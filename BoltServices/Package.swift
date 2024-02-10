@@ -142,10 +142,10 @@ let testTargets: [Target] = [
 let dependencies: [Package.Dependency] = [
   .package(name: "BoltUtils", path: "../BoltUtils"),
   .package(name: "BoltRxSwift", path: "../BoltRxSwift"),
-  .package(url: "git@github.com:hmlongco/Factory.git", revision: "2.2.0"),
-  .package(url: "git@github.com:BoltDocs/SWCompressionTAR.git", revision: "4.8.5"),
+  .package(url: "https://github.com/hmlongco/Factory.git", revision: "2.2.0"),
+  .package(url: "https://github.com/BoltDocs/SWCompressionTAR.git", revision: "4.8.5"),
   .package(url: "https://github.com/CombineCommunity/CombineExt.git", revision: "1.8.1"),
-  .package(url: "git@github.com:BoltDocs/GzipSwift.git", revision: "6.0.1"),
+  .package(url: "https://github.com/BoltDocs/GzipSwift.git", revision: "6.0.1"),
   .package(url: "https://github.com/groue/GRDB.swift.git", revision: "v6.16.0"),
   .package(url: "https://github.com/Alamofire/Alamofire.git", revision: "5.7.1"),
   .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", revision: "5.0.1"),

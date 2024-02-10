@@ -134,7 +134,7 @@ let package = Package(
     .package(url: "https://github.com/stleamist/BetterSafariView.git", exact: "2.4.1"),
     .package(url: "https://github.com/wxxsw/GSMessages.git", revision: "88d895a"),
     .package(url: "https://github.com/pointfreeco/swift-overture.git", revision: "0.5.0"),
-    .package(url: "git@github.com:BoltDocs/RoutableNavigation.git", revision: "5fa1eb3"),
+    .package(url: "https://github.com/BoltDocs/RoutableNavigation.git", revision: "5fa1eb3"),
     .package(path: "../BoltRxSwift"),
     .package(path: "../BoltLocalizations"),
     .package(path: "./BoltServices"),
