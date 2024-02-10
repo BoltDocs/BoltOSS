@@ -1,0 +1,5 @@
+exclude:
+  - ObjectAssociationHelper
+  - BoltLocalizations
+rename:
+  SWCompressionTAR: SWCompression

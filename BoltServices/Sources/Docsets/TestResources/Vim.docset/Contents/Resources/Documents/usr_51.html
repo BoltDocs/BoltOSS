@@ -1,0 +1,725 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: usr_51</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: usr_51</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="usr_51.txt"></A><B>usr_51.txt</B>*	For Vim version 9.0.  Last change: 2022 Jun 03
+
+		     VIM USER MANUAL - by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+			      Write plugins
+
+
+Plugins can be used to define settings for a specific type of file, <A HREF="syntax.html#syntax">syntax</A>
+highlighting and many other things.  This chapter explains how to write the
+most common Vim plugins.
+
+|<A HREF="#51.1">51.1</A>|	Writing a generic <A HREF="usr_05.html#plugin">plugin</A>
+|<A HREF="#51.2">51.2</A>|	Writing a <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A>
+|<A HREF="#51.3">51.3</A>|	Writing a compiler <A HREF="usr_05.html#plugin">plugin</A>
+|<A HREF="#51.4">51.4</A>|	Distributing Vim scripts
+
+     Next chapter: |<A HREF="usr_52.html">usr_52.txt</A>|  Write large plugins
+ Previous chapter: |<A HREF="usr_50.html">usr_50.txt</A>|  Advanced Vim <A HREF="usr_41.html#script">script</A> <A HREF="editing.html#writing">writing</A>
+Table of contents: |<A HREF="usr_toc.html">usr_toc.txt</A>|
+
+==============================================================================
+
+*<A NAME="51.1"></A><B>51.1</B>*	Writing a generic <A HREF="usr_05.html#plugin">plugin</A>			*<A NAME="write-plugin"></A><B>write-plugin</B>*
+
+You can write a Vim <A HREF="usr_41.html#script">script</A> in such a way that many people can use <A HREF="motion.html#it">it</A>.  This is
+called a <A HREF="usr_05.html#plugin">plugin</A>.  Vim users can drop your <A HREF="usr_41.html#script">script</A> in their <A HREF="usr_05.html#plugin">plugin</A> directory and
+use its features right away |<A HREF="usr_05.html#add-plugin">add-plugin</A>|.
+
+There are actually two types of plugins:
+
+  global plugins: For all types of files.
+<A HREF="filetype.html#filetype">filetype</A> plugins: Only for files of a specific type.
+
+In this section the first type is explained.  Most items are also relevant for
+<A HREF="editing.html#writing">writing</A> <A HREF="filetype.html#filetype">filetype</A> plugins.  The specifics for <A HREF="filetype.html#filetype">filetype</A> plugins are in the next
+section |<A HREF="#write-filetype-plugin">write-filetype-plugin</A>|.
+
+We will use |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="syntax.html#syntax">syntax</A> here, the recommended way to write new plugins.
+Make sure the file starts with the `vim9script` command.
+
+
+NAME
+
+First of all you must choose a name for your <A HREF="usr_05.html#plugin">plugin</A>.  The features provided
+by the <A HREF="usr_05.html#plugin">plugin</A> should be clear from its name.  And <A HREF="motion.html#it">it</A> should be unlikely that
+someone else writes a <A HREF="usr_05.html#plugin">plugin</A> with the same name but which does something
+different.
+
+A <A HREF="usr_41.html#script">script</A> that corrects typing mistakes could be called &quot;typecorrect.vim&quot;.  We
+will use <A HREF="motion.html#it">it</A> here <A HREF="motion.html#as">as</A> an example.
+
+For the <A HREF="usr_05.html#plugin">plugin</A> to work for everybody, <A HREF="motion.html#it">it</A> should follow a few guidelines.  This
+will be explained step-by-step.  The complete example <A HREF="usr_05.html#plugin">plugin</A> is at the end.
+
+
+BODY
+
+Let's start with the body of the <A HREF="usr_05.html#plugin">plugin</A>, the lines that <A HREF="diff.html#do">do</A> the actual work:
+
+<B> 12	iabbrev teh the</B>
+<B> 13	iabbrev otehr other</B>
+<B> 14	iabbrev wnat want</B>
+<B> 15	iabbrev synchronisation</B>
+<B> 16		\ synchronization</B>
+
+The actual <A HREF="eval.html#list">list</A> should be much longer, of course.
+
+The line numbers have only been added to explain a few things, don't put them
+in your <A HREF="usr_05.html#plugin">plugin</A> file!
+
+
+FIRST LINE
+
+<B>  1	vim9script noclear</B>
+
+You need to use `vim9script` <A HREF="motion.html#as">as</A> the very first command.  Best is to put <A HREF="motion.html#it">it</A> in
+the very first line.
+
+The <A HREF="usr_41.html#script">script</A> we are <A HREF="editing.html#writing">writing</A> will have a `finish` command to bail out when <A HREF="motion.html#it">it</A> is
+loaded a second time.  To avoid that the items defined in the <A HREF="usr_41.html#script">script</A> are lost
+the &quot;noclear&quot; argument is used.  More info about this at |<A HREF="vim9.html#vim9-reload">vim9-reload</A>|.
+
+
+HEADER
+
+You will probably add new corrections to the <A HREF="usr_05.html#plugin">plugin</A> and soon have several
+versions lying around.  And when distributing this file, people will want to
+know who wrote this wonderful <A HREF="usr_05.html#plugin">plugin</A> and where they can send remarks.
+Therefore, put a header at the top of your <A HREF="usr_05.html#plugin">plugin</A>:
+
+<B>  2	# Vim global plugin for correcting typing mistakes</B>
+<B>  3	# Last Change:	2021 Dec 30</B>
+<B>  4	# Maintainer:	Bram Moolenaar &lt;Bram@vim.org&gt;</B>
+
+About <A HREF="uganda.html#copyright">copyright</A> and licensing: Since plugins are very useful and it's hardly
+worth restricting their <A HREF="intro.html#distribution">distribution</A>, please consider making your <A HREF="usr_05.html#plugin">plugin</A>
+either public domain or use the Vim |<A HREF="uganda.html#license">license</A>|.  A short note about this near
+the top of the <A HREF="usr_05.html#plugin">plugin</A> should be sufficient.  Example:
+
+<B>  5	# License:	This file is placed in the public domain.</B>
+
+
+NOT LOADING
+
+It is possible that a user doesn't always want to load this <A HREF="usr_05.html#plugin">plugin</A>.  Or the
+system administrator has dropped <A HREF="motion.html#it">it</A> in the system-wide <A HREF="usr_05.html#plugin">plugin</A> directory, but a
+user has his own <A HREF="usr_05.html#plugin">plugin</A> he wants to use.  Then the user must have a chance to
+disable loading this specific <A HREF="usr_05.html#plugin">plugin</A>.  These lines will make <A HREF="motion.html#it">it</A> possible:
+
+<B>  7	if exists("g:loaded_typecorrect")</B>
+<B>  8	  finish</B>
+<B>  9	endif</B>
+<B> 10	g:loaded_typecorrect = 1</B>
+
+This also avoids that when the <A HREF="usr_41.html#script">script</A> is loaded <A HREF="if_cscop.html#twice">twice</A> <A HREF="motion.html#it">it</A> would pointlessly
+redefine <A HREF="eval.html#functions">functions</A> and cause trouble for <A HREF="autocmd.html#autocommands">autocommands</A> that are added <A HREF="if_cscop.html#twice">twice</A>.
+
+The name is recommended to start with &quot;g:loaded_&quot; and then the file name of
+the <A HREF="usr_05.html#plugin">plugin</A>, literally.  The &quot;<A HREF="eval.html#g:">g:</A>&quot; is prepended to make the variable global, so
+that other places can check whether its functionality is available.  Without
+&quot;<A HREF="eval.html#g:">g:</A>&quot; <A HREF="motion.html#it">it</A> would be local to the <A HREF="usr_41.html#script">script</A>.
+
+Using `finish` stops Vim from reading the rest of the file, it's much quicker
+than using if-endif around the whole file, since Vim would still need to parse
+the commands to find the `endif`.
+
+
+MAPPING
+
+Now let's make the <A HREF="usr_05.html#plugin">plugin</A> more interesting: We will add a <A HREF="map.html#mapping">mapping</A> that adds a
+correction for the <A HREF="motion.html#word">word</A> under the cursor.  We could just pick a key sequence
+for this <A HREF="map.html#mapping">mapping</A>, but the user might already use <A HREF="motion.html#it">it</A> for something else.  To
+allow the user to define which keys a <A HREF="map.html#mapping">mapping</A> in a <A HREF="usr_05.html#plugin">plugin</A> uses, the <A HREF="map.html#&lt;Leader&gt;">&lt;Leader&gt;</A>
+item can be used:
+
+<B> 20	  map &lt;unique&gt; &lt;Leader&gt;a  &lt;Plug&gt;TypecorrAdd;</B>
+
+The &quot;&lt;Plug&gt;TypecorrAdd;&quot; thing will <A HREF="diff.html#do">do</A> the work, more about that further on.
+
+The user can set the &quot;g:mapleader&quot; variable to the key sequence that he wants
+<A HREF="usr_05.html#plugin">plugin</A> mappings to start with.  Thus if the user has done:
+
+<B>	g:mapleader = "_"</B>
+
+the <A HREF="map.html#mapping">mapping</A> will define &quot;_a&quot;.  If the user didn't <A HREF="diff.html#do">do</A> this, the default value
+will be used, which is a <A HREF="intro.html#backslash">backslash</A>.  Then a map for &quot;\a&quot; will be defined.
+
+Note that &lt;unique&gt; is used, this will cause an error message if the <A HREF="map.html#mapping">mapping</A>
+already happened to exist. |<A HREF="map.html#:map-&lt;unique&gt;">:map-&lt;unique&gt;</A>|
+
+But what if the user wants to define his own key sequence?  We can allow that
+with this mechanism:
+
+<B> 19	if !hasmapto('&lt;Plug&gt;TypecorrAdd;')</B>
+<B> 20	  map &lt;unique&gt; &lt;Leader&gt;a  &lt;Plug&gt;TypecorrAdd;</B>
+<B> 21	endif</B>
+
+This checks if a <A HREF="map.html#mapping">mapping</A> to &quot;&lt;Plug&gt;TypecorrAdd;&quot; already exists, and only
+defines the <A HREF="map.html#mapping">mapping</A> from &quot;&lt;Leader&gt;a&quot; if <A HREF="motion.html#it">it</A> doesn't.  The user then has a
+chance of putting this in his <A HREF="starting.html#vimrc">vimrc</A> file:
+
+<B>	map ,c  &lt;Plug&gt;TypecorrAdd;</B>
+
+Then the mapped key sequence will be &quot;,c&quot; instead of &quot;_a&quot; or &quot;\a&quot;.
+
+
+PIECES
+
+If a <A HREF="usr_41.html#script">script</A> gets longer, you often want to break up the work in pieces.  You
+can use <A HREF="eval.html#functions">functions</A> or mappings for this.  But you don't want these <A HREF="eval.html#functions">functions</A>
+and mappings to interfere with the ones from other scripts.  For example, you
+could define a function Add(), but another <A HREF="usr_41.html#script">script</A> could try to define the same
+function.  To avoid this, we define the function local to the <A HREF="usr_41.html#script">script</A>.
+Fortunately, in |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="usr_41.html#script">script</A> this is the default.  In a legacy <A HREF="usr_41.html#script">script</A> you
+would need to prefix the name with &quot;s:&quot;.
+
+We will define a function that adds a new typing correction:
+
+<B> 28	def Add(from: string, correct: bool)</B>
+<B> 29	  var to = input($"type the correction for {from}: ")</B>
+<B> 30	  exe $":iabbrev {from} {to}"</B>
+<B> ...</B>
+<B> 34	enddef</B>
+
+Now we can call the function Add() from within this <A HREF="usr_41.html#script">script</A>.  If another
+<A HREF="usr_41.html#script">script</A> also defines Add(), <A HREF="motion.html#it">it</A> will be local to that <A HREF="usr_41.html#script">script</A> and can only
+be called from that <A HREF="usr_41.html#script">script</A>.  There can also be a global g:Add() function,
+which is again another function.
+
+<A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A> can be used with mappings.  It generates a <A HREF="usr_41.html#script">script</A> ID, which identifies
+the current <A HREF="usr_41.html#script">script</A>.  In our typing correction <A HREF="usr_05.html#plugin">plugin</A> we use <A HREF="motion.html#it">it</A> like this:
+
+<B> 22	noremap &lt;unique&gt; &lt;script&gt; &lt;Plug&gt;TypecorrAdd;  &lt;SID&gt;Add</B>
+<B> ...</B>
+<B> 26	noremap &lt;SID&gt;Add  :call &lt;SID&gt;Add(expand("&lt;cword&gt;"), true)&lt;CR&gt;</B>
+
+Thus when a user types &quot;\a&quot;, this sequence is invoked:
+
+<B>	\a  -&gt;  &lt;Plug&gt;TypecorrAdd;  -&gt;  &lt;SID&gt;Add  -&gt;  :call &lt;SID&gt;Add(...)</B>
+
+If another <A HREF="usr_41.html#script">script</A> also maps &lt;SID&gt;Add, <A HREF="motion.html#it">it</A> will get another <A HREF="usr_41.html#script">script</A> ID and
+thus define another <A HREF="map.html#mapping">mapping</A>.
+
+Note that instead of Add() we use &lt;SID&gt;Add() here.  That is because the
+<A HREF="map.html#mapping">mapping</A> is typed by the user, thus outside of the <A HREF="usr_41.html#script">script</A> context.  The <A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A>
+is translated to the <A HREF="usr_41.html#script">script</A> ID, so that Vim knows in which <A HREF="usr_41.html#script">script</A> to look for
+the Add() function.
+
+This is a bit complicated, but it's required for the <A HREF="usr_05.html#plugin">plugin</A> to work together
+with other plugins.  The basic rule is that you use &lt;SID&gt;Add() in mappings and
+Add() in other places (the <A HREF="usr_41.html#script">script</A> itself, <A HREF="autocmd.html#autocommands">autocommands</A>, user commands).
+
+We can also add a menu entry to <A HREF="diff.html#do">do</A> the same <A HREF="motion.html#as">as</A> the <A HREF="map.html#mapping">mapping</A>:
+
+<B> 24	noremenu &lt;script&gt; Plugin.Add\ Correction      &lt;SID&gt;Add</B>
+
+The &quot;Plugin&quot; menu is recommended for adding menu items for plugins.  In this
+<A HREF="change.html#case">case</A> only one item is used.  When adding more items, creating a submenu is
+recommended.  For example, &quot;Plugin.CVS&quot; could be used for a <A HREF="usr_05.html#plugin">plugin</A> that offers
+CVS operations &quot;Plugin.CVS.checkin&quot;, &quot;Plugin.CVS.checkout&quot;, etc.
+
+Note that in line 28 &quot;<A HREF="map.html#:noremap">:noremap</A>&quot; is used to avoid that any other mappings cause
+trouble.  Someone may have remapped &quot;<A HREF="eval.html#:call">:call</A>&quot;, for example.  In line 24 we also
+use &quot;<A HREF="map.html#:noremap">:noremap</A>&quot;, but we <A HREF="diff.html#do">do</A> want &quot;&lt;SID&gt;Add&quot; to be remapped.  This is why
+&quot;<A HREF="cmdline.html#&lt;script&gt;">&lt;script&gt;</A>&quot; is used here.  This only allows mappings which are local to the
+script. |<A HREF="map.html#:map-&lt;script&gt;">:map-&lt;script&gt;</A>|  The same is done in line 26 for &quot;<A HREF="gui.html#:noremenu">:noremenu</A>&quot;.
+|<A HREF="gui.html#:menu-&lt;script&gt;">:menu-&lt;script&gt;</A>|
+
+
+
+<A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A> AND <A HREF="map.html#&lt;Plug&gt;">&lt;Plug&gt;</A>					*<A NAME="using-&lt;Plug&gt;"></A><B>using-&lt;Plug&gt;</B>*
+
+Both <A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A> and <A HREF="map.html#&lt;Plug&gt;">&lt;Plug&gt;</A> are used to avoid that mappings of typed keys interfere
+with mappings that are only to be used from other mappings.  Note the
+difference between using <A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A> and <A HREF="map.html#&lt;Plug&gt;">&lt;Plug&gt;</A>:
+
+<A HREF="map.html#&lt;Plug&gt;">&lt;Plug&gt;</A>	is visible outside of the <A HREF="usr_41.html#script">script</A>.  It is used for mappings which the
+	user might want to map a key sequence to.  <A HREF="map.html#&lt;Plug&gt;">&lt;Plug&gt;</A> is a special code
+	that a typed key will never produce.
+	To make <A HREF="motion.html#it">it</A> very unlikely that other plugins use the same sequence of
+	characters, use this structure: <A HREF="map.html#&lt;Plug&gt;">&lt;Plug&gt;</A> scriptname mapname
+	In our example the scriptname is &quot;Typecorr&quot; and the mapname is &quot;Add&quot;.
+	We add a semicolon <A HREF="motion.html#as">as</A> the terminator.  This results in
+	&quot;&lt;Plug&gt;TypecorrAdd;&quot;.  Only the first character of scriptname and
+	mapname is <A HREF="change.html#uppercase">uppercase</A>, so that we can see where mapname starts.
+
+<A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A>	is the <A HREF="usr_41.html#script">script</A> ID, a unique identifier for a <A HREF="usr_41.html#script">script</A>.
+	Internally Vim translates <A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A> to &quot;&lt;SNR&gt;123_&quot;, where &quot;123&quot; can be any
+	number.  Thus a function &quot;&lt;SID&gt;Add()&quot; will have a name &quot;&lt;SNR&gt;11_Add()&quot;
+	in one <A HREF="usr_41.html#script">script</A>, and &quot;&lt;SNR&gt;22_Add()&quot; in another.  You can see this if
+	you use the &quot;<A HREF="eval.html#:function">:function</A>&quot; command to get a <A HREF="eval.html#list">list</A> of <A HREF="eval.html#functions">functions</A>.  The
+	translation of <A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A> in mappings is exactly the same, that's how you
+	can call a <A HREF="map.html#script-local">script-local</A> function from a <A HREF="map.html#mapping">mapping</A>.
+
+
+USER COMMAND
+
+Now let's add a user command to add a correction:
+
+<B> 36	if !exists(":Correct")</B>
+<B> 37	  command -nargs=1  Correct  :call Add(&lt;q-args&gt;, false)</B>
+<B> 38	endif</B>
+
+The user command is defined only if no command with the same name already
+exists.  Otherwise we would get an error here.  Overriding the existing user
+command with &quot;:command!&quot; is not a good idea, this would probably make the user
+wonder why the command he defined himself doesn't work.  |<A HREF="map.html#:command">:command</A>|
+If <A HREF="motion.html#it">it</A> did happen you can find out who to blame with:
+
+<B>	verbose command Correct</B>
+
+
+SCRIPT VARIABLES
+
+When a variable starts with &quot;s:&quot; <A HREF="motion.html#it">it</A> is a <A HREF="usr_41.html#script">script</A> variable.  It can only be used
+inside a <A HREF="usr_41.html#script">script</A>.  Outside the <A HREF="usr_41.html#script">script</A> it's not visible.  This avoids trouble
+with using the same variable name in different scripts.  The <A HREF="eval.html#variables">variables</A> will be
+kept <A HREF="motion.html#as">as</A> long <A HREF="motion.html#as">as</A> Vim is running.  And the same <A HREF="eval.html#variables">variables</A> are used when sourcing
+the same <A HREF="usr_41.html#script">script</A> again. |<A HREF="eval.html#s:var">s:var</A>|
+
+The nice thing about |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="usr_41.html#script">script</A> is that <A HREF="eval.html#variables">variables</A> are local to the <A HREF="usr_41.html#script">script</A>
+by default.  You can prepend &quot;s:&quot; if you like, but you <A HREF="diff.html#do">do</A> not need to.  And
+<A HREF="eval.html#functions">functions</A> in the <A HREF="usr_41.html#script">script</A> can also use the <A HREF="usr_41.html#script">script</A> <A HREF="eval.html#variables">variables</A> without a prefix
+(they must be declared before the function for this to work).
+
+Script-local <A HREF="eval.html#variables">variables</A> can also be used in <A HREF="eval.html#functions">functions</A>, <A HREF="autocmd.html#autocommands">autocommands</A> and user
+commands that are defined in the <A HREF="usr_41.html#script">script</A>.  Thus they are the perfect way to
+share information between parts of your <A HREF="usr_05.html#plugin">plugin</A>, without <A HREF="motion.html#it">it</A> leaking out.  In
+our example we can add a few lines to <A HREF="intro.html#count">count</A> the number of corrections:
+
+<B> 17	var count = 4</B>
+<B> ...</B>
+<B> 28	def Add(from: string, correct: bool)</B>
+<B> ...</B>
+<B> 32	  count += 1</B>
+<B> 33	  echo "you now have " .. count .. " corrections"</B>
+<B> 34	enddef</B>
+
+&quot;<A HREF="intro.html#count">count</A>&quot; is declared and initialized to 4 in the <A HREF="usr_41.html#script">script</A> itself.  When later
+the Add() function is called, <A HREF="motion.html#it">it</A> increments &quot;<A HREF="intro.html#count">count</A>&quot;.  It doesn't matter from
+where the function was called, since <A HREF="motion.html#it">it</A> has been defined in the <A HREF="usr_41.html#script">script</A>, <A HREF="motion.html#it">it</A>
+will use the local <A HREF="eval.html#variables">variables</A> from this <A HREF="usr_41.html#script">script</A>.
+
+
+THE RESULT
+
+Here is the resulting complete example:
+
+<B>  1	vim9script noclear</B>
+<B>  2	# Vim global plugin for correcting typing mistakes</B>
+<B>  3	# Last Change:	2021 Dec 30</B>
+<B>  4	# Maintainer:	Bram Moolenaar &lt;Bram@vim.org&gt;</B>
+<B>  5	# License:	This file is placed in the public domain.</B>
+<B>  6</B>
+<B>  7	if exists("g:loaded_typecorrect")</B>
+<B>  8	  finish</B>
+<B>  9	endif</B>
+<B> 10	g:loaded_typecorrect = 1</B>
+<B> 11</B>
+<B> 12	iabbrev teh the</B>
+<B> 13	iabbrev otehr other</B>
+<B> 14	iabbrev wnat want</B>
+<B> 15	iabbrev synchronisation</B>
+<B> 16		\ synchronization</B>
+<B> 17	var count = 4</B>
+<B> 18</B>
+<B> 19	if !hasmapto('&lt;Plug&gt;TypecorrAdd;')</B>
+<B> 20	  map &lt;unique&gt; &lt;Leader&gt;a  &lt;Plug&gt;TypecorrAdd;</B>
+<B> 21	endif</B>
+<B> 22	noremap &lt;unique&gt; &lt;script&gt; &lt;Plug&gt;TypecorrAdd;  &lt;SID&gt;Add</B>
+<B> 23</B>
+<B> 24	noremenu &lt;script&gt; Plugin.Add\ Correction      &lt;SID&gt;Add</B>
+<B> 25</B>
+<B> 26	noremap &lt;SID&gt;Add  :call &lt;SID&gt;Add(expand("&lt;cword&gt;"), true)&lt;CR&gt;</B>
+<B> 27</B>
+<B> 28	def Add(from: string, correct: bool)</B>
+<B> 29	  var to = input("type the correction for " .. from .. ": ")</B>
+<B> 30	  exe ":iabbrev " .. from .. " " .. to</B>
+<B> 31	  if correct | exe "normal viws\&lt;C-R&gt;\" \b\e" | endif</B>
+<B> 32	  count += 1</B>
+<B> 33	  echo "you now have " .. count .. " corrections"</B>
+<B> 34	enddef</B>
+<B> 35</B>
+<B> 36	if !exists(":Correct")</B>
+<B> 37	  command -nargs=1  Correct  call Add(&lt;q-args&gt;, false)</B>
+<B> 38	endif</B>
+
+Line 31 wasn't explained yet.  It applies the new correction to the <A HREF="motion.html#word">word</A> under
+the cursor.  The |<A HREF="various.html#:normal">:normal</A>| command is used to use the new abbreviation.  Note
+that mappings and <A HREF="map.html#abbreviations">abbreviations</A> are expanded here, even though the function
+was called from a <A HREF="map.html#mapping">mapping</A> defined with &quot;<A HREF="map.html#:noremap">:noremap</A>&quot;.
+
+
+
+DOCUMENTATION						*<A NAME="write-local-help"></A><B>write-local-help</B>*
+
+It's a good idea to also write some documentation for your <A HREF="usr_05.html#plugin">plugin</A>.  Especially
+when its behavior can be changed by the user.  See |<A HREF="usr_05.html#add-local-help">add-local-help</A>| for how
+they are installed.
+
+Here is a simple example for a <A HREF="usr_05.html#plugin">plugin</A> help file, called &quot;<A HREF="#typecorrect.txt">typecorrect.txt</A>&quot;:
+
+<B>  1	*typecorrect.txt*	Plugin for correcting typing mistakes</B>
+<B>  2</B>
+<B>  3	If you make typing mistakes, this plugin will have them corrected</B>
+<B>  4	automatically.</B>
+<B>  5</B>
+<B>  6	There are currently only a few corrections.  Add your own if you like.</B>
+<B>  7</B>
+<B>  8	Mappings:</B>
+<B>  9	&lt;Leader&gt;a   or   &lt;Plug&gt;TypecorrAdd;</B>
+<B> 10		Add a correction for the word under the cursor.</B>
+<B> 11</B>
+<B> 12	Commands:</B>
+<B> 13	:Correct {word}</B>
+<B> 14		Add a correction for {word}.</B>
+<B> 15</B>
+<B> 16							*typecorrect-settings*</B>
+<B> 17	This plugin doesn't have any settings.</B>
+
+The first line is actually the only one for which the format matters.  It will
+be extracted from the help file to be put in the &quot;LOCAL ADDITIONS:&quot; section of
+<A HREF="help.html#help.txt">help.txt</A> |<A HREF="help.html#local-additions">local-additions</A>|.  The first &quot;*&quot; must be in the first column of the
+first line.  After adding your help file <A HREF="diff.html#do">do</A> &quot;<A HREF="helphelp.html#:help">:help</A>&quot; and check that the entries
+line up nicely.
+
+
+You can add more <A HREF="tagsrch.html#tags">tags</A> inside ** in your help file.  But be careful not to use
+existing help <A HREF="tagsrch.html#tags">tags</A>.  You would probably use the name of your <A HREF="usr_05.html#plugin">plugin</A> in most of
+them, like &quot;<A HREF="#typecorrect-settings">typecorrect-settings</A>&quot; in the example.
+
+Using references to other parts of the help in &#124;&#124; is recommended.  This makes
+<A HREF="motion.html#it">it</A> <A HREF="starting.html#easy">easy</A> for the user to find associated help.
+
+
+
+SUMMARY							*<A NAME="plugin-special"></A><B>plugin-special</B>*
+
+Summary of special things to use in a <A HREF="usr_05.html#plugin">plugin</A>:
+
+var name		Variable local to the <A HREF="usr_41.html#script">script</A>.
+
+<A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A>			Script-ID, used for mappings and <A HREF="eval.html#functions">functions</A> local to
+			the <A HREF="usr_41.html#script">script</A>.
+
+<A HREF="builtin.html#hasmapto()">hasmapto()</A>		Function to test if the user already defined a <A HREF="map.html#mapping">mapping</A>
+			for functionality the <A HREF="usr_41.html#script">script</A> offers.
+
+<A HREF="map.html#&lt;Leader&gt;">&lt;Leader&gt;</A>		Value of &quot;<A HREF="map.html#mapleader">mapleader</A>&quot;, which the user defines <A HREF="motion.html#as">as</A> the
+			keys that <A HREF="usr_05.html#plugin">plugin</A> mappings start with.
+
+map &lt;unique&gt;		Give a warning if a <A HREF="map.html#mapping">mapping</A> already exists.
+
+noremap <A HREF="cmdline.html#&lt;script&gt;">&lt;script&gt;</A>	Use only mappings local to the <A HREF="usr_41.html#script">script</A>, not global
+			mappings.
+
+exists(&quot;:Cmd&quot;)		Check if a user command already exists.
+
+==============================================================================
+
+*<A NAME="51.2"></A><B>51.2</B>*	Writing a <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A>	*<A NAME="write-filetype-plugin"></A><B>write-filetype-plugin</B>* *<A NAME="ftplugin"></A><B>ftplugin</B>*
+
+A <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> is like a global <A HREF="usr_05.html#plugin">plugin</A>, except that <A HREF="motion.html#it">it</A> sets <A HREF="options.html#options">options</A> and
+defines mappings for the current buffer only.  See |<A HREF="usr_05.html#add-filetype-plugin">add-filetype-plugin</A>| for
+how this type of <A HREF="usr_05.html#plugin">plugin</A> is used.
+
+First read the section on global plugins above |<A HREF="#51.1">51.1</A>|.  All that is said there
+also applies to <A HREF="filetype.html#filetype">filetype</A> plugins.  There are a few extras, which are explained
+here.  The essential thing is that a <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> should only have an
+effect on the current buffer.
+
+
+DISABLING
+
+If you are <A HREF="editing.html#writing">writing</A> a <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> to be used by many people, they need a
+chance to disable loading <A HREF="motion.html#it">it</A>.  Put this at the top of the <A HREF="usr_05.html#plugin">plugin</A>:
+
+<B>	# Only do this when not done yet for this buffer</B>
+<B>	if exists("b:did_ftplugin")</B>
+<B>	  finish</B>
+<B>	endif</B>
+<B>	b:did_ftplugin = 1</B>
+
+This also needs to be used to avoid that the same <A HREF="usr_05.html#plugin">plugin</A> is executed <A HREF="if_cscop.html#twice">twice</A> for
+the same buffer (happens when using an &quot;<A HREF="editing.html#:edit">:edit</A>&quot; command without arguments).
+
+Now users can disable loading the default <A HREF="usr_05.html#plugin">plugin</A> completely by making a
+<A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> with only these lines:
+
+<B>	vim9script</B>
+<B>	b:did_ftplugin = 1</B>
+
+This does require that the <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> directory comes before <A HREF="starting.html#$VIMRUNTIME">$VIMRUNTIME</A>
+in <A HREF="options.html#'runtimepath'">'runtimepath'</A>!
+
+If you <A HREF="diff.html#do">do</A> want to use the default <A HREF="usr_05.html#plugin">plugin</A>, but overrule one of the settings,
+you can write the different setting in a <A HREF="usr_41.html#script">script</A>:
+
+<B>	setlocal textwidth=70</B>
+
+Now write this in the &quot;after&quot; directory, so that <A HREF="motion.html#it">it</A> gets sourced after the
+distributed &quot;<A HREF="syntax.html#vim.vim">vim.vim</A>&quot; <A HREF="#ftplugin">ftplugin</A> |<A HREF="options.html#after-directory">after-directory</A>|.  For <A HREF="os_unix.html#Unix">Unix</A> this would be
+&quot;~/.vim/after/ftplugin/vim.vim&quot;.  Note that the default <A HREF="usr_05.html#plugin">plugin</A> will have set
+&quot;b:did_ftplugin&quot;, <A HREF="motion.html#it">it</A> is ignored here.
+
+
+OPTIONS
+
+To make sure the <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> only affects the current buffer use the
+
+<B>	setlocal</B>
+
+command to set <A HREF="options.html#options">options</A>.  And only set <A HREF="options.html#options">options</A> which are local to a buffer (see
+the help for the option to check that).  When using `:setlocal` for global
+<A HREF="options.html#options">options</A> or <A HREF="options.html#options">options</A> local to a <A HREF="windows.html#window">window</A>, the value will change for many <A HREF="windows.html#buffers">buffers</A>,
+and that is not what a <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> should <A HREF="diff.html#do">do</A>.
+
+When an option has a value that is a <A HREF="eval.html#list">list</A> of flags or items, consider using
+&quot;+=&quot; and &quot;-=&quot; to keep the existing value.  Be aware that the user may have
+changed an option value already.  First resetting to the default value and
+then <A HREF="change.html#changing">changing</A> <A HREF="motion.html#it">it</A> is often a good idea.  Example:
+
+<B>	setlocal formatoptions&amp; formatoptions+=ro</B>
+
+
+MAPPINGS
+
+To make sure mappings will only work in the current buffer use the
+
+<B>	map &lt;buffer&gt;</B>
+
+command.  This needs to be combined with the two-step <A HREF="map.html#mapping">mapping</A> explained above.
+An example of how to define functionality in a <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A>:
+
+<B>	if !hasmapto('&lt;Plug&gt;JavaImport;')</B>
+<B>	  map &lt;buffer&gt; &lt;unique&gt; &lt;LocalLeader&gt;i &lt;Plug&gt;JavaImport;</B>
+<B>	endif</B>
+<B>	noremap &lt;buffer&gt; &lt;unique&gt; &lt;Plug&gt;JavaImport; oimport ""&lt;Left&gt;&lt;Esc&gt;</B>
+
+|<A HREF="builtin.html#hasmapto()">hasmapto()</A>| is used to check if the user has already defined a map to
+&lt;Plug&gt;JavaImport;.  If not, then the <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> defines the default
+<A HREF="map.html#mapping">mapping</A>.  This starts with |<A HREF="map.html#&lt;LocalLeader&gt;">&lt;LocalLeader&gt;</A>|, which allows the user to select
+the key(s) he wants <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> mappings to start with.  The default is a
+<A HREF="intro.html#backslash">backslash</A>.
+&quot;&lt;unique&gt;&quot; is used to give an error message if the <A HREF="map.html#mapping">mapping</A> already exists or
+overlaps with an existing <A HREF="map.html#mapping">mapping</A>.
+|<A HREF="map.html#:noremap">:noremap</A>| is used to avoid that any other mappings that the user has defined
+interferes.  You might want to use &quot;<A HREF="map.html#:noremap">:noremap</A> &lt;script&gt;&quot; to allow remapping
+mappings defined in this <A HREF="usr_41.html#script">script</A> that start with <A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A>.
+
+The user must have a chance to disable the mappings in a <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A>,
+without disabling everything.  Here is an example of how this is done for a
+<A HREF="usr_05.html#plugin">plugin</A> for the mail <A HREF="filetype.html#filetype">filetype</A>:
+
+<B>	# Add mappings, unless the user didn't want this.</B>
+<B>	if !exists("g:no_plugin_maps") &amp;&amp; !exists("g:no_mail_maps")</B>
+<B>	  # Quote text by inserting "&gt; "</B>
+<B>	  if !hasmapto('&lt;Plug&gt;MailQuote;')</B>
+<B>	    vmap &lt;buffer&gt; &lt;LocalLeader&gt;q &lt;Plug&gt;MailQuote;</B>
+<B>	    nmap &lt;buffer&gt; &lt;LocalLeader&gt;q &lt;Plug&gt;MailQuote;</B>
+<B>	  endif</B>
+<B>	  vnoremap &lt;buffer&gt; &lt;Plug&gt;MailQuote; :s/^/&gt; /&lt;CR&gt;</B>
+<B>	  nnoremap &lt;buffer&gt; &lt;Plug&gt;MailQuote; :.,$s/^/&gt; /&lt;CR&gt;</B>
+<B>	endif</B>
+
+Two global <A HREF="eval.html#variables">variables</A> are used:
+|<A HREF="filetype.html#g:no_plugin_maps">g:no_plugin_maps</A>|	disables mappings for all <A HREF="filetype.html#filetype">filetype</A> plugins
+|<A HREF="filetype.html#g:no_mail_maps">g:no_mail_maps</A>|	disables mappings for the &quot;mail&quot; <A HREF="filetype.html#filetype">filetype</A>
+
+
+USER COMMANDS
+
+To add a user command for a specific file type, so that <A HREF="motion.html#it">it</A> can only be used in
+one buffer, use the &quot;-buffer&quot; argument to |<A HREF="map.html#:command">:command</A>|.  Example:
+
+<B>	command -buffer  Make  make %:r.s</B>
+
+
+VARIABLES
+
+A <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> will be sourced for each buffer of the type it's for.  Local
+<A HREF="usr_41.html#script">script</A> <A HREF="eval.html#variables">variables</A> will be shared between all invocations.  Use local buffer
+<A HREF="eval.html#variables">variables</A> |<A HREF="eval.html#b:var">b:var</A>| if you want a variable specifically for one buffer.
+
+
+FUNCTIONS
+
+When defining a function, this only needs to be done once.  But the <A HREF="filetype.html#filetype">filetype</A>
+<A HREF="usr_05.html#plugin">plugin</A> will be sourced every time a file with this <A HREF="filetype.html#filetype">filetype</A> will be opened.
+This construct makes sure the function is only defined once:
+
+<B>	if !exists("*Func")</B>
+<B>	  def Func(arg)</B>
+<B>	    ...</B>
+<B>	  enddef</B>
+<B>	endif</B>
+ 
+Don't forget to use &quot;noclear&quot; with the `vim9script` command to avoid that the
+function is deleted when the <A HREF="usr_41.html#script">script</A> is sourced a second time.
+
+
+
+UNDO						*<A NAME="undo_indent"></A><B>undo_indent</B>* *<A NAME="undo_ftplugin"></A><B>undo_ftplugin</B>*
+
+When the user does &quot;<A HREF="options.html#:setfiletype">:setfiletype</A> xyz&quot; the effect of the previous <A HREF="filetype.html#filetype">filetype</A>
+should be undone.  Set the b:undo_ftplugin variable to the commands that will
+<A HREF="undo.html#undo">undo</A> the settings in your <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A>.  Example:
+
+<B>	b:undo_ftplugin = "setlocal fo&lt; com&lt; tw&lt; commentstring&lt;"</B>
+<B>		\ .. "| unlet b:match_ignorecase b:match_words b:match_skip"</B>
+
+Using &quot;<A HREF="options.html#:setlocal">:setlocal</A>&quot; with &quot;<A HREF="change.html#&lt;">&lt;</A>&quot; after the option name resets the option to its
+global value.  That is mostly the best way to reset the option value.
+
+For undoing the effect of an indent <A HREF="usr_41.html#script">script</A>, the b:undo_indent variable should
+be set accordingly.
+
+Both these <A HREF="eval.html#variables">variables</A> use legacy <A HREF="usr_41.html#script">script</A> <A HREF="syntax.html#syntax">syntax</A>, not |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="syntax.html#syntax">syntax</A>.
+
+
+FILE NAME
+
+The <A HREF="filetype.html#filetype">filetype</A> must be included in the file name |<A HREF="usr_05.html#ftplugin-name">ftplugin-name</A>|.  Use one of
+these three forms:
+
+	.../ftplugin/stuff.vim
+	.../ftplugin/stuff_foo.vim
+	.../ftplugin/stuff/bar.vim
+
+&quot;stuff&quot; is the <A HREF="filetype.html#filetype">filetype</A>, &quot;foo&quot; and &quot;<A HREF="motion.html#bar">bar</A>&quot; are arbitrary names.
+
+
+
+FILETYPE DETECTION					*<A NAME="plugin-filetype"></A><B>plugin-filetype</B>*
+
+If your <A HREF="filetype.html#filetype">filetype</A> is not already detected by Vim, you should create a <A HREF="filetype.html#filetype">filetype</A>
+detection snippet in a separate file.  It is usually in the form of an
+<A HREF="autocmd.html#autocommand">autocommand</A> that sets the <A HREF="filetype.html#filetype">filetype</A> when the file name matches a <A HREF="pattern.html#pattern">pattern</A>.
+Example:
+
+<B>	au BufNewFile,BufRead *.foo		setlocal filetype=foofoo</B>
+
+Write this single-line file <A HREF="motion.html#as">as</A> &quot;ftdetect/foofoo.vim&quot; in the first directory
+that appears in <A HREF="options.html#'runtimepath'">'runtimepath'</A>.  For <A HREF="os_unix.html#Unix">Unix</A> that would be
+&quot;~/.vim/ftdetect/foofoo.vim&quot;.  The convention is to use the name of the
+<A HREF="filetype.html#filetype">filetype</A> for the <A HREF="usr_41.html#script">script</A> name.
+
+You can make more complicated checks if you like, for example to inspect the
+contents of the file to recognize the language.  Also see |<A HREF="filetype.html#new-filetype">new-filetype</A>|.
+
+
+
+SUMMARY							*<A NAME="ftplugin-special"></A><B>ftplugin-special</B>*
+
+Summary of special things to use in a <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A>:
+
+<A HREF="map.html#&lt;LocalLeader&gt;">&lt;LocalLeader&gt;</A>		Value of &quot;<A HREF="map.html#maplocalleader">maplocalleader</A>&quot;, which the user defines <A HREF="motion.html#as">as</A>
+			the keys that <A HREF="filetype.html#filetype">filetype</A> <A HREF="usr_05.html#plugin">plugin</A> mappings start with.
+
+map &lt;buffer&gt;		Define a <A HREF="map.html#mapping">mapping</A> local to the buffer.
+
+noremap <A HREF="cmdline.html#&lt;script&gt;">&lt;script&gt;</A>	Only remap mappings defined in this <A HREF="usr_41.html#script">script</A> that start
+			with <A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A>.
+
+setlocal		Set an option for the current buffer only.
+
+command -buffer		Define a user command local to the buffer.
+
+exists(&quot;*s:Func&quot;)	Check if a function was already defined.
+
+Also see |<A HREF="#plugin-special">plugin-special</A>|, the special things used for all plugins.
+
+==============================================================================
+
+*<A NAME="51.3"></A><B>51.3</B>*	Writing a compiler <A HREF="usr_05.html#plugin">plugin</A>		*<A NAME="write-compiler-plugin"></A><B>write-compiler-plugin</B>*
+
+A compiler <A HREF="usr_05.html#plugin">plugin</A> sets <A HREF="options.html#options">options</A> for use with a specific compiler.  The user can
+load <A HREF="motion.html#it">it</A> with the |<A HREF="quickfix.html#:compiler">:compiler</A>| command.  The main use is to set the
+<A HREF="options.html#'errorformat'">'errorformat'</A> and <A HREF="options.html#'makeprg'">'makeprg'</A> <A HREF="options.html#options">options</A>.
+
+Easiest is to have a look at examples.  This command will edit all the default
+compiler plugins:
+
+<B>	next $VIMRUNTIME/compiler/*.vim</B>
+
+Type `:next` to go to the next <A HREF="usr_05.html#plugin">plugin</A> file.
+
+There are two special items about these files.  First is a mechanism to allow
+a user to overrule or add to the default file.  The default files start with:
+
+<B>	vim9script</B>
+<B>	if exists("g:current_compiler")</B>
+<B>	  finish</B>
+<B>	endif</B>
+<B>	g:current_compiler = "mine"</B>
+
+When you write a compiler file and put <A HREF="motion.html#it">it</A> in your personal runtime directory
+(e.g., ~/.vim/compiler for Unix), you set the &quot;<A HREF="quickfix.html#current_compiler">current_compiler</A>&quot; variable to
+make the default file skip the settings.
+
+							*<A NAME=":CompilerSet"></A><B>:CompilerSet</B>*
+The second mechanism is to use &quot;<A HREF="options.html#:set">:set</A>&quot; for &quot;:compiler!&quot; and &quot;<A HREF="options.html#:setlocal">:setlocal</A>&quot; for
+&quot;<A HREF="quickfix.html#:compiler">:compiler</A>&quot;.  Vim defines the &quot;<A HREF="#:CompilerSet">:CompilerSet</A>&quot; user command for this.  However,
+older Vim versions don't, thus your <A HREF="usr_05.html#plugin">plugin</A> should define <A HREF="motion.html#it">it</A> then.  This is an
+example:
+
+<B>  if exists(":CompilerSet") != 2</B>
+<B>    command -nargs=* CompilerSet setlocal &lt;args&gt;</B>
+<B>  endif</B>
+<B>  CompilerSet errorformat&amp;		" use the default 'errorformat'</B>
+<B>  CompilerSet makeprg=nmake</B>
+
+When you write a compiler <A HREF="usr_05.html#plugin">plugin</A> for the Vim <A HREF="intro.html#distribution">distribution</A> or for a system-wide
+runtime directory, use the mechanism mentioned above.  When
+&quot;<A HREF="quickfix.html#current_compiler">current_compiler</A>&quot; was already set by a user <A HREF="usr_05.html#plugin">plugin</A> nothing will be done.
+
+When you write a compiler <A HREF="usr_05.html#plugin">plugin</A> to overrule settings from a default <A HREF="usr_05.html#plugin">plugin</A>,
+don't check &quot;<A HREF="quickfix.html#current_compiler">current_compiler</A>&quot;.  This <A HREF="usr_05.html#plugin">plugin</A> is supposed to be loaded
+last, thus <A HREF="motion.html#it">it</A> should be in a directory at the end of <A HREF="options.html#'runtimepath'">'runtimepath'</A>.  For <A HREF="os_unix.html#Unix">Unix</A>
+that could be ~/.vim/after/compiler.
+
+==============================================================================
+
+*<A NAME="51.4"></A><B>51.4</B>*	Distributing Vim scripts			*<A NAME="distribute-script"></A><B>distribute-script</B>*
+
+ Vim users will look for scripts on the Vim website:	<A HREF="http://www.vim.org">http://www.vim.org</A>.
+If you made something that is useful for others, share <A HREF="motion.html#it">it</A>!
+
+Another place is github.  But there you need to know where to find <A HREF="motion.html#it">it</A>!  The
+advantage is that most <A HREF="usr_05.html#plugin">plugin</A> managers <A HREF="pi_netrw.html#fetch">fetch</A> plugins from github.  You'll have
+to use your favorite search engine to find them.
+
+Vim scripts can be used on any system.  However, there might not be a <A HREF="pi_tar.html#tar">tar</A> or
+<A HREF="pi_gzip.html#gzip">gzip</A> command.  If you want to pack files together and/or <A HREF="pi_gzip.html#compress">compress</A> them the
+&quot;<A HREF="pi_zip.html#zip">zip</A>&quot; utility is recommended.
+
+For utmost portability use Vim itself to pack scripts together.  This can be
+done with the Vimball utility.  See |<A HREF="pi_vimball.html#vimball">vimball</A>|.
+
+It's good if you add a line to allow automatic updating.  See |<A HREF="pi_getscript.html#glvs-plugins">glvs-plugins</A>|.
+
+==============================================================================
+
+Next chapter: |<A HREF="usr_52.html">usr_52.txt</A>|  Write large plugins
+
+Copyright: see |<A HREF="usr_01.html#manual-copyright">manual-copyright</A>|  vim:tw=78:ts=8:noet:ft=help:norl:
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

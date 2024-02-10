@@ -1,0 +1,458 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: textprop</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: textprop</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="textprop.txt"></A><B>textprop.txt</B>*  For Vim version 9.0.  Last change: 2021 Nov 23
+
+
+		  VIM REFERENCE MANUAL    by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+
+
+Displaying text with properties attached.	*<A NAME="textprop"></A><B>textprop</B>* *<A NAME="text-properties"></A><B>text-properties</B>*
+
+
+1. Introduction			|<A HREF="#text-prop-intro">text-prop-intro</A>|
+2. Functions			|<A HREF="#text-prop-functions">text-prop-functions</A>|
+3. When text changes		|<A HREF="#text-prop-changes">text-prop-changes</A>|
+
+
+{not able to use text properties when the |<A HREF="various.html#+textprop">+textprop</A>| feature was
+disabled at compile time}
+
+==============================================================================
+
+1. Introduction						*<A NAME="text-prop-intro"></A><B>text-prop-intro</B>*
+
+Text properties can be attached to text in a buffer.  They will move with the
+text: If lines are deleted or inserted the properties move with the text they
+are attached to.  Also when inserting/deleting text in the line before the
+text property.  And when inserting/deleting text inside the text property, <A HREF="motion.html#it">it</A>
+will increase/decrease in size.
+
+The main use for text properties is to highlight text.  This can be seen <A HREF="motion.html#as">as</A> a
+replacement for <A HREF="syntax.html#syntax">syntax</A> highlighting.  Instead of defining patterns to match
+the text, the highlighting is set by a <A HREF="usr_41.html#script">script</A>, possibly using the output of an
+external parser.  This only needs to be done once, not every time when
+redrawing the screen, thus can be much faster, after the initial cost of
+attaching the text properties.
+
+Text properties can also be used for other purposes to identify text.  For
+example, add a text property on a function name, so that a search can be
+defined to jump to the next/previous function.
+
+A text property is attached at a specific line and column, and has a specified
+length.  The property can span multiple lines.
+
+A text property has these fields:
+	&quot;id&quot;		a number to be used <A HREF="motion.html#as">as</A> desired
+	&quot;type&quot;		the name of a property type
+
+
+<B><FONT COLOR="PURPLE">Property Types </FONT></B>
+
+							*<A NAME="E971"></A><B>E971</B>*
+A text property normally has the name of a property type, which defines
+how to highlight the text.  The property type can have these entries:
+	&quot;highlight&quot;	name of the highlight group to use
+	&quot;combine&quot;	when omitted or <A HREF="eval.html#TRUE">TRUE</A> the text property highlighting is
+			combined with any <A HREF="syntax.html#syntax">syntax</A> highlighting; when <A HREF="eval.html#FALSE">FALSE</A> the
+			text property highlighting replaces the <A HREF="syntax.html#syntax">syntax</A>
+			highlighting
+	&quot;priority&quot;	when properties overlap, the one with the highest
+			priority will be used.
+	&quot;start_incl&quot;	when <A HREF="eval.html#TRUE">TRUE</A> inserts at the start position will be
+			included in the text property
+	&quot;end_incl&quot;    	when <A HREF="eval.html#TRUE">TRUE</A> inserts at the end position will be
+			included in the text property
+
+
+<B><FONT COLOR="PURPLE">Example </FONT></B>
+
+Suppose line 11 in a buffer has this text (excluding the indent):
+
+	The number 123 is smaller than 4567.
+
+To highlight the numbers in this text:
+<B>	call prop_type_add('number', {'highlight': 'Constant'})</B>
+<B>	call prop_add(11, 12, {'length': 3, 'type': 'number'})</B>
+<B>	call prop_add(11, 32, {'length': 4, 'type': 'number'})</B>
+
+Try <A HREF="insert.html#inserting">inserting</A> or <A HREF="change.html#deleting">deleting</A> lines above the text, you will see that the text
+properties stick to the text, thus the line number is adjusted <A HREF="motion.html#as">as</A> needed.
+
+Setting &quot;start_incl&quot; and &quot;end_incl&quot; is useful when white space surrounds the
+text, e.g. for a function name.  Using <A HREF="vim9.html#false">false</A> is useful when the text starts
+and/or ends with a specific character, such <A HREF="motion.html#as">as</A> the <A HREF="change.html#quote">quote</A> surrounding a <A HREF="eval.html#string">string</A>.
+
+<B><FONT COLOR="PURPLE">	func FuncName(arg) </FONT></B>
+	     ^^^^^^^^        property with start_incl and end_incl set
+
+<B><FONT COLOR="PURPLE">	var = "text"; </FONT></B>
+	      ^^^^^^	     property with start_incl and end_incl not set
+
+Nevertheless, when text is inserted or deleted the text may need to be parsed
+and the text properties updated.  But this can be done asynchronously.
+
+
+
+Internal error *<A NAME="E967"></A><B>E967</B>*
+
+If you see <A HREF="#E967">E967</A>, please report the bug.  You can <A HREF="diff.html#do">do</A> this at Github:
+https://github.com/vim/vim/issues/new
+
+==============================================================================
+
+2. Functions						*<A NAME="text-prop-functions"></A><B>text-prop-functions</B>*
+
+Manipulating text property types:
+
+prop_type_add({name}, {props})		define a new property type
+prop_type_change({name}, {props})	change an existing property type
+prop_type_delete({name} [, {props}])	delete a property type
+prop_type_get({name} [, {props}])	get property type values
+prop_type_list([{props}])		get <A HREF="eval.html#list">list</A> of property types
+
+
+Manipulating text properties:
+
+prop_add({lnum}, {col}, {props})  	add a text property
+prop_add_list({props}, [[{lnum}, {col}, {end-lnum}, {end-col}], ...])
+					add a text property at multiple
+					positions.
+prop_clear({lnum} [, {lnum-end} [, {bufnr}]])
+					remove all text properties
+prop_find({props} [, {direction}])	search for a text property
+prop_list({lnum} [, {props}])  		text properties in {lnum}
+prop_remove({props} [, {lnum} [, {lnum-end}]])
+					remove a text property
+
+
+						*<A NAME="prop_add()"></A><B>prop_add()</B>* *<A NAME="E965"></A><B>E965</B>*
+prop_add({lnum}, {col}, {props})
+		Attach a text property at position {lnum}, {col}.  {col} is
+		counted in bytes, use one for the first column.
+
+		If {lnum} is invalid an error is given. *<A NAME="E966"></A><B>E966</B>*
+
+		If {col} is invalid an error is given. *<A NAME="E964"></A><B>E964</B>*
+
+		{props} is a dictionary with these fields:
+		   length	length of text in bytes, can only be used
+				for a property that does not continue in
+				another line; can be zero
+		   end_lnum	line number for the end of text (inclusive)
+		   end_col	column just after the text; not used when
+				&quot;length&quot; is present; when {col} and &quot;end_col&quot;
+				are equal, and &quot;end_lnum&quot; is omitted or equal
+				to {lnum}, this is a zero-width text property
+		   bufnr	buffer to add the property to; when omitted
+				the current buffer is used
+		   id		user defined ID for the property; must be a
+				number; when omitted zero is used
+		   type		name of the text property type
+		All fields except &quot;type&quot; are optional.
+
+		It is an error when both &quot;length&quot; and &quot;end_lnum&quot; or &quot;end_col&quot;
+		are given.  Either use &quot;length&quot; or &quot;end_col&quot; for a property
+		within one line, or use &quot;end_lnum&quot; and &quot;end_col&quot; for a
+		property that spans more than one line.
+		When neither &quot;length&quot; nor &quot;end_col&quot; are given the property
+		will be zero-width.  That means <A HREF="motion.html#it">it</A> will move with the text, <A HREF="motion.html#as">as</A>
+		a kind of <A HREF="motion.html#mark">mark</A>.  One character will be highlighted, if the
+		type specifies highlighting.
+		The property can end exactly at the last character of the
+		text, or just after <A HREF="motion.html#it">it</A>.  In the last <A HREF="change.html#case">case</A>, if text is appended
+		to the line, the text property size will increase, also when
+		the property type does not have &quot;end_incl&quot; set.
+
+		&quot;type&quot; will first be looked up in the buffer the property is
+		added to. When not found, the global property types are used.
+		If not found an error is given.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetLnum()-&gt;prop_add(col, props)</B>
+ 
+
+						*<A NAME="prop_add_list()"></A><B>prop_add_list()</B>*
+prop_add_list({props}, [[{lnum}, {col}, {end-lnum}, {end-col}], ...])
+		Similar to <A HREF="#prop_add()">prop_add()</A>, but attaches a text property at
+		multiple positions in a buffer.
+
+		{props} is a dictionary with these fields:
+		   bufnr	buffer to add the property to; when omitted
+				the current buffer is used
+		   id		user defined ID for the property; must be a
+				number; when omitted zero is used
+		   type		name of the text property type
+		All fields except &quot;type&quot; are optional.
+
+		The second argument is a <A HREF="eval.html#List">List</A> of <A HREF="eval.html#Lists">Lists</A> where each <A HREF="eval.html#list">list</A>
+		specifies the starting and ending position of the text.  The
+		first two items {lnum} and {col} specify the starting position
+		of the text where the property will be attached and the last
+		two items {end-lnum} and {end-col} specify the position just
+		after the text.
+
+		Example:
+			call prop_add_list(#{type: 'MyProp', id: 2},
+					\ [[1, 4, 1, 7],
+					\  [1, 15, 1, 20],
+					\  [2, 30, 3, 30]]
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetProp()-&gt;prop_add_list([[1, 1, 1, 2], [1, 4, 1, 8]])</B>
+
+
+
+prop_clear({lnum} [, {lnum-end} [, {props}]])		*<A NAME="prop_clear()"></A><B>prop_clear()</B>*
+		Remove all text properties from line {lnum}.
+		When {lnum-end} is given, remove all text properties from line
+		{lnum} to {lnum-end} (inclusive).
+
+		When {props} contains a &quot;bufnr&quot; item use this buffer,
+		otherwise use the current buffer.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetLnum()-&gt;prop_clear()</B>
+ 
+
+							*<A NAME="prop_find()"></A><B>prop_find()</B>*
+prop_find({props} [, {direction}])
+		Search for a text property <A HREF="motion.html#as">as</A> specified with {props}:
+		   id		property with this ID
+		   type		property with this type name
+		   both		&quot;id&quot; and &quot;type&quot; must both match
+		   bufnr	buffer to search in; when present a
+				start position with &quot;lnum&quot; and &quot;col&quot;
+				must be given; when omitted the
+				current buffer is used
+		   lnum		start in this line (when omitted start
+				at the cursor)
+		   col		start at this column (when omitted
+				and &quot;lnum&quot; is given: use column 1,
+				otherwise start at the cursor)
+		   skipstart	<A HREF="diff.html#do">do</A> not look for a match at the start
+				position
+
+		A property matches when either &quot;id&quot; or &quot;type&quot; matches.
+		{direction} can be &quot;<A HREF="motion.html#f">f</A>&quot; for forward and &quot;<A HREF="motion.html#b">b</A>&quot; for backward.  When
+		omitted forward search is performed.
+
+		If a match is found then a <A HREF="eval.html#Dict">Dict</A> is returned with the entries
+		<A HREF="motion.html#as">as</A> with <A HREF="#prop_list()">prop_list()</A>, and additionally an &quot;lnum&quot; entry.
+		If no match is found then an empty <A HREF="eval.html#Dict">Dict</A> is returned.
+
+
+
+prop_list({lnum} [, {props}])				*<A NAME="prop_list()"></A><B>prop_list()</B>*
+		Returns a <A HREF="eval.html#List">List</A> with all the text properties in line {lnum}.
+
+		The following optional items are supported in {props}:
+		   bufnr	use this buffer instead of the current buffer
+		   end_lnum	return text properties in all the lines
+				between {lnum} and {end_lnum} (inclusive).
+				A negative value is used <A HREF="motion.html#as">as</A> an offset from the
+				last buffer line; -1 refers to the last buffer
+				line.
+		   types	<A HREF="eval.html#List">List</A> of property type names. Return only text
+				properties that match one of the type names.
+		   ids		<A HREF="eval.html#List">List</A> of property identifiers. Return only text
+				properties with one of these identifiers.
+
+		The properties are ordered by starting column and priority.
+		Each property is a <A HREF="eval.html#Dict">Dict</A> with these entries:
+		   lnum		starting line number. Present only when
+				returning text properties between {lnum} and
+				{end_lnum}.
+		   col		starting column
+		   length	length in bytes, one more if line break is
+				included
+		   id		property ID
+		   type		name of the property type, omitted if
+				the type was deleted
+		   type_bufnr	buffer number for which this type was defined;
+				0 if the type is global
+		   start	when <A HREF="eval.html#TRUE">TRUE</A> property starts in this line
+		   end		when <A HREF="eval.html#TRUE">TRUE</A> property ends in this line
+
+		When &quot;start&quot; is zero the property started in a previous line,
+		the current one is a continuation.
+		When &quot;end&quot; is zero the property continues in the next line.
+		The line break after this line is included.
+
+		Returns an empty <A HREF="eval.html#list">list</A> on error.
+
+		Examples:
+		   &quot; get text properties placed in line 5
+		   echo prop_list(5)
+		   &quot; get text properties placed in line 20 in buffer 4
+		   echo prop_list(20, {'bufnr': 4})
+		   &quot; get all the text properties between line 1 and 20
+		   echo prop_list(1, {'end_lnum': 20})
+		   &quot; get all the text properties of type 'myprop'
+		   echo prop_list(1, {'types': ['myprop'],
+						\ 'end_lnum': -1})
+		   &quot; get all the text properties of type 'prop1' or 'prop2'
+		   echo prop_list(1, {'types': ['prop1', 'prop2'],
+						\ 'end_lnum': -1})
+		   &quot; get all the text properties with ID 8
+		   echo prop_list(1, {'ids': [8], 'end_lnum': line('$')})
+		   &quot; get all the text properties with ID 10 and 20
+		   echo prop_list(1, {'ids': [10, 20], 'end_lnum': -1})
+		   &quot; get text properties with type 'myprop' and ID 100
+		   &quot; in buffer 4.
+		   echo prop_list(1, {'bufnr': 4, 'types': ['myprop'],
+					\ 'ids': [100], 'end_lnum': -1})
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetLnum()-&gt;prop_list()</B>
+ 
+
+						*<A NAME="prop_remove()"></A><B>prop_remove()</B>* *<A NAME="E968"></A><B>E968</B>* *<A NAME="E860"></A><B>E860</B>*
+prop_remove({props} [, {lnum} [, {lnum-end}]])
+		Remove a matching text property from line {lnum}.  When
+		{lnum-end} is given, remove matching text properties from line
+		{lnum} to {lnum-end} (inclusive).
+		When {lnum} is omitted remove matching text properties from
+		all lines (this requires going over all lines, thus will be a
+		bit slow for a buffer with many lines).
+
+		{props} is a dictionary with these fields:
+		   id		remove text properties with this ID
+		   type		remove text properties with this type name
+		   both		&quot;id&quot; and &quot;type&quot; must both match
+		   bufnr	use this buffer instead of the current one
+		   all		when <A HREF="eval.html#TRUE">TRUE</A> remove all matching text properties,
+				not just the first one
+		A property matches when either &quot;id&quot; or &quot;type&quot; matches.
+		If buffer &quot;bufnr&quot; does not exist you get an error message.
+		If buffer &quot;bufnr&quot; is not loaded then nothing happens.
+
+		Returns the number of properties that were removed.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetProps()-&gt;prop_remove()</B>
+
+
+
+prop_type_add({name}, {props})		*<A NAME="prop_type_add()"></A><B>prop_type_add()</B>* *<A NAME="E969"></A><B>E969</B>* *<A NAME="E970"></A><B>E970</B>*
+		Add a text property type {name}.  If a property type with this
+		name already exists an error is given.  Nothing is returned.
+		{props} is a dictionary with these optional fields:
+		   bufnr	define the property only for this buffer; this
+				avoids name collisions and automatically
+				clears the property types when the buffer is
+				deleted.
+		   highlight	name of highlight group to use
+		   priority	when a character has multiple text
+				properties the one with the highest priority
+				will be used; negative values can be used, the
+				default priority is zero
+		   combine	when omitted or <A HREF="eval.html#TRUE">TRUE</A> combine the highlight
+				with any <A HREF="syntax.html#syntax">syntax</A> highlight; when <A HREF="eval.html#FALSE">FALSE</A> <A HREF="syntax.html#syntax">syntax</A>
+				highlight will not be used
+		   start_incl	when <A HREF="eval.html#TRUE">TRUE</A> inserts at the start position will
+				be included in the text property
+		   end_incl	when <A HREF="eval.html#TRUE">TRUE</A> inserts at the end position will be
+				included in the text property
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPropName()-&gt;prop_type_add(props)</B>
+
+
+prop_type_change({name}, {props})			*<A NAME="prop_type_change()"></A><B>prop_type_change()</B>*
+		Change properties of an existing text property type.  If a
+		property with this name does not exist an error is given.
+		The {props} argument is just like |<A HREF="#prop_type_add()">prop_type_add()</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPropName()-&gt;prop_type_change(props)</B>
+
+
+prop_type_delete({name} [, {props}])			*<A NAME="prop_type_delete()"></A><B>prop_type_delete()</B>*
+		Remove the text property type {name}.  When text properties
+		using the type {name} are still in place, they will not have
+		an effect and can no longer be removed by name.
+
+		{props} can contain a &quot;bufnr&quot; item.  When <A HREF="motion.html#it">it</A> is given, delete
+		a property type from this buffer instead of from the global
+		property types.
+
+		When text property type {name} is not found there is no error.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPropName()-&gt;prop_type_delete()</B>
+
+
+prop_type_get({name} [, {props}])			*<A NAME="prop_type_get()"></A><B>prop_type_get()</B>*
+		Returns the properties of property type {name}.  This is a
+		dictionary with the same fields <A HREF="motion.html#as">as</A> was given to
+		<A HREF="#prop_type_add()">prop_type_add()</A>.
+		When the property type {name} does not exist, an empty
+		dictionary is returned.
+
+		{props} can contain a &quot;bufnr&quot; item.  When <A HREF="motion.html#it">it</A> is given, use
+		this buffer instead of the global property types.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPropName()-&gt;prop_type_get()</B>
+
+
+prop_type_list([{props}])				*<A NAME="prop_type_list()"></A><B>prop_type_list()</B>*
+		Returns a <A HREF="eval.html#list">list</A> with all property type names.
+
+		{props} can contain a &quot;bufnr&quot; item.  When <A HREF="motion.html#it">it</A> is given, use
+		this buffer instead of the global property types.
+
+
+==============================================================================
+
+3. When text changes				*<A NAME="text-prop-changes"></A><B>text-prop-changes</B>*
+
+Vim will <A HREF="diff.html#do">do</A> its best to keep the text properties on the text where <A HREF="motion.html#it">it</A> was
+attached.  When <A HREF="insert.html#inserting">inserting</A> or <A HREF="change.html#deleting">deleting</A> text the properties after the change
+will move accordingly.
+
+When text is deleted and a text property no longer includes any text, <A HREF="motion.html#it">it</A> is
+deleted.  However, a text property that was defined <A HREF="motion.html#as">as</A> zero-width will remain,
+unless the whole line is deleted.
+
+								*<A NAME="E275"></A><B>E275</B>*
+When a buffer is unloaded, all the text properties are gone.  There is no way
+to store the properties in a file.  You can only re-create them.  When a
+buffer is hidden the text is preserved and so are the text properties.  It is
+not possible to add text properties to an unloaded buffer.
+
+When using replace mode, the text properties stay on the same character
+positions, even though the characters themselves change.
+
+To update text properties after the text was changed, <A HREF="usr_90.html#install">install</A> a callback with
+`listener_add()`.  E.g, if your <A HREF="usr_05.html#plugin">plugin</A> does <A HREF="spell.html#spell">spell</A> checking, you can have the
+callback update spelling mistakes in the changed text.  Vim will move the
+properties below the changed text, so that they still highlight the same text,
+thus you don't need to update these.
+
+
+<B><FONT COLOR="PURPLE">Text property columns are not updated or copied: </FONT></B>
+
+- When setting the line with |<A HREF="builtin.html#setline()">setline()</A>| or through an interface, such <A HREF="motion.html#as">as</A> <A HREF="if_lua.html#Lua">Lua</A>,
+  <A HREF="if_tcl.html#Tcl">Tcl</A> or <A HREF="if_pyth.html#Python">Python</A>.  Vim does not know what text got inserted or deleted.
+- With a command like `:move`, which takes a line of text out of context.
+
+
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

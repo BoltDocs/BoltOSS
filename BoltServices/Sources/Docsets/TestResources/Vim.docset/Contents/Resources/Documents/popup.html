@@ -1,0 +1,1167 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: popup</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: popup</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="popup.txt"></A><B>popup.txt</B>*  For Vim version 9.0.  Last change: 2022 Jun 16
+
+
+		  VIM REFERENCE MANUAL    by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+
+
+Displaying text in a floating <A HREF="windows.html#window">window</A>.	*<A NAME="popup"></A><B>popup</B>* *<A NAME="popup-window"></A><B>popup-window</B>* *<A NAME="popupwin"></A><B>popupwin</B>*
+
+
+1. Introduction			|<A HREF="#popup-intro">popup-intro</A>|
+   Window position and size	|<A HREF="#popup-position">popup-position</A>|
+   Closing the popup <A HREF="windows.html#window">window</A>	|<A HREF="#popup-close">popup-close</A>|
+   Popup buffer and <A HREF="windows.html#window">window</A>	|<A HREF="#popup-buffer">popup-buffer</A>|
+   Terminal in popup <A HREF="windows.html#window">window</A>	|<A HREF="#popup-terminal">popup-terminal</A>|
+2. Functions			|<A HREF="#popup-functions">popup-functions</A>|
+   Details			|<A HREF="#popup-function-details">popup-function-details</A>|
+3. Usage			|<A HREF="#popup-usage">popup-usage</A>|
+   <A HREF="#popup_create()">popup_create()</A> arguments	|<A HREF="#popup_create-arguments">popup_create-arguments</A>|
+   Popup text properties	|<A HREF="#popup-props">popup-props</A>|
+   Position popup with textprop	|<A HREF="#popup-textprop-pos">popup-textprop-pos</A>|
+   Popup filter			|<A HREF="#popup-filter">popup-filter</A>|
+   Popup callback		|<A HREF="#popup-callback">popup-callback</A>|
+   Popup scrollbar		|<A HREF="#popup-scrollbar">popup-scrollbar</A>|
+   Popup mask			|<A HREF="#popup-mask">popup-mask</A>|
+4. Examples			|<A HREF="#popup-examples">popup-examples</A>|
+
+
+{not available if the |<A HREF="various.html#+popupwin">+popupwin</A>| feature was disabled at compile time}
+
+==============================================================================
+
+1. Introduction						*<A NAME="popup-intro"></A><B>popup-intro</B>*
+
+We are talking about <A HREF="#popup">popup</A> <A HREF="windows.html#windows">windows</A> here, text that goes on top of the regular
+<A HREF="windows.html#windows">windows</A> and is under <A HREF="intro.html#control">control</A> of a <A HREF="usr_05.html#plugin">plugin</A>.  You cannot edit the text in the
+<A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> like with regular <A HREF="windows.html#windows">windows</A>.
+
+A <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> can be used for such things <A HREF="motion.html#as">as</A>:
+- briefly show a message without overwriting the command line
+- prompt the user with a <A HREF="gui_w32.html#dialog">dialog</A>
+- display contextual information while typing
+- give extra information for auto-completion
+
+The text in the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> can be colored with |<A HREF="textprop.html#text-properties">text-properties</A>|.  It is
+also possible to use <A HREF="syntax.html#syntax">syntax</A> highlighting.
+
+The default color used is &quot;Pmenu&quot;.  If you prefer something else use the
+&quot;highlight&quot; argument or the <A HREF="options.html#'wincolor'">'wincolor'</A> option, e.g.:
+<B>	hi MyPopupColor ctermbg=lightblue guibg=lightblue</B>
+<B>	call setwinvar(winid, '&amp;wincolor', 'MyPopupColor')</B>
+
+<A HREF="options.html#'hlsearch'">'hlsearch'</A> highlighting is not displayed in a <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>.
+
+A <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> has a <A HREF="windows.html#window-ID">window-ID</A> like other <A HREF="windows.html#windows">windows</A>, but behaves differently.
+The size can be up to the whole Vim <A HREF="windows.html#window">window</A> and <A HREF="motion.html#it">it</A> overlaps other <A HREF="windows.html#windows">windows</A>.
+Popup <A HREF="windows.html#windows">windows</A> can also overlap each other.  The &quot;zindex&quot; property specifies
+what goes on top of what.
+
+							*<A NAME="E366"></A><B>E366</B>*
+The <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> contains a buffer, and that buffer is always associated with
+the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>.  The <A HREF="windows.html#window">window</A> cannot be in <A HREF="intro.html#Normal">Normal</A>, <A HREF="visual.html#Visual">Visual</A> or <A HREF="insert.html#Insert">Insert</A> mode, <A HREF="motion.html#it">it</A>
+does not get keyboard focus.  You can use <A HREF="eval.html#functions">functions</A> like `setbufline()` to
+change the text in the buffer.  There are more differences from how this
+<A HREF="windows.html#window">window</A> and buffer behave compared to regular <A HREF="windows.html#windows">windows</A> and <A HREF="windows.html#buffers">buffers</A>, see
+|<A HREF="#popup-buffer">popup-buffer</A>|.
+
+If this is not what you are looking for, check out other <A HREF="#popup">popup</A> functionality:
+- popup menu, see |<A HREF="gui.html#popup-menu">popup-menu</A>|
+- balloon, see |<A HREF="debugger.html#balloon-eval">balloon-eval</A>|
+
+
+
+WINDOW POSITION AND SIZE				*<A NAME="popup-position"></A><B>popup-position</B>*
+
+The height of the <A HREF="windows.html#window">window</A> is normally equal to the number of, possibly
+wrapping, lines in the buffer.  It can be limited with the &quot;maxheight&quot;
+property.  You can use empty lines to increase the height or the &quot;minheight&quot;
+property.
+
+The width of the <A HREF="windows.html#window">window</A> is normally equal to the longest visible line in the
+buffer.  It can be limited with the &quot;maxwidth&quot; property.  You can use spaces
+to increase the width or use the &quot;minwidth&quot; property.
+
+By default the <A HREF="options.html#'wrap'">'wrap'</A> option is set, so that no text disappears.  Otherwise,
+if there is not enough space then the <A HREF="windows.html#window">window</A> is shifted left in order to
+display more text.  When right-aligned the <A HREF="windows.html#window">window</A> is shifted right to display
+more text.  The shifting can be disabled with the &quot;fixed&quot; property.
+
+Vim tries to show the <A HREF="#popup">popup</A> in the location you specify.  In some cases, e.g.
+when the <A HREF="#popup">popup</A> would go outside of the Vim <A HREF="windows.html#window">window</A>, <A HREF="motion.html#it">it</A> will show <A HREF="motion.html#it">it</A> somewhere
+nearby.  E.g. if you use `popup_atcursor()` the <A HREF="#popup">popup</A> normally shows just above
+the current cursor position, but if the cursor is close to the top of the Vim
+<A HREF="windows.html#window">window</A> <A HREF="motion.html#it">it</A> will be placed below the cursor position.
+
+When the screen scrolls up for output of an <A HREF="intro.html#Ex">Ex</A> command, popups move too, so
+that they will not cover the output.
+
+The current cursor position is displayed even when <A HREF="motion.html#it">it</A> is under a <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>.
+That way you can still see where <A HREF="motion.html#it">it</A> is, even though you cannot see the text
+that <A HREF="motion.html#it">it</A> is in.
+
+
+
+CLOSING THE POPUP WINDOW				*<A NAME="popup-close"></A><B>popup-close</B>*
+
+Normally the <A HREF="usr_05.html#plugin">plugin</A> that created the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> is also in charge of closing
+<A HREF="motion.html#it">it</A>.  If somehow a <A HREF="#popup">popup</A> hangs around, you can close all of them with:
+<B>	call popup_clear(1)</B>
+Some popups, such <A HREF="motion.html#as">as</A> notifications, close after a specified time.  This can be
+set with the &quot;time&quot; property on `popup_create()`.
+Otherwise, a <A HREF="#popup">popup</A> can be closed by clicking on the X in the top-right corner
+or by clicking anywhere inside the <A HREF="#popup">popup</A>.  This must be enabled with the
+&quot;close&quot; property.  It is set by default for notifications.
+
+
+
+POPUP BUFFER AND WINDOW					*<A NAME="popup-buffer"></A><B>popup-buffer</B>*
+
+If a <A HREF="#popup">popup</A> function is called to create a <A HREF="#popup">popup</A> from text, a new buffer is
+created to hold the text and text properties of the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>.  The buffer
+is always associated with the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> and manipulation is restricted:
+- the buffer has no name
+- <A HREF="options.html#'buftype'">'buftype'</A> is &quot;<A HREF="#popup">popup</A>&quot;
+- <A HREF="options.html#'swapfile'">'swapfile'</A> is off
+- <A HREF="options.html#'bufhidden'">'bufhidden'</A> is &quot;hide&quot;
+- <A HREF="options.html#'buflisted'">'buflisted'</A> is off
+- <A HREF="options.html#'undolevels'">'undolevels'</A> is -1: no <A HREF="undo.html#undo">undo</A> at all
+- all other buffer-local and window-local <A HREF="options.html#options">options</A> are set to their Vim default
+  value.
+
+It is possible to change the specifically mentioned <A HREF="options.html#options">options</A>, but anything
+might break then, so better leave them alone.
+
+The <A HREF="windows.html#window">window</A> does have a cursor position, but the cursor is not displayed.  In
+fact, the cursor in the underlying <A HREF="windows.html#window">window</A> is displayed, <A HREF="motion.html#as">as</A> if <A HREF="motion.html#it">it</A> peeks through
+the <A HREF="#popup">popup</A>, so you can see where <A HREF="motion.html#it">it</A> is.
+
+To execute a command in the context of the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> and buffer use
+`win_execute()`.  Example:
+<B>	call win_execute(winid, 'syntax enable')</B>
+
+Options can be set on the <A HREF="windows.html#window">window</A> with `setwinvar()`, e.g.:
+<B>	call setwinvar(winid, '&amp;wrap', 0)</B>
+And <A HREF="options.html#options">options</A> can be set on the buffer with `setbufvar()`, e.g.:
+<B>	call setbufvar(winbufnr(winid), '&amp;filetype', 'java')</B>
+You can also use `win_execute()` with a &quot;<A HREF="options.html#:setlocal">:setlocal</A>&quot; command.
+
+
+
+TERMINAL IN POPUP WINDOW				 *<A NAME="popup-terminal"></A><B>popup-terminal</B>*
+
+A special <A HREF="change.html#case">case</A> is running a <A HREF="terminal.html#terminal">terminal</A> in a <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>.  Many rules are then
+
+different:						*<A NAME="E863"></A><B>E863</B>*
+- The <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> always has focus, <A HREF="motion.html#it">it</A> is not possible to switch to another
+  <A HREF="windows.html#window">window</A>.
+- When the <A HREF="channel.html#job">job</A> ends, the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> shows the buffer in <A HREF="terminal.html#Terminal-Normal">Terminal-Normal</A>
+  mode.  Use `:q` to close <A HREF="motion.html#it">it</A> or use &quot;term_finish&quot; value &quot;close&quot;.
+- The <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> can be closed with `popup_close()`, the <A HREF="terminal.html#terminal">terminal</A> buffer
+  then becomes hidden.
+
+- It is not possible to open a second <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> with a <A HREF="terminal.html#terminal">terminal</A>. *<A NAME="E861"></A><B>E861</B>*
+- The default Pmenu color is only used for the border and padding.  To change
+  the color of the <A HREF="terminal.html#terminal">terminal</A> itself set the Terminal highlight group before
+  creating the <A HREF="terminal.html#terminal">terminal</A>.  Setting <A HREF="options.html#'wincolor'">'wincolor'</A> later can work but requires the
+  program in the <A HREF="terminal.html#terminal">terminal</A> to redraw everything.
+- The default minimal size is 5 lines of 20 characters; Use the &quot;minwidth&quot; and
+  &quot;minheight&quot; parameters to set a different value.
+- The <A HREF="terminal.html#terminal">terminal</A> size will grow if the program running in the <A HREF="terminal.html#terminal">terminal</A> writes
+  text.  Set &quot;maxheight&quot; and &quot;maxwidth&quot; to restrict the size.
+
+To run a <A HREF="terminal.html#terminal">terminal</A> in a <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>, first create the <A HREF="terminal.html#terminal">terminal</A> hidden.  Then
+pass the buffer number to <A HREF="#popup_create()">popup_create()</A>.  Example:
+<B>	hi link Terminal Search</B>
+<B>	let buf = term_start(['picker', 'Something'], #{hidden: 1, term_finish: 'close'})</B>
+<B>	let winid = popup_create(buf, #{minwidth: 50, minheight: 20})</B>
+
+==============================================================================
+
+2. Functions						*<A NAME="popup-functions"></A><B>popup-functions</B>*
+
+Creating a <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>:
+	|<A HREF="#popup_create()">popup_create()</A>|	centered in the screen
+	|<A HREF="#popup_atcursor()">popup_atcursor()</A>|	just above the cursor position, closes when
+				the cursor moves away
+	|<A HREF="#popup_beval()">popup_beval()</A>|		at the position indicated by v:beval_
+				<A HREF="eval.html#variables">variables</A>, closes when the mouse moves away
+	|<A HREF="#popup_notification()">popup_notification()</A>|	show a notification for three seconds
+	|<A HREF="#popup_dialog()">popup_dialog()</A>|	centered with padding and border
+	|<A HREF="#popup_menu()">popup_menu()</A>|		prompt for selecting an item from a <A HREF="eval.html#list">list</A>
+
+Manipulating a <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>:
+	|<A HREF="#popup_hide()">popup_hide()</A>|		hide a popup temporarily
+	|<A HREF="#popup_show()">popup_show()</A>|		show a previously hidden popup
+	|<A HREF="#popup_move()">popup_move()</A>|		change the position and size of a popup
+	|<A HREF="#popup_setoptions()">popup_setoptions()</A>|	override options of a popup
+	|<A HREF="#popup_settext()">popup_settext()</A>|	replace the popup buffer contents
+
+Closing <A HREF="#popup">popup</A> <A HREF="windows.html#windows">windows</A>:
+	|<A HREF="#popup_close()">popup_close()</A>|		close one popup
+	|<A HREF="#popup_clear()">popup_clear()</A>|		close all popups
+
+Filter <A HREF="eval.html#functions">functions</A>:
+	|<A HREF="#popup_filter_menu()">popup_filter_menu()</A>|	select from a <A HREF="eval.html#list">list</A> of items
+	|<A HREF="#popup_filter_yesno()">popup_filter_yesno()</A>|	blocks until 'y' or 'n' is pressed
+
+Other:
+	|<A HREF="#popup_getoptions()">popup_getoptions()</A>|	get current options for a popup
+	|<A HREF="#popup_getpos()">popup_getpos()</A>|	get actual position and size of a popup
+	|<A HREF="#popup_locate()">popup_locate()</A>|	find popup <A HREF="windows.html#window">window</A> at a screen position
+	|<A HREF="#popup_list()">popup_list()</A>|		get list of all popups
+
+
+
+DETAILS						*<A NAME="popup-function-details"></A><B>popup-function-details</B>*
+
+
+popup_atcursor({what}, {options})			*<A NAME="popup_atcursor()"></A><B>popup_atcursor()</B>*
+		Show the {what} above the cursor, and close <A HREF="motion.html#it">it</A> when the cursor
+		moves.  This works like:
+<B>			call popup_create({what}, #{</B>
+<B>				\ pos: 'botleft',</B>
+<B>				\ line: 'cursor-1',</B>
+<B>				\ col: 'cursor',</B>
+<B>				\ moved: 'WORD',</B>
+<B>				\ })</B>
+ 		Use {options} to change the properties.
+		If &quot;pos&quot; is passed <A HREF="motion.html#as">as</A> &quot;topleft&quot; then the default for &quot;line&quot;
+		becomes &quot;cursor+1&quot;.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetText()-&gt;popup_atcursor({})</B>
+
+
+
+popup_beval({what}, {options})			*<A NAME="popup_beval()"></A><B>popup_beval()</B>*
+		Show the {what} above the position from <A HREF="options.html#'ballooneval'">'ballooneval'</A> and
+		close <A HREF="motion.html#it">it</A> when the mouse moves.  This works like:
+<B>		  let pos = screenpos(v:beval_winnr, v:beval_lnum, v:beval_col)</B>
+<B>		  call popup_create({what}, #{</B>
+<B>			\ pos: 'botleft',</B>
+<B>			\ line: pos.row - 1,</B>
+<B>			\ col: pos.col,</B>
+<B>			\ mousemoved: 'WORD',</B>
+<B>			\ })</B>
+ 		Use {options} to change the properties.
+		See |<A HREF="#popup_beval_example">popup_beval_example</A>| for an example.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetText()-&gt;popup_beval({})</B>
+ 
+
+							*<A NAME="popup_clear()"></A><B>popup_clear()</B>*
+popup_clear([{force}])
+		Emergency solution to a misbehaving <A HREF="usr_05.html#plugin">plugin</A>: close all <A HREF="#popup">popup</A>
+		<A HREF="windows.html#windows">windows</A> for the current <A HREF="intro.html#tab">tab</A> and global popups.
+		Close callbacks are not invoked.
+		When {force} is not present this will fail if the current
+		<A HREF="windows.html#window">window</A> is a <A HREF="#popup">popup</A>.
+		When {force} is present and |<A HREF="eval.html#TRUE">TRUE</A>| the <A HREF="#popup">popup</A> is also closed
+		when <A HREF="motion.html#it">it</A> is the current <A HREF="windows.html#window">window</A>.  If a <A HREF="terminal.html#terminal">terminal</A> is running in a
+		<A HREF="#popup">popup</A> <A HREF="motion.html#it">it</A> is killed.
+
+
+
+popup_close({id} [, {result}])				*<A NAME="popup_close()"></A><B>popup_close()</B>*
+		Close <A HREF="#popup">popup</A> {id}.  The <A HREF="windows.html#window">window</A> and the associated buffer will
+		be deleted.
+
+		If the <A HREF="#popup">popup</A> has a callback <A HREF="motion.html#it">it</A> will be called just before the
+		<A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> is deleted.  If the optional {result} is present
+		<A HREF="motion.html#it">it</A> will be passed <A HREF="motion.html#as">as</A> the second argument of the callback.
+		Otherwise zero is passed to the callback.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPopup()-&gt;popup_close()</B>
+
+
+
+popup_create({what}, {options})				*<A NAME="popup_create()"></A><B>popup_create()</B>*
+
+		Open a <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> showing {what}, which is either: *<A NAME="E450"></A><B>E450</B>*
+		- a buffer number
+		- a <A HREF="eval.html#string">string</A>
+		- a <A HREF="eval.html#list">list</A> of strings
+		- a <A HREF="eval.html#list">list</A> of text lines with text properties
+		When {what} is not a buffer number, a buffer is created with
+		<A HREF="options.html#'buftype'">'buftype'</A> set to &quot;<A HREF="#popup">popup</A>&quot;.  That buffer will be wiped out once
+		the <A HREF="#popup">popup</A> closes.
+
+		if {what} is a buffer number and loading the buffer runs into
+		an existing swap file, <A HREF="motion.html#it">it</A> is silently opened read-only, <A HREF="motion.html#as">as</A> if
+		a |<A HREF="autocmd.html#SwapExists">SwapExists</A>| <A HREF="autocmd.html#autocommand">autocommand</A> had set |<A HREF="eval.html#v:swapchoice">v:swapchoice</A>| to 'o'.
+		This is because we assume the buffer is only used for viewing.
+
+		{options} is a dictionary with many possible entries.
+		See |<A HREF="#popup_create-arguments">popup_create-arguments</A>| for details.
+
+		Returns a <A HREF="windows.html#window-ID">window-ID</A>, which can be used with other <A HREF="#popup">popup</A>
+		<A HREF="eval.html#functions">functions</A>.  Use `winbufnr()` to get the number of the buffer
+		in the <A HREF="windows.html#window">window</A>:
+<B>			let winid = popup_create('hello', {})</B>
+<B>			let bufnr = winbufnr(winid)</B>
+<B>			call setbufline(bufnr, 2, 'second line')</B>
+ 		In <A HREF="change.html#case">case</A> of failure zero is returned.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetText()-&gt;popup_create({})</B>
+
+
+
+popup_dialog({what}, {options})				*<A NAME="popup_dialog()"></A><B>popup_dialog()</B>*
+		Just like |<A HREF="#popup_create()">popup_create()</A>| but with these default <A HREF="options.html#options">options</A>:
+<B>			call popup_create({what}, #{</B>
+<B>				\ pos: 'center',</B>
+<B>				\ zindex: 200,</B>
+<B>				\ drag: 1,</B>
+<B>				\ border: [],</B>
+<B>				\ padding: [],</B>
+<B>				\ mapping: 0,</B>
+<B>				\})</B>
+ 		Use {options} to change the properties. E.g. add a '<A HREF="change.html#filter">filter</A>'
+		option with value 'popup_filter_yesno'.  Example:
+<B>			call popup_create('do you want to quit (Yes/no)?', #{</B>
+<B>				\ filter: 'popup_filter_yesno',</B>
+<B>				\ callback: 'QuitCallback',</B>
+<B>				\ })</B>
+
+ 		By default the <A HREF="gui_w32.html#dialog">dialog</A> can be dragged, so that text below <A HREF="motion.html#it">it</A>
+		can be read if needed.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetText()-&gt;popup_dialog({})</B>
+
+
+
+popup_filter_menu({id}, {key})				*<A NAME="popup_filter_menu()"></A><B>popup_filter_menu()</B>*
+		Filter that can be used for a <A HREF="#popup">popup</A>. These keys can be used:
+		    <A HREF="motion.html#j">j</A> <A HREF="motion.html#&lt;Down&gt;">&lt;Down&gt;</A> &lt;C-N&gt;	select item below
+		    <A HREF="motion.html#k">k</A> <A HREF="motion.html#&lt;Up&gt;">&lt;Up&gt;</A> &lt;C-P&gt;	select item above
+		    <A HREF="motion.html#&lt;Space&gt;">&lt;Space&gt;</A> <A HREF="intro.html#&lt;Enter&gt;">&lt;Enter&gt;</A>	accept current selection
+		    <A HREF="change.html#x">x</A> Esc <A HREF="pattern.html#CTRL-C">CTRL-C</A>	cancel the menu
+		Other keys are ignored.
+		Always returns |<A HREF="eval.html#v:true">v:true</A>|.
+
+		A match is set on that line to highlight <A HREF="motion.html#it">it</A>, see
+		|<A HREF="#popup_menu()">popup_menu()</A>|.
+
+		When the current selection is accepted the &quot;callback&quot; of the
+		<A HREF="#popup">popup</A> menu is invoked with the index of the selected line <A HREF="motion.html#as">as</A>
+		the second argument.  The first entry has index one.
+		Cancelling the menu invokes the callback with -1.
+
+		To add shortcut keys, see the example here:
+		|<A HREF="#popup_menu-shortcut-example">popup_menu-shortcut-example</A>|
+
+
+
+popup_filter_yesno({id}, {key})				*<A NAME="popup_filter_yesno()"></A><B>popup_filter_yesno()</B>*
+		Filter that can be used for a <A HREF="#popup">popup</A>. It handles only the keys
+		'<A HREF="change.html#y">y</A>', '<A HREF="change.html#Y">Y</A>' and '<A HREF="pattern.html#n">n</A>' or '<A HREF="pattern.html#N">N</A>'.  Invokes the &quot;callback&quot; of the
+		<A HREF="#popup">popup</A> menu with the 1 for '<A HREF="change.html#y">y</A>' or '<A HREF="change.html#Y">Y</A>' and zero for '<A HREF="pattern.html#n">n</A>' or '<A HREF="pattern.html#N">N</A>'
+		<A HREF="motion.html#as">as</A> the second argument.  Pressing Esc and '<A HREF="change.html#x">x</A>' works like
+		pressing '<A HREF="pattern.html#n">n</A>'.  <A HREF="pattern.html#CTRL-C">CTRL-C</A> invokes the callback with -1.  Other
+		keys are ignored.
+		See the example here: |<A HREF="#popup_dialog-example">popup_dialog-example</A>|
+
+
+
+<A HREF="#popup_findinfo()">popup_findinfo()</A>					*<A NAME="popup_findinfo()"></A><B>popup_findinfo()</B>*
+		Get the |<A HREF="windows.html#window-ID">window-ID</A>| for the <A HREF="#popup">popup</A> info window, <A HREF="motion.html#as">as</A> <A HREF="motion.html#it">it</A> used by
+		the popup menu.  See |<A HREF="insert.html#complete-popup">complete-popup</A>|.  The info popup is
+		hidden when not used, <A HREF="motion.html#it">it</A> can be deleted with |<A HREF="#popup_clear()">popup_clear()</A>|
+		and |<A HREF="#popup_close()">popup_close()</A>|.  Use |<A HREF="#popup_show()">popup_show()</A>| to reposition <A HREF="motion.html#it">it</A> to
+		the item in the <A HREF="#popup">popup</A> menu.
+		Returns zero if there is none.
+
+
+
+<A HREF="#popup_findpreview()">popup_findpreview()</A>					*<A NAME="popup_findpreview()"></A><B>popup_findpreview()</B>*
+		Get the |<A HREF="windows.html#window-ID">window-ID</A>| for the <A HREF="#popup">popup</A> preview window.
+		Return zero if there is none.
+
+
+
+popup_getoptions({id})					*<A NAME="popup_getoptions()"></A><B>popup_getoptions()</B>*
+		Return the {options} for <A HREF="#popup">popup</A> {id} in a <A HREF="eval.html#Dict">Dict</A>.
+		A zero value means the option was not set.  For &quot;zindex&quot; the
+		default value is returned, not zero.
+
+		The &quot;moved&quot; entry is a <A HREF="eval.html#list">list</A> with line number, minimum and
+		maximum column, [0, 0, 0] when not set.
+
+		The &quot;mousemoved&quot; entry is a <A HREF="eval.html#list">list</A> with screen row, minimum and
+		maximum screen column, [0, 0, 0] when not set.
+
+		&quot;firstline&quot; is the property set on the <A HREF="#popup">popup</A>, unlike the
+		&quot;firstline&quot; obtained with |<A HREF="#popup_getpos()">popup_getpos()</A>| which is the actual
+		buffer line at the top of the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>.
+
+		&quot;border&quot; and &quot;padding&quot; are not included when all values are
+		zero.  When all values are one then an empty <A HREF="eval.html#list">list</A> is included.
+
+		&quot;borderhighlight&quot; is not included when all values are empty.
+		&quot;scrollbarhighlight&quot; and &quot;thumbhighlight&quot; are only included
+		when set.
+
+		&quot;<A HREF="tabpage.html#tabpage">tabpage</A>&quot; will be -1 for a global <A HREF="#popup">popup</A>, zero for a <A HREF="#popup">popup</A> on
+		the current <A HREF="tabpage.html#tabpage">tabpage</A> and a positive number for a <A HREF="#popup">popup</A> on
+		another <A HREF="tabpage.html#tabpage">tabpage</A>.
+
+		&quot;<A HREF="textprop.html#textprop">textprop</A>&quot;, &quot;textpropid&quot; and &quot;textpropwin&quot; are only present
+		when &quot;<A HREF="textprop.html#textprop">textprop</A>&quot; was set.
+
+		If <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> {id} is not found an empty <A HREF="eval.html#Dict">Dict</A> is returned.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPopup()-&gt;popup_getoptions()</B>
+
+
+
+popup_getpos({id})					*<A NAME="popup_getpos()"></A><B>popup_getpos()</B>*
+		Return the position and size of <A HREF="#popup">popup</A> {id}.  Returns a <A HREF="eval.html#Dict">Dict</A>
+		with these entries:
+		    col		screen column of the <A HREF="#popup">popup</A>, one-based
+		    line	screen line of the <A HREF="#popup">popup</A>, one-based
+		    width	width of the whole <A HREF="#popup">popup</A> in screen cells
+		    height	height of the whole <A HREF="#popup">popup</A> in screen cells
+		    core_col	screen column of the text box
+		    core_line	screen line of the text box
+		    core_width	width of the text box in screen cells
+		    core_height	height of the text box in screen cells
+		    firstline	line of the buffer at top (1 unless scrolled)
+				(not the value of the &quot;firstline&quot; property)
+		    lastline	line of the buffer at the bottom (updated when
+				the <A HREF="#popup">popup</A> is redrawn)
+		    scrollbar	non-zero if a scrollbar is displayed
+		    visible	one if the <A HREF="#popup">popup</A> is displayed, zero if hidden
+		Note that these are the actual screen positions.  They differ
+		from the values in `popup_getoptions()` for the sizing and
+		positioning mechanism applied.
+
+		The &quot;core_&quot; values exclude the padding and border.
+
+		If <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> {id} is not found an empty <A HREF="eval.html#Dict">Dict</A> is returned.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPopup()-&gt;popup_getpos()</B>
+
+
+
+popup_hide({id})						*<A NAME="popup_hide()"></A><B>popup_hide()</B>*
+		If {id} is a displayed <A HREF="#popup">popup</A>, hide <A HREF="motion.html#it">it</A> now. If the <A HREF="#popup">popup</A> has a
+		<A HREF="change.html#filter">filter</A> <A HREF="motion.html#it">it</A> will not be invoked for so long <A HREF="motion.html#as">as</A> the <A HREF="#popup">popup</A> is
+		hidden.
+		If <A HREF="windows.html#window">window</A> {id} does not exist nothing happens.  If <A HREF="windows.html#window">window</A> {id}
+
+		exists but is not a <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> an error is given. *<A NAME="E993"></A><B>E993</B>*
+		If <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> {id} contains a <A HREF="terminal.html#terminal">terminal</A> an error is given.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPopup()-&gt;popup_hide()</B>
+
+
+
+<A HREF="#popup_list()">popup_list()</A>						 *<A NAME="popup_list()"></A><B>popup_list()</B>*
+		Return a <A HREF="eval.html#List">List</A> with the |<A HREF="windows.html#window-ID">window-ID</A>| of all existing popups.
+
+
+
+popup_locate({row}, {col})				 *<A NAME="popup_locate()"></A><B>popup_locate()</B>*
+		Return the |<A HREF="windows.html#window-ID">window-ID</A>| of the <A HREF="#popup">popup</A> at screen position {row}
+		and {col}.  If there are multiple popups the one with the
+		highest zindex is returned.  If there are no popups at this
+		position then zero is returned.
+
+
+
+popup_menu({what}, {options})				 *<A NAME="popup_menu()"></A><B>popup_menu()</B>*
+		Show the {what} near the cursor, handle selecting one of the
+		items with cursorkeys, and close <A HREF="motion.html#it">it</A> an item is selected with
+		Space or Enter. {what} should have multiple lines to make this
+		useful.  This works like:
+<B>			call popup_create({what}, #{</B>
+<B>				\ pos: 'center',</B>
+<B>				\ zindex: 200,</B>
+<B>				\ drag: 1,</B>
+<B>				\ wrap: 0,</B>
+<B>				\ border: [],</B>
+<B>				\ cursorline: 1,</B>
+<B>				\ padding: [0,1,0,1],</B>
+<B>				\ filter: 'popup_filter_menu',</B>
+<B>				\ mapping: 0,</B>
+<B>				\ })</B>
+ 		The current line is highlighted with a match using
+		&quot;PopupSelected&quot;, or &quot;PmenuSel&quot; if that is not defined.
+
+		Use {options} to change the properties.  Should at least set
+		&quot;callback&quot; to a function that handles the selected item.
+		Example:
+<B>			func ColorSelected(id, result)</B>
+<B>			   " use a:result</B>
+<B>			endfunc</B>
+<B>			call popup_menu(['red', 'green', 'blue'], #{</B>
+<B>				\ callback: 'ColorSelected',</B>
+<B>				\ })</B>
+
+ 		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChoices()-&gt;popup_menu({})</B>
+
+
+
+popup_move({id}, {options})					*<A NAME="popup_move()"></A><B>popup_move()</B>*
+		Move <A HREF="#popup">popup</A> {id} to the position specified with {options}.
+		{options} may contain the items from |<A HREF="#popup_create()">popup_create()</A>| that
+		specify the <A HREF="#popup">popup</A> position:
+			line
+			col
+			pos
+			maxheight
+			minheight
+			maxwidth
+			minwidth
+			fixed
+		For {id} see `popup_hide()`.
+		For other options see |<A HREF="#popup_setoptions()">popup_setoptions()</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPopup()-&gt;popup_move(options)</B>
+
+
+
+popup_notification({what}, {options})			 *<A NAME="popup_notification()"></A><B>popup_notification()</B>*
+		Show the {what} for 3 seconds at the top of the Vim <A HREF="windows.html#window">window</A>.
+		This works like:
+<B>			call popup_create({what}, #{</B>
+<B>				\ line: 1,</B>
+<B>				\ col: 10,</B>
+<B>				\ minwidth: 20,</B>
+<B>				\ time: 3000,</B>
+<B>				\ tabpage: -1,</B>
+<B>				\ zindex: 300,</B>
+<B>				\ drag: 1,</B>
+<B>				\ highlight: 'WarningMsg',</B>
+<B>				\ border: [],</B>
+<B>				\ close: 'click',</B>
+<B>				\ padding: [0,1,0,1],</B>
+<B>				\ })</B>
+ 		The PopupNotification highlight group is used instead of
+		WarningMsg if <A HREF="motion.html#it">it</A> is defined.
+
+		Without the |<A HREF="various.html#+timers">+timers</A>| feature the <A HREF="#popup">popup</A> will not disappear
+		automatically, the user has to click in <A HREF="motion.html#it">it</A>.
+
+		The position will be adjusted to avoid overlap with other
+		notifications.
+		Use {options} to change the properties.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetText()-&gt;popup_notification({})</B>
+
+
+
+popup_setoptions({id}, {options})			*<A NAME="popup_setoptions()"></A><B>popup_setoptions()</B>*
+		Override <A HREF="options.html#options">options</A> in <A HREF="#popup">popup</A> {id} with entries in {options}.
+		These <A HREF="options.html#options">options</A> can be set:
+			border
+			borderchars
+			borderhighlight
+			callback
+			close
+			cursorline
+			drag
+			<A HREF="change.html#filter">filter</A>
+			firstline
+			flip
+			highlight
+			<A HREF="map.html#mapping">mapping</A>
+			mask
+			moved
+			padding
+			resize
+			scrollbar
+			scrollbarhighlight
+			thumbhighlight
+			time
+			title
+			wrap
+			zindex
+		The <A HREF="options.html#options">options</A> from |<A HREF="#popup_move()">popup_move()</A>| can also be used.
+		Generally, setting an option to zero or an empty <A HREF="eval.html#string">string</A> resets
+		<A HREF="motion.html#it">it</A> to the default value, but there are exceptions.
+		For &quot;hidden&quot; use |<A HREF="#popup_hide()">popup_hide()</A>| and |<A HREF="#popup_show()">popup_show()</A>|.
+		&quot;<A HREF="tabpage.html#tabpage">tabpage</A>&quot; cannot be changed.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPopup()-&gt;popup_setoptions(options)</B>
+
+
+
+popup_settext({id}, {text})				*<A NAME="popup_settext()"></A><B>popup_settext()</B>*
+		Set the text of the buffer in <A HREF="#popup">popup</A> win {id}. {text} is the
+		same <A HREF="motion.html#as">as</A> supplied to |<A HREF="#popup_create()">popup_create()</A>|, except that a buffer
+		number is not allowed.
+		Does not change the <A HREF="windows.html#window">window</A> size or position, other than caused
+		by the different text.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetPopup()-&gt;popup_settext('hello')</B>
+
+
+
+popup_show({id})						*<A NAME="popup_show()"></A><B>popup_show()</B>*
+		If {id} is a hidden <A HREF="#popup">popup</A>, show <A HREF="motion.html#it">it</A> now.
+		For {id} see `popup_hide()`.
+		If {id} is the info <A HREF="#popup">popup</A> <A HREF="motion.html#it">it</A> will be positioned next to the
+		current <A HREF="#popup">popup</A> menu item.
+
+
+==============================================================================
+
+3. Usage						*<A NAME="popup-usage"></A><B>popup-usage</B>*
+
+
+POPUP_CREATE() ARGUMENTS			 *<A NAME="popup_create-arguments"></A><B>popup_create-arguments</B>*
+
+The first argument of |<A HREF="#popup_create()">popup_create()</A>| (and the second argument to
+|<A HREF="#popup_settext()">popup_settext()</A>|) specifies the text to be displayed, and optionally text
+properties.  It is in one of four forms:
+- a buffer number
+- a <A HREF="eval.html#string">string</A>
+- a <A HREF="eval.html#list">list</A> of strings
+- a <A HREF="eval.html#list">list</A> of dictionaries, where each dictionary has these entries:
+	text		<A HREF="eval.html#String">String</A> with the text to display.
+	props		A <A HREF="eval.html#list">list</A> of text properties.  Optional.
+			Each entry is a dictionary, like the third argument of
+			|<A HREF="textprop.html#prop_add()">prop_add()</A>|, but specifying the column in the
+			dictionary with a &quot;col&quot; entry, see below:
+			|<A HREF="#popup-props">popup-props</A>|.
+
+If you want to create a new buffer yourself use |<A HREF="builtin.html#bufadd()">bufadd()</A>| and pass the buffer
+number to <A HREF="#popup_create()">popup_create()</A>.
+
+The second argument of |<A HREF="#popup_create()">popup_create()</A>| is a dictionary with <A HREF="options.html#options">options</A>:
+	line		Screen line where to position the <A HREF="#popup">popup</A>.  Can use a
+			number or &quot;cursor&quot;, &quot;cursor+1&quot; or &quot;cursor-1&quot; to use
+			the line of the cursor and add or subtract a number of
+			lines.  If omitted or zero the <A HREF="#popup">popup</A> is vertically
+			centered.  The first line is 1.
+			When using &quot;<A HREF="textprop.html#textprop">textprop</A>&quot; the number is relative to the
+			text property and can be negative.
+	col		Screen column where to position the <A HREF="#popup">popup</A>.  Can use a
+			number or &quot;cursor&quot; to use the column of the cursor,
+			&quot;cursor+9&quot; or &quot;cursor-9&quot; to add or subtract a number
+			of columns.  If omitted or zero the <A HREF="#popup">popup</A> is
+			horizontally centered.  The first column is 1.
+			When using &quot;<A HREF="textprop.html#textprop">textprop</A>&quot; the number is relative to the
+			text property and can be negative.
+	pos		&quot;topleft&quot;, &quot;topright&quot;, &quot;botleft&quot; or &quot;botright&quot;:
+			defines what corner of the <A HREF="#popup">popup</A> &quot;line&quot; and &quot;col&quot; are
+			used for.  When not set &quot;topleft&quot; is used.
+			Alternatively &quot;center&quot; can be used to position the
+			<A HREF="#popup">popup</A> in the center of the Vim <A HREF="windows.html#window">window</A>, in which <A HREF="change.html#case">case</A>
+			&quot;line&quot; and &quot;col&quot; are ignored.
+	posinvert	When <A HREF="eval.html#FALSE">FALSE</A> the value of &quot;pos&quot; is always used.  When
+			<A HREF="eval.html#TRUE">TRUE</A> (the default) and the <A HREF="#popup">popup</A> does not fit
+			vertically and there is more space on the other side
+			then the <A HREF="#popup">popup</A> is placed on the other side of the
+			position indicated by &quot;line&quot;.
+	<A HREF="textprop.html#textprop">textprop</A>	When present the <A HREF="#popup">popup</A> is positioned next to a text
+			property with this name and will move when the text
+			property moves.  Use an empty <A HREF="eval.html#string">string</A> to remove.  See
+			|<A HREF="#popup-textprop-pos">popup-textprop-pos</A>|.
+	textpropwin	What <A HREF="windows.html#window">window</A> to search for the text property.  When
+			omitted or invalid the current <A HREF="windows.html#window">window</A> is used.  Used
+			when &quot;<A HREF="textprop.html#textprop">textprop</A>&quot; is present.
+	textpropid	Used to identify the text property when &quot;<A HREF="textprop.html#textprop">textprop</A>&quot; is
+			present. Use zero to reset.
+	fixed		When <A HREF="eval.html#FALSE">FALSE</A> (the default), and:
+			 - &quot;pos&quot; is &quot;botleft&quot; or &quot;topleft&quot;, and
+			 - &quot;wrap&quot; is off, and
+			 - the <A HREF="#popup">popup</A> would be truncated at the right edge of
+			   the screen, then
+			the <A HREF="#popup">popup</A> is moved to the left so <A HREF="motion.html#as">as</A> to fit the
+			contents on the screen.  Set to <A HREF="eval.html#TRUE">TRUE</A> to disable this.
+	flip		When <A HREF="eval.html#TRUE">TRUE</A> (the default) and the position is relative
+			to the cursor, flip to below or above the cursor to
+			avoid overlap with the |<A HREF="insert.html#popupmenu-completion">popupmenu-completion</A>| or
+			another <A HREF="#popup">popup</A> with a higher &quot;zindex&quot;.  When there is
+			no space above/below the cursor then show the <A HREF="#popup">popup</A> to
+			the side of the <A HREF="#popup">popup</A> or <A HREF="#popup">popup</A> menu.
+			{not implemented yet}
+	maxheight	Maximum height of the contents, excluding border and
+			padding.
+	minheight	Minimum height of the contents, excluding border and
+			padding.
+	maxwidth	Maximum width of the contents, excluding border,
+			padding and scrollbar.
+	minwidth	Minimum width of the contents, excluding border,
+			padding and scrollbar.
+	firstline	First buffer line to display.  When larger than one <A HREF="motion.html#it">it</A>
+			looks like the text scrolled up.  When out of range
+			the last buffer line will at the top of the <A HREF="windows.html#window">window</A>.
+			Set to zero to leave the position <A HREF="motion.html#as">as</A> set by commands.
+			Also see &quot;scrollbar&quot;.
+	hidden		When <A HREF="eval.html#TRUE">TRUE</A> the <A HREF="#popup">popup</A> exists but is not displayed; use
+			`popup_show()` to unhide <A HREF="motion.html#it">it</A>.
+	<A HREF="tabpage.html#tabpage">tabpage</A>		When -1: display the <A HREF="#popup">popup</A> on all <A HREF="intro.html#tab">tab</A> pages.
+			When 0 (the default): display the <A HREF="#popup">popup</A> on the current
+			<A HREF="intro.html#tab">tab</A> page.
+			Otherwise the number of the <A HREF="intro.html#tab">tab</A> page the <A HREF="#popup">popup</A> is
+			displayed on; when invalid the <A HREF="#popup">popup</A> is not created
+
+			and an error is given. *<A NAME="E997"></A><B>E997</B>*
+	title		Text to be displayed above the first item in the
+			<A HREF="#popup">popup</A>, on top of any border.  If there is no top
+			border one line of padding is added to put the title
+			on.  You might want to add one or more spaces at the
+			start and end <A HREF="motion.html#as">as</A> padding.
+	wrap		<A HREF="eval.html#TRUE">TRUE</A> to make the lines wrap (default <A HREF="eval.html#TRUE">TRUE</A>).
+	drag		<A HREF="eval.html#TRUE">TRUE</A> to allow the <A HREF="#popup">popup</A> to be dragged with the mouse
+			by grabbing at the border.  Has no effect if the
+			<A HREF="#popup">popup</A> does not have a border. As soon <A HREF="motion.html#as">as</A> dragging
+			starts and &quot;pos&quot; is &quot;center&quot; <A HREF="motion.html#it">it</A> is changed to
+			&quot;topleft&quot;.
+	dragall		<A HREF="eval.html#TRUE">TRUE</A> to allow the <A HREF="#popup">popup</A> to be dragged from every
+			position.  Makes <A HREF="motion.html#it">it</A> very difficult to select text in
+			the <A HREF="#popup">popup</A>.
+	resize		<A HREF="eval.html#TRUE">TRUE</A> to allow the <A HREF="#popup">popup</A> to be resized with the mouse
+			by grabbing at the bottom right corner.  Has no effect
+			if the <A HREF="#popup">popup</A> does not have a border.
+	close		When &quot;button&quot; an X is displayed in the top-right, on
+			top of any border, padding or text.  When clicked on
+			the X the <A HREF="#popup">popup</A> will close.  Any callback is invoked
+			with the value -2.
+			When &quot;click&quot; any mouse click in the <A HREF="#popup">popup</A> will close
+			<A HREF="motion.html#it">it</A>.
+			When &quot;none&quot; (the default) mouse clicks <A HREF="diff.html#do">do</A> not close
+			the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A>.
+	highlight	Highlight group name to use for the text, stored in
+			the <A HREF="options.html#'wincolor'">'wincolor'</A> option.
+	padding		<A HREF="eval.html#List">List</A> with numbers, defining the padding
+			above/right/below/left of the <A HREF="#popup">popup</A> (similar to CSS).
+			An empty <A HREF="eval.html#list">list</A> uses a padding of 1 all around.  The
+			padding goes around the text, inside any border.
+			Padding uses the <A HREF="options.html#'wincolor'">'wincolor'</A> highlight.
+			Example: [1, 2, 1, 3] has 1 line of padding above, 2
+			columns on the right, 1 line below and 3 columns on
+			the left.
+	border		<A HREF="eval.html#List">List</A> with numbers, defining the border thickness
+			above/right/below/left of the <A HREF="#popup">popup</A> (similar to CSS).
+			Only values of zero and non-zero are currently
+			recognized.  An empty <A HREF="eval.html#list">list</A> uses a border all around.
+	borderhighlight	<A HREF="eval.html#List">List</A> of highlight group names to use for the border.
+			When one entry <A HREF="motion.html#it">it</A> is used for all borders, otherwise
+			the highlight for the top/right/bottom/left border.
+			Example: ['TopColor', 'RightColor', 'BottomColor,
+			'LeftColor']
+	borderchars	<A HREF="eval.html#List">List</A> with characters, defining the character to use
+			for the top/right/bottom/left border.  Optionally
+			followed by the character to use for the
+			topleft/topright/botright/botleft corner.
+			Example: ['-', '&#124;', '<A HREF="motion.html#-">-</A>', '&#124;', '┌', '┐', '┘', '└']
+			When the <A HREF="eval.html#list">list</A> has one character <A HREF="motion.html#it">it</A> is used for all.
+			When the <A HREF="eval.html#list">list</A> has two characters the first is used for
+			the border lines, the second for the corners.
+			By default a double line is used all around when
+			<A HREF="options.html#'encoding'">'encoding'</A> is &quot;<A HREF="mbyte.html#utf-8">utf-8</A>&quot; and <A HREF="options.html#'ambiwidth'">'ambiwidth'</A> is &quot;single&quot;,
+			otherwise ASCII characters are used.
+	scrollbar	1 or <A HREF="vim9.html#true">true</A>: show a scrollbar when the text doesn't fit.
+			zero: <A HREF="diff.html#do">do</A> not show a scrollbar.  Default is non-zero.
+			Also see |<A HREF="#popup-scrollbar">popup-scrollbar</A>|.
+	scrollbarhighlight  Highlight group name for the scrollbar. The
+			background color is what matters.  When not given then
+			PmenuSbar is used.
+	thumbhighlight  Highlight group name for the scrollbar thumb. The
+			background color is what matters.  When not given then
+			PmenuThumb is used.
+	zindex		Priority for the <A HREF="#popup">popup</A>, default 50.  Minimum value is
+			1, maximum value is 32000.
+	mask		A <A HREF="eval.html#list">list</A> of lists with coordinates, defining parts of
+			the popup that are transparent.  See |<A HREF="#popup-mask">popup-mask</A>|.
+	time		Time in milliseconds after which the <A HREF="#popup">popup</A> will close.
+			When omitted |<A HREF="#popup_close()">popup_close()</A>| must be used.
+	moved		Specifies to close the <A HREF="#popup">popup</A> if the cursor moved:
+			- &quot;any&quot;: if the cursor moved at all
+			- &quot;word&quot;: if the cursor moved outside |<A HREF="cmdline.html#&lt;cword&gt;">&lt;cword&gt;</A>|
+			- &quot;WORD&quot;: if the cursor moved outside |<A HREF="cmdline.html#&lt;cWORD&gt;">&lt;cWORD&gt;</A>|
+			- &quot;expr&quot;: if the cursor moved outside |<A HREF="cmdline.html#&lt;cexpr&gt;">&lt;cexpr&gt;</A>|
+			- [{start}, {end}]: if the cursor moved before column
+			  {start} or after {end}
+			- [{lnum}, {start}, {end}]: if the cursor moved away
+			  from line {lnum}, before column {start} or after
+			  {end}
+			- [0, 0, 0] <A HREF="diff.html#do">do</A> not close the <A HREF="#popup">popup</A> when the cursor
+			  moves
+			The <A HREF="#popup">popup</A> also closes if the cursor moves to another
+			line or to another <A HREF="windows.html#window">window</A>.
+	mousemoved	Like &quot;moved&quot; but referring to the mouse pointer
+			position
+	cursorline	<A HREF="eval.html#TRUE">TRUE</A>:	 Highlight the cursor line. Also scrolls the
+				 text to show this line (only works properly
+				 when <A HREF="options.html#'wrap'">'wrap'</A> is off).
+			zero: 	 Do not highlight the cursor line.
+			Default is zero, except for |<A HREF="#popup_menu()">popup_menu()</A>|.
+	<A HREF="change.html#filter">filter</A>		A callback that can <A HREF="change.html#filter">filter</A> typed characters, see
+			|<A HREF="#popup-filter">popup-filter</A>|.
+	<A HREF="map.html#mapping">mapping</A>		Allow for key <A HREF="map.html#mapping">mapping</A>.  When <A HREF="eval.html#FALSE">FALSE</A> and the <A HREF="#popup">popup</A> is
+			visible and has a <A HREF="change.html#filter">filter</A> callback key <A HREF="map.html#mapping">mapping</A> is
+			disabled.  Default value is <A HREF="eval.html#TRUE">TRUE</A>.
+	filtermode	In which modes the <A HREF="change.html#filter">filter</A> is used (same flags <A HREF="motion.html#as">as</A> with
+			|<A HREF="builtin.html#hasmapto()">hasmapto()</A>| plus &quot;a&quot;):
+				<A HREF="pattern.html#n">n</A>	<A HREF="intro.html#Normal">Normal</A> mode
+				<A HREF="visual.html#v">v</A>	<A HREF="visual.html#Visual">Visual</A> and <A HREF="visual.html#Select">Select</A> mode
+				<A HREF="change.html#x">x</A>	<A HREF="visual.html#Visual">Visual</A> mode
+				<A HREF="change.html#s">s</A>	<A HREF="visual.html#Select">Select</A> mode
+				<A HREF="insert.html#o">o</A>	<A HREF="intro.html#Operator-pending">Operator-pending</A> mode
+				<A HREF="insert.html#i">i</A>	<A HREF="insert.html#Insert">Insert</A> mode
+				<A HREF="motion.html#l">l</A>	Language-Argument (&quot;r&quot;, &quot;<A HREF="motion.html#f">f</A>&quot;, &quot;<A HREF="motion.html#t">t</A>&quot;, etc.)
+				<A HREF="change.html#c">c</A>	<A HREF="cmdline.html#Command-line">Command-line</A> mode
+				a	all modes
+			The default value is &quot;<A HREF="insert.html#a">a</A>&quot;.
+	callback	A callback that is called when the <A HREF="#popup">popup</A> closes, e.g.
+			when using |<A HREF="#popup_filter_menu()">popup_filter_menu()</A>|, see |<A HREF="#popup-callback">popup-callback</A>|.
+
+Depending on the &quot;zindex&quot; the <A HREF="#popup">popup</A> goes under or above other popups.  The
+completion menu (|<A HREF="gui.html#popup-menu">popup-menu</A>|) has zindex 100.  For <A HREF="message.html#messages">messages</A> that occur for a
+short time the suggestion is to use zindex 1000.
+
+By default text wraps, which causes a line in {lines} to occupy more than one
+screen line.  When &quot;wrap&quot; is <A HREF="eval.html#FALSE">FALSE</A> then the text outside of the <A HREF="#popup">popup</A> or
+outside of the Vim <A HREF="windows.html#window">window</A> will not be displayed, thus truncated.
+
+
+
+POPUP TEXT PROPERTIES					*<A NAME="popup-props"></A><B>popup-props</B>*
+
+These are similar to the third argument of |<A HREF="textprop.html#prop_add()">prop_add()</A>| except:
+- &quot;lnum&quot; is always the current line in the <A HREF="eval.html#list">list</A>
+- &quot;bufnr&quot; is always the buffer of the <A HREF="#popup">popup</A>
+- &quot;col&quot; is in the <A HREF="eval.html#Dict">Dict</A> instead of a separate argument
+So we get:
+	col		starting column, counted in bytes, use one for the
+			first column.
+	length		length of text in bytes; can be zero
+	end_lnum	line number for the end of the text
+	end_col		column just after the text; not used when &quot;length&quot; is
+			present; when {col} and &quot;end_col&quot; are equal, this is a
+			zero-width text property
+	id		user defined ID for the property; when omitted zero is
+			used
+	type		name of the text property type, <A HREF="motion.html#as">as</A> added with
+			|<A HREF="textprop.html#prop_type_add()">prop_type_add()</A>|
+
+
+
+POSITION POPUP WITH TEXTPROP				*<A NAME="popup-textprop-pos"></A><B>popup-textprop-pos</B>*
+
+Positioning a <A HREF="#popup">popup</A> next to a text property causes the <A HREF="#popup">popup</A> to move when text
+is inserted or deleted.  The <A HREF="#popup">popup</A> <A HREF="eval.html#functions">functions</A> like a tooltip.
+
+These steps are needed to make this work:
+
+- Define a text property type, <A HREF="motion.html#it">it</A> defines the name.
+<B>	call prop_type_add('popupMarker', {})</B>
+
+- Place a text property at the desired text:
+<B>	let lnum = {line of the text}</B>
+<B>	let col = {start column of the text}</B>
+<B>	let len = {length of the text}</B>
+<B>	let propId = {arbitrary but unique number}</B>
+<B>	call prop_add(lnum, col, #{</B>
+<B>		\ length: len,</B>
+<B>		\ type: 'popupMarker',</B>
+<B>		\ id: propId,</B>
+<B>		\ })</B>
+
+- Create a <A HREF="#popup">popup</A>:
+<B>	let winid = popup_create('the text', #{</B>
+<B>		\ pos: 'botleft',</B>
+<B>		\ textprop: 'popupMarker',</B>
+<B>		\ textpropid: propId,</B>
+<B>		\ border: [],</B>
+<B>		\ padding: [0,1,0,1],</B>
+<B>		\ close: 'click',</B>
+<B>		\ })</B>
+
+By default the <A HREF="#popup">popup</A> is positioned at the corner of the text, opposite of the
+&quot;pos&quot; specified for the <A HREF="#popup">popup</A>.  Thus when the <A HREF="#popup">popup</A> uses &quot;botleft&quot;, the
+bottom-left corner of the <A HREF="#popup">popup</A> is positioned next to the top-right corner of
+the text property:
+			  +----------+
+			  &#124; the text |
+			  +----------+
+	just some PROPERTY <A HREF="motion.html#as">as</A> an example
+
+Here the text property is on &quot;PROPERTY&quot;.  Move the <A HREF="#popup">popup</A> to the left by
+passing a negative &quot;col&quot; value to <A HREF="#popup_create()">popup_create()</A>.  With &quot;col: -5&quot; you get:
+
+		     +----------+
+		     &#124; the text |
+		     +----------+
+	just some PROPERTY <A HREF="motion.html#as">as</A> an example
+
+If the text property moves out of <A HREF="starting.html#view">view</A> then the <A HREF="#popup">popup</A> will be hidden.
+If the <A HREF="windows.html#window">window</A> for which the <A HREF="#popup">popup</A> was defined is closed, the <A HREF="#popup">popup</A> is closed.
+
+If the <A HREF="#popup">popup</A> cannot fit in the desired position, <A HREF="motion.html#it">it</A> may show at a nearby
+position.
+
+Some hints:
+- To avoid collision with other plugins the text property type name has to be
+  unique.  You can also use the &quot;bufnr&quot; item to make <A HREF="motion.html#it">it</A> local to a buffer.
+- You can leave out the text property ID if there is only ever one text
+  property visible.
+- The <A HREF="#popup">popup</A> may be in the way of what the user is doing, making <A HREF="motion.html#it">it</A> close with
+  a click, <A HREF="motion.html#as">as</A> in the example above, helps for that.
+- If the text property is removed the <A HREF="#popup">popup</A> is closed.  Use something like
+  this:
+<B>	call prop_remove(#{type: 'popupMarker', id: propId})</B>
+
+
+
+POPUP FILTER						*<A NAME="popup-filter"></A><B>popup-filter</B>*
+
+A callback that gets any typed keys while a <A HREF="#popup">popup</A> is displayed.  The <A HREF="change.html#filter">filter</A> is
+not invoked when the <A HREF="#popup">popup</A> is hidden.
+
+The <A HREF="change.html#filter">filter</A> can return <A HREF="eval.html#TRUE">TRUE</A> to indicate the key has been handled and is to be
+discarded, or <A HREF="eval.html#FALSE">FALSE</A> to let Vim handle the key <A HREF="motion.html#as">as</A> usual in the current state.
+In <A HREF="change.html#case">case</A> <A HREF="motion.html#it">it</A> returns <A HREF="eval.html#FALSE">FALSE</A> and there is another <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> visible, that
+<A HREF="change.html#filter">filter</A> is also called.  The <A HREF="change.html#filter">filter</A> of the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> with the highest zindex
+is called first.
+
+The <A HREF="change.html#filter">filter</A> function is called with two arguments: the ID of the <A HREF="#popup">popup</A> and the
+key <A HREF="motion.html#as">as</A> a <A HREF="eval.html#string">string</A>, e.g.:
+<B>	func MyFilter(winid, key)</B>
+<B>	  if a:key == "\&lt;F2&gt;"</B>
+<B>	    " do something</B>
+<B>	    return 1</B>
+<B>	  endif</B>
+<B>	  if a:key == 'x'</B>
+<B>	    call popup_close(a:winid)</B>
+<B>	    return 1</B>
+<B>	  endif</B>
+<B>	  return 0</B>
+<B>	endfunc</B>
+
+ 							*<A NAME="popup-filter-mode"></A><B>popup-filter-mode</B>*
+The &quot;filtermode&quot; property can be used to specify in what mode the <A HREF="change.html#filter">filter</A> is
+invoked.  The default is &quot;<A HREF="insert.html#a">a</A>&quot;: all modes.  When using &quot;nvi&quot; <A HREF="cmdline.html#Command-line">Command-line</A> mode
+is not included, so that any command typed on the command line is not
+filtered.  However, to get to <A HREF="cmdline.html#Command-line">Command-line</A> mode the <A HREF="change.html#filter">filter</A> must not consume
+&quot;<A HREF="cmdline.html#:">:</A>&quot;.  Just like <A HREF="motion.html#it">it</A> must not consume &quot;<A HREF="visual.html#v">v</A>&quot; to allow for entering <A HREF="visual.html#Visual">Visual</A> mode.
+
+
+							*<A NAME="popup-mapping"></A><B>popup-mapping</B>*
+Normally the key is what results after any <A HREF="map.html#mapping">mapping</A>, since the keys pass on <A HREF="motion.html#as">as</A>
+normal input if the <A HREF="change.html#filter">filter</A> does not use <A HREF="motion.html#it">it</A>.  If the <A HREF="change.html#filter">filter</A> consumes all the
+keys, set the &quot;<A HREF="map.html#mapping">mapping</A>&quot; property to zero so that mappings <A HREF="diff.html#do">do</A> not get in the
+way.  This is default for |<A HREF="#popup_menu()">popup_menu()</A>| and |<A HREF="#popup_dialog()">popup_dialog()</A>|.
+
+Some recommended key actions:
+	<A HREF="change.html#x">x</A>		close the <A HREF="#popup">popup</A> (see note below)
+	cursor keys	select another entry
+	<A HREF="intro.html#Tab">Tab</A>		accept current suggestion
+
+When <A HREF="pattern.html#CTRL-C">CTRL-C</A> is pressed the <A HREF="#popup">popup</A> is closed, the <A HREF="change.html#filter">filter</A> will not be invoked.
+
+A mouse click arrives <A HREF="motion.html#as">as</A> <A HREF="visual.html#&lt;LeftMouse&gt;">&lt;LeftMouse&gt;</A>.  The coordinates can be obtained with
+|<A HREF="builtin.html#getmousepos()">getmousepos()</A>|.
+
+Vim provides standard filters |<A HREF="#popup_filter_menu()">popup_filter_menu()</A>| and
+|<A HREF="#popup_filter_yesno()">popup_filter_yesno()</A>|.
+
+Keys coming from a `:normal` command <A HREF="diff.html#do">do</A> not pass through the <A HREF="change.html#filter">filter</A>.  This can
+be used to move the cursor in a <A HREF="#popup">popup</A> where the &quot;cursorline&quot; option is set:
+<B>	call win_execute(winid, 'normal! 10Gzz')</B>
+Keys coming from `feedkeys()` are passed through the <A HREF="change.html#filter">filter</A>.
+
+Note that &quot;<A HREF="change.html#x">x</A>&quot; is the normal way to close a <A HREF="#popup">popup</A>.  You may want to use Esc,
+but since many keys start with an Esc character, there may be a delay before
+Vim recognizes the Esc key.  If you <A HREF="diff.html#do">do</A> use Esc, <A HREF="motion.html#it">it</A> is recommended to set the
+<A HREF="options.html#'ttimeoutlen'">'ttimeoutlen'</A> option to 100 and set <A HREF="options.html#'timeout'">'timeout'</A> and/or <A HREF="options.html#'ttimeout'">'ttimeout'</A>.
+
+
+							*<A NAME="popup-filter-errors"></A><B>popup-filter-errors</B>*
+If the <A HREF="change.html#filter">filter</A> function can't be called, e.g. because the name is wrong, then
+the <A HREF="#popup">popup</A> is closed.  If the <A HREF="change.html#filter">filter</A> causes an error then <A HREF="motion.html#it">it</A> is assumed to
+return zero.  If this happens three times in a row the <A HREF="#popup">popup</A> is closed.  If
+the <A HREF="#popup">popup</A> gives <A HREF="message.html#errors">errors</A> fewer than 10&#37; of the calls then <A HREF="motion.html#it">it</A> won't be closed.
+
+
+
+POPUP CALLBACK						*<A NAME="popup-callback"></A><B>popup-callback</B>*
+
+A callback that is invoked when the <A HREF="#popup">popup</A> closes.
+
+The callback is invoked with two arguments: the ID of the <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> and the
+result, which could be an index in the <A HREF="#popup">popup</A> lines, or whatever was passed <A HREF="motion.html#as">as</A>
+the second argument of `popup_close()`.
+
+If the <A HREF="#popup">popup</A> is force-closed, e.g. because the cursor moved or <A HREF="pattern.html#CTRL-C">CTRL-C</A> was
+pressed, the number -1 is passed to the callback.
+
+Example:
+<B>	func SelectedColor(id, result)</B>
+<B>	   echo 'choice made: ' .. a:result</B>
+<B>	endfunc</B>
+
+
+
+POPUP SCROLLBAR						*<A NAME="popup-scrollbar"></A><B>popup-scrollbar</B>*
+
+If the text does not fit in the <A HREF="#popup">popup</A> a scrollbar is displayed on the right of
+the <A HREF="windows.html#window">window</A>.  This can be disabled by setting the &quot;scrollbar&quot; option to zero.
+When the scrollbar is displayed mouse scroll events, while the mouse pointer
+is on the <A HREF="#popup">popup</A>, will cause the text to scroll up or down <A HREF="motion.html#as">as</A> you would expect.
+A click in the upper half of the scrollbar will scroll the text down one line.
+A click in the lower half will scroll the text up one line.  However, this is
+limited so that the <A HREF="#popup">popup</A> does not get smaller.
+
+
+
+POPUP MASK						*<A NAME="popup-mask"></A><B>popup-mask</B>*
+
+To minimize the text that the <A HREF="#popup">popup</A> covers, parts of <A HREF="motion.html#it">it</A> can be made
+transparent.  This is defined by a &quot;mask&quot; which is a <A HREF="eval.html#list">list</A> of lists, where each
+<A HREF="eval.html#list">list</A> has four numbers:
+    col		start column, positive for counting from the left, 1 for
+		leftmost, negative for counting from the right, -1 for
+		rightmost
+    endcol	last column, like &quot;col&quot;
+    line	start line, positive for counting from the top, 1 for top,
+		negative for counting from the bottom, -1 for bottom
+    endline	end line, like &quot;line&quot;
+
+For example, to make the last 10 columns of the last line transparent:
+	[[-10, -1, -1, -1]]
+
+To make the four corners transparent:
+	[[1, 1, 1, 1], [-1, -1, 1, 1], [1, 1, -1, -1], [-1, -1, -1, -1]]
+
+==============================================================================
+
+4. Examples						*<A NAME="popup-examples"></A><B>popup-examples</B>*
+
+These examples use |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="usr_41.html#script">script</A>.
+
+
+					*<A NAME="popup_dialog-example"></A><B>popup_dialog-example</B>*
+Prompt the user to press y/Y or n/N:
+
+<B>	popup_dialog('Continue? y/n', {</B>
+<B>		 filter: 'popup_filter_yesno',</B>
+<B>		 callback: (id, result) =&gt; {</B>
+<B>				if result == 1</B>
+<B>				  echomsg "'y' or 'Y' was pressed"</B>
+<B>				else</B>
+<B>				  echomsg "'y' or 'Y' was NOT pressed"</B>
+<B>				endif</B>
+<B>			     },</B>
+<B>		 padding: [2, 4, 2, 4],</B>
+<B>		 })</B>
+ 
+
+					*<A NAME="popup_menu-shortcut-example"></A><B>popup_menu-shortcut-example</B>*
+Extend <A HREF="#popup_filter_menu()">popup_filter_menu()</A> with shortcut keys:
+
+<B>	popup_menu(['Save', 'Cancel', 'Discard'], {</B>
+<B>	    callback: (_, result) =&gt; {</B>
+<B>		echo 'dialog result is' result</B>
+<B>	    },</B>
+<B>	    filter: (id, key) =&gt; {</B>
+<B>		# Handle shortcuts</B>
+<B>		if key == 'S' || key == 's'</B>
+<B>		    popup_close(id, 1)</B>
+<B>		elseif key == 'C' || key == 'c'</B>
+<B>		    popup_close(id, 2)</B>
+<B>		elseif key == 'D' || key == 'd'</B>
+<B>		    popup_close(id, 3)</B>
+<B>		else</B>
+<B>		    # No shortcut, pass to generic filter</B>
+<B>		    return popup_filter_menu(id, key)</B>
+<B>		endif</B>
+<B>		return true</B>
+<B>	    },</B>
+<B>	})</B>
+ 
+
+					*<A NAME="popup_beval_example"></A><B>popup_beval_example</B>*
+Example for using a <A HREF="#popup">popup</A> <A HREF="windows.html#window">window</A> for <A HREF="options.html#'ballooneval'">'ballooneval'</A>:
+
+<B>	set ballooneval balloonevalterm</B>
+<B>	set balloonexpr=BalloonExpr()</B>
+<B>	var winid: number</B>
+<B>	var last_text: string</B>
+
+<B>	def BalloonExpr(): string</B>
+<B>	    # here you would use "v:beval_text" to lookup something interesting</B>
+<B>	    var text = v:beval_text</B>
+<B>	    if winid &gt; 0 &amp;&amp; popup_getpos(winid) != null_dict</B>
+<B>		# previous popup window still shows</B>
+<B>		if text == last_text</B>
+<B>		    # still the same text, keep the existing popup</B>
+<B>		    return null_string</B>
+<B>		endif</B>
+<B>		popup_close(winid)</B>
+<B>	    endif</B>
+
+<B>	    winid = popup_beval(text, {})</B>
+<B>	    last_text = text</B>
+<B>	    return null_string</B>
+<B>	enddef</B>
+
+If the text has to be obtained asynchronously return an empty <A HREF="eval.html#string">string</A> from the
+<A HREF="eval.html#expression">expression</A> function and call <A HREF="#popup_beval()">popup_beval()</A> once the text is available.  In
+this example simulated with a <A HREF="builtin.html#timer">timer</A> callback:
+
+<B>	set ballooneval balloonevalterm</B>
+<B>	set balloonexpr=BalloonExpr()</B>
+<B>	var winid: number</B>
+<B>	var last_text: string</B>
+
+<B>	def BalloonExpr(): string</B>
+<B>	    var text = v:beval_text</B>
+<B>	    if winid &gt; 0 &amp;&amp; popup_getpos(winid) != null_dict</B>
+<B>		# previous popup window still shows</B>
+<B>		if text == last_text</B>
+<B>		    # still the same text, keep the existing popup</B>
+<B>		    return null_string</B>
+<B>		endif</B>
+<B>		popup_close(winid)</B>
+<B>	    endif</B>
+
+<B>	    # Simulate an asynchronous lookup that takes half a second for the</B>
+<B>	    # text to display.</B>
+<B>	    last_text = text</B>
+<B>	    timer_start(500, 'ShowPopup')</B>
+<B>	    return null_string</B>
+<B>	enddef</B>
+
+<B>	def ShowPopup(timerid: number)</B>
+<B>	    winid = popup_beval('Result: ' .. last_text, {})</B>
+<B>	enddef</B>
+ 
+
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

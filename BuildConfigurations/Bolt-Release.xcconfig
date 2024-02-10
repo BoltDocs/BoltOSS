@@ -1,0 +1,7 @@
+#include "./Bolt.xcconfig"
+
+CODE_SIGN_ENTITLEMENTS = Bolt/BoltRelease.entitlements
+CODE_SIGN_STYLE = Manual
+INFOPLIST_KEY_CFBundleDisplayName = Bolt
+PRODUCT_BUNDLE_IDENTIFIER = $(ORGANIZATION_IDENTIFIER).BoltOSS
+PRODUCT_DISPLAY_NAME = Bolt

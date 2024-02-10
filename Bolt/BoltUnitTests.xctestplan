@@ -1,0 +1,52 @@
+{
+  "configurations" : [
+    {
+      "id" : "1AC5D909-D3FD-4385-9D30-9FE12F900E4C",
+      "name" : "Default Configuration",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:BoltLocalizations",
+        "identifier" : "BoltLocalizationsTests",
+        "name" : "BoltLocalizationsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:BoltServices",
+        "identifier" : "BoltNetworkingTests",
+        "name" : "BoltNetworkingTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:BoltServices",
+        "identifier" : "BoltArchivesTests",
+        "name" : "BoltArchivesTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:BoltServices",
+        "identifier" : "BoltRepositoryTests",
+        "name" : "BoltRepositoryTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:BoltServices",
+        "identifier" : "BoltDocsetsTests",
+        "name" : "BoltDocsetsTests"
+      }
+    },
+  ],
+  "version" : 1
+}

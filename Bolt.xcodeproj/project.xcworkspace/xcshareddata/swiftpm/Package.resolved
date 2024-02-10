@@ -1,0 +1,167 @@
+{
+  "pins" : [
+    {
+      "identity" : "alamofire",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "state" : {
+        "branch" : "5.7.1",
+        "revision" : "bc268c28fb170f494de9e9927c371b8342979ece"
+      }
+    },
+    {
+      "identity" : "bettersafariview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stleamist/BetterSafariView.git",
+      "state" : {
+        "revision" : "dffd42bc70287e761979bc81dd278db5c80f0deb",
+        "version" : "2.4.1"
+      }
+    },
+    {
+      "identity" : "bitbytedata",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tsolomko/BitByteData",
+      "state" : {
+        "revision" : "b4b41619522aacd7aae7b02fa8360833e796a03d",
+        "version" : "2.0.2"
+      }
+    },
+    {
+      "identity" : "combineext",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/CombineCommunity/CombineExt.git",
+      "state" : {
+        "branch" : "1.8.1",
+        "revision" : "d7b896fa9ca8b47fa7bcde6b43ef9b70bf8c1f56"
+      }
+    },
+    {
+      "identity" : "factory",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:hmlongco/Factory.git",
+      "state" : {
+        "branch" : "2.2.0",
+        "revision" : "061b3afe0358a0da7ce568f8272c847910be3dd7"
+      }
+    },
+    {
+      "identity" : "grdb.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/groue/GRDB.swift.git",
+      "state" : {
+        "branch" : "v6.16.0",
+        "revision" : "e83f3eb25ef4d5a36a13dbee98f8ac67e24e5c8f"
+      }
+    },
+    {
+      "identity" : "gsmessages",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wxxsw/GSMessages.git",
+      "state" : {
+        "branch" : "88d895a",
+        "revision" : "88d895a9c889b310dd498ccb897a5aac4f3f2b1e"
+      }
+    },
+    {
+      "identity" : "gzipswift",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:BoltDocs/GzipSwift.git",
+      "state" : {
+        "branch" : "6.0.1",
+        "revision" : "1e880448010e6aef68ca6a23e7c61a984c9f00cf"
+      }
+    },
+    {
+      "identity" : "licenseplistviewcontroller",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yhirano/LicensePlistViewController.git",
+      "state" : {
+        "revision" : "1fb4a71c2e37a4ea1a9a135c6d2aff65130c8a55",
+        "version" : "2.2.0"
+      }
+    },
+    {
+      "identity" : "objectassociationhelper",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:BoltDocs/ObjectAssociationHelper.git",
+      "state" : {
+        "revision" : "b3e1960c4fb36bad80841f76c32e1d2b67f42349",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "routablenavigation",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:BoltDocs/RoutableNavigation.git",
+      "state" : {
+        "branch" : "5fa1eb3",
+        "revision" : "5fa1eb3374ac2625c131242ea75871ac980abb40"
+      }
+    },
+    {
+      "identity" : "rxcombine",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:CombineCommunity/RxCombine.git",
+      "state" : {
+        "branch" : "2.0.1",
+        "revision" : "19474c2ac9fde613bba8513bf98990e1aa9831cd"
+      }
+    },
+    {
+      "identity" : "rxswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ReactiveX/RxSwift.git",
+      "state" : {
+        "branch" : "6.6.0",
+        "revision" : "9dcaa4b333db437b0fbfaf453fad29069044a8b4"
+      }
+    },
+    {
+      "identity" : "snapkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SnapKit/SnapKit.git",
+      "state" : {
+        "revision" : "f222cbdf325885926566172f6f5f06af95473158",
+        "version" : "5.6.0"
+      }
+    },
+    {
+      "identity" : "swcompressiontar",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:BoltDocs/SWCompressionTAR.git",
+      "state" : {
+        "branch" : "4.8.5",
+        "revision" : "1884c84b7784e26b64de993c95ee73e3db4bf2dc"
+      }
+    },
+    {
+      "identity" : "swift-overture",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-overture.git",
+      "state" : {
+        "branch" : "0.5.0",
+        "revision" : "7977acd7597f413717058acc1e080731249a1d7e"
+      }
+    },
+    {
+      "identity" : "swiftyjson",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftyJSON/SwiftyJSON.git",
+      "state" : {
+        "branch" : "5.0.1",
+        "revision" : "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07"
+      }
+    },
+    {
+      "identity" : "swiftyxmlparser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yahoojapan/SwiftyXMLParser.git",
+      "state" : {
+        "branch" : "5.6.0",
+        "revision" : "d7a1d23f04c86c1cd2e8f19247dd15d74e0ea8be"
+      }
+    }
+  ],
+  "version" : 2
+}

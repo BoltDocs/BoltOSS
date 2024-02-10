@@ -1,0 +1,211 @@
+<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Directory Stack Builtins</title>
+
+<meta name="description" content="Directory Stack Builtins (Bash Reference Manual)">
+<meta name="keywords" content="Directory Stack Builtins (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="The-Directory-Stack.html" rel="up" title="The Directory Stack">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<div class="subsection" id="Directory-Stack-Builtins">
+<div class="header">
+<p>
+Up: <a href="The-Directory-Stack.html" accesskey="u" rel="up">The Directory Stack</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Directory-Stack-Builtins-1"></span><h4 class="subsection">6.8.1 Directory Stack Builtins</h4>
+
+<dl compact="compact">
+<a class="dashAnchor" name="//apple_ref/Builtin/dirs"></a><dt id="index-dirs"><span><code>dirs</code><a href="#index-dirs" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><div class="example">
+<pre class="example">dirs [-clpv] [+<var>N</var> | -<var>N</var>]
+</pre></div>
+
+<p>Display the list of currently remembered directories.  Directories
+are added to the list with the <code>pushd</code> command; the
+<code>popd</code> command removes directories from the list.
+The current directory is always the first directory in the stack.
+</p>
+<dl compact="compact">
+<dt><span><code>-c</code></span></dt>
+<dd><p>Clears the directory stack by deleting all of the elements.
+</p></dd>
+<dt><span><code>-l</code></span></dt>
+<dd><p>Produces a listing using full pathnames;
+the default listing format uses a tilde to denote the home directory.
+</p></dd>
+<dt><span><code>-p</code></span></dt>
+<dd><p>Causes <code>dirs</code> to print the directory stack with one entry per
+line.
+</p></dd>
+<dt><span><code>-v</code></span></dt>
+<dd><p>Causes <code>dirs</code> to print the directory stack with one entry per
+line, prefixing each entry with its index in the stack.
+</p></dd>
+<dt><span><code>+<var>N</var></code></span></dt>
+<dd><p>Displays the <var>N</var>th directory (counting from the left of the
+list printed by <code>dirs</code> when invoked without options), starting
+with zero.
+</p></dd>
+<dt><span><code>-<var>N</var></code></span></dt>
+<dd><p>Displays the <var>N</var>th directory (counting from the right of the
+list printed by <code>dirs</code> when invoked without options), starting
+with zero.
+</p></dd>
+</dl>
+
+</dd>
+<a class="dashAnchor" name="//apple_ref/Builtin/popd"></a><dt id="index-popd"><span><code>popd</code><a href="#index-popd" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><div class="example">
+<pre class="example">popd [-n] [+<var>N</var> | -<var>N</var>]
+</pre></div>
+
+<p>Removes elements from the directory stack.
+The elements are numbered from 0 starting at the first directory
+listed by <code>dirs</code>;
+that is, <code>popd</code> is equivalent to <code>popd +0</code>.
+</p>
+<p>When no arguments are given, <code>popd</code>
+removes the top directory from the stack and changes to
+the new top directory.
+</p>
+<p>Arguments, if supplied, have the following meanings:
+</p>
+<dl compact="compact">
+<dt><span><code>-n</code></span></dt>
+<dd><p>Suppresses the normal change of directory when removing directories
+from the stack, so that only the stack is manipulated.
+</p></dd>
+<dt><span><code>+<var>N</var></code></span></dt>
+<dd><p>Removes the <var>N</var>th directory (counting from the left of the
+list printed by <code>dirs</code>), starting with zero, from the stack.
+</p></dd>
+<dt><span><code>-<var>N</var></code></span></dt>
+<dd><p>Removes the <var>N</var>th directory (counting from the right of the
+list printed by <code>dirs</code>), starting with zero, from the stack.
+</p></dd>
+</dl>
+
+<p>If the top element of the directory stack is modified, and
+the <samp>-n</samp> option was not supplied, <code>popd</code> uses the <code>cd</code>
+builtin to change to the directory at the top of the stack.
+If the <code>cd</code> fails, <code>popd</code> returns a non-zero value.
+</p>
+<p>Otherwise, <code>popd</code> returns an unsuccessful status if
+an invalid option is encountered, the directory stack
+is empty, or a non-existent directory stack entry is specified.
+</p>
+<p>If the <code>popd</code> command is successful,
+Bash runs <code>dirs</code> to show the final contents of the directory stack,
+and the return status is 0.
+</p>
+<a class="dashAnchor" name="//apple_ref/Builtin/pushd"></a><span id="index-pushd"></span>
+</dd>
+<dt><span><code>pushd</code></span></dt>
+<dd><div class="example">
+<pre class="example">pushd [-n] [<var>+N</var> | <var>-N</var> | <var>dir</var>]
+</pre></div>
+
+<p>Adds a directory to the top of the directory stack, or rotates
+the stack, making the new top of the stack the current working
+directory.
+With no arguments, <code>pushd</code> exchanges the top two elements
+of the directory stack.
+</p>
+<p>Arguments, if supplied, have the following meanings:
+</p>
+<dl compact="compact">
+<dt><span><code>-n</code></span></dt>
+<dd><p>Suppresses the normal change of directory when rotating or
+adding directories to the stack, so that only the stack is manipulated.
+</p></dd>
+<dt><span><code>+<var>N</var></code></span></dt>
+<dd><p>Brings the <var>N</var>th directory (counting from the left of the
+list printed by <code>dirs</code>, starting with zero) to the top of
+the list by rotating the stack.
+</p></dd>
+<dt><span><code>-<var>N</var></code></span></dt>
+<dd><p>Brings the <var>N</var>th directory (counting from the right of the
+list printed by <code>dirs</code>, starting with zero) to the top of
+the list by rotating the stack.
+</p></dd>
+<dt><span><code><var>dir</var></code></span></dt>
+<dd><p>Makes <var>dir</var> be the top of the stack.
+</p></dd>
+</dl>
+
+<p>After the stack has been modified, if the <samp>-n</samp> option was not
+supplied, <code>pushd</code> uses the <code>cd</code> builtin to change to the
+directory at the top of the stack.
+If the <code>cd</code> fails, <code>pushd</code> returns a non-zero value.
+</p>
+<p>Otherwise, if no arguments are supplied, <code>pushd</code> returns 0 unless the
+directory stack is empty.
+When rotating the directory stack, <code>pushd</code> returns 0 unless
+the directory stack is empty or a non-existent directory stack element
+is specified.
+</p>
+<p>If the <code>pushd</code> command is successful,
+Bash runs <code>dirs</code> to show the final contents of the directory stack.
+</p>
+</dd>
+</dl>
+
+</div>
+<hr>
+<div class="header">
+<p>
+Up: <a href="The-Directory-Stack.html">The Directory Stack</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+
+
+</body></html>

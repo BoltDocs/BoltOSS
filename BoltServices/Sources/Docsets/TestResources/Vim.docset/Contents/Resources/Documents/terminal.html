@@ -1,0 +1,1649 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: terminal</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: terminal</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="terminal.txt"></A><B>terminal.txt</B>*	For Vim version 9.0.  Last change: 2022 Jun 09
+
+
+		  VIM REFERENCE MANUAL	  by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+
+
+Terminal <A HREF="windows.html#window">window</A> support				*<A NAME="terminal"></A><B>terminal</B>* *<A NAME="terminal-window"></A><B>terminal-window</B>*
+
+
+The <A HREF="#terminal">terminal</A> feature is optional, use this to check if your Vim has <A HREF="motion.html#it">it</A>:
+<B>	echo has('terminal')</B>
+If the result is &quot;1&quot; you have <A HREF="motion.html#it">it</A>.
+
+
+1. Basic use				|<A HREF="#terminal-use">terminal-use</A>|
+      Typing					|<A HREF="#terminal-typing">terminal-typing</A>|
+      Size and color				|<A HREF="#terminal-size-color">terminal-size-color</A>|
+      Command <A HREF="syntax.html#syntax">syntax</A>				|<A HREF="#:terminal">:terminal</A>|
+      Resizing					|<A HREF="#terminal-resizing">terminal-resizing</A>|
+      Terminal Modes				|<A HREF="#Terminal-mode">Terminal-mode</A>|
+      Cursor style				|<A HREF="#terminal-cursor-style">terminal-cursor-style</A>|
+      <A HREF="starting.html#Session">Session</A>					|<A HREF="#terminal-session">terminal-session</A>|
+      <A HREF="eval.html#Special">Special</A> keys				|<A HREF="#terminal-special-keys">terminal-special-keys</A>|
+      <A HREF="os_unix.html#Unix">Unix</A>					|<A HREF="#terminal-unix">terminal-unix</A>|
+      <A HREF="os_win32.html#MS-Windows">MS-Windows</A>				|<A HREF="#terminal-ms-windows">terminal-ms-windows</A>|
+2. Terminal <A HREF="eval.html#functions">functions</A>			|<A HREF="#terminal-function-details">terminal-function-details</A>|
+3. Terminal communication		|<A HREF="#terminal-communication">terminal-communication</A>|
+      Vim to job: <A HREF="#term_sendkeys()">term_sendkeys()</A>		|<A HREF="#terminal-to-job">terminal-to-job</A>|
+      <A HREF="eval.html#Job">Job</A> to Vim: JSON API			|<A HREF="#terminal-api">terminal-api</A>|
+      Using the client-server feature		|<A HREF="#terminal-client-server">terminal-client-server</A>|
+4. Remote testing			|<A HREF="#terminal-testing">terminal-testing</A>|
+5. Diffing screen dumps			|<A HREF="#terminal-diff">terminal-diff</A>|
+      Writing a screen dump test for Vim  	|<A HREF="#terminal-dumptest">terminal-dumptest</A>|
+      Creating a screen dump		  	|<A HREF="#terminal-screendump">terminal-screendump</A>|
+      Comparing screen dumps		  	|<A HREF="#terminal-diffscreendump">terminal-diffscreendump</A>|
+6. Debugging				|<A HREF="#terminal-debug">terminal-debug</A>|
+      Starting					|<A HREF="#termdebug-starting">termdebug-starting</A>|
+      Example session				|<A HREF="#termdebug-example">termdebug-example</A>|
+      Stepping through code			|<A HREF="#termdebug-stepping">termdebug-stepping</A>|
+      Inspecting variables			|<A HREF="#termdebug-variables">termdebug-variables</A>|
+      Other commands				|<A HREF="#termdebug-commands">termdebug-commands</A>|
+      Events					|<A HREF="#termdebug-events">termdebug-events</A>|
+      Prompt mode				|<A HREF="#termdebug-prompt">termdebug-prompt</A>|
+      Communication				|<A HREF="#termdebug-communication">termdebug-communication</A>|
+      Customizing				|<A HREF="#termdebug-customizing">termdebug-customizing</A>|
+
+{only available when compiled with the |<A HREF="various.html#+terminal">+terminal</A>| feature}
+The <A HREF="#terminal">terminal</A> feature requires the |<A HREF="various.html#+job">+job</A>| and |<A HREF="various.html#+channel">+channel</A>| features.
+
+==============================================================================
+
+1. Basic use						*<A NAME="terminal-use"></A><B>terminal-use</B>*
+
+This feature is for running a <A HREF="#terminal">terminal</A> emulator in a Vim <A HREF="windows.html#window">window</A>.  A <A HREF="channel.html#job">job</A> can be
+started connected to the <A HREF="#terminal">terminal</A> emulator. For example, to run a shell:
+<B>     :term bash</B>
+
+Or to run build command:
+<B>     :term make myprogram</B>
+
+The <A HREF="channel.html#job">job</A> runs asynchronously from Vim, the <A HREF="windows.html#window">window</A> will be updated to show
+output from the <A HREF="channel.html#job">job</A>, also while editing in another <A HREF="windows.html#window">window</A>.
+
+
+<B><FONT COLOR="PURPLE">Typing </FONT></B>
+
+							*<A NAME="terminal-typing"></A><B>terminal-typing</B>*
+When the keyboard focus is in the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>, typed keys will be sent to
+the <A HREF="channel.html#job">job</A>.  This uses a pty when possible.  You can click outside of the
+<A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> to move keyboard focus elsewhere.
+
+
+						*<A NAME="t_CTRL-W_CTRL-W"></A><B>t_CTRL-W_CTRL-W</B>* *<A NAME="t_CTRL-W_:"></A><B>t_CTRL-W_:</B>*
+<A HREF="index.html#CTRL-W">CTRL-W</A> can be used to navigate between <A HREF="windows.html#windows">windows</A> and other <A HREF="index.html#CTRL-W">CTRL-W</A> commands, e.g.:
+	<A HREF="index.html#CTRL-W">CTRL-W</A> <A HREF="index.html#CTRL-W">CTRL-W</A>	move focus to the next <A HREF="windows.html#window">window</A>
+	<A HREF="index.html#CTRL-W">CTRL-W</A> :	enter an <A HREF="intro.html#Ex">Ex</A> command
+See |<A HREF="index.html#CTRL-W">CTRL-W</A>| for more commands.
+
+
+<A HREF="eval.html#Special">Special</A> in the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>:			*<A NAME="t_CTRL-W_."></A><B>t_CTRL-W_.</B>*  *<A NAME="t_CTRL-W_N"></A><B>t_CTRL-W_N</B>*
+	<A HREF="index.html#CTRL-W">CTRL-W</A> .	send a <A HREF="index.html#CTRL-W">CTRL-W</A> to the <A HREF="channel.html#job">job</A> in the <A HREF="#terminal">terminal</A>
+	<A HREF="index.html#CTRL-W">CTRL-W</A> CTRL-\	send a CTRL-\ to the <A HREF="channel.html#job">job</A> in the <A HREF="#terminal">terminal</A>
+	<A HREF="index.html#CTRL-W">CTRL-W</A> N	go to <A HREF="#Terminal-Normal">Terminal-Normal</A> mode, see |<A HREF="#Terminal-mode">Terminal-mode</A>|
+	CTRL-\ <A HREF="motion.html#CTRL-N">CTRL-N</A>   go to <A HREF="#Terminal-Normal">Terminal-Normal</A> mode, see |<A HREF="#Terminal-mode">Terminal-mode</A>|
+
+	<A HREF="index.html#CTRL-W">CTRL-W</A> &quot; {reg}  paste <A HREF="sponsor.html#register">register</A> {reg}		*<A NAME="t_CTRL-W_quote"></A><B>t_CTRL-W_quote</B>*
+			Also works with the = <A HREF="sponsor.html#register">register</A> to insert the result of
+			evaluating an <A HREF="eval.html#expression">expression</A>.
+	CTRL-W CTRL-C	ends the <A HREF="channel.html#job">job</A>, see below |<A HREF="#t_CTRL-W_CTRL-C">t_CTRL-W_CTRL-C</A>|
+
+	<A HREF="index.html#CTRL-W">CTRL-W</A> <A HREF="tabpage.html#gt">gt</A>	go to next <A HREF="tabpage.html#tabpage">tabpage</A>, same <A HREF="motion.html#as">as</A> `gt`	*<A NAME="t_CTRL-W_gt"></A><B>t_CTRL-W_gt</B>*
+
+	<A HREF="index.html#CTRL-W">CTRL-W</A> <A HREF="tabpage.html#gT">gT</A>	go to previous <A HREF="tabpage.html#tabpage">tabpage</A>, same <A HREF="motion.html#as">as</A> `gT`	*<A NAME="t_CTRL-W_gT"></A><B>t_CTRL-W_gT</B>*
+
+See option <A HREF="options.html#'termwinkey'">'termwinkey'</A> for specifying another key instead of <A HREF="index.html#CTRL-W">CTRL-W</A> that
+will work like <A HREF="index.html#CTRL-W">CTRL-W</A>.  However, typing <A HREF="options.html#'termwinkey'">'termwinkey'</A> <A HREF="if_cscop.html#twice">twice</A> sends <A HREF="options.html#'termwinkey'">'termwinkey'</A>
+to the <A HREF="channel.html#job">job</A>.  For example:
+	<A HREF="options.html#'termwinkey'">'termwinkey'</A> <A HREF="index.html#CTRL-W">CTRL-W</A>    move focus to the next <A HREF="windows.html#window">window</A>
+	<A HREF="options.html#'termwinkey'">'termwinkey'</A> :	       enter an <A HREF="intro.html#Ex">Ex</A> command
+	<A HREF="options.html#'termwinkey'">'termwinkey'</A> <A HREF="options.html#'termwinkey'">'termwinkey'</A> send <A HREF="options.html#'termwinkey'">'termwinkey'</A> to the <A HREF="channel.html#job">job</A> in the <A HREF="#terminal">terminal</A>
+	<A HREF="options.html#'termwinkey'">'termwinkey'</A> .	       send <A HREF="options.html#'termwinkey'">'termwinkey'</A> to the <A HREF="channel.html#job">job</A> in the <A HREF="#terminal">terminal</A>
+	<A HREF="options.html#'termwinkey'">'termwinkey'</A> CTRL-\    send a CTRL-\ to the <A HREF="channel.html#job">job</A> in the <A HREF="#terminal">terminal</A>
+	<A HREF="options.html#'termwinkey'">'termwinkey'</A> N	       go to <A HREF="#terminal">terminal</A> <A HREF="intro.html#Normal">Normal</A> mode, see below
+	<A HREF="options.html#'termwinkey'">'termwinkey'</A> <A HREF="motion.html#CTRL-N">CTRL-N</A>    same <A HREF="motion.html#as">as</A> CTRL-W N |<A HREF="#t_CTRL-W_N">t_CTRL-W_N</A>|
+	<A HREF="options.html#'termwinkey'">'termwinkey'</A> CTRL-C    same <A HREF="motion.html#as">as</A> CTRL-W CTRL-C |<A HREF="#t_CTRL-W_CTRL-C">t_CTRL-W_CTRL-C</A>|
+
+							*<A NAME="t_CTRL-\_CTRL-N"></A><B>t_CTRL-\_CTRL-N</B>*
+The special key combination CTRL-\ <A HREF="motion.html#CTRL-N">CTRL-N</A> can be used to switch to <A HREF="intro.html#Normal">Normal</A>
+mode, just like this works in any other mode.
+
+							*<A NAME="t_CTRL-W_CTRL-C"></A><B>t_CTRL-W_CTRL-C</B>*
+<A HREF="index.html#CTRL-W">CTRL-W</A> <A HREF="pattern.html#CTRL-C">CTRL-C</A> can be typed to forcefully end the <A HREF="channel.html#job">job</A>.  On <A HREF="os_win32.html#MS-Windows">MS-Windows</A> a
+CTRL-Break will also kill the <A HREF="channel.html#job">job</A>.
+
+If you type <A HREF="pattern.html#CTRL-C">CTRL-C</A> the effect depends on what the pty has been configured to
+<A HREF="diff.html#do">do</A>.  For simple commands this causes a SIGINT to be sent to the <A HREF="channel.html#job">job</A>, which
+would end <A HREF="motion.html#it">it</A>.  Other commands may ignore the SIGINT or handle the <A HREF="pattern.html#CTRL-C">CTRL-C</A>
+themselves (like Vim does).
+
+To change the keys you type use <A HREF="#terminal">terminal</A> mode mappings, see |<A HREF="map.html#:tmap">:tmap</A>|.
+These are defined like any <A HREF="map.html#mapping">mapping</A>, but apply only when typing keys that are
+sent to the <A HREF="channel.html#job">job</A> running in the <A HREF="#terminal">terminal</A>.  For example, to make F1 switch
+to <A HREF="#Terminal-Normal">Terminal-Normal</A> mode:
+<B>   tnoremap &lt;F1&gt; &lt;C-W&gt;N</B>
+You can use Esc, but you need to make sure <A HREF="motion.html#it">it</A> won't cause other keys to
+break (cursor keys start with an Esc, so they may break), this probably only
+works in the <A HREF="gui.html#GUI">GUI</A>:
+<B>   tnoremap &lt;Esc&gt; &lt;C-W&gt;N</B>
+<B>   set notimeout ttimeout timeoutlen=100</B>
+
+You can also create <A HREF="gui.html#menus">menus</A> similar to <A HREF="#terminal">terminal</A> mode mappings, but you have to
+use |<A HREF="gui.html#:tlmenu">:tlmenu</A>| instead of |<A HREF="gui.html#:tmenu">:tmenu</A>|.
+
+
+							*<A NAME="options-in-terminal"></A><B>options-in-terminal</B>*
+After opening the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> and setting <A HREF="options.html#'buftype'">'buftype'</A> to &quot;<A HREF="#terminal">terminal</A>&quot; the
+|<A HREF="autocmd.html#TerminalWinOpen">TerminalWinOpen</A>| <A HREF="autocmd.html#autocommand">autocommand</A> event is triggered.  This makes <A HREF="motion.html#it">it</A> possible to set
+<A HREF="options.html#options">options</A> specifically for the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> and buffer.  Example:
+<B>   au TerminalWinOpen * setlocal bufhidden=hide</B>
+This only works properly if the <A HREF="#terminal">terminal</A> is not hidden.
+
+For both hidden and non-hidden terminals this works, both for buffer-local and
+window-local <A HREF="options.html#options">options</A>:
+<B>   au TerminalWinOpen,BufWinEnter * if &amp;buftype == 'terminal'</B>
+<B>        \ | setlocal bufhidden=hide colorcolumn=123</B>
+<B>        \ | endif</B>
+Note that for a hidden <A HREF="#terminal">terminal</A> the <A HREF="options.html#options">options</A> are not set until the <A HREF="#terminal">terminal</A> is
+no longer hidden.
+
+There is also the |<A HREF="autocmd.html#TerminalOpen">TerminalOpen</A>| event.  Keep in mind this may be triggered
+for a hidden <A HREF="#terminal">terminal</A>, then the current <A HREF="windows.html#window">window</A> and buffer are not that of the
+new <A HREF="#terminal">terminal</A>.
+You need to use <A HREF="cmdline.html#&lt;abuf&gt;">&lt;abuf&gt;</A>, which is set to the <A HREF="#terminal">terminal</A> buffer.  Example:
+<B>    au TerminalOpen * call setbufvar(expand('&lt;abuf&gt;')-&gt;str2nr(),</B>
+<B>	    \ '&amp;termwinscroll', 1000)</B>
+For a window-local option, you need to delay setting the option until the
+<A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> has been created (this only works for a hidden terminal):
+<B>    au TerminalOpen * exe printf(</B>
+<B>        \    'au BufWinEnter &lt;buffer=%d&gt; ++once setlocal colorcolumn=%d',</B>
+<B>        \       expand('&lt;abuf&gt;')-&gt;str2nr(), 123)</B>
+For a non-hidden <A HREF="#terminal">terminal</A> use |<A HREF="autocmd.html#TerminalWinOpen">TerminalWinOpen</A>|.
+
+Mouse events (click and drag) are passed to the <A HREF="#terminal">terminal</A>.  Mouse move events
+are only passed when Vim itself is receiving them.  For a <A HREF="#terminal">terminal</A> that is
+when <A HREF="options.html#'balloonevalterm'">'balloonevalterm'</A> is enabled.
+
+
+<B><FONT COLOR="PURPLE">Size and color </FONT></B>
+
+							*<A NAME="terminal-size-color"></A><B>terminal-size-color</B>*
+See option <A HREF="options.html#'termwinsize'">'termwinsize'</A> for controlling the size of the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.
+(TODO: <A HREF="scroll.html#scrolling">scrolling</A> when the <A HREF="#terminal">terminal</A> is larger than the <A HREF="windows.html#window">window</A>)
+
+The <A HREF="channel.html#job">job</A> running in the <A HREF="#terminal">terminal</A> can change the colors.  The default foreground
+and background colors are taken from Vim, the <A HREF="intro.html#Normal">Normal</A> highlight group.
+
+For a color <A HREF="#terminal">terminal</A> the <A HREF="options.html#'background'">'background'</A> option is used to decide whether the
+<A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> will start with a white or black background.
+
+To use a different color the Terminal highlight group can be used, for
+example:
+<B>    hi Terminal ctermbg=lightgrey ctermfg=blue guibg=lightgrey guifg=blue</B>
+Instead of Terminal another group can be specified with the &quot;term_highlight&quot;
+option for `term_start()`.
+
+
+							*<A NAME="g:terminal_ansi_colors"></A><B>g:terminal_ansi_colors</B>*
+In <A HREF="gui.html#GUI">GUI</A> mode or with <A HREF="options.html#'termguicolors'">'termguicolors'</A>, the 16 ANSI colors used by default in new
+<A HREF="#terminal">terminal</A> <A HREF="windows.html#windows">windows</A> may be configured using the variable
+`g:terminal_ansi_colors`, which should be a <A HREF="eval.html#list">list</A> of 16 color names or
+hexadecimal color codes, similar to those accepted by |<A HREF="syntax.html#highlight-guifg">highlight-guifg</A>|.  When
+not using <A HREF="gui.html#GUI">GUI</A> colors, the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> always uses the 16 ANSI colors of
+the underlying <A HREF="#terminal">terminal</A>.
+When using `term_start()` the colors can be set with the &quot;ansi_colors&quot; option.
+The |<A HREF="#term_setansicolors()">term_setansicolors()</A>| function can be used to change the colors, and
+|<A HREF="#term_getansicolors()">term_getansicolors()</A>| to get the currently used colors.
+
+
+<B><FONT COLOR="PURPLE">Command syntax </FONT></B>
+
+
+:[range]ter[minal] [options] [command]			*<A NAME=":ter"></A><B>:ter</B>* *<A NAME=":terminal"></A><B>:terminal</B>*
+			Open a new <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.
+
+			If [command] is provided run <A HREF="motion.html#it">it</A> <A HREF="motion.html#as">as</A> a <A HREF="channel.html#job">job</A> and connect
+			the input and output to the <A HREF="#terminal">terminal</A>.
+			If [command] is not given the <A HREF="options.html#'shell'">'shell'</A> option is used.
+			if [command] is NONE no <A HREF="channel.html#job">job</A> is started, the pty of the
+			<A HREF="#terminal">terminal</A> can be used by a command like <A HREF="debug.html#gdb">gdb</A>.
+
+			If [command] is missing the default behavior is to
+			close the <A HREF="#terminal">terminal</A> when the shell exits.  This can be
+			changed with the ++noclose argument.
+			If [command] is present the default behavior is to
+			keep the <A HREF="#terminal">terminal</A> open in <A HREF="#Terminal-Normal">Terminal-Normal</A> mode.  This
+			can be changed with the ++close argument.
+
+			No Vim command can follow, any &#124; is included in
+			[command].  Use `:execute` if you must have a Vim
+			command following in the same line.
+
+			A new buffer will be created, using [command] or
+			<A HREF="options.html#'shell'">'shell'</A> <A HREF="motion.html#as">as</A> the name, prefixed with a &quot;<A HREF="change.html#!">!</A>&quot;.  If a buffer
+			by this name already exists a number is added in
+			parentheses.  E.g. if &quot;<A HREF="debug.html#gdb">gdb</A>&quot; exists the second <A HREF="#terminal">terminal</A>
+			buffer will use &quot;!gdb (1)&quot;.
+
+			If <A HREF="cmdline.html#[range]">[range]</A> is given the specified lines are used <A HREF="motion.html#as">as</A>
+			input for the <A HREF="channel.html#job">job</A>.  It will not be possible to type
+			keys in the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.  For <A HREF="os_win32.html#MS-Windows">MS-Windows</A> see the
+			++eof argument below.
+
+
+						*<A NAME="term++close"></A><B>term++close</B>* *<A NAME="term++open"></A><B>term++open</B>*
+			Supported [options] are:
+			++close		The <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> will close
+					automatically when the <A HREF="channel.html#job">job</A> terminates.
+					|<A HREF="#terminal-close">terminal-close</A>|
+			++noclose	The <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> will NOT close
+					automatically when the <A HREF="channel.html#job">job</A> terminates.
+			++open		When the <A HREF="channel.html#job">job</A> terminates and no <A HREF="windows.html#window">window</A>
+					shows <A HREF="motion.html#it">it</A>, a <A HREF="windows.html#window">window</A> will be opened.
+					Note that this can be interruptive.
+				The last of ++close, ++noclose and ++open
+				matters and rules out earlier arguments.
+
+			++curwin	Open the <A HREF="#terminal">terminal</A> in the current
+					<A HREF="windows.html#window">window</A>, <A HREF="diff.html#do">do</A> not split the current
+					<A HREF="windows.html#window">window</A>.  Fails if the current buffer
+					cannot be YXXYabandon|ed.
+			++hidden	Open the <A HREF="#terminal">terminal</A> in a hidden buffer,
+					no <A HREF="windows.html#window">window</A> will be used.
+			++norestore	Do not include this <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>
+					in a session file.
+			++shell		Instead of executing {command}
+					directly, use a shell, like with
+
+					`:!command` 		*<A NAME="E279"></A><B>E279</B>*
+					{only works on <A HREF="os_unix.html#Unix">Unix</A> and MS-Windows}
+			++kill={how}	When trying to close the <A HREF="#terminal">terminal</A>
+					<A HREF="windows.html#window">window</A> kill the <A HREF="channel.html#job">job</A> with {how}.  See
+					|<A HREF="#term_setkill()">term_setkill()</A>| for the values.
+			++rows={height} Use {height} for the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>
+					height.  If the <A HREF="#terminal">terminal</A> uses the full
+					Vim height (no <A HREF="windows.html#window">window</A> above or below
+					the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>) the command line
+					height will be reduced <A HREF="motion.html#as">as</A> needed.
+			++cols={width}  Use {width} for the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>
+					width. If the <A HREF="#terminal">terminal</A> uses the full
+					Vim width (no <A HREF="windows.html#window">window</A> left or right of
+					the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>) this value is
+					ignored.
+			++eof={text}	When using <A HREF="cmdline.html#[range]">[range]</A>: text to send after
+					the last line was written. Cannot
+					contain white space.  A CR is
+					appended.  For <A HREF="os_win32.html#MS-Windows">MS-Windows</A> the default
+					is to send <A HREF="scroll.html#CTRL-D">CTRL-D</A>.
+					E.g. for a shell use &quot;++eof=exit&quot; and
+					for <A HREF="if_pyth.html#Python">Python</A> &quot;++eof=exit()&quot;.  <A HREF="eval.html#Special">Special</A>
+					codes can be used like with `:map`,
+					e.g. &quot;&lt;C-Z&gt;&quot; for <A HREF="starting.html#CTRL-Z">CTRL-Z</A>.
+			++type={pty}	(MS-Windows only): Use {pty} <A HREF="motion.html#as">as</A> the
+					virtual console.  See <A HREF="options.html#'termwintype'">'termwintype'</A>
+					for the values.
+			++api={expr}	Permit the function name starting with
+					{expr} to be called <A HREF="motion.html#as">as</A> |<A HREF="#terminal-api">terminal-api</A>|
+					function.  If {expr} is empty then no
+					function can be called.
+
+			If you want to use more <A HREF="options.html#options">options</A> use the |<A HREF="#term_start()">term_start()</A>|
+			function.
+			If you want to split the <A HREF="windows.html#window">window</A> vertically, use:
+<B>				:vertical terminal</B>
+ 			Or short:
+<B>				:vert ter</B>
+
+When the buffer associated with the <A HREF="#terminal">terminal</A> is forcibly unloaded or wiped out
+the <A HREF="channel.html#job">job</A> is killed, similar to calling `job_stop(job, &quot;kill&quot;)` .
+Closing the <A HREF="windows.html#window">window</A> normally results in |<A HREF="#E947">E947</A>|.  When a kill <A HREF="eval.html#method">method</A> was set
+with &quot;++kill={how}&quot; or |<A HREF="#term_setkill()">term_setkill()</A>| then closing the <A HREF="windows.html#window">window</A> will use that
+way to kill or interrupt the <A HREF="channel.html#job">job</A>.  For example:
+<B>	:term ++kill=term tail -f /tmp/log</B>
+
+So long <A HREF="motion.html#as">as</A> the <A HREF="channel.html#job">job</A> is running the <A HREF="windows.html#window">window</A> behaves like <A HREF="motion.html#it">it</A> contains a modified
+buffer.  Trying to close the <A HREF="windows.html#window">window</A> with `CTRL-W :quit` fails.  When using
+`CTRL-W :quit!` the <A HREF="channel.html#job">job</A> is ended.  The text in the <A HREF="windows.html#window">window</A> is lost.  The buffer
+still exists, but getting <A HREF="motion.html#it">it</A> in a <A HREF="windows.html#window">window</A> with `:buffer` will show an empty
+buffer.
+
+Trying to close the <A HREF="windows.html#window">window</A> with `CTRL-W :close` also fails.   Using
+`CTRL-W :close!` will close the <A HREF="windows.html#window">window</A> and make the buffer hidden.
+
+You can use `CTRL-W :hide` to close the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> and make the buffer
+hidden, the <A HREF="channel.html#job">job</A> keeps running.  The `:buffer` command can be used to turn the
+current <A HREF="windows.html#window">window</A> into a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.  If there are unsaved changes this
+fails, use ! to force, <A HREF="motion.html#as">as</A> usual.
+
+
+							*<A NAME="terminal-close"></A><B>terminal-close</B>*
+When the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> is closed, e.g. when the shell exits and &quot;++close&quot;
+argument was used, and this is the last normal Vim <A HREF="windows.html#window">window</A>, then Vim will exit.
+This is like using |<A HREF="editing.html#:quit">:quit</A>| in a normal <A HREF="windows.html#window">window</A>. Help and preview <A HREF="windows.html#windows">windows</A> are
+not counted.
+
+To have a background <A HREF="channel.html#job">job</A> run without a <A HREF="windows.html#window">window</A>, and open the <A HREF="windows.html#window">window</A> when it's
+done, use <A HREF="options.html#options">options</A> like this:
+<B>	:term ++hidden ++open make</B>
+Note that the <A HREF="windows.html#window">window</A> will open at an unexpected moment, this will interrupt
+what you are doing.
+
+
+							*<A NAME="E947"></A><B>E947</B>* *<A NAME="E948"></A><B>E948</B>*
+So long <A HREF="motion.html#as">as</A> the <A HREF="channel.html#job">job</A> is running, the buffer is considered modified and Vim
+cannot be quit easily, see |<A HREF="editing.html#abandon">abandon</A>|.
+
+When the <A HREF="channel.html#job">job</A> has finished and no changes were made to the buffer: closing the
+<A HREF="windows.html#window">window</A> will wipe out the buffer.
+
+Before changes can be made to a <A HREF="#terminal">terminal</A> buffer, the <A HREF="options.html#'modifiable'">'modifiable'</A> option must
+be set.  This is only possible when the <A HREF="channel.html#job">job</A> has finished.  At the first change
+the buffer will become a normal buffer and the highlighting is removed.
+You may want to change the buffer name with |<A HREF="editing.html#:file">:file</A>| to be able to write, since
+the buffer name will still be set to the command.
+
+
+<B><FONT COLOR="PURPLE">Resizing </FONT></B>
+
+							*<A NAME="terminal-resizing"></A><B>terminal-resizing</B>*
+The size of the <A HREF="#terminal">terminal</A> can be in one of three modes:
+
+1. The <A HREF="options.html#'termwinsize'">'termwinsize'</A> option is empty: The <A HREF="#terminal">terminal</A> size follows the <A HREF="windows.html#window">window</A>
+   size.  The minimal size is 2 screen lines with 10 cells.
+
+2. The <A HREF="options.html#'termwinsize'">'termwinsize'</A> option is &quot;rows*cols&quot;, where &quot;rows&quot; is the minimal number
+   of screen rows and &quot;cols&quot; is the minimal number of cells.
+
+3. The <A HREF="options.html#'termwinsize'">'termwinsize'</A> option is &quot;rowsXcols&quot; (where the <A HREF="change.html#x">x</A> is upper or lower
+   <A HREF="change.html#case">case</A>).  The <A HREF="#terminal">terminal</A> size is fixed to the specified number of screen lines
+   and cells.  If the <A HREF="windows.html#window">window</A> is bigger there will be unused empty space.
+
+If the <A HREF="windows.html#window">window</A> is smaller than the <A HREF="#terminal">terminal</A> size, only part of the <A HREF="#terminal">terminal</A> can
+be seen (the lower-left part).
+
+The |<A HREF="#term_getsize()">term_getsize()</A>| function can be used to get the current size of the
+<A HREF="#terminal">terminal</A>.  |<A HREF="#term_setsize()">term_setsize()</A>| can be used only when in the first or second mode,
+not when <A HREF="options.html#'termwinsize'">'termwinsize'</A> is &quot;rowsXcols&quot;.
+
+
+<B><FONT COLOR="PURPLE">Terminal-Job and Terminal-Normal mode </FONT></B>
+
+						*<A NAME="Terminal-mode"></A><B>Terminal-mode</B>* *<A NAME="Terminal-Job"></A><B>Terminal-Job</B>*
+When the <A HREF="channel.html#job">job</A> is running the contents of the <A HREF="#terminal">terminal</A> is under <A HREF="intro.html#control">control</A> of the
+<A HREF="channel.html#job">job</A>.  That includes the cursor position.  Typed keys are sent to the <A HREF="channel.html#job">job</A>.
+The <A HREF="#terminal">terminal</A> contents can change at any time.  This is called <A HREF="#Terminal-Job">Terminal-Job</A>
+mode.
+
+Use <A HREF="index.html#CTRL-W">CTRL-W</A> N (or <A HREF="options.html#'termwinkey'">'termwinkey'</A> N) to switch to <A HREF="#Terminal-Normal">Terminal-Normal</A> mode.  Now the
+contents of the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> is under <A HREF="intro.html#control">control</A> of Vim, the <A HREF="channel.html#job">job</A> output is
+suspended.  CTRL-\ <A HREF="motion.html#CTRL-N">CTRL-N</A> does the same.
+
+<A HREF="#Terminal-Job">Terminal-Job</A> mode is where |<A HREF="map.html#:tmap">:tmap</A>| mappings are applied. Keys sent by
+|<A HREF="#term_sendkeys()">term_sendkeys()</A>| are not subject to tmap, but keys from |<A HREF="builtin.html#feedkeys()">feedkeys()</A>| are.
+
+It is not possible to enter <A HREF="insert.html#Insert">Insert</A> mode from <A HREF="#Terminal-Job">Terminal-Job</A> mode.
+
+
+						*<A NAME="Terminal-Normal"></A><B>Terminal-Normal</B>* *<A NAME="E946"></A><B>E946</B>*
+In <A HREF="#Terminal-Normal">Terminal-Normal</A> mode you can move the cursor around with the usual Vim
+commands, Visually <A HREF="motion.html#mark">mark</A> text, <A HREF="change.html#yank">yank</A> text, etc.  But you cannot change the
+contents of the buffer.  The commands that would start insert mode, such <A HREF="motion.html#as">as</A>
+'<A HREF="insert.html#i">i</A>' and '<A HREF="insert.html#a">a</A>', return to <A HREF="#Terminal-Job">Terminal-Job</A> mode.  The <A HREF="windows.html#window">window</A> will be updated to show
+the contents of the <A HREF="#terminal">terminal</A>. |<A HREF="insert.html#:startinsert">:startinsert</A>| is ineffective.
+
+In <A HREF="#Terminal-Normal">Terminal-Normal</A> mode the statusline and <A HREF="windows.html#window">window</A> title show &quot;(Terminal)&quot;.  If
+the <A HREF="channel.html#job">job</A> ends while in <A HREF="#Terminal-Normal">Terminal-Normal</A> mode this changes to
+&quot;(Terminal-finished)&quot;.
+
+When the <A HREF="channel.html#job">job</A> outputs lines in the <A HREF="#terminal">terminal</A>, such that the contents scrolls off
+the top, those lines are remembered and can be seen in <A HREF="#Terminal-Normal">Terminal-Normal</A> mode.
+The number of lines is limited by the <A HREF="options.html#'termwinscroll'">'termwinscroll'</A> option. When going over
+this limit, the first 10&#37; of the scrolled lines are deleted and are lost.
+
+
+<B><FONT COLOR="PURPLE">Cursor style </FONT></B>
+
+							*<A NAME="terminal-cursor-style"></A><B>terminal-cursor-style</B>*
+By default the cursor in the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> uses a not blinking block.  The
+normal xterm <A HREF="intro.html#escape">escape</A> sequences can be used to change the blinking state and the
+shape.  Once focus leaves the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> Vim will restore the original
+cursor.
+
+An exception is when xterm is started with the &quot;-bc&quot; argument, or another way
+that causes the cursor to blink.  This actually means that the blinking flag
+is inverted.  Since Vim cannot detect this, the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> cursor
+blinking will also be inverted.
+
+
+<B><FONT COLOR="PURPLE">Session </FONT></B>
+
+							*<A NAME="terminal-session"></A><B>terminal-session</B>*
+A <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> will be restored when using a session file, if possible and
+wanted.
+
+If &quot;<A HREF="#terminal">terminal</A>&quot; was removed from <A HREF="options.html#'sessionoptions'">'sessionoptions'</A> then no <A HREF="#terminal">terminal</A> <A HREF="windows.html#windows">windows</A> will
+be restored.
+
+If the <A HREF="channel.html#job">job</A> in the <A HREF="#terminal">terminal</A> was finished the <A HREF="windows.html#window">window</A> will not be restored.
+
+If the <A HREF="#terminal">terminal</A> can be restored, the command that was used to open <A HREF="motion.html#it">it</A> will be
+used again.  To change this use the |<A HREF="#term_setrestore()">term_setrestore()</A>| function.  This can
+also be used to not restore a specific <A HREF="#terminal">terminal</A> by setting the command to
+&quot;NONE&quot;.
+
+
+<B><FONT COLOR="PURPLE">Special keys </FONT></B>
+
+							*<A NAME="terminal-special-keys"></A><B>terminal-special-keys</B>*
+Since the <A HREF="#terminal">terminal</A> emulator simulates an xterm, only <A HREF="intro.html#escape">escape</A> sequences that
+both Vim and xterm recognize will be available in the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.  If you
+want to pass on other <A HREF="intro.html#escape">escape</A> sequences to the <A HREF="channel.html#job">job</A> running in the <A HREF="#terminal">terminal</A> you
+need to set up forwarding.  Example:
+<B>	tmap &lt;expr&gt; &lt;Esc&gt;]b SendToTerm("\&lt;Esc&gt;]b")</B>
+<B>	func SendToTerm(what)</B>
+<B>	  call term_sendkeys('', a:what)</B>
+<B>	  return ''</B>
+<B>	endfunc</B>
+
+
+<B><FONT COLOR="PURPLE">Unix </FONT></B>
+
+							*<A NAME="terminal-unix"></A><B>terminal-unix</B>*
+On <A HREF="os_unix.html#Unix">Unix</A> a pty is used to make <A HREF="motion.html#it">it</A> possible to run all kinds of commands.  You
+can even run Vim in the <A HREF="#terminal">terminal</A>!  That's used for debugging, see below.
+
+Environment <A HREF="eval.html#variables">variables</A> are used to pass information to the running <A HREF="channel.html#job">job</A>:
+    <A HREF="starting.html#TERM">TERM</A>		the name of the <A HREF="#terminal">terminal</A>, from the <A HREF="options.html#'term'">'term'</A> option or
+			$TERM in the <A HREF="gui.html#GUI">GUI</A>; falls back to &quot;xterm&quot; if <A HREF="motion.html#it">it</A> does not
+			start with &quot;xterm&quot;
+    ROWS		number of rows in the <A HREF="#terminal">terminal</A> initially
+    LINES		same <A HREF="motion.html#as">as</A> ROWS
+    COLUMNS		number of columns in the <A HREF="#terminal">terminal</A> initially
+    COLORS		number of colors, <A HREF="term.html#'t_Co'">'t_Co'</A> (256*256*256 in the <A HREF="gui.html#GUI">GUI</A>)
+    VIM_SERVERNAME	<A HREF="eval.html#v:servername">v:servername</A>
+    VIM_TERMINAL	<A HREF="eval.html#v:version">v:version</A>
+
+
+<B><FONT COLOR="PURPLE">MS-Windows </FONT></B>
+
+							*<A NAME="terminal-ms-windows"></A><B>terminal-ms-windows</B>*
+On <A HREF="os_win32.html#MS-Windows">MS-Windows</A> winpty is used to make <A HREF="motion.html#it">it</A> possible to run all kind of commands.
+Obviously, they must be commands that run in a <A HREF="#terminal">terminal</A>, not open their own
+<A HREF="windows.html#window">window</A>.
+
+You need the following two files from winpty:
+
+    winpty.dll
+    winpty-agent.exe
+
+You can <A HREF="intro.html#download">download</A> them from the following page:
+
+    https://github.com/rprichard/winpty
+
+Just put the files somewhere in your PATH.  You can set the <A HREF="options.html#'winptydll'">'winptydll'</A> option
+to point to the right file, if needed.  If you have both the 32-bit and 64-bit
+version, rename to winpty32.dll and winpty64.dll to match the way Vim was
+build.
+
+							*<A NAME="ConPTY"></A><B>ConPTY</B>* *<A NAME="E982"></A><B>E982</B>*
+On more recent versions of <A HREF="os_win32.html#MS-Windows">MS-Windows</A> 10 (beginning with the &quot;October 2018
+Update&quot;), winpty is no longer required. On those versions, |<A HREF="#:terminal">:terminal</A>| will use
+Windows' built-in support for hosting <A HREF="#terminal">terminal</A> applications, &quot;<A HREF="#ConPTY">ConPTY</A>&quot;.  When
+<A HREF="#ConPTY">ConPTY</A> is in use, there may be rendering artifacts regarding ambiguous-width
+characters. If you encounter any such issues, <A HREF="usr_90.html#install">install</A> &quot;winpty&quot;.  Until the
+<A HREF="#ConPTY">ConPTY</A> problems have been fixed &quot;winpty&quot; will be preferred.
+
+Environment <A HREF="eval.html#variables">variables</A> are used to pass information to the running <A HREF="channel.html#job">job</A>:
+    VIM_SERVERNAME	<A HREF="eval.html#v:servername">v:servername</A>
+
+
+==============================================================================
+
+2. Terminal <A HREF="eval.html#functions">functions</A>				 *<A NAME="terminal-function-details"></A><B>terminal-function-details</B>*
+
+
+							*<A NAME="term_dumpdiff()"></A><B>term_dumpdiff()</B>*
+term_dumpdiff({filename}, {filename} [, {options}])
+		Open a new <A HREF="windows.html#window">window</A> displaying the difference between the two
+		files.  The files must have been created with
+		|<A HREF="#term_dumpwrite()">term_dumpwrite()</A>|.
+		Returns the buffer number or zero when the <A HREF="diff.html#diff">diff</A> fails.
+		Also see |<A HREF="#terminal-diff">terminal-diff</A>|.
+		NOTE: this does not work with double-width characters yet.
+
+		The top part of the buffer contains the contents of the first
+		file, the bottom part of the buffer contains the contents of
+		the second file.  The middle part shows the differences.
+		The parts are separated by a line of equals.
+
+		If the {options} argument is present, <A HREF="motion.html#it">it</A> must be a <A HREF="eval.html#Dict">Dict</A> with
+		these possible members:
+		   &quot;term_name&quot;	     name to use for the buffer name, instead
+				     of the first file name.
+		   &quot;term_rows&quot;	     vertical size to use for the <A HREF="#terminal">terminal</A>,
+				     instead of using <A HREF="options.html#'termwinsize'">'termwinsize'</A>, but
+				     respecting the minimal size
+		   &quot;term_cols&quot;	     horizontal size to use for the <A HREF="#terminal">terminal</A>,
+				     instead of using <A HREF="options.html#'termwinsize'">'termwinsize'</A>, but
+				     respecting the minimal size
+		   &quot;vertical&quot;	     split the <A HREF="windows.html#window">window</A> vertically
+		   &quot;curwin&quot;	     use the current <A HREF="windows.html#window">window</A>, <A HREF="diff.html#do">do</A> not split the
+				     <A HREF="windows.html#window">window</A>; fails if the current buffer
+				     cannot be YXXYabandon|ed
+		   &quot;bufnr&quot;	     <A HREF="diff.html#do">do</A> not create a new buffer, use the
+				     existing buffer &quot;bufnr&quot;.  This buffer
+				     must have been previously created with
+				     <A HREF="#term_dumpdiff()">term_dumpdiff()</A> or <A HREF="#term_dumpload()">term_dumpload()</A> and
+				     visible in a <A HREF="windows.html#window">window</A>.
+		   &quot;norestore&quot;	     <A HREF="diff.html#do">do</A> not add the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> to a
+				     session file
+
+		Each character in the middle part indicates a difference. If
+		there are multiple differences only the first in this <A HREF="eval.html#list">list</A> is
+		used:
+			X	different character
+			<A HREF="motion.html#w">w</A>	different width
+			<A HREF="motion.html#f">f</A>	different foreground color
+			<A HREF="motion.html#b">b</A>	different background color
+			a	different attribute
+			+	missing position in first file
+			-	missing position in second file
+			<A HREF="change.html#&gt;">&gt;</A>	cursor position in first file, not in second
+			<A HREF="change.html#&lt;">&lt;</A>	cursor position in second file, not in first
+
+		Using the &quot;<A HREF="change.html#s">s</A>&quot; key the top and bottom parts are swapped.  This
+		makes <A HREF="motion.html#it">it</A> <A HREF="starting.html#easy">easy</A> to spot a difference.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetFilename()-&gt;term_dumpdiff(otherfile)</B>
+ 
+
+							*<A NAME="term_dumpload()"></A><B>term_dumpload()</B>*
+term_dumpload({filename} [, {options}])
+		Open a new <A HREF="windows.html#window">window</A> displaying the contents of {filename}
+		The file must have been created with |<A HREF="#term_dumpwrite()">term_dumpwrite()</A>|.
+		Returns the buffer number or zero when <A HREF="motion.html#it">it</A> fails.
+		Also see |<A HREF="#terminal-diff">terminal-diff</A>|.
+
+		For {options} see |<A HREF="#term_dumpdiff()">term_dumpdiff()</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetFilename()-&gt;term_dumpload()</B>
+ 
+
+							*<A NAME="term_dumpwrite()"></A><B>term_dumpwrite()</B>*
+term_dumpwrite({buf}, {filename} [, {options}])
+		Dump the contents of the <A HREF="#terminal">terminal</A> screen of {buf} in the file
+		{filename}.  This uses a format that can be used with
+		|<A HREF="#term_dumpload()">term_dumpload()</A>| and |<A HREF="#term_dumpdiff()">term_dumpdiff()</A>|.
+		If the <A HREF="channel.html#job">job</A> in the <A HREF="#terminal">terminal</A> already finished an error is given:
+
+		*<A NAME="E958"></A><B>E958</B>*
+
+		If {filename} already exists an error is given:	*<A NAME="E953"></A><B>E953</B>*
+		Also see |<A HREF="#terminal-diff">terminal-diff</A>|.
+
+		{options} is a dictionary with these optional entries:
+			&quot;rows&quot;		maximum number of rows to dump
+			&quot;columns&quot;	maximum number of columns to dump
+
+		Can also be used <A HREF="motion.html#as">as</A> a |<A HREF="eval.html#method">method</A>|, the base is used for the file
+		name:
+<B>			GetFilename()-&gt;term_dumpwrite(bufnr)</B>
+
+
+term_getaltscreen({buf})				*<A NAME="term_getaltscreen()"></A><B>term_getaltscreen()</B>*
+		Returns 1 if the <A HREF="#terminal">terminal</A> of {buf} is using the alternate
+		screen.
+		{buf} is used <A HREF="motion.html#as">as</A> with |<A HREF="#term_getsize()">term_getsize()</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_getaltscreen()</B>
+
+
+
+term_getansicolors({buf})				*<A NAME="term_getansicolors()"></A><B>term_getansicolors()</B>*
+		Get the ANSI color palette in use by <A HREF="#terminal">terminal</A> {buf}.
+		Returns a <A HREF="eval.html#List">List</A> of length 16 where each element is a <A HREF="eval.html#String">String</A>
+		representing a color in hexadecimal &quot;#rrggbb&quot; format.
+		Also see |<A HREF="#term_setansicolors()">term_setansicolors()</A>| and |<A HREF="#g:terminal_ansi_colors">g:terminal_ansi_colors</A>|.
+		If neither was used returns the default colors.
+
+		{buf} is used <A HREF="motion.html#as">as</A> with |<A HREF="#term_getsize()">term_getsize()</A>|.  If the buffer does not
+		exist or is not a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>, an empty <A HREF="eval.html#list">list</A> is returned.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_getansicolors()</B>
+
+ 		{only available when compiled with <A HREF="gui.html#GUI">GUI</A> enabled and/or the
+		|<A HREF="various.html#+termguicolors">+termguicolors</A>| feature}
+
+
+term_getattr({attr}, {what})				*<A NAME="term_getattr()"></A><B>term_getattr()</B>*
+		Given {attr}, a value returned by <A HREF="#term_scrape()">term_scrape()</A> in the &quot;attr&quot;
+		item, return whether {what} is on.  {what} can be one of:
+			<A HREF="syntax.html#bold">bold</A>
+			<A HREF="syntax.html#italic">italic</A>
+			<A HREF="syntax.html#underline">underline</A>
+			strike
+			reverse
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetAttr()-&gt;term_getattr()</B>
+
+
+
+term_getcursor({buf})					*<A NAME="term_getcursor()"></A><B>term_getcursor()</B>*
+		Get the cursor position of <A HREF="#terminal">terminal</A> {buf}. Returns a <A HREF="eval.html#list">list</A> with
+		two numbers and a dictionary: [row, col, dict].
+
+		&quot;row&quot; and &quot;col&quot; are one based, the first screen cell is row
+		1, column 1.  This is the cursor position of the <A HREF="#terminal">terminal</A>
+		itself, not of the Vim <A HREF="windows.html#window">window</A>.
+
+		&quot;<A HREF="eval.html#dict">dict</A>&quot; can have these members:
+		   &quot;visible&quot;	one when the cursor is visible, zero when <A HREF="motion.html#it">it</A>
+				is hidden.
+		   &quot;blink&quot;	one when the cursor is blinking, zero when <A HREF="motion.html#it">it</A>
+				is not blinking.
+		   &quot;shape&quot;	1 for a block cursor, 2 for <A HREF="syntax.html#underline">underline</A> and 3
+				for a vertical <A HREF="motion.html#bar">bar</A>.
+		   &quot;color&quot;	color of the cursor, e.g. &quot;green&quot;
+
+		{buf} must be the buffer number of a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>. If the
+		buffer does not exist or is not a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>, an empty
+		<A HREF="eval.html#list">list</A> is returned.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_getcursor()</B>
+
+
+term_getjob({buf})					*<A NAME="term_getjob()"></A><B>term_getjob()</B>*
+		Get the <A HREF="eval.html#Job">Job</A> associated with <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> {buf}.
+		{buf} is used <A HREF="motion.html#as">as</A> with |<A HREF="#term_getsize()">term_getsize()</A>|.
+		Returns |<A HREF="eval.html#v:null">v:null</A>| when there is no <A HREF="channel.html#job">job</A>.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_getjob()</B>
+
+
+
+term_getline({buf}, {row})				*<A NAME="term_getline()"></A><B>term_getline()</B>*
+		Get a line of text from the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> of {buf}.
+		{buf} is used <A HREF="motion.html#as">as</A> with |<A HREF="#term_getsize()">term_getsize()</A>|.
+
+		The first line has {row} one.  When {row} is &quot;<A HREF="repeat.html#.">.</A>&quot; the cursor
+		line is used.  When {row} is invalid an empty <A HREF="eval.html#string">string</A> is
+		returned.
+
+		To get attributes of each character use |<A HREF="#term_scrape()">term_scrape()</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_getline(row)</B>
+
+
+
+term_getscrolled({buf})					*<A NAME="term_getscrolled()"></A><B>term_getscrolled()</B>*
+		Return the number of lines that scrolled to above the top of
+		<A HREF="#terminal">terminal</A> {buf}.  This is the offset between the row number
+		used for |<A HREF="#term_getline()">term_getline()</A>| and |<A HREF="builtin.html#getline()">getline()</A>|, so that:
+<B>			term_getline(buf, N)</B>
+ 		is equal to:
+<B>			getline(N + term_getscrolled(buf))</B>
+ 		(if that line exists).
+
+		{buf} is used <A HREF="motion.html#as">as</A> with |<A HREF="#term_getsize()">term_getsize()</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_getscrolled()</B>
+
+
+
+term_getsize({buf})					*<A NAME="term_getsize()"></A><B>term_getsize()</B>*
+		Get the size of <A HREF="#terminal">terminal</A> {buf}. Returns a <A HREF="eval.html#list">list</A> with two
+		numbers: [rows, cols].  This is the size of the <A HREF="#terminal">terminal</A>, not
+		the <A HREF="windows.html#window">window</A> containing the <A HREF="#terminal">terminal</A>.
+
+		{buf} must be the buffer number of a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.  Use an
+		empty <A HREF="eval.html#string">string</A> for the current buffer.  If the buffer does not
+		exist or is not a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>, an empty <A HREF="eval.html#list">list</A> is returned.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_getsize()</B>
+
+
+
+term_getstatus({buf})					*<A NAME="term_getstatus()"></A><B>term_getstatus()</B>*
+		Get the status of <A HREF="#terminal">terminal</A> {buf}. This returns a <A HREF="eval.html#String">String</A> with
+		a comma-separated <A HREF="eval.html#list">list</A> of these items:
+			running		<A HREF="channel.html#job">job</A> is running
+			finished	<A HREF="channel.html#job">job</A> has finished
+			normal		in <A HREF="#Terminal-Normal">Terminal-Normal</A> mode
+		One of &quot;running&quot; or &quot;finished&quot; is always present.
+
+		{buf} must be the buffer number of a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>. If the
+		buffer does not exist or is not a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>, an empty
+		<A HREF="eval.html#string">string</A> is returned.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_getstatus()</B>
+
+
+
+term_gettitle({buf})					*<A NAME="term_gettitle()"></A><B>term_gettitle()</B>*
+		Get the title of <A HREF="#terminal">terminal</A> {buf}. This is the title that the
+		<A HREF="channel.html#job">job</A> in the <A HREF="#terminal">terminal</A> has set.
+
+		{buf} must be the buffer number of a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>. If the
+		buffer does not exist or is not a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>, an empty
+		<A HREF="eval.html#string">string</A> is returned.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_gettitle()</B>
+
+
+
+term_gettty({buf} [, {input}])				*<A NAME="term_gettty()"></A><B>term_gettty()</B>*
+		Get the name of the controlling <A HREF="#terminal">terminal</A> associated with
+		<A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> {buf}.  {buf} is used <A HREF="motion.html#as">as</A> with |<A HREF="#term_getsize()">term_getsize()</A>|.
+
+		When {input} is omitted or 0, return the name for <A HREF="editing.html#writing">writing</A>
+		(stdout). When {input} is 1 return the name for reading
+		(stdin). On UNIX, both return same name.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_gettty()</B>
+
+
+
+<A HREF="#term_list()">term_list()</A>						*<A NAME="term_list()"></A><B>term_list()</B>*
+		Return a <A HREF="eval.html#list">list</A> with the buffer numbers of all <A HREF="windows.html#buffers">buffers</A> for
+		<A HREF="#terminal">terminal</A> <A HREF="windows.html#windows">windows</A>.
+
+
+
+term_scrape({buf}, {row})				*<A NAME="term_scrape()"></A><B>term_scrape()</B>*
+		Get the contents of {row} of <A HREF="#terminal">terminal</A> screen of {buf}.
+		For {buf} see |<A HREF="#term_getsize()">term_getsize()</A>|.
+
+		The first line has {row} one.  When {row} is &quot;<A HREF="repeat.html#.">.</A>&quot; the cursor
+		line is used.  When {row} is invalid an empty <A HREF="eval.html#string">string</A> is
+		returned.
+
+		Return a <A HREF="eval.html#List">List</A> containing a <A HREF="eval.html#Dict">Dict</A> for each screen cell:
+		    &quot;chars&quot;	character(s) at the cell
+		    &quot;fg&quot;	foreground color <A HREF="motion.html#as">as</A> #rrggbb
+		    &quot;bg&quot;	background color <A HREF="motion.html#as">as</A> #rrggbb
+		    &quot;attr&quot;	attributes of the cell, use |<A HREF="#term_getattr()">term_getattr()</A>|
+				to get the individual flags
+		    &quot;width&quot;	cell width: 1 or 2
+		For a double-width cell there is one item, thus the <A HREF="eval.html#list">list</A> can
+		be shorter than the width of the <A HREF="#terminal">terminal</A>.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_scrape(row)</B>
+
+
+
+term_sendkeys({buf}, {keys})				*<A NAME="term_sendkeys()"></A><B>term_sendkeys()</B>*
+		Send keystrokes {keys} to <A HREF="#terminal">terminal</A> {buf}.
+		{buf} is used <A HREF="motion.html#as">as</A> with |<A HREF="#term_getsize()">term_getsize()</A>|.
+
+		{keys} are translated <A HREF="motion.html#as">as</A> key sequences. For example, &quot;\&lt;c-x&gt;&quot;
+		means the character <A HREF="change.html#CTRL-X">CTRL-X</A>.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_sendkeys(keys)</B>
+
+
+
+term_setansicolors({buf}, {colors})			*<A NAME="term_setansicolors()"></A><B>term_setansicolors()</B>*
+		Set the ANSI color palette used by <A HREF="#terminal">terminal</A> {buf}.
+		{colors} must be a <A HREF="eval.html#List">List</A> of 16 valid color names or hexadecimal
+		color codes, like those accepted by |<A HREF="syntax.html#highlight-guifg">highlight-guifg</A>|.
+		Also see |<A HREF="#term_getansicolors()">term_getansicolors()</A>| and |<A HREF="#g:terminal_ansi_colors">g:terminal_ansi_colors</A>|.
+
+		The colors normally are:
+			0    black
+			1    dark red
+			2    dark green
+			3    brown
+			4    dark blue
+			5    dark magenta
+			6    dark cyan
+			7    light grey
+			8    dark grey
+			9    red
+			10   green
+			11   yellow
+			12   blue
+			13   magenta
+			14   cyan
+			15   white
+
+		These colors are used in the <A HREF="gui.html#GUI">GUI</A> and in the <A HREF="#terminal">terminal</A> when
+		<A HREF="options.html#'termguicolors'">'termguicolors'</A> is set.  When not using <A HREF="gui.html#GUI">GUI</A> colors (GUI mode
+		or 'termguicolors'), the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> always uses the 16
+		ANSI colors of the underlying <A HREF="#terminal">terminal</A>.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_setansicolors(colors)</B>
+
+ 		{only available with <A HREF="gui.html#GUI">GUI</A> enabled and/or the |<A HREF="various.html#+termguicolors">+termguicolors</A>|
+		feature}
+
+
+
+term_setapi({buf}, {expr})				*<A NAME="term_setapi()"></A><B>term_setapi()</B>*
+		Set the function name prefix to be used for the |<A HREF="#terminal-api">terminal-api</A>|
+		function in <A HREF="#terminal">terminal</A> {buf}.  For example:
+<B>		    :call term_setapi(buf, "Myapi_")</B>
+<B>		    :call term_setapi(buf, "")</B>
+ 
+		The default is &quot;Tapi_&quot;.  When {expr} is an empty <A HREF="eval.html#string">string</A> then
+		no |<A HREF="#terminal-api">terminal-api</A>| function can be used for {buf}.
+
+		When used <A HREF="motion.html#as">as</A> a <A HREF="eval.html#method">method</A> the base is used for {buf}:
+<B>			GetBufnr()-&gt;term_setapi({expr})</B>
+
+
+
+term_setkill({buf}, {how})				*<A NAME="term_setkill()"></A><B>term_setkill()</B>*
+		When <A HREF="starting.html#exiting">exiting</A> Vim or trying to close the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> in
+		another way, {how} defines whether the <A HREF="channel.html#job">job</A> in the <A HREF="#terminal">terminal</A> can
+		be stopped.
+		When {how} is empty (the default), the <A HREF="channel.html#job">job</A> will not be
+		stopped, trying to exit will result in |<A HREF="#E947">E947</A>|.
+		Otherwise, {how} specifies what signal to send to the <A HREF="channel.html#job">job</A>.
+		See |<A HREF="channel.html#job_stop()">job_stop()</A>| for the values.
+
+		After sending the signal Vim will wait for up to a second to
+		check that the <A HREF="channel.html#job">job</A> actually stopped.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_setkill(how)</B>
+
+
+
+term_setrestore({buf}, {command})			*<A NAME="term_setrestore()"></A><B>term_setrestore()</B>*
+		Set the command to write in a session file to restore the <A HREF="channel.html#job">job</A>
+		in this <A HREF="#terminal">terminal</A>.  The line written in the session file is:
+<B>			terminal ++curwin ++cols=%d ++rows=%d {command}</B>
+ 		Make sure to <A HREF="intro.html#escape">escape</A> the command properly.
+
+		Use an empty {command} to run <A HREF="options.html#'shell'">'shell'</A>.
+		Use &quot;NONE&quot; to not restore this <A HREF="windows.html#window">window</A>.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_setrestore(command)</B>
+
+
+
+term_setsize({buf}, {rows}, {cols})		*<A NAME="term_setsize()"></A><B>term_setsize()</B>* *<A NAME="E955"></A><B>E955</B>*
+		Set the size of <A HREF="#terminal">terminal</A> {buf}. The size of the <A HREF="windows.html#window">window</A>
+		containing the <A HREF="#terminal">terminal</A> will also be adjusted, if possible.
+		If {rows} or {cols} is zero or negative, that dimension is not
+		changed.
+
+		{buf} must be the buffer number of a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.  Use an
+		empty <A HREF="eval.html#string">string</A> for the current buffer.  If the buffer does not
+		exist or is not a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>, an error is given.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_setsize(rows, cols)</B>
+
+
+
+term_start({cmd} [, {options}])			*<A NAME="term_start()"></A><B>term_start()</B>*
+		Open a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> and run {cmd} in <A HREF="motion.html#it">it</A>.
+
+		{cmd} can be a <A HREF="eval.html#string">string</A> or a <A HREF="eval.html#List">List</A>, like with |<A HREF="channel.html#job_start()">job_start()</A>|. The
+		<A HREF="eval.html#string">string</A> &quot;NONE&quot; can be used to open a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> without
+		starting a <A HREF="channel.html#job">job</A>, the pty of the <A HREF="#terminal">terminal</A> can be used by a
+		command like <A HREF="debug.html#gdb">gdb</A>.
+
+		Returns the buffer number of the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.  If {cmd}
+		cannot be executed the <A HREF="windows.html#window">window</A> does open and shows an error
+		message.
+		If opening the <A HREF="windows.html#window">window</A> fails zero is returned.
+
+		{options} are similar to what is used for |<A HREF="channel.html#job_start()">job_start()</A>|, see
+		|<A HREF="channel.html#job-options">job-options</A>|.  However, not all options can be used.  These
+		are supported:
+		   all timeout <A HREF="options.html#options">options</A>
+		   &quot;stoponexit&quot;, &quot;cwd&quot;, &quot;env&quot;
+		   &quot;callback&quot;, &quot;<A HREF="channel.html#out_cb">out_cb</A>&quot;, &quot;<A HREF="channel.html#err_cb">err_cb</A>&quot;, &quot;exit_cb&quot;, &quot;<A HREF="channel.html#close_cb">close_cb</A>&quot;
+		   &quot;in_io&quot;, &quot;<A HREF="channel.html#in_top">in_top</A>&quot;, &quot;<A HREF="channel.html#in_bot">in_bot</A>&quot;, &quot;<A HREF="channel.html#in_name">in_name</A>&quot;, &quot;<A HREF="channel.html#in_buf">in_buf</A>&quot;
+		   &quot;out_io&quot;, &quot;<A HREF="channel.html#out_name">out_name</A>&quot;, &quot;<A HREF="channel.html#out_buf">out_buf</A>&quot;, &quot;<A HREF="channel.html#out_modifiable">out_modifiable</A>&quot;, &quot;<A HREF="channel.html#out_msg">out_msg</A>&quot;
+		   &quot;err_io&quot;, &quot;<A HREF="channel.html#err_name">err_name</A>&quot;, &quot;<A HREF="channel.html#err_buf">err_buf</A>&quot;, &quot;<A HREF="channel.html#err_modifiable">err_modifiable</A>&quot;, &quot;<A HREF="channel.html#err_msg">err_msg</A>&quot;
+		However, at least one of stdin, stdout or stderr must be
+		connected to the <A HREF="#terminal">terminal</A>.  When I/O is connected to the
+		<A HREF="#terminal">terminal</A> then the callback function for that part is not used.
+
+		There are extra <A HREF="options.html#options">options</A>:
+		   &quot;term_name&quot;	     name to use for the buffer name, instead
+				     of the command name.
+		   &quot;term_rows&quot;	     vertical size to use for the <A HREF="#terminal">terminal</A>,
+				     instead of using <A HREF="options.html#'termwinsize'">'termwinsize'</A>; valid
+				     range is from zero to 1000
+		   &quot;term_cols&quot;	     horizontal size to use for the <A HREF="#terminal">terminal</A>,
+				     instead of using <A HREF="options.html#'termwinsize'">'termwinsize'</A>
+		   &quot;vertical&quot;	     split the <A HREF="windows.html#window">window</A> vertically; note that
+				     other <A HREF="windows.html#window">window</A> position can be defined with
+				     command modifiers, such <A HREF="motion.html#as">as</A> |<A HREF="windows.html#:belowright">:belowright</A>|.
+		   &quot;curwin&quot;	     use the current <A HREF="windows.html#window">window</A>, <A HREF="diff.html#do">do</A> not split the
+				     <A HREF="windows.html#window">window</A>; fails if the current buffer
+				     cannot be YXXYabandon|ed
+		   &quot;hidden&quot;	     <A HREF="diff.html#do">do</A> not open a <A HREF="windows.html#window">window</A>
+		   &quot;norestore&quot;	     <A HREF="diff.html#do">do</A> not add the <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> to a
+				     session file
+		   &quot;term_kill&quot;	     what to <A HREF="diff.html#do">do</A> when trying to close the
+				     <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>, see |<A HREF="#term_setkill()">term_setkill()</A>|
+		   &quot;term_finish&quot;     What to <A HREF="diff.html#do">do</A> when the <A HREF="channel.html#job">job</A> is finished:
+					&quot;close&quot;: close any <A HREF="windows.html#windows">windows</A>
+					&quot;open&quot;: open <A HREF="windows.html#window">window</A> if needed
+				     Note that &quot;open&quot; can be interruptive.
+				     See |<A HREF="#term++close">term++close</A>| and |<A HREF="#term++open">term++open</A>|.
+		   &quot;term_opencmd&quot;    command to use for opening the <A HREF="windows.html#window">window</A> when
+				     &quot;open&quot; is used for &quot;term_finish&quot;; must
+				     have &quot;&#37;d&quot; where the buffer number goes,
+				     e.g. &quot;10split|buffer &#37;d&quot;; when not
+				     specified &quot;botright sbuf &#37;d&quot; is used
+		   &quot;term_highlight&quot;  highlight group to use instead of
+				     &quot;Terminal&quot;
+		   &quot;eof_chars&quot;	     Text to send after all buffer lines were
+				     written to the <A HREF="#terminal">terminal</A>.  When not set
+				     <A HREF="scroll.html#CTRL-D">CTRL-D</A> is used on <A HREF="os_win32.html#MS-Windows">MS-Windows</A>. For <A HREF="if_pyth.html#Python">Python</A>
+				     use <A HREF="starting.html#CTRL-Z">CTRL-Z</A> or &quot;exit()&quot;. For a shell use
+				     &quot;exit&quot;.  A CR is always added.
+		   &quot;ansi_colors&quot;     A <A HREF="eval.html#list">list</A> of 16 color names or hex codes
+				     defining the ANSI palette used in <A HREF="gui.html#GUI">GUI</A>
+				     color modes.  See |<A HREF="#g:terminal_ansi_colors">g:terminal_ansi_colors</A>|.
+		   &quot;tty_type&quot;	     (MS-Windows only): Specify which pty to
+				     use.  See <A HREF="options.html#'termwintype'">'termwintype'</A> for the values.
+		   &quot;term_api&quot;	     function name prefix for the
+				     |<A HREF="#terminal-api">terminal-api</A>| function.  See
+				     |<A HREF="#term_setapi()">term_setapi()</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetCommand()-&gt;term_start()</B>
+
+
+
+term_wait({buf} [, {time}])					*<A NAME="term_wait()"></A><B>term_wait()</B>*
+		Wait for pending updates of {buf} to be handled.
+		{buf} is used <A HREF="motion.html#as">as</A> with |<A HREF="#term_getsize()">term_getsize()</A>|.
+		{time} is how long to wait for updates to arrive in msec.  If
+		not set then 10 msec will be used.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetBufnr()-&gt;term_wait()</B>
+
+==============================================================================
+
+3. Terminal communication			 *<A NAME="terminal-communication"></A><B>terminal-communication</B>*
+
+There are several ways to communicate with the <A HREF="channel.html#job">job</A> running in a <A HREF="#terminal">terminal</A>:
+- Use |<A HREF="#term_sendkeys()">term_sendkeys()</A>| to send text and <A HREF="intro.html#escape">escape</A> sequences from Vim to the <A HREF="channel.html#job">job</A>.
+- Use the JSON API to send encoded commands from the <A HREF="channel.html#job">job</A> to Vim.
+- Use the |<A HREF="remote.html#client-server">client-server</A>| mechanism. This works on machines with an X server
+  and on <A HREF="os_win32.html#MS-Windows">MS-Windows</A>.
+
+
+<B><FONT COLOR="PURPLE">Vim to job: term_sendkeys() </FONT></B>
+
+							*<A NAME="terminal-to-job"></A><B>terminal-to-job</B>*
+This allows for remote controlling the <A HREF="channel.html#job">job</A> running in the <A HREF="#terminal">terminal</A>.  It is a
+one-way mechanism.  The <A HREF="channel.html#job">job</A> can update the display to signal back to Vim.
+For example, if a shell is running in a <A HREF="#terminal">terminal</A>, you can <A HREF="diff.html#do">do</A>:
+<B>	call term_sendkeys(buf, "ls *.java\&lt;CR&gt;")</B>
+
+This requires for the <A HREF="channel.html#job">job</A> to be in the right state where <A HREF="motion.html#it">it</A> will <A HREF="diff.html#do">do</A> the right
+thing when receiving the keys.  For the above example, the shell must be
+waiting for a command to be typed.
+
+For a <A HREF="channel.html#job">job</A> that was written for the purpose, you can use the JSON API <A HREF="intro.html#escape">escape</A>
+sequence in the other direction.  E.g.:
+<B>	call term_sendkeys(buf, "\&lt;Esc&gt;]51;["response"]\x07")</B>
+
+
+<B><FONT COLOR="PURPLE">Job to Vim: JSON API </FONT></B>
+
+							*<A NAME="terminal-api"></A><B>terminal-api</B>*
+The <A HREF="channel.html#job">job</A> can send JSON to Vim, using a special <A HREF="intro.html#escape">escape</A> sequence.  The JSON
+encodes a command that Vim understands.  Example of such a message:
+<B>	&lt;Esc&gt;]51;["drop", "README.md"]&lt;07&gt;</B>
+
+The body is always a <A HREF="eval.html#list">list</A>, making <A HREF="motion.html#it">it</A> <A HREF="starting.html#easy">easy</A> to find the end: ]&lt;07&gt;.
+The &lt;Esc&gt;]51;msg&lt;07&gt; sequence is reserved by xterm for &quot;Emacs shell&quot;, which is
+similar to what we are doing here.
+
+Currently supported commands:
+
+	call {funcname} {argument}
+
+		Call a user defined function with {argument}.
+		The function is called with two arguments: the buffer number
+		of the <A HREF="#terminal">terminal</A> and {argument}, the decoded JSON argument.
+		By default, the function name must start with &quot;Tapi_&quot; to avoid
+		accidentally calling a function not meant to be used for the
+		<A HREF="#terminal">terminal</A> API.  This can be changed with |<A HREF="#term_setapi()">term_setapi()</A>|.
+		The user function should sanity check the argument.
+		The function can use |<A HREF="#term_sendkeys()">term_sendkeys()</A>| to send back a reply.
+		Example in JSON:
+<B>			["call", "Tapi_Impression", ["play", 14]]</B>
+ 		Calls a function defined like this:
+<B>			function Tapi_Impression(bufnum, arglist)</B>
+<B>			  if len(a:arglist) == 2</B>
+<B>			    echomsg "impression " .. a:arglist[0]</B>
+<B>			    echomsg "count " .. a:arglist[1]</B>
+<B>			  endif</B>
+<B>			endfunc</B>
+ 		Output from `:echo` may be erased by a redraw, use `:echomsg`
+		to be able to see <A HREF="motion.html#it">it</A> with `:messages`.
+
+	drop {filename} [options]
+
+		Let Vim open a file, like the `:drop` command.  If {filename}
+		is already open in a <A HREF="windows.html#window">window</A>, switch to that <A HREF="windows.html#window">window</A>.  Otherwise
+		open a new <A HREF="windows.html#window">window</A> to edit {filename}.
+		Note that both the <A HREF="channel.html#job">job</A> and Vim may change the current
+		directory, thus it's best to use the full path.
+
+		[options] is only used when opening a new <A HREF="windows.html#window">window</A>.  If present,
+		<A HREF="motion.html#it">it</A> must be a <A HREF="eval.html#Dict">Dict</A>.  Similarly to |<A HREF="editing.html#++opt">++opt</A>|, these entries are
+		recognized:
+		  &quot;ff&quot;		file format: &quot;<A HREF="os_dos.html#dos">dos</A>&quot;, &quot;<A HREF="os_mac.html#mac">mac</A>&quot; or &quot;<A HREF="os_unix.html#unix">unix</A>&quot;
+		  &quot;fileformat&quot;	idem
+		  &quot;enc&quot;		overrides <A HREF="options.html#'fileencoding'">'fileencoding'</A>
+		  &quot;encoding&quot;	idem
+		  &quot;bin&quot;		sets <A HREF="options.html#'binary'">'binary'</A>
+		  &quot;binary&quot;	idem
+		  &quot;nobin&quot;	resets <A HREF="options.html#'binary'">'binary'</A>
+		  &quot;nobinary&quot;	idem
+		  &quot;bad&quot;		specifies behavior for bad characters, see
+				|<A HREF="editing.html#++bad">++bad</A>|
+
+		Example in JSON:
+<B>			["drop", "path/file.txt", {"ff": "dos"}]</B>
+
+A trick to have Vim send this <A HREF="intro.html#escape">escape</A> sequence:
+<B>	exe "set t_ts=\&lt;Esc&gt;]51; t_fs=\x07"</B>
+<B>	let &amp;titlestring = '["call","Tapi_TryThis",["hello",123]]'</B>
+<B>	redraw</B>
+<B>	set t_ts&amp; t_fs&amp;</B>
+
+Rationale: Why not allow for any command or <A HREF="eval.html#expression">expression</A>?  Because that might
+create a security problem.
+
+
+<B><FONT COLOR="PURPLE">Using the client-server feature </FONT></B>
+
+						*<A NAME="terminal-client-server"></A><B>terminal-client-server</B>*
+This only works when <A HREF="eval.html#v:servername">v:servername</A> is not empty.  If needed you can set <A HREF="motion.html#it">it</A>,
+before opening the <A HREF="#terminal">terminal</A>, with:
+<B>	call remote_startserver('vim-server')</B>
+
+$VIM_SERVERNAME is set in the <A HREF="#terminal">terminal</A> to pass on the server name.
+
+In the <A HREF="channel.html#job">job</A> you can then <A HREF="diff.html#do">do</A> something like:
+<B>	vim --servername $VIM_SERVERNAME --remote +123 some_file.c</B>
+This will open the file &quot;some_file.c&quot; and put the cursor on line 123.
+
+==============================================================================
+
+4. Remote <A HREF="testing.html#testing">testing</A>					*<A NAME="terminal-testing"></A><B>terminal-testing</B>*
+
+Most Vim tests execute a <A HREF="usr_41.html#script">script</A> inside Vim.  For some tests this does not
+work, running the test interferes with the code being tested.  To avoid this
+Vim is executed in a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.  The test sends keystrokes to <A HREF="motion.html#it">it</A> and
+inspects the resulting screen state.
+
+<B><FONT COLOR="PURPLE">Functions </FONT></B>
+
+|<A HREF="#term_sendkeys()">term_sendkeys()</A>|	send keystrokes to a <A HREF="#terminal">terminal</A> (not subject to tmap)
+|<A HREF="#term_wait()">term_wait()</A>|		wait for screen to be updated
+|<A HREF="#term_scrape()">term_scrape()</A>|		inspect <A HREF="#terminal">terminal</A> screen
+
+
+==============================================================================
+
+5. Diffing screen dumps					*<A NAME="terminal-diff"></A><B>terminal-diff</B>*
+
+In some cases <A HREF="motion.html#it">it</A> can be bothersome to test that Vim displays the right
+characters on the screen.  E.g. with <A HREF="syntax.html#syntax">syntax</A> highlighting.  To make this
+simpler <A HREF="motion.html#it">it</A> is possible to take a screen dump of a <A HREF="#terminal">terminal</A> and compare <A HREF="motion.html#it">it</A> to
+an expected screen dump.
+
+Vim uses the <A HREF="windows.html#window">window</A> size, text, color and other attributes <A HREF="motion.html#as">as</A> displayed.  The
+Vim screen size, font and other properties <A HREF="diff.html#do">do</A> not matter.  Therefore this
+mechanism is portable across systems.  A conventional screenshot would reflect
+all differences, including font size and family.
+
+
+<B><FONT COLOR="PURPLE">Writing a screen dump test for Vim </FONT></B>
+
+							*<A NAME="terminal-dumptest"></A><B>terminal-dumptest</B>*
+For an example see the Test_syntax_c() function in
+src/testdir/test_syntax.vim.  The main parts are:
+- Write a file you want to test with. This is useful for <A HREF="testing.html#testing">testing</A> <A HREF="syntax.html#syntax">syntax</A>
+  highlighting.  You can also start Vim with an empty buffer.
+- Run Vim in a <A HREF="#terminal">terminal</A> with a specific size.  The default is 20 lines of 75
+  characters.  This makes sure the dump is always this size.  The function
+  RunVimInTerminal() takes care of this.  Pass <A HREF="motion.html#it">it</A> the arguments for the Vim
+  command.
+- Send any commands to Vim using |<A HREF="#term_sendkeys()">term_sendkeys()</A>|.  For example:
+<B>	call term_sendkeys(buf, ":echo &amp;lines &amp;columns\&lt;CR&gt;")</B>
+- Check that the screen is now in the expected state, using
+  VerifyScreenDump().  This expects the reference screen dump to be in the
+  src/testdir/dumps/ directory.  Pass the name without &quot;.dump&quot;.  It is
+  recommended to use the name of the test function and a sequence number, so
+  that we know what test is using the file.
+- Repeat sending commands and checking the state.
+- Finally stop Vim by calling StopVimInTerminal().
+
+The first time you <A HREF="diff.html#do">do</A> this you won't have a screen dump yet.  Create an empty
+file for now, e.g.:
+<B>	touch src/testdir/dumps/Test_function_name_01.dump</B>
+
+The test will then fail, giving you the command to compare the reference dump
+and the failed dump, e.g.:
+<B>	call term_dumpdiff("failed/Test_func.dump", "dumps/Test_func.dump")</B>
+
+Use this command in Vim, with the current directory set to src/testdir.
+Once you are satisfied with the test, move the failed dump in place of the
+reference:
+<B>	:!mv failed/Test_func.dump dumps/Test_func.dump</B>
+
+
+<B><FONT COLOR="PURPLE">Creating a screen dump </FONT></B>
+
+							*<A NAME="terminal-screendump"></A><B>terminal-screendump</B>*
+
+To create the screen dump, run Vim (or any other program) in a <A HREF="#terminal">terminal</A> and
+make it show the desired state.  Then use the |<A HREF="#term_dumpwrite()">term_dumpwrite()</A>| function to
+create a screen dump file.  For example:
+<B>	:call term_dumpwrite(77, "mysyntax.dump")</B>
+
+Here &quot;77&quot; is the buffer number of the <A HREF="#terminal">terminal</A>.  Use `:ls!` to see <A HREF="motion.html#it">it</A>.
+
+You can <A HREF="starting.html#view">view</A> the screen dump with YXXYterm_dumpload()|:
+<B>	:call term_dumpload("mysyntax.dump")</B>
+
+To verify that Vim still shows exactly the same screen, run Vim again with
+exactly the same way to show the desired state.  Then create a screen dump
+again, using a different file name:
+<B>	:call term_dumpwrite(88, "test.dump")</B>
+
+To assert that the files are exactly the same use YXXYassert_equalfile()|:
+<B>	call assert_equalfile("mysyntax.dump", "test.dump")</B>
+
+If there are differences then <A HREF="eval.html#v:errors">v:errors</A> will contain the error message.
+
+
+<B><FONT COLOR="PURPLE">Comparing screen dumps </FONT></B>
+
+						*<A NAME="terminal-diffscreendump"></A><B>terminal-diffscreendump</B>*
+
+|<A HREF="testing.html#assert_equalfile()">assert_equalfile()</A>| does not make <A HREF="motion.html#it">it</A> <A HREF="starting.html#easy">easy</A> to see what is different.
+To spot the problem use YXXYterm_dumpdiff()|:
+<B>	call term_dumpdiff("mysyntax.dump", "test.dump")</B>
+
+This will open a <A HREF="windows.html#window">window</A> consisting of three parts:
+1.  The contents of the first dump
+2.  The difference between the first and second dump
+3.  The contents of the second dump
+
+You can usually see what differs in the second part.  Use the <A HREF="options.html#'ruler'">'ruler'</A> to
+relate <A HREF="motion.html#it">it</A> to the position in the first or second dump.  Letters indicate the
+kind of difference:
+	X	different character
+	<A HREF="change.html#&gt;">&gt;</A>	cursor in first but not in second
+	<A HREF="change.html#&lt;">&lt;</A>	cursor in second but not in first
+	<A HREF="motion.html#w">w</A>	character width differs (single vs double width)
+	<A HREF="motion.html#f">f</A>	foreground color differs
+	<A HREF="motion.html#b">b</A>	background color differs
+	a	attribute differs (bold, <A HREF="syntax.html#underline">underline</A>, reverse, etc.)
+	?	character missing in both
+	+	character missing in first
+	-	character missing in second
+
+Alternatively, press &quot;<A HREF="change.html#s">s</A>&quot; to swap the first and second dump. Do this several
+times so that you can spot the difference in the context of the text.
+
+==============================================================================
+
+6. Debugging				*<A NAME="terminal-debug"></A><B>terminal-debug</B>* *<A NAME="terminal-debugger"></A><B>terminal-debugger</B>*
+
+The Terminal debugging <A HREF="usr_05.html#plugin">plugin</A> can be used to debug a program with <A HREF="debug.html#gdb">gdb</A> and <A HREF="starting.html#view">view</A>
+the source code in a Vim <A HREF="windows.html#window">window</A>.  Since this is completely contained inside
+Vim this also works remotely over an ssh connection.
+
+When the |<A HREF="various.html#+terminal">+terminal</A>| feature is missing, the <A HREF="usr_05.html#plugin">plugin</A> will use the &quot;prompt&quot;
+buffer type, if possible.  The running program will then use a newly opened
+<A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.  See |<A HREF="#termdebug-prompt">termdebug-prompt</A>| below for details.
+
+
+<B><FONT COLOR="PURPLE">Starting </FONT></B>
+
+							*<A NAME="termdebug-starting"></A><B>termdebug-starting</B>*
+Load the <A HREF="usr_05.html#plugin">plugin</A> with this command:
+<B>	packadd termdebug</B>
+
+ 							*<A NAME=":Termdebug"></A><B>:Termdebug</B>*
+To start debugging use `:Termdebug` or `:TermdebugCommand` followed by the
+command name, for example:
+<B>	:Termdebug vim</B>
+
+This opens two <A HREF="windows.html#windows">windows</A>:
+
+<A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>	A <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> in which &quot;<A HREF="debug.html#gdb">gdb</A> vim&quot; is executed.  Here you
+		can directly interact with <A HREF="debug.html#gdb">gdb</A>.  The buffer name is &quot;!gdb&quot;.
+
+program <A HREF="windows.html#window">window</A>	A <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A> for the executed program.  When &quot;run&quot; is
+		used in <A HREF="debug.html#gdb">gdb</A> the program I/O will happen in this <A HREF="windows.html#window">window</A>, so
+		that <A HREF="motion.html#it">it</A> does not interfere with controlling <A HREF="debug.html#gdb">gdb</A>.  The buffer
+		name is &quot;debugged program&quot;.
+
+The current <A HREF="windows.html#window">window</A> is used to show the source code.  When <A HREF="debug.html#gdb">gdb</A> pauses the
+source file location will be displayed, if possible.  A sign is used to
+highlight the current position, using highlight group debugPC.
+
+If the buffer in the current <A HREF="windows.html#window">window</A> is modified, another <A HREF="windows.html#window">window</A> will be opened
+to display the current <A HREF="debug.html#gdb">gdb</A> position.  You can use `:Winbar` to add a <A HREF="windows.html#window">window</A>
+toolbar there.
+
+Focus the <A HREF="#terminal">terminal</A> of the executed program to interact with <A HREF="motion.html#it">it</A>.  This works
+the same <A HREF="motion.html#as">as</A> any command running in a <A HREF="#terminal">terminal</A> <A HREF="windows.html#window">window</A>.
+
+When the debugger ends, typically by typing &quot;quit&quot; in the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>, the two
+opened <A HREF="windows.html#windows">windows</A> are closed.
+
+Only one debugger can be active at a time.
+
+							*<A NAME=":TermdebugCommand"></A><B>:TermdebugCommand</B>*
+If you want to give specific commands to the command being debugged, you can
+use the `:TermdebugCommand` command followed by the command name and
+additional parameters.
+<B>	:TermdebugCommand vim --clean -c ':set nu'</B>
+
+Both the `:Termdebug` and `:TermdebugCommand` support an optional &quot;<A HREF="change.html#!">!</A>&quot; bang
+argument to start the command right away, without pausing at the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>
+(and cursor will be in the debugged <A HREF="windows.html#window">window</A>).  For example:
+<B>	:TermdebugCommand! vim --clean</B>
+
+To attach <A HREF="debug.html#gdb">gdb</A> to an already running executable or use a core file, pass extra
+arguments.  E.g.:
+<B>	:Termdebug vim core</B>
+<B>	:Termdebug vim 98343</B>
+
+If no argument is given, you'll end up in a <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>, in which you need to
+specify which command to run using e.g. the <A HREF="debug.html#gdb">gdb</A> `file` command.
+
+
+<B><FONT COLOR="PURPLE">Example session </FONT></B>
+
+							*<A NAME="termdebug-example"></A><B>termdebug-example</B>*
+Start in the Vim &quot;src&quot; directory and build Vim:
+<B>	% make</B>
+Make sure that debug symbols are present, usually that means that $CFLAGS
+includes &quot;<A HREF="starting.html#-g">-g</A>&quot;.
+
+Start Vim:
+<B>	% ./vim</B>
+
+Load the termdebug <A HREF="usr_05.html#plugin">plugin</A> and start debugging Vim:
+<B>	:packadd termdebug</B>
+<B>	:Termdebug vim</B>
+You should now have three <A HREF="windows.html#windows">windows</A>:
+    source  - where you started, has a <A HREF="windows.html#window">window</A> toolbar with buttons
+    <A HREF="debug.html#gdb">gdb</A>	    - you can type <A HREF="debug.html#gdb">gdb</A> commands here
+    program - the executed program will use this <A HREF="windows.html#window">window</A>
+
+You can use <A HREF="index.html#CTRL-W">CTRL-W</A> <A HREF="index.html#CTRL-W">CTRL-W</A> or the mouse to move focus between <A HREF="windows.html#windows">windows</A>.
+Put focus on the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A> and type:
+<B>	break ex_help</B>
+<B>	run</B>
+Vim will start running in the program <A HREF="windows.html#window">window</A>. Put focus there and type:
+<B>	:help gui</B>
+Gdb will run into the ex_help breakpoint.  The source <A HREF="windows.html#window">window</A> now shows the
+ex_cmds.c file.  A red &quot;1 &quot; marker will appear in the signcolumn where the
+breakpoint was set.  The line where the debugger stopped is highlighted.  You
+can now step through the program.  Let's use the mouse: click on the &quot;Next&quot;
+button in the <A HREF="windows.html#window">window</A> toolbar.  You will see the highlighting move <A HREF="motion.html#as">as</A> the
+debugger executes a line of source code.
+
+Click &quot;Next&quot; a few times until the for loop is highlighted.  Put the cursor on
+the end of &quot;eap-&gt;arg&quot;, then click &quot;Eval&quot; in the toolbar.  You will see this
+displayed:
+<B><FONT COLOR="PURPLE">	"eap-&gt;arg": 0x555555e68855 "gui" </FONT></B>
+This way you can inspect the value of local <A HREF="eval.html#variables">variables</A>.  You can also focus the
+<A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A> and use a &quot;print&quot; command, e.g.:
+<B>	print *eap</B>
+If mouse pointer movements are working, Vim will also show a balloon when the
+mouse rests on text that can be evaluated by <A HREF="debug.html#gdb">gdb</A>.
+
+Now go back to the source <A HREF="windows.html#window">window</A> and put the cursor on the first line after
+the for loop, then type:
+<B>	:Break</B>
+You will see a &quot;<A HREF="change.html#&gt;&gt;">&gt;&gt;</A>&quot; marker appear, this indicates the new breakpoint.  Now
+click &quot;Cont&quot; in the toolbar and the code until the breakpoint will be
+executed.
+
+You can type more advanced commands in the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>.  For example, type:
+<B>	watch curbuf</B>
+Now click &quot;Cont&quot; in the toolbar (or type &quot;cont&quot; in the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>). Execution
+will now continue until the value of &quot;curbuf&quot; changes, which is in do_ecmd().
+To remove this watchpoint again type in the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>:
+<B>	delete 3</B>
+
+You can see the stack by typing in the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>:
+<B>	where</B>
+Move through the stack frames, e.g. with:
+<B>	frame 3</B>
+The source <A HREF="windows.html#window">window</A> will show the code, at the point where the call was made to
+a deeper level.
+
+
+<B><FONT COLOR="PURPLE">Stepping through code </FONT></B>
+
+							*<A NAME="termdebug-stepping"></A><B>termdebug-stepping</B>*
+Put focus on the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A> to type commands there.  Some common ones are:
+- <A HREF="pattern.html#CTRL-C">CTRL-C</A>	interrupt the program
+- next		execute the current line and stop at the next line
+- step		execute the current line and stop at the next statement,
+		entering <A HREF="eval.html#functions">functions</A>
+- until		execute until past the current cursor line or past a specified
+		position or the current stack frame returns
+- finish	execute until leaving the current function
+- where		show the stack
+- frame N	go to the Nth stack frame
+- continue	continue execution
+
+
+						*<A NAME=":Run"></A><B>:Run</B>* *<A NAME=":Arguments"></A><B>:Arguments</B>*
+In the <A HREF="windows.html#window">window</A> showing the source code these commands can be used to <A HREF="intro.html#control">control</A>
+<A HREF="debug.html#gdb">gdb</A>:
+ `:Run` [args]	    run the program with [args] or the previous arguments
+ `:Arguments` {args}  set arguments for the next `:Run`
+
+
+ *<A NAME=":Break"></A><B>:Break</B>*	set a breakpoint at the cursor position
+ <A HREF="#:Break">:Break</A> {position}
+		set a breakpoint at the specified position
+
+ *<A NAME=":Clear"></A><B>:Clear</B>*	delete the breakpoint at the cursor position
+
+
+ *<A NAME=":Step"></A><B>:Step</B>*	execute the <A HREF="debug.html#gdb">gdb</A> &quot;step&quot; command
+
+ *<A NAME=":Over"></A><B>:Over</B>*	execute the <A HREF="debug.html#gdb">gdb</A> &quot;next&quot; command (`:Next` is a Vim command)
+
+ *<A NAME=":Until"></A><B>:Until</B>*	execute the <A HREF="debug.html#gdb">gdb</A> &quot;until&quot; command
+
+ *<A NAME=":Finish"></A><B>:Finish</B>*	execute the <A HREF="debug.html#gdb">gdb</A> &quot;finish&quot; command
+
+ *<A NAME=":Continue"></A><B>:Continue</B>*	execute the <A HREF="debug.html#gdb">gdb</A> &quot;continue&quot; command
+
+ *<A NAME=":Stop"></A><B>:Stop</B>*	interrupt the program
+
+If <A HREF="options.html#'mouse'">'mouse'</A> is set the <A HREF="usr_05.html#plugin">plugin</A> adds a <A HREF="windows.html#window">window</A> toolbar with these entries:
+  Step		`:Step`
+  Next		`:Over`
+  Finish	`:Finish`
+  Cont		`:Continue`
+  Stop		`:Stop`
+  Eval		`:Evaluate`
+This way you can use the mouse to perform the most common commands.  You need
+to have the <A HREF="options.html#'mouse'">'mouse'</A> option set to enable mouse clicks.
+
+								*<A NAME=":Winbar"></A><B>:Winbar</B>*
+You can add the <A HREF="windows.html#window">window</A> toolbar in other <A HREF="windows.html#windows">windows</A> you open with:
+<B>  :Winbar</B>
+
+If <A HREF="debug.html#gdb">gdb</A> stops at a source line and there is no <A HREF="windows.html#window">window</A> currently showing the
+source code, a new <A HREF="windows.html#window">window</A> will be created for the source code.  This also
+happens if the buffer in the source code <A HREF="windows.html#window">window</A> has been modified and can't be
+abandoned.
+
+Gdb gives each breakpoint a number.  In Vim the number shows up in the sign
+column, with a red background.  You can use these <A HREF="debug.html#gdb">gdb</A> commands:
+- info break	<A HREF="eval.html#list">list</A> breakpoints
+- delete N	delete breakpoint N
+You can also use the `:Clear` command if the cursor is in the line with the
+breakpoint, or use the &quot;Clear breakpoint&quot; right-click menu entry.
+
+
+<B><FONT COLOR="PURPLE">Inspecting variables </FONT></B>
+
+					*<A NAME="termdebug-variables"></A><B>termdebug-variables</B>* *<A NAME=":Evaluate"></A><B>:Evaluate</B>*
+ `:Evaluate`	    evaluate the <A HREF="eval.html#expression">expression</A> under the cursor
+ `K`		    same (see |<A HREF="#termdebug_map_K">termdebug_map_K</A>| to disable)
+ `:Evaluate` {expr}   evaluate {expr}
+ `:'&lt;,'&gt;Evaluate`     evaluate the Visually selected text
+
+This is similar to using &quot;print&quot; in the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>.
+You can usually shorten `:Evaluate` to `:Ev`.
+
+
+<B><FONT COLOR="PURPLE">Other commands </FONT></B>
+
+							*<A NAME="termdebug-commands"></A><B>termdebug-commands</B>*
+
+ *<A NAME=":Gdb"></A><B>:Gdb</B>*	     jump to the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>
+
+ *<A NAME=":Program"></A><B>:Program</B>*    jump to the <A HREF="windows.html#window">window</A> with the running program
+
+ *<A NAME=":Source"></A><B>:Source</B>*     jump to the <A HREF="windows.html#window">window</A> with the source code, create <A HREF="motion.html#it">it</A> if there
+	     isn't one
+
+ *<A NAME=":Asm"></A><B>:Asm</B>*	     jump to the <A HREF="windows.html#window">window</A> with the disassembly, create <A HREF="motion.html#it">it</A> if there
+	     isn't one
+
+<B><FONT COLOR="PURPLE">Events </FONT></B>
+
+							*<A NAME="termdebug-events"></A><B>termdebug-events</B>*
+Four <A HREF="autocmd.html#autocommands">autocommands</A> can be used:
+<B>	au User TermdebugStartPre  echomsg 'debugging starting'</B>
+<B>	au User TermdebugStartPost echomsg 'debugging started'</B>
+<B>	au User TermdebugStopPre   echomsg 'debugging stopping'</B>
+<B>	au User TermdebugStopPost  echomsg 'debugging stopped'</B>
+ 
+
+						*<A NAME="TermdebugStartPre"></A><B>TermdebugStartPre</B>*
+<A HREF="#TermdebugStartPre">TermdebugStartPre</A>		Before starting debugging.
+				Not triggered if the debugger is already
+				running or the debugger command cannot be
+				executed.
+
+						*<A NAME="TermdebugStartPost"></A><B>TermdebugStartPost</B>*
+<A HREF="#TermdebugStartPost">TermdebugStartPost</A>		After debugging has initialized.
+				If a &quot;<A HREF="change.html#!">!</A>&quot; bang is passed to `:Termdebug` or
+				`:TermdebugCommand` the event is triggered
+				before running the provided command in <A HREF="debug.html#gdb">gdb</A>.
+
+						*<A NAME="TermdebugStopPre"></A><B>TermdebugStopPre</B>*
+<A HREF="#TermdebugStopPre">TermdebugStopPre</A>		Before debugging ends, when <A HREF="debug.html#gdb">gdb</A> is terminated,
+				most likely after issuing a &quot;quit&quot; command in
+				the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A>.
+
+						*<A NAME="TermdebugStopPost"></A><B>TermdebugStopPost</B>*
+<A HREF="#TermdebugStopPost">TermdebugStopPost</A>		After debugging has ended, gdb-related <A HREF="windows.html#windows">windows</A>
+				are closed, debug <A HREF="windows.html#buffers">buffers</A> wiped out and
+				the state before the debugging was restored.
+
+
+<B><FONT COLOR="PURPLE">Prompt mode </FONT></B>
+
+						*<A NAME="termdebug-prompt"></A><B>termdebug-prompt</B>*
+When the |<A HREF="various.html#+terminal">+terminal</A>| feature is not supported and on <A HREF="os_win32.html#MS-Windows">MS-Windows</A>, <A HREF="debug.html#gdb">gdb</A> will run
+in a buffer with <A HREF="options.html#'buftype'">'buftype'</A> set to &quot;prompt&quot;.  This works slightly differently:
+- The <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A> will be in <A HREF="insert.html#Insert">Insert</A> mode while typing commands.  Go to <A HREF="intro.html#Normal">Normal</A>
+  mode with <A HREF="intro.html#&lt;Esc&gt;">&lt;Esc&gt;</A>, then you can move around in the buffer, copy/paste, etc.
+  Go back to editing the <A HREF="debug.html#gdb">gdb</A> command with any command that starts <A HREF="insert.html#Insert">Insert</A> mode,
+  such <A HREF="motion.html#as">as</A> `a` or `i`.
+- The program being debugged will run in a separate <A HREF="windows.html#window">window</A>.  On <A HREF="os_win32.html#MS-Windows">MS-Windows</A>
+  this is a new console <A HREF="windows.html#window">window</A>.  On <A HREF="os_unix.html#Unix">Unix</A>, if the |<A HREF="various.html#+terminal">+terminal</A>| feature is
+  available a Terminal <A HREF="windows.html#window">window</A> will be opened to run the debugged program in.
+
+
+						*<A NAME="termdebug_use_prompt"></A><B>termdebug_use_prompt</B>*
+Prompt mode can be used even when the |<A HREF="various.html#+terminal">+terminal</A>| feature is present with:
+<B>	let g:termdebug_config['use_prompt'] = 1</B>
+Or if there is no <A HREF="#g:termdebug_config">g:termdebug_config</A>:
+<B>	let g:termdebug_use_prompt = 1</B>
+ 
+
+						*<A NAME="termdebug_map_K"></A><B>termdebug_map_K</B>*
+The <A HREF="various.html#K">K</A> key is normally mapped to <A HREF="#:Evaluate">:Evaluate</A>. If you <A HREF="diff.html#do">do</A> not want this use:
+<B>	let g:termdebug_config['map_K'] = 0</B>
+Or if there is no <A HREF="#g:termdebug_config">g:termdebug_config</A>:
+<B>	let g:termdebug_map_K = 0</B>
+ 
+
+						*<A NAME="termdebug_disasm_window"></A><B>termdebug_disasm_window</B>*
+If you want the Asm <A HREF="windows.html#window">window</A> shown by default, set the flag to 1.
+the &quot;disasm_window_height&quot; entry can be used to set the <A HREF="windows.html#window">window</A> height:
+<B>	let g:termdebug_config['disasm_window'] = 1</B>
+<B>	let g:termdebug_config['disasm_window_height'] = 15</B>
+or, if there is no <A HREF="#g:termdebug_config">g:termdebug_config</A>:
+<B>	let g:termdebug_disasm_window = 15</B>
+Any value greater than 1 will set the Asm <A HREF="windows.html#window">window</A> height to that value.
+
+<B><FONT COLOR="PURPLE">Communication </FONT></B>
+
+						*<A NAME="termdebug-communication"></A><B>termdebug-communication</B>*
+There is another, hidden, buffer, which is used for Vim to communicate with
+<A HREF="debug.html#gdb">gdb</A>.  The buffer name is &quot;<A HREF="debug.html#gdb">gdb</A> communication&quot;.  Do not delete this buffer, <A HREF="motion.html#it">it</A>
+will break the debugger.
+
+Gdb has some weird behavior, the <A HREF="usr_05.html#plugin">plugin</A> does its best to work around that.
+For example, after typing &quot;continue&quot; in the <A HREF="debug.html#gdb">gdb</A> <A HREF="windows.html#window">window</A> a <A HREF="pattern.html#CTRL-C">CTRL-C</A> can be used to
+interrupt the running program.  But after using the MI command
+&quot;-exec-continue&quot;  pressing <A HREF="pattern.html#CTRL-C">CTRL-C</A> does not interrupt.  Therefore you will see
+&quot;continue&quot; being used for the `:Continue` command, instead of using the
+communication <A HREF="channel.html#channel">channel</A>.
+
+
+<B><FONT COLOR="PURPLE">Customizing </FONT></B>
+
+				*<A NAME="termdebug-customizing"></A><B>termdebug-customizing</B>* *<A NAME="g:termdebug_config"></A><B>g:termdebug_config</B>*
+In the past several global <A HREF="eval.html#variables">variables</A> were used for configuration.  These are
+deprecated, using the <A HREF="#g:termdebug_config">g:termdebug_config</A> dictionary is preferred.  When
+<A HREF="#g:termdebug_config">g:termdebug_config</A> exists the other global <A HREF="eval.html#variables">variables</A> will not be used.
+
+
+<B><FONT COLOR="PURPLE">GDB command </FONT></B>
+
+							*<A NAME="g:termdebugger"></A><B>g:termdebugger</B>*
+To change the name of the <A HREF="debug.html#gdb">gdb</A> command, set &quot;debugger&quot; entry in
+<A HREF="#g:termdebug_config">g:termdebug_config</A> or the &quot;<A HREF="#g:termdebugger">g:termdebugger</A>&quot; variable before invoking
+`:Termdebug`:
+<B>	let g:termdebug_config['command'] = "mygdb"</B>
+Or if there is no <A HREF="#g:termdebug_config">g:termdebug_config</A>:
+<B>	let g:termdebugger = "mygdb"</B>
+
+If the command needs an argument use a <A HREF="eval.html#List">List</A>:
+<B>	let g:termdebug_config['command'] = ['rr', 'replay', '--']</B>
+Or if there is no <A HREF="#g:termdebug_config">g:termdebug_config</A>:
+<B>	let g:termdebugger = ['rr', 'replay', '--']</B>
+
+Several arguments will be added to make <A HREF="debug.html#gdb">gdb</A> work well for the debugger.
+If you want to modify them, add a function to <A HREF="change.html#filter">filter</A> the argument <A HREF="eval.html#list">list</A>:
+<B>	let g:termdebug_config['command_filter'] = MyDebugFilter</B>
+
+If you <A HREF="diff.html#do">do</A> not want the arguments to be added, but you <A HREF="diff.html#do">do</A> need to set the
+&quot;pty&quot;, use a function to add the necessary arguments:
+<B>	let g:termdebug_config['command_add_args'] = MyAddArguments</B>
+The function will be called with the <A HREF="eval.html#list">list</A> of arguments so far, and a second
+argument that is the name of the pty.
+
+							*<A NAME="gdb-version"></A><B>gdb-version</B>*
+Only debuggers fully compatible with <A HREF="debug.html#gdb">gdb</A> will work.  Vim uses the GDB/MI
+interface.  The &quot;new-ui&quot; command  requires <A HREF="debug.html#gdb">gdb</A> version 7.12 or later.  if you
+get this error:
+<B><FONT COLOR="PURPLE">	Undefined command: "new-ui". Try "help".</FONT></B>
+Then your <A HREF="debug.html#gdb">gdb</A> is too old.
+
+
+<B><FONT COLOR="PURPLE">Colors </FONT></B>
+
+						*<A NAME="hl-debugPC"></A><B>hl-debugPC</B>* *<A NAME="hl-debugBreakpoint"></A><B>hl-debugBreakpoint</B>*
+The color of the <A HREF="sign.html#signs">signs</A> can be adjusted with these highlight groups:
+- debugPC		the current position
+- debugBreakpoint	a breakpoint
+
+The defaults are, when <A HREF="options.html#'background'">'background'</A> is &quot;light&quot;:
+  hi debugPC term=reverse ctermbg=lightblue guibg=lightblue
+  hi debugBreakpoint term=reverse ctermbg=red guibg=red
+
+When <A HREF="options.html#'background'">'background'</A> is &quot;dark&quot;:
+  hi debugPC term=reverse ctermbg=darkblue guibg=darkblue
+  hi debugBreakpoint term=reverse ctermbg=red guibg=red
+
+
+<B><FONT COLOR="PURPLE">Shortcuts </FONT></B>
+
+							*<A NAME="termdebug_shortcuts"></A><B>termdebug_shortcuts</B>*
+
+You can define your own shortcuts (mappings) to <A HREF="intro.html#control">control</A> <A HREF="debug.html#gdb">gdb</A>, that can work in
+any <A HREF="windows.html#window">window</A>, using the TermDebugSendCommand() function.  Example:
+<B>	map ,w :call TermDebugSendCommand('where')&lt;CR&gt;</B>
+The argument is the <A HREF="debug.html#gdb">gdb</A> command.
+
+
+<B><FONT COLOR="PURPLE">Popup menu </FONT></B>
+
+							*<A NAME="termdebug_popup"></A><B>termdebug_popup</B>*
+
+By default the Termdebug <A HREF="usr_05.html#plugin">plugin</A> sets <A HREF="options.html#'mousemodel'">'mousemodel'</A> to &quot;popup_setpos&quot; and adds
+these entries to the <A HREF="popup.html#popup">popup</A> menu:
+	Set breakpoint		`:Break`
+	Clear breakpoint	`:Clear`
+	Evaluate		`:Evaluate`
+If you don't want this then disable <A HREF="motion.html#it">it</A> with:
+<B>	let g:termdebug_config['popup'] = 0</B>
+or if there is no <A HREF="#g:termdebug_config">g:termdebug_config</A>:
+<B>	let g:termdebug_popup = 0</B>
+
+
+<B><FONT COLOR="PURPLE">Vim window width </FONT></B>
+
+							*<A NAME="termdebug_wide"></A><B>termdebug_wide</B>*
+
+To change the width of the Vim <A HREF="windows.html#window">window</A> when debugging starts and use a vertical
+split:
+<B>	let g:termdebug_config['wide'] = 163</B>
+Or if there is no <A HREF="#g:termdebug_config">g:termdebug_config</A>:
+<B>	let g:termdebug_wide = 163</B>
+
+This will set <A HREF="options.html#'columns'">'columns'</A> to 163 when `:Termdebug` is used.  The value is
+restored when quitting the debugger.
+
+If the wide value is set and <A HREF="options.html#'columns'">'columns'</A> is already a greater value, then a
+vertical split will be used without modifying <A HREF="options.html#'columns'">'columns'</A>.
+
+Set the wide value to 1 to use a vertical split without ever <A HREF="change.html#changing">changing</A>
+<A HREF="options.html#'columns'">'columns'</A>.  This is useful when the <A HREF="#terminal">terminal</A> can't be resized by Vim.
+
+
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

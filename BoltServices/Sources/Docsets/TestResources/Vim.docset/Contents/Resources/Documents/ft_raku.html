@@ -1,0 +1,146 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: ft_raku</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: ft_raku</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="ft_raku.txt"></A><B>ft_raku.txt</B>*	The Raku programming language <A HREF="filetype.html#filetype">filetype</A>
+
+
+                                                      *<A NAME="vim-raku"></A><B>vim-raku</B>*
+
+Vim-raku provides <A HREF="syntax.html#syntax">syntax</A> highlighting, indentation, and other support for
+editing Raku programs.
+
+1. Using <A HREF="mbyte.html#Unicode">Unicode</A> in your Raku files	|<A HREF="#raku-unicode">raku-unicode</A>|
+
+==============================================================================
+
+1. Using <A HREF="mbyte.html#Unicode">Unicode</A> in your Raku files                           *<A NAME="raku-unicode"></A><B>raku-unicode</B>*
+
+Defining new operators using <A HREF="mbyte.html#Unicode">Unicode</A> symbols is a good way to make your
+Raku program <A HREF="starting.html#easy">easy</A> to read. See:
+https://perl6advent.wordpress.com/2012/12/18/day-18-formulas-resistance-is-futile/
+
+While Raku does define ASCII alternatives for some common operators (see
+https://docs.raku.org/language/unicode_ascii), using the full range of
+<A HREF="mbyte.html#Unicode">Unicode</A> operators is highly desirable. Your operating system provides input
+facilities, but using the features built in to Vim may be preferable.
+
+The natural way to produce these symbols in Vim is to use <A HREF="digraph.html#digraph">digraph</A> shortcuts
+(:help |<A HREF="digraph.html#digraphs-use">digraphs-use</A>|). Many of them are defined; type `:digraphs` to get
+the <A HREF="eval.html#list">list</A>. A convenient way to read the <A HREF="eval.html#list">list</A> of <A HREF="digraph.html#digraphs">digraphs</A> is to save them in a
+file. From the shell:
+<B>        vim +'redir &gt;/tmp/vim-digraphs-listing.txt' +digraphs +'redir END' +q</B>
+
+Some of them are available with standard Vim <A HREF="digraph.html#digraphs">digraphs</A>:
+<B><FONT COLOR="PURPLE">	&lt;&lt; «    /0 ∅    !&lt; ≮  </FONT></B>
+<B><FONT COLOR="PURPLE">	&gt;&gt; »    Ob ∘    !&gt; ≯  </FONT></B>
+<B><FONT COLOR="PURPLE">	., …    00 ∞    (C ⊂  </FONT></B>
+<B><FONT COLOR="PURPLE">	(U ∩    -: ÷    )C ⊃  </FONT></B>
+<B><FONT COLOR="PURPLE">	)U ∪    (_ ⊆    &gt;= ≥  </FONT></B>
+<B><FONT COLOR="PURPLE">	?= ≅    )_ ⊇    =&lt; ≤  </FONT></B>
+<B><FONT COLOR="PURPLE">	(- ∈    ?= ≅    != ≠  </FONT></B>
+<B><FONT COLOR="PURPLE">	-) ∋    ?- ≃  </FONT></B>
+
+The Greek alphabet is available with '*' followed by a similar Latin symbol:
+<B><FONT COLOR="PURPLE">	*p π  </FONT></B>
+<B><FONT COLOR="PURPLE">	*t τ  </FONT></B>
+<B><FONT COLOR="PURPLE">	*X ×  </FONT></B>
+
+Numbers, subscripts and superscripts are available with '<A HREF="change.html#s">s</A>' and '<A HREF="change.html#S">S</A>':
+<B><FONT COLOR="PURPLE">	0s ₀    0S ⁰  </FONT></B>
+<B><FONT COLOR="PURPLE">	1s ₁    1S ¹  </FONT></B>
+<B><FONT COLOR="PURPLE">	2s ₂    9S ⁹  </FONT></B>
+
+But some don't come defined by default. Those are <A HREF="digraph.html#digraph">digraph</A> <A HREF="intro.html#definitions">definitions</A> you can
+add in your ~/.vimrc file.
+<B>	exec 'digraph \\ ' .. char2nr('∖')</B>
+<B>	exec 'digraph \&lt; ' .. char2nr('≼')</B>
+<B>	exec 'digraph \&gt; ' .. char2nr('≽')</B>
+<B>	exec 'digraph (L ' .. char2nr('⊈')</B>
+<B>	exec 'digraph )L ' .. char2nr('⊉')</B>
+<B>	exec 'digraph (/ ' .. char2nr('⊄')</B>
+<B>	exec 'digraph )/ ' .. char2nr('⊅')</B>
+<B>	exec 'digraph )/ ' .. char2nr('⊅')</B>
+<B>	exec 'digraph U+ ' .. char2nr('⊎')</B>
+<B>	exec 'digraph 0- ' .. char2nr('⊖')</B>
+<B>	" Euler's constant</B>
+<B>	exec 'digraph ne ' .. char2nr('𝑒')</B>
+<B>	" Raku's atomic operations marker</B>
+<B>	exec 'digraph @@ ' .. char2nr('⚛')</B>
+
+Alternatively, you can write <A HREF="insert.html#Insert">Insert</A> mode <A HREF="map.html#abbreviations">abbreviations</A> that convert ASCII-
+based operators into their single-character <A HREF="mbyte.html#Unicode">Unicode</A> equivalent.
+<B>	iabbrev &lt;buffer&gt; !(&lt;) ⊄</B>
+<B>	iabbrev &lt;buffer&gt; !(&lt;=) ⊈</B>
+<B>	iabbrev &lt;buffer&gt; !(&gt;) ⊅</B>
+<B>	iabbrev &lt;buffer&gt; !(&gt;=) ⊉</B>
+<B>	iabbrev &lt;buffer&gt; !(cont) ∌</B>
+<B>	iabbrev &lt;buffer&gt; !(elem) ∉</B>
+<B>	iabbrev &lt;buffer&gt; != ≠</B>
+<B>	iabbrev &lt;buffer&gt; (&amp;) ∩</B>
+<B>	iabbrev &lt;buffer&gt; (+) ⊎</B>
+<B>	iabbrev &lt;buffer&gt; (-) ∖</B>
+<B>	iabbrev &lt;buffer&gt; (.) ⊍</B>
+<B>	iabbrev &lt;buffer&gt; (&lt;) ⊂</B>
+<B>	iabbrev &lt;buffer&gt; (&lt;+) ≼</B>
+<B>	iabbrev &lt;buffer&gt; (&lt;=) ⊆</B>
+<B>	iabbrev &lt;buffer&gt; (&gt;) ⊃</B>
+<B>	iabbrev &lt;buffer&gt; (&gt;+) ≽</B>
+<B>	iabbrev &lt;buffer&gt; (&gt;=) ⊇</B>
+<B>	iabbrev &lt;buffer&gt; (\|) ∪</B>
+<B>	iabbrev &lt;buffer&gt; (^) ⊖</B>
+<B>	iabbrev &lt;buffer&gt; (atomic) ⚛</B>
+<B>	iabbrev &lt;buffer&gt; (cont) ∋</B>
+<B>	iabbrev &lt;buffer&gt; (elem) ∈</B>
+<B>	iabbrev &lt;buffer&gt; * ×</B>
+<B>	iabbrev &lt;buffer&gt; **0 ⁰</B>
+<B>	iabbrev &lt;buffer&gt; **1 ¹</B>
+<B>	iabbrev &lt;buffer&gt; **2 ²</B>
+<B>	iabbrev &lt;buffer&gt; **3 ³</B>
+<B>	iabbrev &lt;buffer&gt; **4 ⁴</B>
+<B>	iabbrev &lt;buffer&gt; **5 ⁵</B>
+<B>	iabbrev &lt;buffer&gt; **6 ⁶</B>
+<B>	iabbrev &lt;buffer&gt; **7 ⁷</B>
+<B>	iabbrev &lt;buffer&gt; **8 ⁸</B>
+<B>	iabbrev &lt;buffer&gt; **9 ⁹</B>
+<B>	iabbrev &lt;buffer&gt; ... …</B>
+<B>	iabbrev &lt;buffer&gt; / ÷</B>
+<B>	iabbrev &lt;buffer&gt; &lt;&lt; «</B>
+<B>	iabbrev &lt;buffer&gt; &lt;&lt;[=]&lt;&lt; «=«</B>
+<B>	iabbrev &lt;buffer&gt; &lt;&lt;[=]&gt;&gt; «=»</B>
+<B>	iabbrev &lt;buffer&gt; &lt;= ≤</B>
+<B>	iabbrev &lt;buffer&gt; =~= ≅</B>
+<B>	iabbrev &lt;buffer&gt; &gt;= ≥</B>
+<B>	iabbrev &lt;buffer&gt; &gt;&gt; »</B>
+<B>	iabbrev &lt;buffer&gt; &gt;&gt;[=]&lt;&lt; »=«</B>
+<B>	iabbrev &lt;buffer&gt; &gt;&gt;[=]&gt;&gt; »=»</B>
+<B>	iabbrev &lt;buffer&gt; Inf ∞</B>
+<B>	iabbrev &lt;buffer&gt; atomic-add-fetch ⚛+=</B>
+<B>	iabbrev &lt;buffer&gt; atomic-assign ⚛=</B>
+<B>	iabbrev &lt;buffer&gt; atomic-fetch ⚛</B>
+<B>	iabbrev &lt;buffer&gt; atomic-dec-fetch --⚛</B>
+<B>	iabbrev &lt;buffer&gt; atomic-fetch-dec ⚛--</B>
+<B>	iabbrev &lt;buffer&gt; atomic-fetch-inc ⚛++</B>
+<B>	iabbrev &lt;buffer&gt; atomic-inc-fetch ++⚛</B>
+<B>	iabbrev &lt;buffer&gt; atomic-sub-fetch ⚛−=</B>
+<B>	iabbrev &lt;buffer&gt; e 𝑒</B>
+<B>	iabbrev &lt;buffer&gt; o ∘</B>
+<B>	iabbrev &lt;buffer&gt; pi π</B>
+<B>	iabbrev &lt;buffer&gt; set() ∅</B>
+<B>	iabbrev &lt;buffer&gt; tau τ</B>
+ 
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

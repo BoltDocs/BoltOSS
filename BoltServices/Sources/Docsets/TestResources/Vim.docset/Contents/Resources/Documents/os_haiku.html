@@ -1,0 +1,266 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: os_haiku</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: os_haiku</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="os_haiku.txt"></A><B>os_haiku.txt</B>*	For Vim version 9.0.  Last change: 2020 May 13
+
+
+		  VIM REFERENCE MANUAL    by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+
+
+							*<A NAME="Haiku"></A><B>Haiku</B>*
+This file contains the particularities for the <A HREF="#Haiku">Haiku</A> version of Vim.  For
+matters not discussed in this file, Vim behaves very much like the <A HREF="os_unix.html#Unix">Unix</A>
+|<A HREF="os_unix.html">os_unix.txt</A>| version.
+
+<A HREF="#Haiku">Haiku</A> is an open-source operating system inspired by <A HREF="os_beos.html#BeOS">BeOS</A>, that specifically
+targets personal computing.
+
+ 1. General			|<A HREF="#haiku-general">haiku-general</A>|
+ 2. Compiling Vim		|<A HREF="#haiku-compiling">haiku-compiling</A>|
+ 3. The <A HREF="#Haiku">Haiku</A> <A HREF="gui.html#GUI">GUI</A>		|<A HREF="#haiku-gui">haiku-gui</A>|
+ 4. The <A HREF="starting.html#$VIM">$VIM</A> directory		|<A HREF="#haiku-vimdir">haiku-vimdir</A>|
+ 5. The $USER_SETTINGS_DIR
+    directory			|<A HREF="#haiku-user-settings-dir">haiku-user-settings-dir</A>|
+ 6. Drag <A HREF="change.html#&amp;">&amp;</A> Drop			|<A HREF="#haiku-dragndrop">haiku-dragndrop</A>|
+ 7. Single Launch vs. Multiple
+    Launch			|<A HREF="#haiku-launch">haiku-launch</A>|
+ 8. Fonts			|<A HREF="#haiku-fonts">haiku-fonts</A>|
+ 9. The meta key modifier	|<A HREF="#haiku-meta">haiku-meta</A>|
+10. Mouse key mappings		|<A HREF="#haiku-mouse">haiku-mouse</A>|
+11. Color names			|<A HREF="#haiku-colors">haiku-colors</A>|
+12. <A HREF="gui.html#GUI">GUI</A> Toolbar Images		|<A HREF="#haiku-toolbar-images">haiku-toolbar-images</A>|
+13. Credits			|<A HREF="#haiku-support-credits">haiku-support-credits</A>|
+14. Bugs <A HREF="change.html#&amp;">&amp;</A> to-do		|<A HREF="#haiku-bugs">haiku-bugs</A>|
+
+
+
+1. General						*<A NAME="haiku-general"></A><B>haiku-general</B>*
+
+The default <A HREF="syntax.html#syntax">syntax</A> highlighting mostly works with different foreground colors
+to highlight items.  This works best if you set your Terminal <A HREF="windows.html#window">window</A> to a
+darkish background and light letters.  Some middle-grey background (for
+instance (r,g,b)=(168,168,168)) with black letters also works nicely.
+
+
+
+2. Compiling Vim					*<A NAME="haiku-compiling"></A><B>haiku-compiling</B>*
+
+Vim can be compiled using the standard configure/make approach. Running
+./configure without any arguments or passing --enable-gui=haiku, will compile
+vim with the <A HREF="#Haiku">Haiku</A> <A HREF="gui.html#GUI">GUI</A> support.  Run ./configure <A HREF="starting.html#--help">--help</A> , to find out other
+features you can enable/disable.
+
+<A HREF="#Haiku">Haiku</A> uses &quot;ncurses6&quot; <A HREF="motion.html#as">as</A> its <A HREF="terminal.html#terminal">terminal</A> library, therefore you need to have
+&quot;ncurses6_devel&quot; package installed from HaikuDepot in order to configure
+the <A HREF="#Haiku">Haiku</A> build.  Just append &quot;--with-tlib=ncurses6&quot; to ./configure command
+
+Now you should use &quot;make&quot; to compile Vim, then &quot;make install&quot; to <A HREF="usr_90.html#install">install</A> <A HREF="motion.html#it">it</A>.
+For seamless integration into <A HREF="#Haiku">Haiku</A>, the GUI-less vim binary should be
+additionally installed over the <A HREF="gui.html#GUI">GUI</A> version.  Typical build commands are:
+
+  ./configure --prefix=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY` \
+    --datarootdir=`finddir B_SYSTEM_NONPACKAGED_DATA_DIRECTORY` \
+    --mandir=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY`/documentation/man \
+  make clean
+  make <A HREF="usr_90.html#install">install</A>
+
+  ./configure --prefix=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY`  \
+    --datarootdir=`finddir B_SYSTEM_NONPACKAGED_DATA_DIRECTORY` \
+    --mandir=`finddir B_SYSTEM_NONPACKAGED_DIRECTORY`/documentation/man \
+    --disable-gui
+  make clean
+  make <A HREF="usr_90.html#install">install</A>
+
+
+
+3. The <A HREF="#Haiku">Haiku</A> <A HREF="gui.html#GUI">GUI</A>					*<A NAME="haiku-gui"></A><B>haiku-gui</B>*
+
+Normally Vim starts with the <A HREF="gui.html#GUI">GUI</A> if you start <A HREF="motion.html#it">it</A> <A HREF="motion.html#as">as</A> <A HREF="starting.html#gvim">gvim</A> or vim <A HREF="starting.html#-g">-g</A>.  The vim
+version with <A HREF="gui.html#GUI">GUI</A> tries to determine if <A HREF="motion.html#it">it</A> was started from the Tracker instead
+of the Terminal, and if so, uses the <A HREF="gui.html#GUI">GUI</A> anyway.  However, the current detection
+scheme is fooled if you use the command &quot;vim - &lt;/dev/null&quot;.
+
+Stuff that does not work yet:
+
+- Mouse up events are not generated when outside the <A HREF="windows.html#window">window</A>.  You can notice
+  this when selecting text and moving the cursor outside the <A HREF="windows.html#window">window</A>, then
+  letting go of the mouse button.  Another way is when you drag the scrollbar
+  and <A HREF="diff.html#do">do</A> the same thing.  Because Vim still thinks you are still playing with
+  the scrollbar <A HREF="motion.html#it">it</A> won't change <A HREF="motion.html#it">it</A> itself.  There is a workaround which kicks
+  in when the <A HREF="windows.html#window">window</A> is activated or deactivated (so <A HREF="motion.html#it">it</A> works best with focus-
+  follows-mouse turned on).
+- The cursor does not flash.
+
+
+
+4. The <A HREF="starting.html#$VIM">$VIM</A> directory					*<A NAME="haiku-vimdir"></A><B>haiku-vimdir</B>*
+
+<A HREF="starting.html#$VIM">$VIM</A> is the symbolic name for the place where Vim's support files are stored.
+The default value for <A HREF="starting.html#$VIM">$VIM</A> is set at compile time and can be determined with:
+
+  <A HREF="various.html#:version">:version</A>
+
+The normal value is /boot/system/data/vim for Haikuports version, 
+/boot/system/non-packaged/data/vim for manual builds.  If you don't like <A HREF="motion.html#it">it</A>
+you can set the VIM environment variable to override this, or set <A HREF="options.html#'helpfile'">'helpfile'</A>
+in your <A HREF="starting.html#.vimrc">.vimrc</A>:
+
+<B>  :if version &gt;= 500</B>
+<B>  :    set helpfile=~/vim/runtime/doc/help.txt</B>
+<B>  :    syntax on</B>
+<B>  :endif</B>
+
+
+
+5. The $USER_SETTINGS_DIR directory		*<A NAME="haiku-user-settings-dir"></A><B>haiku-user-settings-dir</B>*
+
+$USER_SETTINGS_DIR is the symbolic name for the place where <A HREF="#Haiku">Haiku</A>
+configuration and settings files are stored.
+
+The normal value is /boot/home/config/settings.
+
+
+
+6. Drag <A HREF="change.html#&amp;">&amp;</A> Drop						*<A NAME="haiku-dragndrop"></A><B>haiku-dragndrop</B>*
+
+You can drop files and directories on either the Vim icon (starts a new Vim
+session, unless you use the File Types application to set Vim to be &quot;Single
+Launch&quot;) or on the Vim <A HREF="windows.html#window">window</A> (starts editing the files).  Dropping a folder
+sets Vim's current working directory |<A HREF="editing.html#:cd">:cd</A>| |<A HREF="editing.html#:pwd">:pwd</A>|.  If you drop files or
+folders with either SHIFT key pressed, Vim changes directory to the folder
+that contains the first item dropped.  When starting Vim, there is no need to
+press <A HREF="intro.html#shift">shift</A>: Vim behaves <A HREF="motion.html#as">as</A> if you <A HREF="diff.html#do">do</A>.
+
+Files dropped set the current argument list. |<A HREF="editing.html#argument-list">argument-list</A>|
+
+
+
+7. Single Launch vs. Multiple Launch			*<A NAME="haiku-launch"></A><B>haiku-launch</B>*
+
+As distributed Vim's Application Flags (as seen in the FileTypes preference)
+are set to Multiple Launch.  If you prefer, you can set them to Single Launch
+instead.  Attempts to start a second copy of Vim will cause the first Vim to
+open the files instead.  This works from the Tracker but also from the command
+line.  In the latter <A HREF="change.html#case">case</A>, non-file (option) arguments are not supported.
+Another drawback of the Single Launch is silent ignore of &quot;Open With ...&quot;
+requests by vim instance that running <A HREF="motion.html#as">as</A> non-GUI application even <A HREF="gui.html#GUI">GUI</A> support
+was compiled in. Vim instance running with <A HREF="gui.html#GUI">GUI</A> has no such problems.
+
+NB: Only the <A HREF="gui.html#GUI">GUI</A> version has a BApplication (and hence Application Flags).
+This section does not apply to the GUI-less version, should you compile one.
+
+
+
+8. Fonts						*<A NAME="haiku-fonts"></A><B>haiku-fonts</B>*
+
+Set fonts with
+
+<B>  :set guifont=DejaVu_Sans_Mono/Book/12</B>
+
+where the first part is the font family, the second part the style, and the
+third part the size.  You can use underscores instead of spaces in family and
+style.
+
+Best results are obtained with monospaced fonts.  Vim attempts to use all
+fonts in B_FIXED_SPACING mode but apparently this does not work for
+proportional fonts (despite what the BeBook says).
+
+To verify which encodings are supported by the current font give the
+
+<B>  :digraphs</B>
+
+command, which lists a bunch of characters with their ISO Latin 1 encoding.
+If, for instance, there are &quot;box&quot; characters among them, or the last character
+isn't a dotted-y, then for this font the encoding does not work.
+
+If the font you specify is unavailable, you get the system fixed font.
+
+<A HREF="gui.html#GUI">GUI</A> Font Selection Dialog is available at giving the:
+
+  <A HREF="options.html#:set">:set</A> <A HREF="options.html#'guifont'">guifont</A>=*
+
+command.
+
+
+
+9. The <A HREF="intro.html#meta">meta</A> key modifier				*<A NAME="haiku-meta"></A><B>haiku-meta</B>*
+
+The META key modifier is obtained by the left or right OPTION keys.  This is
+because the ALT (aka COMMAND) keys are not passed to applications.
+
+
+
+10. Mouse key mappings					*<A NAME="haiku-mouse"></A><B>haiku-mouse</B>*
+
+Vim calls the various mouse buttons LeftMouse, MiddleMouse and RightMouse.  If
+you use the default Mouse preference settings these names indeed correspond to
+reality.  Vim uses this <A HREF="map.html#mapping">mapping</A>:
+
+    Button 1 <A HREF="eval.html#-&gt;">-&gt;</A> LeftMouse,
+    Button 2 <A HREF="eval.html#-&gt;">-&gt;</A> RightMouse,
+    Button 3 <A HREF="eval.html#-&gt;">-&gt;</A> MiddleMouse.
+
+If your mouse has fewer than 3 buttons you can provide your own <A HREF="map.html#mapping">mapping</A> from
+mouse clicks with modifier(s) to other mouse buttons.  See the file
+$VIM/macros/swapmous.vim for an example.		|<A HREF="gui.html#gui-mouse-mapping">gui-mouse-mapping</A>|
+
+
+
+11. Color names						*<A NAME="haiku-colors"></A><B>haiku-colors</B>*
+
+Vim has a number of color names built-in. Additional names can be defined in
+|<A HREF="eval.html#v:colornames">v:colornames</A>|. See |<A HREF="syntax.html#:colorscheme">:colorscheme</A>| for details.
+
+
+
+12. <A HREF="gui.html#GUI">GUI</A> Toolbar Images					*<A NAME="haiku-toolbar-images"></A><B>haiku-toolbar-images</B>*
+
+Alternative set of toolbar images should be the PNG image of any height you
+like. Image width is calculated to contain at least 32 buttons in one-row
+cells.
+The image should be stored under the name $VIRUNTIME/bitmaps/builtin-tools.png
+More info about the buttons assignment are at |<A HREF="gui.html#builtin-tools">builtin-tools</A>|.
+
+
+
+13. Credits						*<A NAME="haiku-support-credits"></A><B>haiku-support-credits</B>*
+
+<A HREF="#Haiku">Haiku</A> port is based on work done for <A HREF="os_beos.html#BeOS">BeOS</A> version by many people
+ - <A HREF="os_beos.html#BeBox">BeBox</A> <A HREF="gui.html#GUI">GUI</A> support Copyright 1998 by Olaf Seibert;
+- Ported to R4 by Richard Offer <A HREF="mailto:richard@whitequeen.com">&lt;richard@whitequeen.com&gt;</A> Jul 99; 
+ - Those who contributed, not listed above but not forgotten;
+- Haiku support by Siarzhuk Zharski <A HREF="mailto:imker@gmx.li">&lt;imker@gmx.li&gt;</A> Apr-Mai 2009. 
+
+All the changes and patches released under vim-license.
+
+Thank you, all!
+
+
+
+14. Bugs <A HREF="change.html#&amp;">&amp;</A> to-do					*<A NAME="haiku-bugs"></A><B>haiku-bugs</B>*
+ 
+The port is under <A HREF="develop.html#development">development</A> now and far away from the perfect state. For bug
+reports, patches and wishes, please use the Vim mailing <A HREF="eval.html#list">list</A> or Vim Github
+repository.
+ 
+Mailing <A HREF="eval.html#list">list</A>: https://www.vim.org/maillist.php
+Vim Github repository: https://github.com/vim/vim
+
+
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

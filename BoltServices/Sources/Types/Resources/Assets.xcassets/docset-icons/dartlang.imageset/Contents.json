@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "dartlang.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,0 +1,214 @@
+<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Bash History Builtins</title>
+
+<meta name="description" content="Bash History Builtins (Bash Reference Manual)">
+<meta name="keywords" content="Bash History Builtins (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Using-History-Interactively.html" rel="up" title="Using History Interactively">
+<link href="History-Interaction.html" rel="next" title="History Interaction">
+<link href="Bash-History-Facilities.html" rel="prev" title="Bash History Facilities">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<div class="section" id="Bash-History-Builtins">
+<div class="header">
+<p>
+Next: <a href="History-Interaction.html" accesskey="n" rel="next">History Expansion</a>, Previous: <a href="Bash-History-Facilities.html" accesskey="p" rel="prev">Bash History Facilities</a>, Up: <a href="Using-History-Interactively.html" accesskey="u" rel="up">Using History Interactively</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Bash-History-Builtins-1"></span><h3 class="section">9.2 Bash History Builtins</h3>
+<span id="index-history-builtins"></span>
+
+<p>Bash provides two builtin commands which manipulate the
+history list and history file.
+</p>
+<dl compact="compact">
+<a class="dashAnchor" name="//apple_ref/Builtin/fc"></a><dt id="index-fc"><span><code>fc</code><a href="#index-fc" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><div class="example">
+<pre class="example"><code>fc [-e <var>ename</var>] [-lnr] [<var>first</var>] [<var>last</var>]</code>
+<code>fc -s [<var>pat</var>=<var>rep</var>] [<var>command</var>]</code>
+</pre></div>
+
+<p>The first form selects a range of commands from <var>first</var> to
+<var>last</var> from the history list and displays or edits and re-executes
+them.
+Both <var>first</var> and
+<var>last</var> may be specified as a string (to locate the most recent
+command beginning with that string) or as a number (an index into the
+history list, where a negative number is used as an offset from the
+current command number).
+</p>
+<p>When listing, a <var>first</var> or <var>last</var> of 0 is equivalent to -1
+and -0 is equivalent to the current command (usually the <code>fc</code>
+command);
+otherwise 0 is equivalent to -1 and -0 is invalid.
+</p>
+<p>If <var>last</var> is not specified, it is set to
+<var>first</var>.  If <var>first</var> is not specified, it is set to the previous
+command for editing and -16 for listing.  If the <samp>-l</samp> flag is
+given, the commands are listed on standard output.  The <samp>-n</samp> flag
+suppresses the command numbers when listing.  The <samp>-r</samp> flag
+reverses the order of the listing.  Otherwise, the editor given by
+<var>ename</var> is invoked on a file containing those commands.  If
+<var>ename</var> is not given, the value of the following variable expansion
+is used: <code>${FCEDIT:-${EDITOR:-vi}}</code>.  This says to use the
+value of the <code>FCEDIT</code> variable if set, or the value of the
+<code>EDITOR</code> variable if that is set, or <code>vi</code> if neither is set.
+When editing is complete, the edited commands are echoed and executed.
+</p>
+<p>In the second form, <var>command</var> is re-executed after each instance
+of <var>pat</var> in the selected command is replaced by <var>rep</var>.
+<var>command</var> is interpreted the same as <var>first</var> above.
+</p>
+<p>A useful alias to use with the <code>fc</code> command is <code>r='fc -s'</code>, so
+that typing ‘<samp>r cc</samp>’ runs the last command beginning with <code>cc</code>
+and typing ‘<samp>r</samp>’ re-executes the last command (see <a href="Aliases.html">Aliases</a>).
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Builtin/history"></a><dt id="index-history"><span><code>history</code><a href="#index-history" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><div class="example">
+<pre class="example">history [<var>n</var>]
+history -c
+history -d <var>offset</var>
+history -d <var>start</var>-<var>end</var>
+history [-anrw] [<var>filename</var>]
+history -ps <var>arg</var>
+</pre></div>
+
+<p>With no options, display the history list with line numbers.
+Lines prefixed with a ‘<samp>*</samp>’ have been modified.
+An argument of <var>n</var> lists only the last <var>n</var> lines.
+If the shell variable <code>HISTTIMEFORMAT</code> is set and not null,
+it is used as a format string for <var>strftime</var> to display
+the time stamp associated with each displayed history entry.
+No intervening blank is printed between the formatted time stamp
+and the history line.
+</p>
+<p>Options, if supplied, have the following meanings:
+</p>
+<dl compact="compact">
+<dt><span><code>-c</code></span></dt>
+<dd><p>Clear the history list.  This may be combined
+with the other options to replace the history list completely.
+</p>
+</dd>
+<dt><span><code>-d <var>offset</var></code></span></dt>
+<dd><p>Delete the history entry at position <var>offset</var>.
+If <var>offset</var> is positive, it should be specified as it appears when
+the history is displayed.
+If <var>offset</var> is negative, it is interpreted as relative to one greater
+than the last history position, so negative indices count back from the
+end of the history, and an index of ‘<samp>-1</samp>’ refers to the current
+<code>history -d</code> command.
+</p>
+</dd>
+<dt><span><code>-d <var>start</var>-<var>end</var></code></span></dt>
+<dd><p>Delete the range of history entries between positions <var>start</var> and
+<var>end</var>, inclusive.
+Positive and negative values for <var>start</var> and <var>end</var>
+are interpreted as described above.
+</p>
+</dd>
+<dt><span><code>-a</code></span></dt>
+<dd><p>Append the new history lines to the history file.
+These are history lines entered since the beginning of the current
+Bash session, but not already appended to the history file.
+</p>
+</dd>
+<dt><span><code>-n</code></span></dt>
+<dd><p>Append the history lines not already read from the history file
+to the current history list.  These are lines appended to the history
+file since the beginning of the current Bash session.
+</p>
+</dd>
+<dt><span><code>-r</code></span></dt>
+<dd><p>Read the history file and append its contents to
+the history list.
+</p>
+</dd>
+<dt><span><code>-w</code></span></dt>
+<dd><p>Write out the current history list to the history file.
+</p>
+</dd>
+<dt><span><code>-p</code></span></dt>
+<dd><p>Perform history substitution on the <var>arg</var>s and display the result
+on the standard output, without storing the results in the history list.
+</p>
+</dd>
+<dt><span><code>-s</code></span></dt>
+<dd><p>The <var>arg</var>s are added to the end of
+the history list as a single entry.
+</p>
+</dd>
+</dl>
+
+<p>If a <var>filename</var> argument is supplied
+when any of the <samp>-w</samp>, <samp>-r</samp>, <samp>-a</samp>, or <samp>-n</samp> options
+is used, Bash uses <var>filename</var> as the history file.
+If not, then the value of the <code>HISTFILE</code> variable is used.
+</p>
+<p>The return value is 0 unless an invalid option is encountered, an
+error occurs while reading or writing the history file, an invalid
+<var>offset</var> or range is supplied as an argument to <samp>-d</samp>, or the
+history expansion supplied as an argument to <samp>-p</samp> fails.
+</p>
+</dd>
+</dl>
+
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="History-Interaction.html">History Expansion</a>, Previous: <a href="Bash-History-Facilities.html">Bash History Facilities</a>, Up: <a href="Using-History-Interactively.html">Using History Interactively</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+
+
+</body></html>

@@ -1,0 +1,7 @@
+#include "./Bolt.xcconfig"
+
+CODE_SIGN_ENTITLEMENTS = Bolt/BoltDebug.entitlements
+CODE_SIGN_STYLE = Automatic
+INFOPLIST_KEY_CFBundleDisplayName = BoltDebug
+PRODUCT_BUNDLE_IDENTIFIER = $(ORGANIZATION_IDENTIFIER).BoltOSSDebug
+PRODUCT_DISPLAY_NAME = BoltDebug

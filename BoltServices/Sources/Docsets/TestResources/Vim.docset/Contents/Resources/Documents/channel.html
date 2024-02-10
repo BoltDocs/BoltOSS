@@ -1,0 +1,1657 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: channel</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: channel</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="channel.txt"></A><B>channel.txt</B>*      For Vim version 9.0.  Last change: 2022 Jun 23
+
+
+		  VIM REFERENCE MANUAL	  by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+
+
+		      Inter-process communication		*<A NAME="channel"></A><B>channel</B>*
+
+Vim uses channels to communicate with other processes.
+
+A <A HREF="#channel">channel</A> uses a socket or pipes.			*<A NAME="socket-interface"></A><B>socket-interface</B>*
+<A HREF="eval.html#Jobs">Jobs</A> can be used to start processes and communicate with them.
+The Netbeans interface also uses a <A HREF="#channel">channel</A>. |<A HREF="netbeans.html#netbeans">netbeans</A>|
+
+1. Overview				|<A HREF="#job-channel-overview">job-channel-overview</A>|
+2. <A HREF="eval.html#Channel">Channel</A> demo				|<A HREF="#channel-demo">channel-demo</A>|
+3. Opening a channel			|<A HREF="#channel-open">channel-open</A>|
+4. Using a JSON or JS channel		|<A HREF="#channel-use">channel-use</A>|
+5. <A HREF="eval.html#Channel">Channel</A> commands			|<A HREF="#channel-commands">channel-commands</A>|
+6. Using a RAW or NL channel		|<A HREF="#channel-raw">channel-raw</A>|
+7. More channel <A HREF="eval.html#functions">functions</A>		|<A HREF="#channel-more">channel-more</A>|
+8. <A HREF="eval.html#Channel">Channel</A> functions details		|<A HREF="#channel-functions-details">channel-functions-details</A>|
+9. Starting a job with a <A HREF="#channel">channel</A>	|<A HREF="#job-start">job-start</A>|
+10. Starting a job without a channel	|<A HREF="#job-start-nochannel">job-start-nochannel</A>|
+11. <A HREF="eval.html#Job">Job</A> functions			|<A HREF="#job-functions-details">job-functions-details</A>|
+12. <A HREF="eval.html#Job">Job</A> options				|<A HREF="#job-options">job-options</A>|
+13. Controlling a job			|<A HREF="#job-control">job-control</A>|
+14. Using a prompt buffer		|<A HREF="#prompt-buffer">prompt-buffer</A>|
+15. Language Server Protocol		|<A HREF="#language-server-protocol">language-server-protocol</A>|
+
+{only when compiled with the |<A HREF="various.html#+channel">+channel</A>| feature for channel stuff}
+	You can check this with: `has('channel')`
+{only when compiled with the |<A HREF="various.html#+job">+job</A>| feature for job stuff}
+	You can check this with: `has('job')`
+
+==============================================================================
+
+1. Overview						*<A NAME="job-channel-overview"></A><B>job-channel-overview</B>*
+
+There are four main types of jobs:
+1. A daemon, serving several Vim instances.
+   Vim connects to <A HREF="motion.html#it">it</A> with a socket.
+2. One <A HREF="#job">job</A> working with one Vim instance, asynchronously.
+   Uses a socket or pipes.
+3. A <A HREF="#job">job</A> performing some work for a short time, asynchronously.
+   Uses a socket or pipes.
+4. Running a <A HREF="change.html#filter">filter</A>, synchronously.
+   Uses pipes.
+
+For when using sockets See |<A HREF="#job-start">job-start</A>|, |<A HREF="#job-start-nochannel">job-start-nochannel</A>| and
+|<A HREF="#channel-open">channel-open</A>|.  For 2 and 3, one or more jobs using pipes, see |<A HREF="#job-start">job-start</A>|.
+For 4 use the &quot;:{range}!cmd&quot; command, see |<A HREF="change.html#filter">filter</A>|.
+
+Over the socket and pipes these protocols are available:
+RAW	nothing known, Vim cannot tell where a message ends
+NL	every message ends in a NL (newline) character
+JSON	JSON encoding |<A HREF="builtin.html#json_encode()">json_encode()</A>|
+JS	JavaScript style JSON-like encoding |<A HREF="builtin.html#js_encode()">js_encode()</A>|
+LSP	Language Server Protocol encoding |<A HREF="#language-server-protocol">language-server-protocol</A>|
+
+Common combination are:
+- Using a <A HREF="#job">job</A> connected through pipes in NL mode.  E.g., to run a style
+  checker and receive <A HREF="message.html#errors">errors</A> and warnings.
+- Using a daemon, connecting over a socket in JSON mode.  E.g. to lookup
+  cross-references in a database.
+
+==============================================================================
+
+2. <A HREF="eval.html#Channel">Channel</A> demo				*<A NAME="channel-demo"></A><B>channel-demo</B>* *<A NAME="demoserver.py"></A><B>demoserver.py</B>*
+
+This requires <A HREF="if_pyth.html#Python">Python</A>.  The demo program can be found in
+$VIMRUNTIME/tools/demoserver.py
+Run <A HREF="motion.html#it">it</A> in one <A HREF="terminal.html#terminal">terminal</A>.  We will call this T1.
+
+Run Vim in another <A HREF="terminal.html#terminal">terminal</A>.  Connect to the demo server with:
+<B>	let channel = ch_open('localhost:8765')</B>
+
+In T1 you should see:
+<B><FONT COLOR="PURPLE">	=== socket opened === </FONT></B>
+
+You can now send a message to the server:
+<B>	echo ch_evalexpr(channel, 'hello!')</B>
+
+The message is received in T1 and a response is sent back to Vim.
+You can see the raw <A HREF="message.html#messages">messages</A> in T1.  What Vim sends is:
+<B><FONT COLOR="PURPLE">	[1,"hello!"] </FONT></B>
+And the response is:
+<B><FONT COLOR="PURPLE">	[1,"got it"] </FONT></B>
+The number will increase every time you send a message.
+
+The server can send a command to Vim.  Type this on T1 (literally, including
+the quotes):
+<B><FONT COLOR="PURPLE">	["ex","echo 'hi there'"] </FONT></B>
+And you should see the message in Vim. You can move the cursor a <A HREF="motion.html#word">word</A> forward:
+<B><FONT COLOR="PURPLE">	["normal","w"] </FONT></B>
+
+To handle asynchronous communication a callback needs to be used:
+<B>	func MyHandler(channel, msg)</B>
+<B>	  echo "from the handler: " .. a:msg</B>
+<B>	endfunc</B>
+<B>	call ch_sendexpr(channel, 'hello!', {'callback': "MyHandler"})</B>
+Vim will not wait for a response.  Now the server can send the response later
+and MyHandler will be invoked.
+
+Instead of giving a callback with every send call, <A HREF="motion.html#it">it</A> can also be specified
+when opening the <A HREF="#channel">channel</A>:
+<B>	call ch_close(channel)</B>
+<B>	let channel = ch_open('localhost:8765', {'callback': "MyHandler"})</B>
+<B>	call ch_sendexpr(channel, 'hello channel!')</B>
+
+When trying out channels it's useful to see what is going on.  You can tell
+Vim to write lines in log file:
+<B>	call ch_logfile('channellog', 'w')</B>
+See |<A HREF="#ch_logfile()">ch_logfile()</A>|.
+
+==============================================================================
+
+3. Opening a <A HREF="#channel">channel</A>					*<A NAME="channel-open"></A><B>channel-open</B>*
+
+To open a <A HREF="#channel">channel</A>:
+<B>    let channel = ch_open({address} [, {options}])</B>
+<B>    if ch_status(channel) == "open"</B>
+<B>      " use the channel</B>
+
+Use |<A HREF="#ch_status()">ch_status()</A>| to see if the <A HREF="#channel">channel</A> could be opened.
+
+
+					*<A NAME="channel-address"></A><B>channel-address</B>*
+<A HREF="cmdline.html#{address}">{address}</A> can be a domain name or an IP address, followed by a port number, or
+a Unix-domain socket path prefixed by &quot;unix:&quot;.  E.g.
+<B>    www.example.com:80   " domain + port</B>
+<B>    127.0.0.1:1234       " IPv4 + port</B>
+<B>    [2001:db8::1]:8765   " IPv6 + port</B>
+<B>    unix:/tmp/my-socket  " Unix-domain socket path</B>
+
+
+{options} is a dictionary with optional entries:	*<A NAME="channel-open-options"></A><B>channel-open-options</B>*
+
+
+&quot;mode&quot; can be:						*<A NAME="channel-mode"></A><B>channel-mode</B>*
+	&quot;json&quot; - Use JSON, see below; most convenient way. Default.
+	&quot;js&quot;   - Use JS (JavaScript) encoding, more efficient than JSON.
+	&quot;nl&quot;   - Use <A HREF="message.html#messages">messages</A> that end in a NL character
+	&quot;raw&quot;  - Use raw <A HREF="message.html#messages">messages</A>
+	&quot;lsp&quot;  - Use language server protocol encoding
+
+						*<A NAME="channel-callback"></A><B>channel-callback</B>* *<A NAME="E921"></A><B>E921</B>*
+&quot;callback&quot;	A function that is called when a message is received that is
+		not handled otherwise (e.g. a JSON message with ID zero).  It
+		gets two arguments: the <A HREF="#channel">channel</A> and the received message.
+		Example:
+<B>	func Handle(channel, msg)</B>
+<B>	  echo 'Received: ' .. a:msg</B>
+<B>	endfunc</B>
+<B>	let channel = ch_open("localhost:8765", {"callback": "Handle"})</B>
+ 
+		When &quot;mode&quot; is &quot;json&quot; or &quot;js&quot; or &quot;lsp&quot; the &quot;msg&quot; argument is
+		the body of the received message, converted to Vim types.
+		When &quot;mode&quot; is &quot;nl&quot; the &quot;msg&quot; argument is one message,
+		excluding the NL.
+		When &quot;mode&quot; is &quot;raw&quot; the &quot;msg&quot; argument is the whole message
+		<A HREF="motion.html#as">as</A> a <A HREF="eval.html#string">string</A>.
+
+		For all callbacks: Use |<A HREF="builtin.html#function()">function()</A>| to bind <A HREF="motion.html#it">it</A> to arguments
+		and/or a <A HREF="eval.html#Dictionary">Dictionary</A>.  Or use the form &quot;dict.function&quot; to bind
+		the <A HREF="eval.html#Dictionary">Dictionary</A>.
+
+		Callbacks are only called at a &quot;safe&quot; moment, usually when Vim
+		is waiting for the user to type a character.  Vim does not use
+		multi-threading.
+
+
+							*<A NAME="close_cb"></A><B>close_cb</B>*
+&quot;<A HREF="#close_cb">close_cb</A>&quot;	A function that is called when the <A HREF="#channel">channel</A> gets closed, other
+		than by calling <A HREF="#ch_close()">ch_close()</A>.  It should be defined like this:
+<B>	func MyCloseHandler(channel)</B>
+ 		Vim will invoke callbacks that handle data before invoking
+		<A HREF="#close_cb">close_cb</A>, thus when this function is called no more data will
+		be passed to the callbacks.  However, if a callback causes Vim
+		to check for <A HREF="message.html#messages">messages</A>, the <A HREF="#close_cb">close_cb</A> may be invoked while still
+		in the callback.  The <A HREF="usr_05.html#plugin">plugin</A> must handle this somehow, <A HREF="motion.html#it">it</A> can
+		be useful to know that no more data is coming.
+		If <A HREF="motion.html#it">it</A> is not known if there is a message to be read, use a
+		try/catch block:
+<B>			try</B>
+<B>			  let msg = ch_readraw(a:channel)</B>
+<B>			catch</B>
+<B>			  let msg = 'no message'</B>
+<B>			endtry</B>
+<B>			try</B>
+<B>			  let err = ch_readraw(a:channel, #{part: 'err'})</B>
+<B>			catch</B>
+<B>			  let err = 'no error'</B>
+<B>			endtry</B>
+
+ 							*<A NAME="channel-drop"></A><B>channel-drop</B>*
+&quot;drop&quot;		Specifies when to drop <A HREF="message.html#messages">messages</A>:
+		    &quot;auto&quot;	When there is no callback to handle a message.
+				The &quot;<A HREF="#close_cb">close_cb</A>&quot; is also considered for this.
+		    &quot;never&quot;	All <A HREF="message.html#messages">messages</A> will be kept.
+
+
+							*<A NAME="channel-noblock"></A><B>channel-noblock</B>*
+&quot;noblock&quot;	Same effect <A HREF="motion.html#as">as</A> |<A HREF="#job-noblock">job-noblock</A>|.  Only matters for <A HREF="editing.html#writing">writing</A>.
+
+
+							*<A NAME="waittime"></A><B>waittime</B>*
+&quot;<A HREF="#waittime">waittime</A>&quot;	The time to wait for the connection to be made in
+		milliseconds.  A negative number waits forever.
+
+		The default is zero, don't wait, which is useful if a local
+		server is supposed to be running already.  On <A HREF="os_unix.html#Unix">Unix</A> Vim
+		actually uses a 1 msec timeout, that is required on many
+		systems.  Use a larger value for a remote server, e.g.  10
+		msec at least.
+
+							*<A NAME="channel-timeout"></A><B>channel-timeout</B>*
+&quot;timeout&quot;	The time to wait for a request when blocking, E.g. when using
+		<A HREF="#ch_evalexpr()">ch_evalexpr()</A>.  In milliseconds.  The default is 2000 (2
+		seconds).
+
+When &quot;mode&quot; is &quot;json&quot; or &quot;js&quot; the &quot;callback&quot; is optional.  When omitted <A HREF="motion.html#it">it</A> is
+only possible to receive a message after sending one.
+
+To change the <A HREF="#channel">channel</A> options after opening <A HREF="motion.html#it">it</A> use |<A HREF="#ch_setoptions()">ch_setoptions()</A>|.  The
+arguments are similar to what is passed to |<A HREF="#ch_open()">ch_open()</A>|, but &quot;<A HREF="#waittime">waittime</A>&quot; cannot
+be given, since that only applies to opening the <A HREF="#channel">channel</A>.
+
+For example, the handler can be added or changed:
+<B>    call ch_setoptions(channel, {'callback': callback})</B>
+When &quot;callback&quot; is empty (zero or an empty <A HREF="eval.html#string">string</A>) the handler is removed.
+
+After a callback has been invoked Vim will update the screen and put the
+cursor back where <A HREF="motion.html#it">it</A> belongs.  Thus the callback should not need to <A HREF="diff.html#do">do</A>
+`:redraw`.
+
+The timeout can be changed:
+<B>    call ch_setoptions(channel, {'timeout': msec})</B>
+ 
+
+							  *<A NAME="channel-close"></A><B>channel-close</B>* *<A NAME="E906"></A><B>E906</B>*
+Once done with the <A HREF="#channel">channel</A>, disconnect <A HREF="motion.html#it">it</A> like this:
+<B>    call ch_close(channel)</B>
+When a socket is used this will close the socket for both directions.  When
+pipes are used (stdin/stdout/stderr) they are all closed.  This might not be
+what you want!  Stopping the <A HREF="#job">job</A> with <A HREF="#job_stop()">job_stop()</A> might be better.
+All readahead is discarded, callbacks will no longer be invoked.
+
+Note that a <A HREF="#channel">channel</A> is closed in three stages:
+  - The I/O ends, log message: &quot;Closing channel&quot;. There can still be queued
+    <A HREF="message.html#messages">messages</A> to read or callbacks to invoke.
+  - The readahead is cleared, log message: &quot;Clearing channel&quot;.  Some <A HREF="eval.html#variables">variables</A>
+    may still reference the <A HREF="#channel">channel</A>.
+  - The <A HREF="#channel">channel</A> is freed, log message: &quot;Freeing channel&quot;.
+
+When the <A HREF="#channel">channel</A> can't be opened you will get an error message.  There is a
+difference between <A HREF="os_win32.html#MS-Windows">MS-Windows</A> and <A HREF="os_unix.html#Unix">Unix</A>: On <A HREF="os_unix.html#Unix">Unix</A> when the port doesn't exist
+<A HREF="#ch_open()">ch_open()</A> fails quickly.  On <A HREF="os_win32.html#MS-Windows">MS-Windows</A> &quot;<A HREF="#waittime">waittime</A>&quot; applies.
+
+*<A NAME="E898"></A><B>E898</B>* *<A NAME="E901"></A><B>E901</B>* *<A NAME="E902"></A><B>E902</B>*
+
+If there is an error reading or <A HREF="editing.html#writing">writing</A> a <A HREF="#channel">channel</A> <A HREF="motion.html#it">it</A> will be closed.
+
+*<A NAME="E630"></A><B>E630</B>* *<A NAME="E631"></A><B>E631</B>*
+
+==============================================================================
+
+4. Using a JSON or JS <A HREF="#channel">channel</A>					*<A NAME="channel-use"></A><B>channel-use</B>*
+
+If mode is JSON then a message can be sent synchronously like this:
+<B>    let response = ch_evalexpr(channel, {expr})</B>
+This awaits a response from the other side.
+
+When mode is JS this works the same, except that the <A HREF="message.html#messages">messages</A> use
+JavaScript encoding.  See |<A HREF="builtin.html#js_encode()">js_encode()</A>| for the difference.
+
+To send a message, without handling a response or letting the <A HREF="#channel">channel</A> callback
+handle the response:
+<B>    call ch_sendexpr(channel, {expr})</B>
+
+To send a message and letting the response handled by a specific function,
+asynchronously:
+<B>    call ch_sendexpr(channel, {expr}, {'callback': Handler})</B>
+
+Vim will match the response with the request using the message ID.  Once the
+response is received the callback will be invoked.  Further responses with the
+same ID will be ignored.  If your server sends back multiple responses you
+need to send them with ID zero, they will be passed to the <A HREF="#channel">channel</A> callback.
+
+The {expr} is converted to JSON and wrapped in an array.  An example of the
+message that the receiver will get when {expr} is the <A HREF="eval.html#string">string</A> &quot;hello&quot;:
+<B><FONT COLOR="PURPLE">	[12,"hello"] </FONT></B>
+
+The format of the JSON sent is:
+    [{number},{expr}]
+
+In which {number} is different every time.  It must be used in the response
+(if any):
+
+    [{number},{response}]
+
+This way Vim knows which sent message matches with which received message and
+can call the right handler.  Also when the <A HREF="message.html#messages">messages</A> arrive out of order.
+
+A newline character is terminating the JSON text.  This can be used to
+separate the read text.  For example, in <A HREF="if_pyth.html#Python">Python</A>:
+	splitidx = read_text.find('\n')
+	message = read_text[:splitidx]
+	rest = read_text[splitidx + 1:]
+
+The sender must always send valid JSON to Vim.  Vim can check for the end of
+the message by parsing the JSON.  It will only accept the message if the end
+was received.  A newline after the message is optional.
+
+When the process wants to send a message to Vim without first receiving a
+message, <A HREF="motion.html#it">it</A> must use the number zero:
+    [0,{response}]
+
+Then <A HREF="#channel">channel</A> handler will then get {response} converted to Vim types.  If the
+<A HREF="#channel">channel</A> does not have a handler the message is dropped.
+
+It is also possible to use <A HREF="#ch_sendraw()">ch_sendraw()</A> and <A HREF="#ch_evalraw()">ch_evalraw()</A> on a JSON or JS
+<A HREF="#channel">channel</A>.  The caller is then completely responsible for correct encoding and
+decoding.
+
+==============================================================================
+
+5. <A HREF="eval.html#Channel">Channel</A> commands					*<A NAME="channel-commands"></A><B>channel-commands</B>*
+
+With a JSON <A HREF="#channel">channel</A> the process can send commands to Vim that will be
+handled by Vim internally, <A HREF="motion.html#it">it</A> does not require a handler for the <A HREF="#channel">channel</A>.
+
+
+Possible commands are:				*<A NAME="E903"></A><B>E903</B>* *<A NAME="E904"></A><B>E904</B>* *<A NAME="E905"></A><B>E905</B>*
+    [&quot;redraw&quot;, {forced}]
+    [&quot;ex&quot;,     {Ex command}]
+    [&quot;normal&quot;, {Normal mode command}]
+    [&quot;expr&quot;,   {expression}, {number}]
+    [&quot;expr&quot;,   {expression}]
+    [&quot;call&quot;,   {func name}, {argument list}, {number}]
+    [&quot;call&quot;,   {func name}, {argument list}]
+
+With all of these: Be careful what these commands <A HREF="diff.html#do">do</A>!  You can easily
+interfere with what the user is doing.  To avoid trouble use |<A HREF="builtin.html#mode()">mode()</A>| to check
+that the editor is in the expected state.  E.g., to send keys that must be
+inserted <A HREF="motion.html#as">as</A> text, not executed <A HREF="motion.html#as">as</A> a command:
+<B><FONT COLOR="PURPLE">    ["ex","if mode() == 'i' | call feedkeys('ClassName') | endif"] </FONT></B>
+
+Errors in these commands are normally not reported to avoid them messing up
+the display.  If you <A HREF="diff.html#do">do</A> want to see them, set the <A HREF="options.html#'verbose'">'verbose'</A> option to 3 or
+higher.
+
+
+<B><FONT COLOR="PURPLE">Command "redraw" </FONT></B>
+
+The other commands <A HREF="diff.html#do">do</A> not explicitly update the screen, so that you can send a
+sequence of commands without the cursor moving around.  A redraw can happen <A HREF="motion.html#as">as</A>
+a side effect of some commands.  You must end with the &quot;redraw&quot; command to
+show any changed text and show the cursor where <A HREF="motion.html#it">it</A> belongs.
+
+The argument is normally an empty <A HREF="eval.html#string">string</A>:
+<B><FONT COLOR="PURPLE">	["redraw", ""] </FONT></B>
+To first clear the screen pass &quot;force&quot;:
+<B><FONT COLOR="PURPLE">	["redraw", "force"] </FONT></B>
+
+
+<B><FONT COLOR="PURPLE">Command "ex" </FONT></B>
+
+The &quot;<A HREF="starting.html#ex">ex</A>&quot; command is executed <A HREF="motion.html#as">as</A> any <A HREF="intro.html#Ex">Ex</A> command.  There is no response for
+completion or error.  You could use <A HREF="eval.html#functions">functions</A> in an |<A HREF="eval.html#autoload">autoload</A>| <A HREF="usr_41.html#script">script</A>:
+	[&quot;ex&quot;,&quot;call myscript#MyFunc(arg)&quot;]
+
+You can also use &quot;call |feedkeys()|&quot; to insert any key sequence.
+
+When there is an error a message is written to the <A HREF="#channel">channel</A> log, if <A HREF="motion.html#it">it</A> exists,
+and <A HREF="eval.html#v:errmsg">v:errmsg</A> is set to the error.
+
+
+<B><FONT COLOR="PURPLE">Command "normal" </FONT></B>
+
+The &quot;normal&quot; command is executed like with &quot;:normal!&quot;, commands are not
+mapped.  Example to open the <A HREF="fold.html#folds">folds</A> under the cursor:
+	[&quot;normal&quot; &quot;<A HREF="fold.html#zO">zO</A>&quot;]
+
+
+<B><FONT COLOR="PURPLE">Command "expr"  with response </FONT></B>
+
+The &quot;<A HREF="eval.html#expr">expr</A>&quot; command can be used to get the result of an <A HREF="eval.html#expression">expression</A>.  For
+example, to get the number of lines in the current buffer:
+<B><FONT COLOR="PURPLE">	["expr","line('$')", -2] </FONT></B>
+
+It will send back the result of the <A HREF="eval.html#expression">expression</A>:
+<B><FONT COLOR="PURPLE">	[-2, "last line"] </FONT></B>
+The format is:
+	[{number}, {result}]
+
+Here {number} is the same <A HREF="motion.html#as">as</A> what was in the request.  Use a negative number
+to avoid confusion with message that Vim sends.  Use a different number on
+every request to be able to match the request with the response.
+
+{result} is the result of the evaluation and is JSON encoded.  If the
+evaluation fails or the result can't be encoded in JSON <A HREF="motion.html#it">it</A> is the <A HREF="eval.html#string">string</A>
+&quot;ERROR&quot;.
+
+
+<B><FONT COLOR="PURPLE">Command "expr" without a response </FONT></B>
+
+This command is similar to &quot;<A HREF="eval.html#expr">expr</A>&quot; above, but does not send back any response.
+Example:
+<B><FONT COLOR="PURPLE">	["expr","setline('$', ['one', 'two', 'three'])"] </FONT></B>
+There is no third argument in the request.
+
+
+<B><FONT COLOR="PURPLE">Command "call" </FONT></B>
+
+This is similar to &quot;<A HREF="eval.html#expr">expr</A>&quot;, but instead of passing the whole <A HREF="eval.html#expression">expression</A> <A HREF="motion.html#as">as</A> a
+<A HREF="eval.html#string">string</A> this passes the name of a function and a <A HREF="eval.html#list">list</A> of arguments.  This
+avoids the conversion of the arguments to a <A HREF="eval.html#string">string</A> and escaping and
+concatenating them.  Example:
+<B><FONT COLOR="PURPLE">	["call", "line", ["$"], -2] </FONT></B>
+
+Leave out the fourth argument if no response is to be sent:
+<B><FONT COLOR="PURPLE">	["call", "setline", ["$", ["one", "two", "three"]]] </FONT></B>
+
+==============================================================================
+
+6. Using a RAW or NL <A HREF="#channel">channel</A>				*<A NAME="channel-raw"></A><B>channel-raw</B>*
+
+If mode is RAW or NL then a message can be sent like this:
+<B>    let response = ch_evalraw(channel, {string})</B>
+
+The {string} is sent as-is.  The response will be what can be read from the
+<A HREF="#channel">channel</A> right away.  Since Vim doesn't know how to recognize the end of the
+message you need to take care of <A HREF="motion.html#it">it</A> yourself.  The timeout applies for reading
+the first byte, after that <A HREF="motion.html#it">it</A> will not wait for anything more.
+
+If mode is &quot;nl&quot; you can send a message in a similar way.  You are expected
+to put in the NL after each message.  Thus you can also send several <A HREF="message.html#messages">messages</A>
+ending in a NL at once.  The response will be the text up to and including the
+first NL.  This can also be just the NL for an empty response.
+If no NL was read before the <A HREF="#channel">channel</A> timeout an empty <A HREF="eval.html#string">string</A> is returned.
+
+To send a message, without expecting a response:
+<B>    call ch_sendraw(channel, {string})</B>
+The process can send back a response, the <A HREF="#channel">channel</A> handler will be called with
+<A HREF="motion.html#it">it</A>.
+
+
+						*<A NAME="channel-onetime-callback"></A><B>channel-onetime-callback</B>*
+To send a message and letting the response handled by a specific function,
+asynchronously:
+<B>    call ch_sendraw(channel, {string}, {'callback': 'MyHandler'})</B>
+
+This {string} can also be JSON, use |<A HREF="builtin.html#json_encode()">json_encode()</A>| to create <A HREF="motion.html#it">it</A> and
+|<A HREF="builtin.html#json_decode()">json_decode()</A>| to handle a received JSON message.
+
+It is not possible to use |<A HREF="#ch_evalexpr()">ch_evalexpr()</A>| or |<A HREF="#ch_sendexpr()">ch_sendexpr()</A>| on a raw <A HREF="#channel">channel</A>.
+
+A <A HREF="eval.html#String">String</A> in Vim cannot contain NUL bytes.  To send or receive NUL bytes read
+or write from a buffer.  See |<A HREF="#in_io-buffer">in_io-buffer</A>| and |<A HREF="#out_io-buffer">out_io-buffer</A>|.
+
+==============================================================================
+
+7. More <A HREF="#channel">channel</A> <A HREF="eval.html#functions">functions</A>				*<A NAME="channel-more"></A><B>channel-more</B>*
+
+To obtain the status of a <A HREF="#channel">channel</A>: ch_status(channel).  The possible results
+are:
+	&quot;fail&quot;		Failed to open the <A HREF="#channel">channel</A>.
+	&quot;open&quot;		The <A HREF="#channel">channel</A> can be used.
+	&quot;buffered&quot;	The <A HREF="#channel">channel</A> was closed but there is data to read.
+	&quot;closed&quot;	The <A HREF="#channel">channel</A> was closed.
+
+To obtain the <A HREF="#job">job</A> associated with a <A HREF="#channel">channel</A>: ch_getjob(channel)
+
+To read one message from a <A HREF="#channel">channel</A>:
+<B>	let output = ch_read(channel)</B>
+This uses the <A HREF="#channel">channel</A> timeout.  To read without a timeout, just get any
+message that is available:
+<B>	let output = ch_read(channel, {'timeout': 0})</B>
+When no message was available then the result is <A HREF="eval.html#v:none">v:none</A> for a JSON or JS mode
+channels, an empty <A HREF="eval.html#string">string</A> for a RAW or NL <A HREF="#channel">channel</A>.  You can use |<A HREF="#ch_canread()">ch_canread()</A>|
+to check if there is something to read.
+
+Note that when there is no callback, <A HREF="message.html#messages">messages</A> are dropped.  To avoid that add
+a close callback to the <A HREF="#channel">channel</A>.
+
+To read all normal output from a RAW <A HREF="#channel">channel</A> that is available:
+<B>	let output = ch_readraw(channel)</B>
+To read all error output from a RAW <A HREF="#channel">channel</A> that is available::
+<B>	let output = ch_readraw(channel, {"part": "err"})</B>
+Note that if the <A HREF="#channel">channel</A> is in NL mode, <A HREF="#ch_readraw()">ch_readraw()</A> will only return one line
+for each call.
+
+<A HREF="#ch_read()">ch_read()</A> and <A HREF="#ch_readraw()">ch_readraw()</A> use the <A HREF="#channel">channel</A> timeout.  When there is nothing to
+read within that time an empty <A HREF="eval.html#string">string</A> is returned.  To specify a different
+timeout in msec use the &quot;timeout&quot; option:
+<B><FONT COLOR="PURPLE">	{"timeout": 123} </FONT></B>
+To read from the error output use the &quot;part&quot; option:
+<B><FONT COLOR="PURPLE">	{"part": "err"} </FONT></B>
+To read a message with a specific ID, on a JS or JSON <A HREF="#channel">channel</A>:
+<B><FONT COLOR="PURPLE">	{"id": 99} </FONT></B>
+When no ID is specified or the ID is -1, the first message is returned. This
+overrules any callback waiting for this message.
+
+For a RAW <A HREF="#channel">channel</A> this returns whatever is available, since Vim does not know
+where a message ends.
+For a NL <A HREF="#channel">channel</A> this returns one message.
+For a JS or JSON <A HREF="#channel">channel</A> this returns one decoded message.
+This includes any sequence number.
+
+==============================================================================
+
+8. <A HREF="eval.html#Channel">Channel</A> <A HREF="eval.html#functions">functions</A> details			*<A NAME="channel-functions-details"></A><B>channel-functions-details</B>*
+
+
+ch_canread({handle})						*<A NAME="ch_canread()"></A><B>ch_canread()</B>*
+		Return non-zero when there is something to read from {handle}.
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+
+		This is useful to read from a <A HREF="#channel">channel</A> at a convenient time,
+		e.g. from a <A HREF="builtin.html#timer">timer</A>.
+
+		Note that <A HREF="message.html#messages">messages</A> are dropped when the <A HREF="#channel">channel</A> does not have
+		a callback.  Add a close callback to avoid that.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_canread()</B>
+
+
+ch_close({handle})						*<A NAME="ch_close()"></A><B>ch_close()</B>*
+		Close {handle}.  See |<A HREF="#channel-close">channel-close</A>|.
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+		A close callback is not invoked.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_close()</B>
+
+
+ch_close_in({handle})						*<A NAME="ch_close_in()"></A><B>ch_close_in()</B>*
+		Close the &quot;in&quot; part of {handle}.  See |<A HREF="#channel-close-in">channel-close-in</A>|.
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+		A close callback is not invoked.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_close_in()</B>
+
+
+
+ch_evalexpr({handle}, {expr} [, {options}])			*<A NAME="ch_evalexpr()"></A><B>ch_evalexpr()</B>*
+		Send {expr} over {handle}.  The {expr} is encoded
+		according to the type of <A HREF="#channel">channel</A>.  The function cannot be used
+		with a raw channel.  See |<A HREF="#channel-use">channel-use</A>|.
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+		When using the &quot;lsp&quot; <A HREF="#channel">channel</A> mode, {expr} must be a |<A HREF="eval.html#Dict">Dict</A>|.
+
+								*<A NAME="E917"></A><B>E917</B>*
+		{options} must be a <A HREF="eval.html#Dictionary">Dictionary</A>.  It must not have a &quot;callback&quot;
+		entry.  It can have a &quot;timeout&quot; entry to specify the timeout
+		for this specific request.
+
+		<A HREF="#ch_evalexpr()">ch_evalexpr()</A> waits for a response and returns the decoded
+		<A HREF="eval.html#expression">expression</A>.  When there is an error or timeout <A HREF="motion.html#it">it</A> returns an
+		empty |<A HREF="eval.html#String">String</A>| or, when using the &quot;lsp&quot; <A HREF="#channel">channel</A> mode, returns an
+		empty |<A HREF="eval.html#Dict">Dict</A>|.
+
+		Note that while waiting for the response, Vim handles other
+		<A HREF="message.html#messages">messages</A>.  You need to make sure this doesn't cause trouble.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_evalexpr(expr)</B>
+
+
+
+ch_evalraw({handle}, {string} [, {options}])		*<A NAME="ch_evalraw()"></A><B>ch_evalraw()</B>*
+		Send {string} over {handle}.
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+
+		Works like |<A HREF="#ch_evalexpr()">ch_evalexpr()</A>|, but does not encode the request or
+		decode the response.  The caller is responsible for the
+		correct contents.  Also does not add a newline for a <A HREF="#channel">channel</A>
+		in NL mode, the caller must <A HREF="diff.html#do">do</A> that.  The NL in the response
+		is removed.
+		Note that Vim does not know when the text received on a raw
+		<A HREF="#channel">channel</A> is complete, <A HREF="motion.html#it">it</A> may only return the first part and you
+		need to use |<A HREF="#ch_readraw()">ch_readraw()</A>| to <A HREF="pi_netrw.html#fetch">fetch</A> the rest.
+		See |<A HREF="#channel-use">channel-use</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_evalraw(rawstring)</B>
+
+
+ch_getbufnr({handle}, {what})				 *<A NAME="ch_getbufnr()"></A><B>ch_getbufnr()</B>*
+		Get the buffer number that {handle} is using for <A HREF="eval.html#String">String</A> {what}.
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+		{what} can be &quot;err&quot; for stderr, &quot;out&quot; for stdout or empty for
+		socket output.
+		Returns -1 when there is no buffer.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_getbufnr(what)</B>
+
+
+ch_getjob({channel})						*<A NAME="ch_getjob()"></A><B>ch_getjob()</B>*
+		Get the <A HREF="eval.html#Job">Job</A> associated with {channel}.
+		If there is no job calling |<A HREF="#job_status()">job_status()</A>| on the returned <A HREF="eval.html#Job">Job</A>
+		will result in &quot;fail&quot;.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_getjob()</B>
+
+
+
+ch_info({handle})						*<A NAME="ch_info()"></A><B>ch_info()</B>*
+		Returns a <A HREF="eval.html#Dictionary">Dictionary</A> with information about {handle}.  The
+		items are:
+		   &quot;id&quot;		  number of the <A HREF="#channel">channel</A>
+		   &quot;status&quot;	  &quot;open&quot;, &quot;buffered&quot; or &quot;closed&quot;, like
+				  <A HREF="#ch_status()">ch_status()</A>
+		When opened with <A HREF="#ch_open()">ch_open()</A>:
+		   &quot;hostname&quot;	  the hostname of the address
+		   &quot;port&quot;	  the port of the address
+		   &quot;path&quot;	  the path of the Unix-domain socket
+		   &quot;sock_status&quot;  &quot;open&quot; or &quot;closed&quot;
+		   &quot;sock_mode&quot;	  &quot;NL&quot;, &quot;RAW&quot;, &quot;JSON&quot; or &quot;JS&quot;
+		   &quot;sock_io&quot;	  &quot;socket&quot;
+		   &quot;sock_timeout&quot; timeout in msec
+
+		Note that &quot;path&quot; is only present for Unix-domain sockets, for
+		regular ones &quot;hostname&quot; and &quot;port&quot; are present instead.
+
+		When opened with <A HREF="#job_start()">job_start()</A>:
+		   &quot;out_status&quot;	  &quot;open&quot;, &quot;buffered&quot; or &quot;closed&quot;
+		   &quot;<A HREF="#out_mode">out_mode</A>&quot;	  &quot;NL&quot;, &quot;RAW&quot;, &quot;JSON&quot; or &quot;JS&quot;
+		   &quot;out_io&quot;	  &quot;<A HREF="vim9.html#null">null</A>&quot;, &quot;pipe&quot;, &quot;file&quot; or &quot;buffer&quot;
+		   &quot;<A HREF="#out_timeout">out_timeout</A>&quot;  timeout in msec
+		   &quot;err_status&quot;	  &quot;open&quot;, &quot;buffered&quot; or &quot;closed&quot;
+		   &quot;<A HREF="#err_mode">err_mode</A>&quot;	  &quot;NL&quot;, &quot;RAW&quot;, &quot;JSON&quot; or &quot;JS&quot;
+		   &quot;err_io&quot;	  &quot;out&quot;, &quot;<A HREF="vim9.html#null">null</A>&quot;, &quot;pipe&quot;, &quot;file&quot; or &quot;buffer&quot;
+		   &quot;<A HREF="#err_timeout">err_timeout</A>&quot;  timeout in msec
+		   &quot;in_status&quot;	  &quot;open&quot; or &quot;closed&quot;
+		   &quot;<A HREF="#in_mode">in_mode</A>&quot;	  &quot;NL&quot;, &quot;RAW&quot;, &quot;JSON&quot;, &quot;JS&quot; or &quot;LSP&quot;
+		   &quot;in_io&quot;	  &quot;<A HREF="vim9.html#null">null</A>&quot;, &quot;pipe&quot;, &quot;file&quot; or &quot;buffer&quot;
+		   &quot;in_timeout&quot;	  timeout in msec
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_info()</B>
+
+
+
+ch_log({msg} [, {handle}])					*<A NAME="ch_log()"></A><B>ch_log()</B>*
+		Write <A HREF="eval.html#String">String</A> {msg} in the <A HREF="#channel">channel</A> log file, if <A HREF="motion.html#it">it</A> was opened
+		with |<A HREF="#ch_logfile()">ch_logfile()</A>|.
+		When {handle} is passed the <A HREF="#channel">channel</A> number is used for the
+		message.
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.  The
+		<A HREF="eval.html#Channel">Channel</A> must be open for the <A HREF="#channel">channel</A> number to be used.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			'did something'-&gt;ch_log()</B>
+
+
+
+ch_logfile({fname} [, {mode}])					*<A NAME="ch_logfile()"></A><B>ch_logfile()</B>*
+		Start logging <A HREF="#channel">channel</A> activity to {fname}.
+		When {fname} is an empty <A HREF="eval.html#string">string</A>: stop logging.
+
+		When {mode} is omitted or contains &quot;<A HREF="insert.html#a">a</A>&quot; or is &quot;<A HREF="insert.html#o">o</A>&quot; then append
+		to the file.
+		When {mode} contains &quot;<A HREF="motion.html#w">w</A>&quot; and not &quot;<A HREF="insert.html#a">a</A>&quot; start with an empty file.
+		When {mode} contains &quot;<A HREF="insert.html#o">o</A>&quot; then log all <A HREF="terminal.html#terminal">terminal</A> output.
+		Otherwise only some interesting <A HREF="terminal.html#terminal">terminal</A> output is logged.
+
+		Use |<A HREF="#ch_log()">ch_log()</A>| to write log <A HREF="message.html#messages">messages</A>.  The file is flushed
+		after every message, on <A HREF="os_unix.html#Unix">Unix</A> you can use &quot;tail -f&quot; to see what
+		is going on in real time.
+
+		To enable the log very early, to see what is received from a
+		<A HREF="terminal.html#terminal">terminal</A> during <A HREF="starting.html#startup">startup</A>, use |<A HREF="starting.html#--log">--log</A>| (this uses mode &quot;ao&quot;):
+<B>			vim --log logfile</B>
+ 
+		This function is not available in the |<A HREF="eval.html#sandbox">sandbox</A>|.
+		NOTE: the <A HREF="#channel">channel</A> communication is stored in the file, be
+		aware that this may contain confidential and privacy sensitive
+		information, e.g. a password you type in a <A HREF="terminal.html#terminal">terminal</A> <A HREF="windows.html#window">window</A>.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			'logfile'-&gt;ch_logfile('w')</B>
+
+
+
+ch_open({address} [, {options}])				*<A NAME="ch_open()"></A><B>ch_open()</B>*
+		Open a channel to <A HREF="cmdline.html#{address}">{address}</A>.  See |<A HREF="#channel">channel</A>|.
+		Returns a <A HREF="eval.html#Channel">Channel</A>.  Use |<A HREF="#ch_status()">ch_status()</A>| to check for failure.
+
+		<A HREF="cmdline.html#{address}">{address}</A> is a <A HREF="eval.html#String">String</A>, see |<A HREF="#channel-address">channel-address</A>| for the possible
+		accepted forms.
+
+		If {options} is given <A HREF="motion.html#it">it</A> must be a |<A HREF="eval.html#Dictionary">Dictionary</A>|.
+		See |<A HREF="#channel-open-options">channel-open-options</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetAddress()-&gt;ch_open()</B>
+
+
+
+ch_read({handle} [, {options}])					*<A NAME="ch_read()"></A><B>ch_read()</B>*
+		Read from {handle} and return the received message.
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+		For a NL <A HREF="#channel">channel</A> this waits for a NL to arrive, except when
+		there is nothing more to read (channel was closed).
+		See |<A HREF="#channel-more">channel-more</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_read()</B>
+
+
+
+ch_readblob({handle} [, {options}])			*<A NAME="ch_readblob()"></A><B>ch_readblob()</B>*
+		Like <A HREF="#ch_read()">ch_read()</A> but reads binary data and returns a |<A HREF="eval.html#Blob">Blob</A>|.
+		See |<A HREF="#channel-more">channel-more</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_readblob()</B>
+
+
+
+ch_readraw({handle} [, {options}])			*<A NAME="ch_readraw()"></A><B>ch_readraw()</B>*
+		Like <A HREF="#ch_read()">ch_read()</A> but for a JS and JSON <A HREF="#channel">channel</A> does not decode
+		the message.  For a NL <A HREF="#channel">channel</A> <A HREF="motion.html#it">it</A> does not block waiting for
+		the NL to arrive, but otherwise works like <A HREF="#ch_read()">ch_read()</A>.
+		See |<A HREF="#channel-more">channel-more</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_readraw()</B>
+
+
+
+ch_sendexpr({handle}, {expr} [, {options}])			*<A NAME="ch_sendexpr()"></A><B>ch_sendexpr()</B>*
+		Send {expr} over {handle}.  The {expr} is encoded
+		according to the type of <A HREF="#channel">channel</A>.  The function cannot be used
+		with a raw <A HREF="#channel">channel</A>.
+
+		See |<A HREF="#channel-use">channel-use</A>|.				*<A NAME="E912"></A><B>E912</B>*
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+		When using the &quot;lsp&quot; <A HREF="#channel">channel</A> mode, {expr} must be a |<A HREF="eval.html#Dict">Dict</A>|.
+
+		If the <A HREF="#channel">channel</A> mode is &quot;lsp&quot;, then returns a <A HREF="eval.html#Dict">Dict</A>. Otherwise
+		returns an empty <A HREF="eval.html#String">String</A>.  If the &quot;callback&quot; item is present in
+		{options}, then the returned <A HREF="eval.html#Dict">Dict</A> contains the ID of the
+		request message.  The ID can be used to send a cancellation
+		request to the LSP server (if needed).  Returns an empty <A HREF="eval.html#Dict">Dict</A>
+		on error.
+
+		If a response message is not expected for {expr}, then don't
+		specify the &quot;callback&quot; item in {options}.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_sendexpr(expr)</B>
+
+
+
+ch_sendraw({handle}, {expr} [, {options}])		*<A NAME="ch_sendraw()"></A><B>ch_sendraw()</B>*
+		Send |<A HREF="eval.html#String">String</A>| or |<A HREF="eval.html#Blob">Blob</A>| {expr} over {handle}.
+		Works like |<A HREF="#ch_sendexpr()">ch_sendexpr()</A>|, but does not encode the request or
+		decode the response.  The caller is responsible for the
+		correct contents.  Also does not add a newline for a <A HREF="#channel">channel</A>
+		in NL mode, the caller must <A HREF="diff.html#do">do</A> that.  The NL in the response
+		is removed.
+		See |<A HREF="#channel-use">channel-use</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_sendraw(rawexpr)</B>
+
+
+
+ch_setoptions({handle}, {options})			*<A NAME="ch_setoptions()"></A><B>ch_setoptions()</B>*
+		Set <A HREF="options.html#options">options</A> on {handle}:
+			&quot;callback&quot;	the <A HREF="#channel">channel</A> callback
+			&quot;timeout&quot;	default read timeout in msec
+			&quot;mode&quot;		mode for the whole <A HREF="#channel">channel</A>
+		See |<A HREF="#ch_open()">ch_open()</A>| for more explanation.
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+
+		Note that <A HREF="change.html#changing">changing</A> the mode may cause queued <A HREF="message.html#messages">messages</A> to be
+		lost.
+
+		These <A HREF="options.html#options">options</A> cannot be changed:
+			&quot;<A HREF="#waittime">waittime</A>&quot;	only applies to |<A HREF="#ch_open()">ch_open()</A>|
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_setoptions(options)</B>
+
+
+
+ch_status({handle} [, {options}])				*<A NAME="ch_status()"></A><B>ch_status()</B>*
+		Return the status of {handle}:
+			&quot;fail&quot;		failed to open the <A HREF="#channel">channel</A>
+			&quot;open&quot;		<A HREF="#channel">channel</A> can be used
+			&quot;buffered&quot;	<A HREF="#channel">channel</A> can be read, not written to
+			&quot;closed&quot;	<A HREF="#channel">channel</A> can not be used
+		{handle} can be a <A HREF="eval.html#Channel">Channel</A> or a <A HREF="eval.html#Job">Job</A> that has a <A HREF="eval.html#Channel">Channel</A>.
+		&quot;buffered&quot; is used when the <A HREF="#channel">channel</A> was closed but there is
+		still data that can be obtained with |<A HREF="#ch_read()">ch_read()</A>|.
+
+		If {options} is given <A HREF="motion.html#it">it</A> can contain a &quot;part&quot; entry to specify
+		the part of the <A HREF="#channel">channel</A> to return the status for: &quot;out&quot; or
+		&quot;err&quot;.  For example, to get the error status:
+<B>			ch_status(job, {"part": "err"})</B>
+ 
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetChannel()-&gt;ch_status()</B>
+
+==============================================================================
+
+9. Starting a <A HREF="#job">job</A> with a <A HREF="#channel">channel</A>			*<A NAME="job-start"></A><B>job-start</B>* *<A NAME="job"></A><B>job</B>*
+
+To start a <A HREF="#job">job</A> and open a <A HREF="#channel">channel</A> for stdin/stdout/stderr:
+<B>    let job = job_start(command, {options})</B>
+
+You can get the <A HREF="#channel">channel</A> with:
+<B>    let channel = job_getchannel(job)</B>
+
+The <A HREF="#channel">channel</A> will use NL mode.  If you want another mode it's best to specify
+this in {options}.  When <A HREF="change.html#changing">changing</A> the mode later some text may have already
+been received and not parsed correctly.
+
+If the command produces a line of output that you want to deal with, specify
+a handler for stdout:
+<B>    let job = job_start(command, {"out_cb": "MyHandler"})</B>
+The function will be called with the <A HREF="#channel">channel</A> and a message. You would define
+<A HREF="motion.html#it">it</A> like this:
+<B>    func MyHandler(channel, msg)</B>
+
+Without the handler you need to read the output with |<A HREF="#ch_read()">ch_read()</A>| or
+|<A HREF="#ch_readraw()">ch_readraw()</A>|. You can <A HREF="diff.html#do">do</A> this in the close callback, see |<A HREF="#read-in-close-cb">read-in-close-cb</A>|.
+
+Note that if the <A HREF="#job">job</A> exits before you read the output, the output may be lost.
+This depends on the system (on <A HREF="os_unix.html#Unix">Unix</A> this happens because closing the write end
+of a pipe causes the read end to get EOF).  To avoid this make the <A HREF="#job">job</A> sleep
+for a short while before <A HREF="motion.html#it">it</A> exits.
+
+The handler defined for &quot;<A HREF="#out_cb">out_cb</A>&quot; will not receive stderr.  If you want to
+handle that separately, add an &quot;<A HREF="#err_cb">err_cb</A>&quot; handler:
+<B>    let job = job_start(command, {"out_cb": "MyHandler",</B>
+<B>	    \			  "err_cb": "ErrHandler"})</B>
+
+If you want to handle both stderr and stdout with one handler use the
+&quot;callback&quot; option:
+<B>    let job = job_start(command, {"callback": "MyHandler"})</B>
+
+Depending on the system, starting a <A HREF="#job">job</A> can put Vim in the background, the
+started <A HREF="#job">job</A> gets the focus.  To avoid that, use the `foreground()` function.
+This might not always work when called early, put in the callback handler or
+use a <A HREF="builtin.html#timer">timer</A> to call <A HREF="motion.html#it">it</A> after the <A HREF="#job">job</A> has started.
+
+You can send a message to the command with <A HREF="#ch_evalraw()">ch_evalraw()</A>.  If the <A HREF="#channel">channel</A> is in
+JSON or JS mode you can use <A HREF="#ch_evalexpr()">ch_evalexpr()</A>.
+
+There are several options you can use, see |<A HREF="#job-options">job-options</A>|.
+For example, to start a <A HREF="#job">job</A> and write its output in buffer &quot;dummy&quot;:
+<B>	let logjob = job_start("tail -f /tmp/log",</B>
+<B>			     \ {'out_io': 'buffer', 'out_name': 'dummy'})</B>
+<B>	sbuf dummy</B>
+
+
+<B><FONT COLOR="PURPLE">Job input from a buffer </FONT></B>
+
+							*<A NAME="in_io-buffer"></A><B>in_io-buffer</B>*
+To run a <A HREF="#job">job</A> that reads from a buffer:
+<B>	let job = job_start({command},</B>
+<B>	    \ {'in_io': 'buffer', 'in_name': 'mybuffer'})</B>
+ 
+
+							*<A NAME="E915"></A><B>E915</B>* *<A NAME="E918"></A><B>E918</B>*
+The buffer is found by name, similar to |<A HREF="builtin.html#bufnr()">bufnr()</A>|. The buffer must exist and
+be loaded when <A HREF="#job_start()">job_start()</A> is called.
+
+By default this reads the whole buffer.  This can be changed with the &quot;<A HREF="#in_top">in_top</A>&quot;
+and &quot;<A HREF="#in_bot">in_bot</A>&quot; <A HREF="options.html#options">options</A>.
+
+A special mode is when &quot;<A HREF="#in_top">in_top</A>&quot; is set to zero and &quot;<A HREF="#in_bot">in_bot</A>&quot; is not set: Every
+time a line is added to the buffer, the last-but-one line will be sent to the
+<A HREF="#job">job</A> stdin.  This allows for editing the last line and sending <A HREF="motion.html#it">it</A> when pressing
+Enter.
+
+							*<A NAME="channel-close-in"></A><B>channel-close-in</B>*
+When not using the special mode the pipe or socket will be closed after the
+last line has been written.  This signals the reading end that the input
+finished.  You can also use |<A HREF="#ch_close_in()">ch_close_in()</A>| to close <A HREF="motion.html#it">it</A> sooner.
+
+NUL bytes in the text will be passed to the <A HREF="#job">job</A> (internally Vim stores these
+<A HREF="motion.html#as">as</A> NL bytes).
+
+
+<B><FONT COLOR="PURPLE">Reading job output in the close callback </FONT></B>
+
+							*<A NAME="read-in-close-cb"></A><B>read-in-close-cb</B>*
+If the <A HREF="#job">job</A> can take some time and you don't need intermediate results, you can
+add a close callback and read the output there:
+
+<B>	func! CloseHandler(channel)</B>
+<B>	  while ch_status(a:channel, {'part': 'out'}) == 'buffered'</B>
+<B>	    echomsg ch_read(a:channel)</B>
+<B>	  endwhile</B>
+<B>	endfunc</B>
+<B>	let job = job_start(command, {'close_cb': 'CloseHandler'})</B>
+
+You will want to <A HREF="diff.html#do">do</A> something more useful than &quot;echomsg&quot;.
+
+==============================================================================
+
+10. Starting a <A HREF="#job">job</A> without a <A HREF="#channel">channel</A>			*<A NAME="job-start-nochannel"></A><B>job-start-nochannel</B>*
+
+To start another process without creating a <A HREF="#channel">channel</A>:
+<B>    let job = job_start(command,</B>
+<B>	\ {"in_io": "null", "out_io": "null", "err_io": "null"})</B>
+
+This starts {command} in the background, Vim does not wait for <A HREF="motion.html#it">it</A> to finish.
+
+When Vim sees that neither stdin, stdout or stderr are connected, no <A HREF="#channel">channel</A>
+will be created.  Often you will want to include redirection in the command to
+avoid <A HREF="motion.html#it">it</A> getting stuck.
+
+There are several options you can use, see |<A HREF="#job-options">job-options</A>|.
+
+
+							*<A NAME="job-start-if-needed"></A><B>job-start-if-needed</B>*
+To start a <A HREF="#job">job</A> only when connecting to an address does not work, <A HREF="diff.html#do">do</A> something
+like this:
+<B>	let channel = ch_open(address, {"waittime": 0})</B>
+<B>	if ch_status(channel) == "fail"</B>
+<B>	  let job = job_start(command)</B>
+<B>	  let channel = ch_open(address, {"waittime": 1000})</B>
+<B>	endif</B>
+
+Note that the <A HREF="#waittime">waittime</A> for <A HREF="#ch_open()">ch_open()</A> gives the <A HREF="#job">job</A> one second to make the port
+available.
+
+==============================================================================
+
+11. <A HREF="eval.html#Job">Job</A> <A HREF="eval.html#functions">functions</A>					*<A NAME="job-functions-details"></A><B>job-functions-details</B>*
+
+
+job_getchannel({job})					 *<A NAME="job_getchannel()"></A><B>job_getchannel()</B>*
+		Get the <A HREF="#channel">channel</A> handle that {job} is using.
+		To check if the <A HREF="#job">job</A> has no <A HREF="#channel">channel</A>:
+<B>			if string(job_getchannel(job)) == 'channel fail'</B>
+ 
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetJob()-&gt;job_getchannel()</B>
+
+
+job_info([{job}])					*<A NAME="job_info()"></A><B>job_info()</B>*
+		Returns a <A HREF="eval.html#Dictionary">Dictionary</A> with information about {job}:
+		   &quot;status&quot;	what |<A HREF="#job_status()">job_status()</A>| returns
+		   &quot;channel&quot;	what |<A HREF="#job_getchannel()">job_getchannel()</A>| returns
+		   &quot;cmd&quot;	<A HREF="eval.html#List">List</A> of command arguments used to start the <A HREF="#job">job</A>
+		   &quot;process&quot;	process ID
+		   &quot;tty_in&quot;	<A HREF="terminal.html#terminal">terminal</A> input name, empty when none
+		   &quot;tty_out&quot;	<A HREF="terminal.html#terminal">terminal</A> output name, empty when none
+		   &quot;exitval&quot;	only valid when &quot;status&quot; is &quot;dead&quot;
+		   &quot;exit_cb&quot;	function to be called on exit
+		   &quot;stoponexit&quot;	|<A HREF="#job-stoponexit">job-stoponexit</A>|
+
+		   Only in <A HREF="os_unix.html#Unix">Unix</A>:
+		   &quot;termsig&quot;	the signal which terminated the process
+				(See |<A HREF="#job_stop()">job_stop()</A>| for the values)
+				only valid when &quot;status&quot; is &quot;dead&quot;
+
+		   Only in <A HREF="os_win32.html#MS-Windows">MS-Windows</A>:
+		   &quot;tty_type&quot;	Type of virtual console in use.
+				Values are &quot;winpty&quot; or &quot;conpty&quot;.
+				See <A HREF="options.html#'termwintype'">'termwintype'</A>.
+
+		Without any arguments, returns a <A HREF="eval.html#List">List</A> with all <A HREF="eval.html#Job">Job</A> <A HREF="index.html#objects">objects</A>.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetJob()-&gt;job_info()</B>
+
+
+
+job_setoptions({job}, {options})			*<A NAME="job_setoptions()"></A><B>job_setoptions()</B>*
+		Change <A HREF="options.html#options">options</A> for {job}.  Supported are:
+		   &quot;stoponexit&quot;	|<A HREF="#job-stoponexit">job-stoponexit</A>|
+		   &quot;exit_cb&quot;	|<A HREF="#job-exit_cb">job-exit_cb</A>|
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetJob()-&gt;job_setoptions(options)</B>
+
+
+
+job_start({command} [, {options}])			*<A NAME="job_start()"></A><B>job_start()</B>*
+		Start a <A HREF="#job">job</A> and return a <A HREF="eval.html#Job">Job</A> object.  Unlike |<A HREF="builtin.html#system()">system()</A>| and
+		|<A HREF="various.html#:!cmd">:!cmd</A>| this does not wait for the <A HREF="#job">job</A> to finish.
+		To start a <A HREF="#job">job</A> in a <A HREF="terminal.html#terminal">terminal</A> <A HREF="windows.html#window">window</A> see |<A HREF="terminal.html#term_start()">term_start()</A>|.
+
+		If the job fails to start then |<A HREF="#job_status()">job_status()</A>| on the returned
+		<A HREF="eval.html#Job">Job</A> object results in &quot;fail&quot; and none of the callbacks will be
+		invoked.
+
+		{command} can be a <A HREF="eval.html#String">String</A>.  This works best on <A HREF="os_win32.html#MS-Windows">MS-Windows</A>.  On
+		<A HREF="os_unix.html#Unix">Unix</A> <A HREF="motion.html#it">it</A> is split up in white-separated parts to be passed to
+		execvp().  Arguments in double <A HREF="quotes.html#quotes">quotes</A> can contain white space.
+
+		{command} can be a <A HREF="eval.html#List">List</A>, where the first item is the executable
+		and further items are the arguments.  All items are converted
+		to <A HREF="eval.html#String">String</A>.  This works best on <A HREF="os_unix.html#Unix">Unix</A>.
+
+		On <A HREF="os_win32.html#MS-Windows">MS-Windows</A>, <A HREF="#job_start()">job_start()</A> makes a <A HREF="gui.html#GUI">GUI</A> application hidden. If
+		want to show <A HREF="motion.html#it">it</A>, Use |<A HREF="os_win32.html#:!start">:!start</A>| instead.
+
+		The command is executed directly, not through a shell, the
+		<A HREF="options.html#'shell'">'shell'</A> option is not used.  To use the shell:
+<B>	let job = job_start(["/bin/sh", "-c", "echo hello"])</B>
+ 		Or:
+<B>	let job = job_start('/bin/sh -c "echo hello"')</B>
+ 		Note that this will start two processes, the shell and the
+		command <A HREF="motion.html#it">it</A> executes.  If you don't want this use the &quot;exec&quot;
+		shell command.
+
+		On <A HREF="os_unix.html#Unix">Unix</A> $PATH is used to search for the executable only when
+		the command does not contain a slash.
+
+		The <A HREF="#job">job</A> will use the same <A HREF="terminal.html#terminal">terminal</A> <A HREF="motion.html#as">as</A> Vim.  If <A HREF="motion.html#it">it</A> reads from
+		stdin the <A HREF="#job">job</A> and Vim will be fighting over input, that
+		doesn't work.  Redirect stdin and stdout to avoid problems:
+<B>	let job = job_start(['sh', '-c', "myserver &lt;/dev/null &gt;/dev/null"])</B>
+ 
+		The returned <A HREF="eval.html#Job">Job</A> object can be used to get the status with
+		|<A HREF="#job_status()">job_status()</A>| and stop the job with |<A HREF="#job_stop()">job_stop()</A>|.
+
+		Note that the <A HREF="#job">job</A> object will be deleted if there are no
+		references to <A HREF="motion.html#it">it</A>.  This closes the stdin and stderr, which may
+		cause the <A HREF="#job">job</A> to fail with an error.  To avoid this keep a
+		reference to the <A HREF="#job">job</A>.  Thus instead of:
+<B>	call job_start('my-command')</B>
+ 		use:
+<B>	let myjob = job_start('my-command')</B>
+ 		and unlet &quot;myjob&quot; once the <A HREF="#job">job</A> is not needed or is past the
+		point where <A HREF="motion.html#it">it</A> would fail (e.g. when <A HREF="motion.html#it">it</A> prints a message on
+		<A HREF="starting.html#startup">startup</A>).  Keep in mind that <A HREF="eval.html#variables">variables</A> local to a function
+		will cease to exist if the function returns.  Use a
+		<A HREF="map.html#script-local">script-local</A> variable if needed:
+<B>	let s:myjob = job_start('my-command')</B>
+ 
+		{options} must be a <A HREF="eval.html#Dictionary">Dictionary</A>.  It can contain many optional
+		items, see |<A HREF="#job-options">job-options</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			BuildCommand()-&gt;job_start()</B>
+
+
+
+job_status({job})					*<A NAME="job_status()"></A><B>job_status()</B>* *<A NAME="E916"></A><B>E916</B>*
+		Returns a <A HREF="eval.html#String">String</A> with the status of {job}:
+			&quot;run&quot;	<A HREF="#job">job</A> is running
+			&quot;fail&quot;	<A HREF="#job">job</A> failed to start
+			&quot;dead&quot;	<A HREF="#job">job</A> died or was stopped after running
+
+		On <A HREF="os_unix.html#Unix">Unix</A> a non-existing command results in &quot;dead&quot; instead of
+		&quot;fail&quot;, because a <A HREF="os_unix.html#fork">fork</A> happens before the failure can be
+		detected.
+
+		If in <A HREF="vim9.html#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> a variable is declared with type &quot;<A HREF="#job">job</A>&quot; but
+		never assigned to, passing that variable to <A HREF="#job_status()">job_status()</A>
+		returns &quot;fail&quot;.
+
+		If an exit callback was set with the &quot;exit_cb&quot; option and the
+		<A HREF="#job">job</A> is now detected to be &quot;dead&quot; the callback will be invoked.
+
+		For more information see |<A HREF="#job_info()">job_info()</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetJob()-&gt;job_status()</B>
+
+
+
+job_stop({job} [, {how}])					*<A NAME="job_stop()"></A><B>job_stop()</B>*
+		Stop the {job}.  This can also be used to signal the <A HREF="#job">job</A>.
+
+		When {how} is omitted or is &quot;term&quot; the <A HREF="#job">job</A> will be terminated.
+		For <A HREF="os_unix.html#Unix">Unix</A> SIGTERM is sent.  On <A HREF="os_win32.html#MS-Windows">MS-Windows</A> the <A HREF="#job">job</A> will be
+		terminated forcedly (there is no &quot;gentle&quot; way).
+		This goes to the process group, thus children may also be
+		affected.
+
+		Effect for <A HREF="os_unix.html#Unix">Unix</A>:
+			&quot;term&quot;	 SIGTERM (default)
+			&quot;hup&quot;	 SIGHUP
+			&quot;quit&quot;	 SIGQUIT
+			&quot;int&quot;	 SIGINT
+			&quot;kill&quot;	 SIGKILL (strongest way to stop)
+			number	 signal with that number
+
+		Effect for <A HREF="os_win32.html#MS-Windows">MS-Windows</A>:
+			&quot;term&quot;	 terminate process forcedly (default)
+			&quot;hup&quot;	 CTRL_BREAK
+			&quot;quit&quot;	 CTRL_BREAK
+			&quot;int&quot;	 CTRL_C
+			&quot;kill&quot;	 terminate process forcedly
+			Others	 CTRL_BREAK
+
+		On <A HREF="os_unix.html#Unix">Unix</A> the signal is sent to the process group.  This means
+		that when the <A HREF="#job">job</A> is &quot;sh <A HREF="starting.html#-c">-c</A> command&quot; <A HREF="motion.html#it">it</A> affects both the shell
+		and the command.
+
+		The result is a <A HREF="eval.html#Number">Number</A>: 1 if the operation could be executed,
+		0 if &quot;how&quot; is not supported on the system.
+		Note that even when the operation was executed, whether the
+		<A HREF="#job">job</A> was actually stopped needs to be checked with
+		|<A HREF="#job_status()">job_status()</A>|.
+
+		If the status of the <A HREF="#job">job</A> is &quot;dead&quot;, the signal will not be
+		sent.  This is to avoid to stop the wrong <A HREF="#job">job</A> (esp. on <A HREF="os_unix.html#Unix">Unix</A>,
+		where process numbers are recycled).
+
+		When using &quot;kill&quot; Vim will assume the <A HREF="#job">job</A> will die and close
+		the <A HREF="#channel">channel</A>.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetJob()-&gt;job_stop()</B>
+
+
+==============================================================================
+
+12. <A HREF="eval.html#Job">Job</A> <A HREF="options.html#options">options</A>						*<A NAME="job-options"></A><B>job-options</B>*
+
+The {options} argument in <A HREF="#job_start()">job_start()</A> is a dictionary.  All entries are
+optional.  Some <A HREF="options.html#options">options</A> can be used after the <A HREF="#job">job</A> has started, using
+job_setoptions(job, {options}).  Many <A HREF="options.html#options">options</A> can be used with the <A HREF="#channel">channel</A>
+related to the <A HREF="#job">job</A>, using ch_setoptions(channel, {options}).
+See |<A HREF="#job_setoptions()">job_setoptions()</A>| and |<A HREF="#ch_setoptions()">ch_setoptions()</A>|.
+
+
+						*<A NAME="in_mode"></A><B>in_mode</B>* *<A NAME="out_mode"></A><B>out_mode</B>* *<A NAME="err_mode"></A><B>err_mode</B>*
+&quot;<A HREF="#in_mode">in_mode</A>&quot;		mode specifically for stdin, only when using pipes
+&quot;<A HREF="#out_mode">out_mode</A>&quot;		mode specifically for stdout, only when using pipes
+&quot;<A HREF="#err_mode">err_mode</A>&quot;		mode specifically for stderr, only when using pipes
+			See |<A HREF="#channel-mode">channel-mode</A>| for the values.
+
+			Note: when setting &quot;mode&quot; the part specific mode is
+			overwritten.  Therefore set &quot;mode&quot; first and the part
+			specific mode later.
+
+			Note: when <A HREF="editing.html#writing">writing</A> to a file or buffer and when
+			reading from a buffer NL mode is used by default.
+
+
+						*<A NAME="job-noblock"></A><B>job-noblock</B>*
+&quot;noblock&quot;: 1		When <A HREF="editing.html#writing">writing</A> use a non-blocking write call.  This
+			avoids getting stuck if Vim should handle other
+			<A HREF="message.html#messages">messages</A> in between, e.g. when a <A HREF="#job">job</A> sends back data
+			to Vim.  It implies that when `ch_sendraw()` returns
+			not all data may have been written yet.
+			This option was added in patch 8.1.0350, test with:
+<B>				if has("patch-8.1.350")</B>
+<B>				  let options['noblock'] = 1</B>
+<B>				endif</B>
+ 
+
+						*<A NAME="job-callback"></A><B>job-callback</B>*
+&quot;callback&quot;: handler	Callback for something to read on any part of the
+			<A HREF="#channel">channel</A>.
+
+						*<A NAME="job-out_cb"></A><B>job-out_cb</B>* *<A NAME="out_cb"></A><B>out_cb</B>*
+&quot;<A HREF="#out_cb">out_cb</A>&quot;: handler	Callback for when there is something to read on
+			stdout.  Only for when the <A HREF="#channel">channel</A> uses pipes.  When
+			&quot;<A HREF="#out_cb">out_cb</A>&quot; wasn't set the <A HREF="#channel">channel</A> callback is used.
+			The two arguments are the <A HREF="#channel">channel</A> and the message.
+
+
+						*<A NAME="job-err_cb"></A><B>job-err_cb</B>* *<A NAME="err_cb"></A><B>err_cb</B>*
+&quot;<A HREF="#err_cb">err_cb</A>&quot;: handler	Callback for when there is something to read on
+			stderr.  Only for when the <A HREF="#channel">channel</A> uses pipes.  When
+			&quot;<A HREF="#err_cb">err_cb</A>&quot; wasn't set the <A HREF="#channel">channel</A> callback is used.
+			The two arguments are the <A HREF="#channel">channel</A> and the message.
+
+						*<A NAME="job-close_cb"></A><B>job-close_cb</B>*
+&quot;<A HREF="#close_cb">close_cb</A>&quot;: handler	Callback for when the <A HREF="#channel">channel</A> is closed.  Same <A HREF="motion.html#as">as</A>
+			&quot;close_cb&quot; on |<A HREF="#ch_open()">ch_open()</A>|, see |<A HREF="#close_cb">close_cb</A>|.
+
+						*<A NAME="job-drop"></A><B>job-drop</B>*
+&quot;drop&quot;: when		Specifies when to drop <A HREF="message.html#messages">messages</A>.  Same <A HREF="motion.html#as">as</A> &quot;drop&quot; on
+			|<A HREF="#ch_open()">ch_open()</A>|, see |<A HREF="#channel-drop">channel-drop</A>|.  For &quot;auto&quot; the
+			exit_cb is not considered.
+
+						*<A NAME="job-exit_cb"></A><B>job-exit_cb</B>*
+&quot;exit_cb&quot;: handler	Callback for when the <A HREF="#job">job</A> ends.  The arguments are the
+			<A HREF="#job">job</A> and the exit status.
+			Vim checks up to 10 times per second for jobs that
+			ended.  The check can also be triggered by calling
+			|<A HREF="#job_status()">job_status()</A>|, which may then invoke the exit_cb
+			handler.
+			Note that data can be buffered, callbacks may still be
+			called after the process ends.
+
+							*<A NAME="job-timeout"></A><B>job-timeout</B>*
+&quot;timeout&quot;: time		The time to wait for a request when blocking, E.g.
+			when using <A HREF="#ch_evalexpr()">ch_evalexpr()</A>.  In milliseconds.  The
+			default is 2000 (2 seconds).
+
+						*<A NAME="out_timeout"></A><B>out_timeout</B>* *<A NAME="err_timeout"></A><B>err_timeout</B>*
+&quot;<A HREF="#out_timeout">out_timeout</A>&quot;: time	Timeout for stdout.  Only when using pipes.
+&quot;<A HREF="#err_timeout">err_timeout</A>&quot;: time	Timeout for stderr.  Only when using pipes.
+			Note: when setting &quot;timeout&quot; the part specific mode is
+			overwritten.  Therefore set &quot;timeout&quot; first and the
+			part specific mode later.
+
+
+						*<A NAME="job-stoponexit"></A><B>job-stoponexit</B>*
+&quot;stoponexit&quot;: {signal}	Send {signal} to the <A HREF="#job">job</A> when Vim exits.  See
+			|<A HREF="#job_stop()">job_stop()</A>| for possible values.
+&quot;stoponexit&quot;: &quot;&quot;	Do not stop the <A HREF="#job">job</A> when Vim exits.
+			The default is &quot;term&quot;.
+
+
+						*<A NAME="job-term"></A><B>job-term</B>*
+&quot;term&quot;: &quot;open&quot;		Start a <A HREF="terminal.html#terminal">terminal</A> in a new <A HREF="windows.html#window">window</A> and connect the <A HREF="#job">job</A>
+			stdin/stdout/stderr to <A HREF="motion.html#it">it</A>.  Similar to using
+			`:terminal`.
+			NOTE: Not implemented yet!
+
+&quot;<A HREF="#channel">channel</A>&quot;: {channel}	Use an existing <A HREF="#channel">channel</A> instead of creating a new one.
+			The parts of the <A HREF="#channel">channel</A> that get used for the new <A HREF="#job">job</A>
+			will be disconnected from what they were used before.
+			If the <A HREF="#channel">channel</A> was still used by another <A HREF="#job">job</A> this may
+			cause I/O <A HREF="message.html#errors">errors</A>.
+			Existing callbacks and other settings remain.
+
+&quot;pty&quot;: 1		Use a pty (pseudo-tty) instead of a pipe when
+			possible.  This is most useful in combination with a
+			terminal <A HREF="windows.html#window">window</A>, see |<A HREF="terminal.html#terminal">terminal</A>|.
+			{only on <A HREF="os_unix.html#Unix">Unix</A> and Unix-like systems}
+
+
+				*<A NAME="job-in_io"></A><B>job-in_io</B>* *<A NAME="in_top"></A><B>in_top</B>* *<A NAME="in_bot"></A><B>in_bot</B>* *<A NAME="in_name"></A><B>in_name</B>* *<A NAME="in_buf"></A><B>in_buf</B>*
+&quot;in_io&quot;: &quot;<A HREF="vim9.html#null">null</A>&quot;		disconnect stdin (read from /dev/null)
+&quot;in_io&quot;: &quot;pipe&quot;		stdin is connected to the <A HREF="#channel">channel</A> (default)
+&quot;in_io&quot;: &quot;file&quot;		stdin reads from a file
+&quot;in_io&quot;: &quot;buffer&quot;	stdin reads from a buffer
+&quot;<A HREF="#in_top">in_top</A>&quot;: number	when using &quot;buffer&quot;: first line to send (default: 1)
+&quot;<A HREF="#in_bot">in_bot</A>&quot;: number	when using &quot;buffer&quot;: last line to send (default: last)
+&quot;<A HREF="#in_name">in_name</A>&quot;: &quot;/path/file&quot;	the name of the file or buffer to read from
+&quot;<A HREF="#in_buf">in_buf</A>&quot;: number	the number of the buffer to read from
+
+
+				*<A NAME="job-out_io"></A><B>job-out_io</B>* *<A NAME="out_name"></A><B>out_name</B>* *<A NAME="out_buf"></A><B>out_buf</B>*
+&quot;out_io&quot;: &quot;<A HREF="vim9.html#null">null</A>&quot;	disconnect stdout (goes to /dev/null)
+&quot;out_io&quot;: &quot;pipe&quot;	stdout is connected to the <A HREF="#channel">channel</A> (default)
+&quot;out_io&quot;: &quot;file&quot;	stdout writes to a file
+&quot;out_io&quot;: &quot;buffer&quot;	stdout appends to a buffer (see below)
+&quot;<A HREF="#out_name">out_name</A>&quot;: &quot;/path/file&quot; the name of the file or buffer to write to
+&quot;<A HREF="#out_buf">out_buf</A>&quot;: number	the number of the buffer to write to
+&quot;<A HREF="#out_modifiable">out_modifiable</A>&quot;: 0	when <A HREF="editing.html#writing">writing</A> to a buffer, <A HREF="options.html#'modifiable'">'modifiable'</A> will be off
+			(see below)
+&quot;<A HREF="#out_msg">out_msg</A>&quot;: 0		when <A HREF="editing.html#writing">writing</A> to a new buffer, the first line will be
+			set to &quot;Reading from <A HREF="#channel">channel</A> output...&quot;
+
+
+				*<A NAME="job-err_io"></A><B>job-err_io</B>* *<A NAME="err_name"></A><B>err_name</B>* *<A NAME="err_buf"></A><B>err_buf</B>*
+&quot;err_io&quot;: &quot;out&quot;		stderr <A HREF="message.html#messages">messages</A> to go to stdout
+&quot;err_io&quot;: &quot;<A HREF="vim9.html#null">null</A>&quot;	disconnect stderr  (goes to /dev/null)
+&quot;err_io&quot;: &quot;pipe&quot;	stderr is connected to the <A HREF="#channel">channel</A> (default)
+&quot;err_io&quot;: &quot;file&quot;	stderr writes to a file
+&quot;err_io&quot;: &quot;buffer&quot;	stderr appends to a buffer (see below)
+&quot;<A HREF="#err_name">err_name</A>&quot;: &quot;/path/file&quot; the name of the file or buffer to write to
+&quot;<A HREF="#err_buf">err_buf</A>&quot;: number	the number of the buffer to write to
+&quot;<A HREF="#err_modifiable">err_modifiable</A>&quot;: 0	when <A HREF="editing.html#writing">writing</A> to a buffer, <A HREF="options.html#'modifiable'">'modifiable'</A> will be off
+			(see below)
+&quot;<A HREF="#err_msg">err_msg</A>&quot;: 0		when <A HREF="editing.html#writing">writing</A> to a new buffer, the first line will be
+			set to &quot;Reading from <A HREF="#channel">channel</A> error...&quot;
+
+&quot;block_write&quot;: number	only for <A HREF="testing.html#testing">testing</A>: pretend every other write to stdin
+			will block
+
+&quot;env&quot;: <A HREF="eval.html#dict">dict</A>		environment <A HREF="eval.html#variables">variables</A> for the new process
+&quot;cwd&quot;: &quot;/path/to/dir&quot;	current working directory for the new process;
+			if the directory does not exist an error is given
+
+
+<B><FONT COLOR="PURPLE">Writing to a buffer </FONT></B>
+
+							*<A NAME="out_io-buffer"></A><B>out_io-buffer</B>*
+When the out_io or err_io mode is &quot;buffer&quot; and there is a callback, the text
+is appended to the buffer before invoking the callback.
+
+When a buffer is used both for input and output, the output lines are put
+above the last line, since the last line is what is written to the <A HREF="#channel">channel</A>
+input.  Otherwise lines are appended below the last line.
+
+When using JS or JSON mode with &quot;buffer&quot;, only <A HREF="message.html#messages">messages</A> with zero or negative
+ID will be added to the buffer, after decoding + encoding.  Messages with a
+positive number will be handled by a callback, commands are handled <A HREF="motion.html#as">as</A> usual.
+
+The name of the buffer from &quot;<A HREF="#out_name">out_name</A>&quot; or &quot;<A HREF="#err_name">err_name</A>&quot; is compared the full name
+of existing <A HREF="windows.html#buffers">buffers</A>, also after expanding the name for the current directory.
+E.g., when a buffer was created with &quot;<A HREF="editing.html#:edit">:edit</A> somename&quot; and the buffer name is
+&quot;somename&quot; <A HREF="motion.html#it">it</A> will use that buffer.
+
+If there is no matching buffer a new buffer is created.  Use an empty name to
+always create a new buffer.  |<A HREF="#ch_getbufnr()">ch_getbufnr()</A>| can then be used to get the
+buffer number.
+
+For a new buffer <A HREF="options.html#'buftype'">'buftype'</A> is set to &quot;nofile&quot; and <A HREF="options.html#'bufhidden'">'bufhidden'</A> to &quot;hide&quot;.  If
+you prefer other settings, create the buffer first and pass the buffer number.
+
+					*<A NAME="out_modifiable"></A><B>out_modifiable</B>* *<A NAME="err_modifiable"></A><B>err_modifiable</B>*
+The &quot;<A HREF="#out_modifiable">out_modifiable</A>&quot; and &quot;<A HREF="#err_modifiable">err_modifiable</A>&quot; <A HREF="options.html#options">options</A> can be used to set the
+<A HREF="options.html#'modifiable'">'modifiable'</A> option off, or write to a buffer that has <A HREF="options.html#'modifiable'">'modifiable'</A> off.  That
+means that lines will be appended to the buffer, but the user can't easily
+change the buffer.
+
+					*<A NAME="out_msg"></A><B>out_msg</B>* *<A NAME="err_msg"></A><B>err_msg</B>*
+The &quot;<A HREF="#out_msg">out_msg</A>&quot; option can be used to specify whether a new buffer will have the
+first line set to &quot;Reading from <A HREF="#channel">channel</A> output...&quot;.  The default is to add the
+message.  &quot;<A HREF="#err_msg">err_msg</A>&quot; does the same for <A HREF="#channel">channel</A> error.
+
+When an existing buffer is to be written where <A HREF="options.html#'modifiable'">'modifiable'</A> is off and the
+&quot;<A HREF="#out_modifiable">out_modifiable</A>&quot; or &quot;<A HREF="#err_modifiable">err_modifiable</A>&quot; <A HREF="options.html#options">options</A> is not zero, an error is given
+and the buffer will not be written to.
+
+When the buffer written to is displayed in a <A HREF="windows.html#window">window</A> and the cursor is in the
+first column of the last line, the cursor will be moved to the newly added
+line and the <A HREF="windows.html#window">window</A> is scrolled up to show the cursor if needed.
+
+Undo is synced for every added line.  NUL bytes are accepted (internally Vim
+stores these <A HREF="motion.html#as">as</A> NL bytes).
+
+
+<B><FONT COLOR="PURPLE">Writing to a file </FONT></B>
+
+							*<A NAME="E920"></A><B>E920</B>*
+The file is created with permissions 600 (read-write for the user, not
+accessible for others).  Use |<A HREF="builtin.html#setfperm()">setfperm()</A>| to change this.
+
+If the file already exists <A HREF="motion.html#it">it</A> is truncated.
+
+==============================================================================
+
+13. Controlling a <A HREF="#job">job</A>					*<A NAME="job-control"></A><B>job-control</B>*
+
+To get the status of a <A HREF="#job">job</A>:
+<B>	echo job_status(job)</B>
+
+To make a <A HREF="#job">job</A> stop running:
+<B>	job_stop(job)</B>
+
+This is the normal way to end a <A HREF="#job">job</A>. On <A HREF="os_unix.html#Unix">Unix</A> <A HREF="motion.html#it">it</A> sends a SIGTERM to the <A HREF="#job">job</A>.
+It is possible to use other ways to stop the <A HREF="#job">job</A>, or even send arbitrary
+signals.  E.g. to force a <A HREF="#job">job</A> to stop, &quot;kill it&quot;:
+<B>	job_stop(job, "kill")</B>
+
+For more <A HREF="options.html#options">options</A> see |<A HREF="#job_stop()">job_stop()</A>|.
+
+==============================================================================
+
+14. Using a prompt buffer				*<A NAME="prompt-buffer"></A><B>prompt-buffer</B>*
+
+If you want to type input for the <A HREF="#job">job</A> in a Vim <A HREF="windows.html#window">window</A> you have a few <A HREF="options.html#options">options</A>:
+- Use a normal buffer and handle all possible commands yourself.
+  This will be complicated, since there are so many possible commands.
+- Use a <A HREF="terminal.html#terminal">terminal</A> <A HREF="windows.html#window">window</A>.  This works well if what you type goes directly to
+  the <A HREF="#job">job</A> and the <A HREF="#job">job</A> output is directly displayed in the <A HREF="windows.html#window">window</A>.
+  See |<A HREF="terminal.html#terminal-window">terminal-window</A>|.
+- Use a <A HREF="windows.html#window">window</A> with a prompt buffer. This works well when entering a line for
+  the <A HREF="#job">job</A> in Vim while displaying (possibly filtered) output from the <A HREF="#job">job</A>.
+
+A prompt buffer is created by setting <A HREF="options.html#'buftype'">'buftype'</A> to &quot;prompt&quot;. You would
+normally only <A HREF="diff.html#do">do</A> that in a newly created buffer.
+
+The user can edit and enter one line of text at the very last line of the
+buffer.  When pressing Enter in the prompt line the callback set with
+|<A HREF="builtin.html#prompt_setcallback()">prompt_setcallback()</A>| is invoked.  It would normally send the line to a <A HREF="#job">job</A>.
+Another callback would receive the output from the <A HREF="#job">job</A> and display <A HREF="motion.html#it">it</A> in the
+buffer, below the prompt (and above the next prompt).
+
+Only the text in the last line, after the prompt, is editable. The rest of the
+buffer is not modifiable with <A HREF="intro.html#Normal">Normal</A> mode commands.  It can be modified by
+calling <A HREF="eval.html#functions">functions</A>, such <A HREF="motion.html#as">as</A> |<A HREF="builtin.html#append()">append()</A>|.  Using other commands may mess up the
+buffer.
+
+After setting <A HREF="options.html#'buftype'">'buftype'</A> to &quot;prompt&quot; Vim does not automatically start <A HREF="insert.html#Insert">Insert</A>
+mode, use `:startinsert` if you want to enter <A HREF="insert.html#Insert">Insert</A> mode, so that the user
+can start typing a line.
+
+The text of the prompt can be set with the |<A HREF="builtin.html#prompt_setprompt()">prompt_setprompt()</A>| function. If
+no prompt is set with |<A HREF="builtin.html#prompt_setprompt()">prompt_setprompt()</A>|, &quot;<A HREF="motion.html#&#37;">&#37;</A> &quot; is used. You can get the
+effective prompt text for a buffer, with |<A HREF="builtin.html#prompt_getprompt()">prompt_getprompt()</A>|.
+
+The user can go to <A HREF="intro.html#Normal">Normal</A> mode and navigate through the buffer.  This can be
+useful to see older output or copy text.
+
+The <A HREF="index.html#CTRL-W">CTRL-W</A> key can be used to start a <A HREF="windows.html#window">window</A> command, such <A HREF="motion.html#as">as</A> <A HREF="index.html#CTRL-W">CTRL-W</A> <A HREF="motion.html#w">w</A> to
+switch to the next <A HREF="windows.html#window">window</A>.  This also works in <A HREF="insert.html#Insert">Insert</A> mode (use Shift-CTRL-W
+to delete a <A HREF="motion.html#word">word</A>). When leaving the <A HREF="windows.html#window">window</A> <A HREF="insert.html#Insert">Insert</A> mode will be stopped.  When
+coming back to the prompt <A HREF="windows.html#window">window</A> <A HREF="insert.html#Insert">Insert</A> mode will be restored.
+
+Any command that starts <A HREF="insert.html#Insert">Insert</A> mode, such <A HREF="motion.html#as">as</A> &quot;<A HREF="insert.html#a">a</A>&quot;, &quot;<A HREF="insert.html#i">i</A>&quot;, &quot;<A HREF="insert.html#A">A</A>&quot; and &quot;<A HREF="insert.html#I">I</A>&quot;, will move
+the cursor to the last line.  &quot;<A HREF="insert.html#A">A</A>&quot; will move to the end of the line, &quot;<A HREF="insert.html#I">I</A>&quot; to the
+start of the line.
+
+Here is an example for <A HREF="os_unix.html#Unix">Unix</A>.  It starts a shell in the background and prompts
+for the next shell command.  Output from the shell is displayed above the
+prompt.
+
+<B>	" Create a channel log so we can see what happens.</B>
+<B>	call ch_logfile('logfile', 'w')</B>
+
+<B>	" Function handling a line of text that has been typed.</B>
+<B>	func TextEntered(text)</B>
+<B>	  " Send the text to a shell with Enter appended.</B>
+<B>	  call ch_sendraw(g:shell_job, a:text .. "\n")</B>
+<B>	endfunc</B>
+
+<B>	" Function handling output from the shell: Add it above the prompt.</B>
+<B>	func GotOutput(channel, msg)</B>
+<B>	  call append(line("$") - 1, "- " .. a:msg)</B>
+<B>	endfunc</B>
+
+<B>	" Function handling the shell exits: close the window.</B>
+<B>	func JobExit(job, status)</B>
+<B>	  quit!</B>
+<B>	endfunc</B>
+
+<B>	" Start a shell in the background.</B>
+<B>	let shell_job = job_start(["/bin/sh"], #{</B>
+<B>		\ out_cb: function('GotOutput'),</B>
+<B>		\ err_cb: function('GotOutput'),</B>
+<B>		\ exit_cb: function('JobExit'),</B>
+<B>		\ })</B>
+
+<B>	new</B>
+<B>	set buftype=prompt</B>
+<B>	let buf = bufnr('')</B>
+<B>	call prompt_setcallback(buf, function("TextEntered"))</B>
+<B>	eval prompt_setprompt(buf, "shell command: ")</B>
+
+<B>	" start accepting shell commands</B>
+<B>	startinsert</B>
+ 
+The same in |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="usr_41.html#script">script</A>:
+
+<B>	vim9script</B>
+
+<B>	# Create a channel log so we can see what happens.</B>
+<B>	ch_logfile('logfile', 'w')</B>
+
+<B>	var shell_job: job</B>
+
+<B>	# Function handling a line of text that has been typed.</B>
+<B>	def TextEntered(text: string)</B>
+<B>	  # Send the text to a shell with Enter appended.</B>
+<B>	  ch_sendraw(shell_job, text .. "\n")</B>
+<B>	enddef</B>
+
+<B>	# Function handling output from the shell: Add it above the prompt.</B>
+<B>	def GotOutput(channel: channel, msg: string)</B>
+<B>	  append(line("$") - 1, "- " .. msg)</B>
+<B>	enddef</B>
+
+<B>	# Function handling the shell exits: close the window.</B>
+<B>	def JobExit(job: job, status: number)</B>
+<B>	  quit!</B>
+<B>	enddef</B>
+
+<B>	# Start a shell in the background.</B>
+<B>	shell_job = job_start(["/bin/sh"], {</B>
+<B>				 out_cb: GotOutput,</B>
+<B>				 err_cb: GotOutput,</B>
+<B>				 exit_cb: JobExit,</B>
+<B>				 })</B>
+
+<B>	new</B>
+<B>	set buftype=prompt</B>
+<B>	var buf = bufnr('')</B>
+<B>	prompt_setcallback(buf, TextEntered)</B>
+<B>	prompt_setprompt(buf, "shell command: ")</B>
+
+<B>	# start accepting shell commands</B>
+<B>	startinsert</B>
+
+==============================================================================
+
+15. Language Server Protocol			*<A NAME="language-server-protocol"></A><B>language-server-protocol</B>*
+
+The language server protocol specification is available at:
+
+    https://microsoft.github.io/language-server-protocol/specification
+
+Each LSP protocol message starts with a simple HTTP header followed by the
+payload encoded in JSON-RPC format.  This is described in:
+
+    https://www.jsonrpc.org/specification
+
+To encode and send a LSP request/notification message in a Vim |<A HREF="eval.html#Dict">Dict</A>| into a
+LSP JSON-RPC message and to receive and decode a LSP JSON-RPC
+response/notification message into a Vim |<A HREF="eval.html#Dict">Dict</A>|, connect to the LSP server
+with the |<A HREF="#channel-mode">channel-mode</A>| set to &quot;lsp&quot;.
+
+For <A HREF="message.html#messages">messages</A> received on a channel with |<A HREF="#channel-mode">channel-mode</A>| set to &quot;lsp&quot;, Vim will
+process the HTTP header and decode the JSON-RPC payload into a Vim |<A HREF="eval.html#Dict">Dict</A>| type
+and call the |<A HREF="#channel-callback">channel-callback</A>| function or the specified
+|<A HREF="#channel-onetime-callback">channel-onetime-callback</A>| function.  When sending <A HREF="message.html#messages">messages</A> on a channel using
+the |<A HREF="#ch_evalexpr()">ch_evalexpr()</A>| or |<A HREF="#ch_sendexpr()">ch_sendexpr()</A>| <A HREF="eval.html#functions">functions</A>, Vim will add the HTTP header
+and encode the Vim <A HREF="eval.html#expression">expression</A> into JSON.  Refer to |<A HREF="builtin.html#json_encode()">json_encode()</A>| and
+|<A HREF="builtin.html#json_decode()">json_decode()</A>| for more information about how Vim encodes and decodes the
+builtin types into JSON.
+
+To open a <A HREF="#channel">channel</A> using the <A HREF="options.html#'lsp'">'lsp'</A> mode, set the 'mode' item in the |<A HREF="#ch_open()">ch_open()</A>|
+{options} argument to <A HREF="options.html#'lsp'">'lsp'</A>.  Example:
+
+<B>    let ch = ch_open(..., #{mode: 'lsp'})</B>
+
+To open a <A HREF="#channel">channel</A> using the <A HREF="options.html#'lsp'">'lsp'</A> mode with a <A HREF="#job">job</A>, set the '<A HREF="#in_mode">in_mode</A>' and
+'<A HREF="#out_mode">out_mode</A>' items in the |<A HREF="#job_start()">job_start()</A>| {options} argument to <A HREF="options.html#'lsp'">'lsp'</A>. Example:
+
+<B>    let cmd = ['clangd', '--background-index', '--clang-tidy']</B>
+<B>    let opts = {}</B>
+<B>    let opts.in_mode = 'lsp'</B>
+<B>    let opts.out_mode = 'lsp'</B>
+<B>    let opts.err_mode = 'nl'</B>
+<B>    let opts.out_cb = function('LspOutCallback')</B>
+<B>    let opts.err_cb = function('LspErrCallback')</B>
+<B>    let opts.exit_cb = function('LspExitCallback')</B>
+<B>    let job = job_start(cmd, opts)</B>
+
+Note that if a <A HREF="#job">job</A> outputs LSP <A HREF="message.html#messages">messages</A> on stdout and non-LSP <A HREF="message.html#messages">messages</A> on
+stderr, then the <A HREF="#channel-callback">channel-callback</A> function should handle both the message
+formats appropriately or you should use a separate callback function for
+&quot;<A HREF="#out_cb">out_cb</A>&quot; and &quot;<A HREF="#err_cb">err_cb</A>&quot; to handle them <A HREF="motion.html#as">as</A> shown above.
+
+To synchronously send a JSON-RPC request to the server, use the
+|<A HREF="#ch_evalexpr()">ch_evalexpr()</A>| function. This function will wait and return the decoded
+response message from the server. You can use either the |<A HREF="#channel-timeout">channel-timeout</A>| or
+the <A HREF="options.html#'timeout'">'timeout'</A> field in the {options} argument to <A HREF="intro.html#control">control</A> the response wait
+time.  If the request times out, then an empty |<A HREF="eval.html#Dict">Dict</A>| is returned.  Example:
+
+<B>    let req = {}</B>
+<B>    let req.method = 'textDocument/definition'</B>
+<B>    let req.params = {}</B>
+<B>    let req.params.textDocument = #{uri: 'a.c'}</B>
+<B>    let req.params.position = #{line: 10, character: 3}</B>
+<B>    let defs = ch_evalexpr(ch, req, #{timeout: 100})</B>
+<B>    if defs-&gt;empty()</B>
+<B>        ... &lt;handle failure&gt;</B>
+<B>    endif</B>
+
+Note that in the request message the 'id' field should not be specified. If <A HREF="motion.html#it">it</A>
+is specified, then Vim will overwrite the value with an internally generated
+identifier.  Vim currently supports only a number type for the 'id' field.
+The callback function will be invoked for both a successful and a failed RPC
+request.
+
+To send a JSON-RPC request to the server and asynchronously process the
+response, use the |<A HREF="#ch_sendexpr()">ch_sendexpr()</A>| function and supply a callback function.  If
+the &quot;id&quot; field is present in the request message, then Vim will overwrite <A HREF="motion.html#it">it</A>
+with an internally generated number.  This function returns a <A HREF="eval.html#Dict">Dict</A> with the
+identifier used for the message.  This can be used to send cancellation
+request to the LSP server (if needed).  Example:
+
+<B>    let req = {}</B>
+<B>    let req.method = 'textDocument/hover'</B>
+<B>    let req.id = 200</B>
+<B>    let req.params = {}</B>
+<B>    let req.params.textDocument = #{uri: 'a.c'}</B>
+<B>    let req.params.position = #{line: 10, character: 3}</B>
+<B>    let resp = ch_sendexpr(ch, req, #{callback: 'HoverFunc'})</B>
+
+To cancel an outstanding asynchronous LSP request sent to the server using the
+|<A HREF="#ch_sendexpr()">ch_sendexpr()</A>| function, send a cancellation message to the server using the
+|<A HREF="#ch_sendexpr()">ch_sendexpr()</A>| function with the ID returned by the |<A HREF="#ch_sendexpr()">ch_sendexpr()</A>| function
+for the request.  Example:
+
+<B>    " send a completion request</B>
+<B>    let req = {}</B>
+<B>    let req.method = 'textDocument/completion'</B>
+<B>    let req.params = {}</B>
+<B>    let req.params.textDocument = #{uri: 'a.c'}</B>
+<B>    let req.params.position = #{line: 10, character: 3}</B>
+<B>    let reqstatus = ch_sendexpr(ch, req, #{callback: 'LspComplete'})</B>
+<B>    " send a cancellation notification</B>
+<B>    let notif = {}</B>
+<B>    let notif.method = '$/cancelRequest'</B>
+<B>    let notif.id = reqstatus.id</B>
+<B>    call ch_sendexpr(ch, notif)</B>
+
+To send a JSON-RPC notification message to the server, use the |<A HREF="#ch_sendexpr()">ch_sendexpr()</A>|
+function. As the server will not send a response message to the notification,
+don't specify the &quot;callback&quot; item.  Example:
+
+<B>    call ch_sendexpr(ch, #{method: 'initialized'})</B>
+
+To respond to a JSON-RPC request message from the server, use the
+|<A HREF="#ch_sendexpr()">ch_sendexpr()</A>| function.  In the response message, copy the 'id' field value
+from the server request message. Example:
+
+<B>    let resp = {}</B>
+<B>    let resp.id = req.id</B>
+<B>    let resp.result = 1</B>
+<B>    call ch_sendexpr(ch, resp)</B>
+
+The JSON-RPC notification <A HREF="message.html#messages">messages</A> from the server are delivered through the
+|<A HREF="#channel-callback">channel-callback</A>| function.
+
+Depending on the use <A HREF="change.html#case">case</A>, you can use the <A HREF="#ch_evalexpr()">ch_evalexpr()</A>, <A HREF="#ch_sendexpr()">ch_sendexpr()</A> and
+<A HREF="#ch_sendraw()">ch_sendraw()</A> <A HREF="eval.html#functions">functions</A> on the same <A HREF="#channel">channel</A>.
+
+A LSP request message has the following format (expressed <A HREF="motion.html#as">as</A> a Vim <A HREF="eval.html#Dict">Dict</A>).  The
+&quot;params&quot; field is optional:
+
+<B>    {</B>
+<B>	"jsonrpc": "2.0",</B>
+<B>	"id": &lt;number&gt;,</B>
+<B>	"method": &lt;string&gt;,</B>
+<B>	"params": &lt;list|dict&gt;</B>
+<B>    }</B>
+
+A LSP response message has the following format (expressed <A HREF="motion.html#as">as</A> a Vim <A HREF="eval.html#Dict">Dict</A>).  The
+&quot;result&quot; and &quot;error&quot; fields are optional:
+
+<B>    {</B>
+<B>	"jsonrpc": "2.0",</B>
+<B>	"id": &lt;number&gt;,</B>
+<B>	"result": &lt;vim type&gt;</B>
+<B>	"error": &lt;dict&gt;</B>
+<B>    }</B>
+
+A LSP notification message has the following format (expressed <A HREF="motion.html#as">as</A> a Vim <A HREF="eval.html#Dict">Dict</A>).
+The &quot;params&quot; field is optional:
+
+<B>    {</B>
+<B>	"jsonrpc": "2.0",</B>
+<B>	"method": &lt;string&gt;,</B>
+<B>	"params": &lt;list|dict&gt;</B>
+<B>    }</B>
+
+ 
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

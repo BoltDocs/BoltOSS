@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Shell Parameters</title>
+
+<meta name="description" content="Shell Parameters (Bash Reference Manual)">
+<meta name="keywords" content="Shell Parameters (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Basic-Shell-Features.html" rel="up" title="Basic Shell Features">
+<link href="Shell-Expansions.html" rel="next" title="Shell Expansions">
+<link href="Shell-Functions.html" rel="prev" title="Shell Functions">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<div class="section" id="Shell-Parameters">
+<div class="header">
+<p>
+Next: <a href="Shell-Expansions.html" accesskey="n" rel="next">Shell Expansions</a>, Previous: <a href="Shell-Functions.html" accesskey="p" rel="prev">Shell Functions</a>, Up: <a href="Basic-Shell-Features.html" accesskey="u" rel="up">Basic Shell Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Shell-Parameters-1"></span><h3 class="section">3.4 Shell Parameters</h3>
+<span id="index-parameters"></span>
+<span id="index-variable_002c-shell"></span>
+<span id="index-shell-variable"></span>
+
+
+<p>A <em>parameter</em> is an entity that stores values.
+It can be a <code>name</code>, a number, or one of the special characters
+listed below.
+A <em>variable</em> is a parameter denoted by a <code>name</code>.
+A variable has a <code>value</code> and zero or more <code>attributes</code>.
+Attributes are assigned using the <code>declare</code> builtin command
+(see the description of the <code>declare</code> builtin in <a href="Bash-Builtins.html">Bash Builtin Commands</a>).
+</p>
+<p>A parameter is set if it has been assigned a value.  The null string is
+a valid value.  Once a variable is set, it may be unset only by using
+the <code>unset</code> builtin command.
+</p>
+<p>A variable may be assigned to by a statement of the form
+</p><div class="example">
+<pre class="example"><var>name</var>=[<var>value</var>]
+</pre></div>
+<p>If <var>value</var>
+is not given, the variable is assigned the null string.  All
+<var>value</var>s undergo tilde expansion, parameter and variable expansion,
+command substitution, arithmetic expansion, and quote
+removal (see <a href="Shell-Parameter-Expansion.html">Shell Parameter Expansion</a>).
+If the variable has its <code>integer</code>
+attribute set, then <var>value</var> 
+is evaluated as an arithmetic expression even if the <code>$((&hellip;))</code>
+expansion is not used (see <a href="Arithmetic-Expansion.html">Arithmetic Expansion</a>).
+Word splitting and filename expansion are not performed.
+Assignment statements may also appear as arguments to the
+<code>alias</code>, 
+<code>declare</code>, <code>typeset</code>, <code>export</code>, <code>readonly</code>,
+and <code>local</code> builtin commands (<em>declaration</em> commands).
+When in <small>POSIX</small> mode (see <a href="Bash-POSIX-Mode.html">Bash POSIX Mode</a>), these builtins may appear
+in a command after one or more instances of the <code>command</code> builtin
+and retain these assignment statement properties.
+</p>
+<p>In the context where an assignment statement is assigning a value  
+to a shell variable or array index (see <a href="Arrays.html">Arrays</a>), the &lsquo;<samp>+=</samp>&rsquo;
+operator can be used to   
+append to or add to the variable&rsquo;s previous value.
+This includes arguments to builtin commands such as <code>declare</code> that
+accept assignment statements (declaration commands).
+When &lsquo;<samp>+=</samp>&rsquo; is applied to a variable for which the <code>integer</code> attribute
+has been set, <var>value</var> is evaluated as an arithmetic expression and
+added to the variable&rsquo;s current value, which is also evaluated.
+When &lsquo;<samp>+=</samp>&rsquo; is applied to an array variable using compound assignment
+(see <a href="Arrays.html">Arrays</a>), the
+variable&rsquo;s value is not unset (as it is when using &lsquo;<samp>=</samp>&rsquo;), and new
+values are appended to the array beginning at one greater than the array&rsquo;s
+maximum index (for indexed arrays),  or added as additional key-value pairs
+in an associative array.
+When applied to a string-valued variable, <var>value</var> is expanded and
+appended to the variable&rsquo;s value.
+</p>
+<p>A variable can be assigned the <code>nameref</code> attribute using the
+<samp>-n</samp> option to the <code>declare</code> or <code>local</code> builtin commands
+(see <a href="Bash-Builtins.html">Bash Builtin Commands</a>)
+to create a <em>nameref</em>, or a reference to another variable.
+This allows variables to be manipulated indirectly.
+Whenever the nameref variable is referenced, assigned to, unset, or has
+its attributes modified (other than using or changing the nameref
+attribute itself), the
+operation is actually performed on the variable specified by the nameref
+variable&rsquo;s value.
+A nameref is commonly used within shell functions to refer to a variable
+whose name is passed as an argument to the function.
+For instance, if a variable name is passed to a shell function as its first
+argument, running
+</p><div class="example">
+<pre class="example">declare -n ref=$1
+</pre></div>
+<p>inside the function creates a nameref variable <code>ref</code> whose value is
+the variable name passed as the first argument.
+References and assignments to <code>ref</code>, and changes to its attributes,
+are treated as references, assignments, and attribute modifications
+to the variable whose name was passed as <code>$1</code>.
+</p>
+<p>If the control variable in a <code>for</code> loop has the nameref attribute,
+the list of words can be a list of shell variables, and a name reference
+will be established for each word in the list, in turn, when the loop is
+executed.
+Array variables cannot be given the nameref attribute.
+However, nameref variables can reference array variables and subscripted
+array variables.
+Namerefs can be unset using the <samp>-n</samp> option to the <code>unset</code> builtin
+(see <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
+Otherwise, if <code>unset</code> is executed with the name of a nameref variable
+as an argument, the variable referenced by the nameref variable will be unset.
+</p>
+<ul class="section-toc">
+<li><a href="Positional-Parameters.html" accesskey="1">Positional Parameters</a></li>
+<li><a href="Special-Parameters.html" accesskey="2">Special Parameters</a></li>
+</ul>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Shell-Expansions.html">Shell Expansions</a>, Previous: <a href="Shell-Functions.html">Shell Functions</a>, Up: <a href="Basic-Shell-Features.html">Basic Shell Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

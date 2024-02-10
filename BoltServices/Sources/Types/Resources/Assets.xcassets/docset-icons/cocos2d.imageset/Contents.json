@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "cocos2d.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

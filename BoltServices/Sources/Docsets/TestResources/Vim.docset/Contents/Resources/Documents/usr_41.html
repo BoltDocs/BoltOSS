@@ -1,0 +1,1956 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: usr_41</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: usr_41</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="usr_41.txt"></A><B>usr_41.txt</B>*	For Vim version 9.0.  Last change: 2022 Jun 23
+
+		     VIM USER MANUAL - by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+			      Write a Vim <A HREF="#script">script</A>
+
+
+The Vim <A HREF="#script">script</A> language is used for the <A HREF="starting.html#startup">startup</A> <A HREF="starting.html#vimrc">vimrc</A> file, <A HREF="syntax.html#syntax">syntax</A> files, and
+many other things.  This chapter explains the items that can be used in a Vim
+<A HREF="#script">script</A>.  There are a lot of them, therefore this is a long chapter.
+
+|<A HREF="#41.1">41.1</A>|	Introduction
+|<A HREF="#41.2">41.2</A>|	Variables
+|<A HREF="#41.3">41.3</A>|	Expressions
+|<A HREF="#41.4">41.4</A>|	Conditionals
+|<A HREF="#41.5">41.5</A>|	Executing an <A HREF="eval.html#expression">expression</A>
+|<A HREF="#41.6">41.6</A>|	Using <A HREF="eval.html#functions">functions</A>
+|<A HREF="#41.7">41.7</A>|	Defining a function
+|<A HREF="#41.8">41.8</A>|	<A HREF="eval.html#Lists">Lists</A> and <A HREF="eval.html#Dictionaries">Dictionaries</A>
+|<A HREF="#41.9">41.9</A>|	White space
+|<A HREF="#41.10">41.10</A>|	Line continuation
+|<A HREF="#41.11">41.11</A>|	Comments
+|<A HREF="#41.12">41.12</A>|	Fileformat
+
+     Next chapter: |<A HREF="usr_42.html">usr_42.txt</A>|  Add new <A HREF="gui.html#menus">menus</A>
+ Previous chapter: |<A HREF="usr_40.html">usr_40.txt</A>|  Make new commands
+Table of contents: |<A HREF="usr_toc.html">usr_toc.txt</A>|
+
+==============================================================================
+
+*<A NAME="41.1"></A><B>41.1</B>*	Introduction				*<A NAME="vim-script-intro"></A><B>vim-script-intro</B>* *<A NAME="script"></A><B>script</B>*
+
+Your first experience with Vim scripts is the <A HREF="starting.html#vimrc">vimrc</A> file.  Vim reads <A HREF="motion.html#it">it</A> when
+<A HREF="motion.html#it">it</A> starts up and executes the commands.  You can set <A HREF="options.html#options">options</A> to the values you
+prefer, define mappings, select plugins and much more.   You can use any colon
+command in <A HREF="motion.html#it">it</A> (commands that start with a &quot;<A HREF="cmdline.html#:">:</A>&quot;; these are sometimes referred to
+<A HREF="motion.html#as">as</A> <A HREF="intro.html#Ex">Ex</A> commands or command-line commands).
+
+<A HREF="autocmd.html#Syntax">Syntax</A> files are also Vim scripts.  As are files that set <A HREF="options.html#options">options</A> for a
+specific file type.  A complicated <A HREF="map.html#macro">macro</A> can be defined by a separate Vim
+<A HREF="#script">script</A> file.  You can think of other uses yourself.
+
+Vim <A HREF="#script">script</A> comes in two flavors: legacy and |<A HREF="vim9.html#Vim9">Vim9</A>|.  Since this help file is
+for new users, we'll teach you the newer and more convenient |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="syntax.html#syntax">syntax</A>.
+While legacy <A HREF="#script">script</A> is particularly for Vim, |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A> looks more like
+other languages, such <A HREF="motion.html#as">as</A> JavaScript and TypeScript.
+
+To try out Vim <A HREF="#script">script</A> the best way is to edit a <A HREF="#script">script</A> file and source <A HREF="motion.html#it">it</A>.
+Basically:
+<B>	:edit test.vim</B>
+<B>	[insert the script lines you want]</B>
+<B>	:w</B>
+<B>	:source %</B>
+
+Let's start with a simple example:
+
+<B>	vim9script</B>
+<B>	var i = 1</B>
+<B>	while i &lt; 5</B>
+<B>	  echo "count is" i</B>
+<B>	  i += 1</B>
+<B>	endwhile</B>
+ 
+The output of the example code is:
+
+<B><FONT COLOR="PURPLE">	count is 1 </FONT></B>
+<B><FONT COLOR="PURPLE">	count is 2 </FONT></B>
+<B><FONT COLOR="PURPLE">	count is 3 </FONT></B>
+<B><FONT COLOR="PURPLE">	count is 4 </FONT></B>
+
+In the first line the `vim9script` command makes clear this is a new, |<A HREF="vim9.html#Vim9">Vim9</A>|
+<A HREF="#script">script</A> file.  That matters for how the rest of the file is used.  It is
+recommended to put <A HREF="motion.html#it">it</A> in the very fist line, before any comments.
+
+							*<A NAME="vim9-declarations"></A><B>vim9-declarations</B>*
+The `var <A HREF="insert.html#i">i</A> = 1` command declares the &quot;<A HREF="insert.html#i">i</A>&quot; variable and initializes <A HREF="motion.html#it">it</A>.  The
+generic form is:
+
+<B>	var {name} = {expression}</B>
+
+In this <A HREF="change.html#case">case</A> the variable name is &quot;<A HREF="insert.html#i">i</A>&quot; and the <A HREF="eval.html#expression">expression</A> is a simple value,
+the number one.
+
+The `while` command starts a loop.  The generic form is:
+
+<B>	while {condition}</B>
+<B>	  {statements}</B>
+<B>	endwhile</B>
+
+The statements until the matching `endwhile` are executed for <A HREF="motion.html#as">as</A> long <A HREF="motion.html#as">as</A> the
+condition is <A HREF="vim9.html#true">true</A>.  The condition used here is the <A HREF="eval.html#expression">expression</A> &quot;<A HREF="insert.html#i">i</A> <A HREF="change.html#&lt;">&lt;</A> 5&quot;.  This
+is <A HREF="vim9.html#true">true</A> when the variable <A HREF="insert.html#i">i</A> is smaller than five.
+	Note:
+	If you happen to write a while loop that keeps on running, you can
+	interrupt <A HREF="motion.html#it">it</A> by pressing <A HREF="pattern.html#CTRL-C">CTRL-C</A> (CTRL-Break on <A HREF="os_win32.html#MS-Windows">MS-Windows</A>).
+
+The `echo` command prints its arguments.  In this <A HREF="change.html#case">case</A> the <A HREF="eval.html#string">string</A> &quot;<A HREF="intro.html#count">count</A> is&quot;
+and the value of the variable <A HREF="insert.html#i">i</A>.  Since <A HREF="insert.html#i">i</A> is one, this will print:
+
+<B><FONT COLOR="PURPLE">	count is 1 </FONT></B>
+
+Then there is the `i += 1` command.  This does the same thing <A HREF="motion.html#as">as</A> &quot;<A HREF="insert.html#i">i</A> = <A HREF="insert.html#i">i</A> + 1&quot;,
+<A HREF="motion.html#it">it</A> adds one to the variable <A HREF="insert.html#i">i</A> and assigns the new value to the same variable.
+
+The example was given to explain the commands, but would you really want to
+make such a loop, <A HREF="motion.html#it">it</A> can be written much more compact:
+
+<B>	for i in range(1, 4)</B>
+<B>	  echo $"count is {i}"</B>
+<B>	endfor</B>
+
+We won't explain how `for`, `range()`and `$&quot;string&quot;` work until later.  Follow
+the links if you are impatient.
+
+
+TRYING OUT EXAMPLES
+
+You can easily try out most examples in these help files without saving the
+commands to a file.  For example, to try out the &quot;for&quot; loop above <A HREF="diff.html#do">do</A> this:
+1. position the cursor on the &quot;for&quot;
+2. start <A HREF="visual.html#Visual">Visual</A> mode with &quot;<A HREF="visual.html#v">v</A>&quot;
+3. move down to the &quot;endfor&quot;
+4. press colon, then &quot;so&quot; and Enter
+
+After pressing colon you will see &quot;:'&lt;,'&gt;&quot;, which is the range of the Visually
+selected text.
+
+For some commands <A HREF="motion.html#it">it</A> matters they are executed <A HREF="motion.html#as">as</A> in |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A>.  But typed
+commands normally use legacy <A HREF="#script">script</A> <A HREF="syntax.html#syntax">syntax</A>, such <A HREF="motion.html#as">as</A> the example below that
+causes the <A HREF="vim9.html#E1004">E1004</A> error.  For that use this fourth step:
+4. press colon, then &quot;<A HREF="vim9.html#vim9">vim9</A> so&quot; and Enter
+
+&quot;<A HREF="vim9.html#vim9">vim9</A>&quot; is short for `vim9cmd`, which is a command modifier to execute the
+following command in |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="syntax.html#syntax">syntax</A>.
+
+Note that this won't work for examples that require a <A HREF="#script">script</A> context.
+
+
+FOUR KINDS OF NUMBERS
+
+Numbers can be decimal, hexadecimal, <A HREF="eval.html#octal">octal</A> and binary.
+
+A hexadecimal number starts with &quot;<A HREF="eval.html#0x">0x</A>&quot; or &quot;0X&quot;.  For example &quot;0x1f&quot; is decimal
+31 and 0x1234 is decimal 4660.
+
+An <A HREF="eval.html#octal">octal</A> number starts with &quot;<A HREF="eval.html#0o">0o</A>&quot;, &quot;0O&quot;.  &quot;0o17&quot; is decimal 15.
+
+A binary number starts with &quot;0b&quot; or &quot;0B&quot;.  For example &quot;0b101&quot; is decimal 5.
+
+A decimal number is just digits.  Careful: In legacy <A HREF="#script">script</A> don't put a zero
+before a decimal number, <A HREF="motion.html#it">it</A> will be interpreted <A HREF="motion.html#as">as</A> an <A HREF="eval.html#octal">octal</A> number!  That's
+one reason to use |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A>.
+
+The `echo` command evaluates its argument and when <A HREF="motion.html#it">it</A> is a number always
+prints the decimal form.  Example:
+
+<B>	echo 0x7f 0o36</B>
+<B><FONT COLOR="PURPLE"> 	127 30 </FONT></B>
+
+A number is made negative with a minus sign.  This also works for hexadecimal,
+<A HREF="eval.html#octal">octal</A> and binary numbers:
+
+<B>	echo -0x7f</B>
+<B><FONT COLOR="PURPLE"> 	-127 </FONT></B>
+
+A minus sign is also used for subtraction.  This can sometimes lead to
+confusion.  If we put a minus sign before both numbers we get an error:
+
+<B>	echo -0x7f -0o36</B>
+<B><FONT COLOR="PURPLE"> 	E1004: White space required before and after '-' at "-0o36" </FONT></B>
+
+Note: if you are not using a |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A> to try out these commands but type
+them directly, they will be executed <A HREF="motion.html#as">as</A> legacy <A HREF="#script">script</A>.  Then the echo command
+sees the second minus sign <A HREF="motion.html#as">as</A> subtraction.  To get the error, prefix the
+command with `vim9cmd`:
+
+<B>	vim9cmd echo -0x7f -0o36</B>
+<B><FONT COLOR="PURPLE"> 	E1004: White space required before and after '-' at "-0o36" </FONT></B>
+
+White space in an <A HREF="eval.html#expression">expression</A> is often required to make sure <A HREF="motion.html#it">it</A> is <A HREF="starting.html#easy">easy</A> to read
+and avoid <A HREF="message.html#errors">errors</A>.  Such <A HREF="motion.html#as">as</A> thinking that the &quot;-0o36&quot; above makes the number
+negative, while <A HREF="motion.html#it">it</A> is actually seen <A HREF="motion.html#as">as</A> a subtraction.
+
+To actually have the minus sign be used for negation, you can put the second
+<A HREF="eval.html#expression">expression</A> in parentheses:
+
+<B>	echo -0x7f (-0o36)</B>
+<B><FONT COLOR="PURPLE"> 	-127 -30 </FONT></B>
+
+==============================================================================
+
+*<A NAME="41.2"></A><B>41.2</B>*	Variables
+
+A variable name consists of ASCII letters, digits and the underscore.  It
+cannot start with a digit.  Valid variable names are:
+
+	counter
+	_aap3
+	very_long_variable_name_with_underscores
+	CamelCaseName
+	LENGTH
+
+Invalid names are &quot;foo.bar&quot; and &quot;6var&quot;.
+
+Some <A HREF="eval.html#variables">variables</A> are global.  To see a <A HREF="eval.html#list">list</A> of currently defined global
+<A HREF="eval.html#variables">variables</A> type this command:
+
+<B>	:let</B>
+
+You can use global <A HREF="eval.html#variables">variables</A> everywhere.  However, <A HREF="motion.html#it">it</A> is too <A HREF="starting.html#easy">easy</A> to use the
+same name in two unrelated scripts.  Therefore <A HREF="eval.html#variables">variables</A> declared in a <A HREF="#script">script</A>
+are local to that <A HREF="#script">script</A>.  For example, if you have this in &quot;script1.vim&quot;:
+
+<B>	vim9script</B>
+<B>	var counter = 5</B>
+<B>	echo counter</B>
+<B><FONT COLOR="PURPLE"> 	5 </FONT></B>
+
+And you try to use the variable in &quot;script2.vim&quot;:
+
+<B>	vim9script</B>
+<B>	echo counter</B>
+<B><FONT COLOR="PURPLE"> 	E121: Undefined variable: counter </FONT></B>
+
+Using a <A HREF="map.html#script-local">script-local</A> variable means you can be sure that <A HREF="motion.html#it">it</A> is only changed in
+that <A HREF="#script">script</A> and not elsewhere.
+
+If you <A HREF="diff.html#do">do</A> want to share <A HREF="eval.html#variables">variables</A> between scripts, use the &quot;<A HREF="eval.html#g:">g:</A>&quot; prefix and
+assign the value directly, <A HREF="diff.html#do">do</A> not use `var`.  And use a specific name to avoid
+mistakes.  Thus in &quot;script1.vim&quot;:
+
+<B>	vim9script</B>
+<B>	g:mash_counter = 5</B>
+<B>	echo g:mash_counter</B>
+<B><FONT COLOR="PURPLE"> 	5 </FONT></B>
+
+And then in &quot;script2.vim&quot;:
+
+<B>	vim9script</B>
+<B>	echo g:mash_counter</B>
+<B><FONT COLOR="PURPLE"> 	5 </FONT></B>
+
+Global <A HREF="eval.html#variables">variables</A> can also be accessed on the command line, E.g. typing this:
+<B>	echo g:mash_counter</B>
+That will not work for a <A HREF="map.html#script-local">script-local</A> variable.
+
+More about <A HREF="map.html#script-local">script-local</A> <A HREF="eval.html#variables">variables</A> here: |<A HREF="eval.html#script-variable">script-variable</A>|.
+
+There are more kinds of variables, see |<A HREF="eval.html#internal-variables">internal-variables</A>|.  The most often
+used ones are:
+
+	b:name		variable local to a buffer
+	w:name		variable local to a <A HREF="windows.html#window">window</A>
+	g:name		global variable (also in a function)
+	v:name		variable predefined by Vim
+
+
+DELETING VARIABLES
+
+Variables take up memory and show up in the output of the `let` command.  To
+delete a global variable use the `unlet` command.  Example:
+
+<B>	unlet g:counter</B>
+
+This deletes the global variable &quot;g:counter&quot; to free up the memory <A HREF="motion.html#it">it</A> uses.
+If you are not sure if the variable exists, and don't want an error message
+when <A HREF="motion.html#it">it</A> doesn't, append !:
+
+<B>	unlet! g:counter</B>
+
+You cannot `unlet` <A HREF="map.html#script-local">script-local</A> <A HREF="eval.html#variables">variables</A> in |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A>, only in legacy
+<A HREF="#script">script</A>.
+
+When a <A HREF="#script">script</A> finishes, the local <A HREF="eval.html#variables">variables</A> declared there will not be
+deleted.  Functions defined in the <A HREF="#script">script</A> can use them.  Example:
+
+<B>	vim9script</B>
+<B>	var counter = 0</B>
+<B>	def g:GetCount(): number</B>
+<B>	  s:counter += 1</B>
+<B>	  return s:counter</B>
+<B>	enddef</B>
+
+Every time you call the function <A HREF="motion.html#it">it</A> will return the next <A HREF="intro.html#count">count</A>:
+<B>	:echo g:GetCount()</B>
+<B><FONT COLOR="PURPLE"> 	1 </FONT></B>
+
+<B>	:echo g:GetCount()</B>
+<B><FONT COLOR="PURPLE"> 	2 </FONT></B>
+
+If you are worried a <A HREF="map.html#script-local">script-local</A> variable is consuming too much memory, set
+<A HREF="motion.html#it">it</A> to an empty or <A HREF="vim9.html#null">null</A> value after you no longer need <A HREF="motion.html#it">it</A>.  Example:
+<B>	var lines = readfile(...)</B>
+<B>	...</B>
+<B>	lines = []</B>
+
+Note: below we'll leave out the `vim9script` line from examples, so we can
+concentrate on the relevant commands, but you'll still need to put <A HREF="motion.html#it">it</A> at the
+top of your <A HREF="#script">script</A> file.
+
+
+STRING VARIABLES AND CONSTANTS
+
+So far only numbers were used for the variable value.  Strings can be used <A HREF="motion.html#as">as</A>
+well.  Numbers and strings are the basic types of <A HREF="eval.html#variables">variables</A> that Vim supports.
+Example:
+
+<B>	var name = "Peter"</B>
+<B>	echo name</B>
+<B><FONT COLOR="PURPLE"> 	Peter </FONT></B>
+
+Every variable has a type.  Very often, <A HREF="motion.html#as">as</A> in this example, the type is
+defined by assigning a value.  This is called type inference.  If you <A HREF="diff.html#do">do</A> not
+want to give the variable a value yet, you need to specify the type:
+
+<B>	var name: string</B>
+<B>	var age: number</B>
+<B>	if male</B>
+<B>	   name = "Peter"</B>
+<B>	   age = 42</B>
+<B>	else</B>
+<B>	   name = "Elisa"</B>
+<B>	   age = 45</B>
+<B>	endif</B>
+
+If you make a mistake and try to assign the wrong type of value you'll get an
+error:
+
+<B>	age = "Peter"</B>
+<B><FONT COLOR="PURPLE"> 	E1012: Type mismatch; expected number but got string </FONT></B>
+
+More about types in |<A HREF="#41.8">41.8</A>|.
+
+To assign a <A HREF="eval.html#string">string</A> value to a variable, you can use a <A HREF="eval.html#string">string</A> constant.  There
+are two types of these.  First the <A HREF="eval.html#string">string</A> in double <A HREF="quotes.html#quotes">quotes</A>, <A HREF="motion.html#as">as</A> we used
+already.  If you want to include a double <A HREF="change.html#quote">quote</A> inside the <A HREF="eval.html#string">string</A>, put a
+<A HREF="intro.html#backslash">backslash</A> in front of <A HREF="motion.html#it">it</A>:
+
+<B>	var name = "he is \"Peter\""</B>
+<B>	echo name</B>
+<B><FONT COLOR="PURPLE"> 	he is "Peter" </FONT></B>
+
+To avoid the need for backslashes, you can use a <A HREF="eval.html#string">string</A> in single <A HREF="quotes.html#quotes">quotes</A>:
+
+<B>	var name = 'he is "Peter"'</B>
+<B>	echo name</B>
+<B><FONT COLOR="PURPLE"> 	he is "Peter" </FONT></B>
+
+Inside a single-quote <A HREF="eval.html#string">string</A> all the characters are <A HREF="motion.html#as">as</A> they are.  Only the
+single <A HREF="change.html#quote">quote</A> itself is special: you need to use two to get one.  A <A HREF="intro.html#backslash">backslash</A>
+is taken literally, thus you can't use <A HREF="motion.html#it">it</A> to change the meaning of the
+character after <A HREF="motion.html#it">it</A>:
+
+<B>	var name = 'P\e''ter'''</B>
+<B>	echo name</B>
+<B><FONT COLOR="PURPLE"> 	P\e'ter' </FONT></B>
+
+In double-quote strings <A HREF="motion.html#it">it</A> is possible to use special characters.  Here are a
+few useful ones:
+
+	\t		<A HREF="motion.html#&lt;Tab&gt;">&lt;Tab&gt;</A>
+	\n		<A HREF="motion.html#&lt;NL&gt;">&lt;NL&gt;</A>, line break
+	\r		<A HREF="motion.html#&lt;CR&gt;">&lt;CR&gt;</A>, <A HREF="intro.html#&lt;Enter&gt;">&lt;Enter&gt;</A>
+	\e		<A HREF="intro.html#&lt;Esc&gt;">&lt;Esc&gt;</A>
+	\b		<A HREF="motion.html#&lt;BS&gt;">&lt;BS&gt;</A>, backspace
+	\&quot;		&quot;
+	\\		\, <A HREF="intro.html#backslash">backslash</A>
+	\&lt;Esc&gt;		<A HREF="intro.html#&lt;Esc&gt;">&lt;Esc&gt;</A>
+	\&lt;C-W&gt;		<A HREF="index.html#CTRL-W">CTRL-W</A>
+
+The last two are just examples.  The  &quot;\&lt;name&gt;&quot; form can be used to include
+the special key &quot;name&quot;.
+
+See |<A HREF="eval.html#expr-quote">expr-quote</A>| for the full <A HREF="eval.html#list">list</A> of special items in a <A HREF="eval.html#string">string</A>.
+
+==============================================================================
+
+*<A NAME="41.3"></A><B>41.3</B>*	Expressions
+
+Vim has a fairly standard way to handle expressions.  You can read the
+definition here: |<A HREF="eval.html#expression-syntax">expression-syntax</A>|.  Here we will show the most common
+items.
+
+The numbers, strings and <A HREF="eval.html#variables">variables</A> mentioned above are expressions by
+themselves.  Thus everywhere an <A HREF="eval.html#expression">expression</A> is expected, you can use a number,
+<A HREF="eval.html#string">string</A> or variable.  Other basic items in an <A HREF="eval.html#expression">expression</A> are:
+
+	$NAME		environment variable
+	&amp;name		option value
+	<A HREF="eval.html#@r">@r</A>		<A HREF="sponsor.html#register">register</A> contents
+
+Examples:
+
+<B>	echo "The value of 'tabstop' is" &amp;ts</B>
+<B>	echo "Your home directory is" $HOME</B>
+<B>	if @a == 'text'</B>
+
+The &amp;name form can also be used to set an option value, <A HREF="diff.html#do">do</A> something and
+restore the old value.  Example:
+
+<B>	var save_ic = &amp;ic</B>
+<B>	set noic</B>
+<B>	s/The Start/The Beginning/</B>
+<B>	&amp;ic = save_ic</B>
+
+This makes sure the &quot;The Start&quot; <A HREF="pattern.html#pattern">pattern</A> is used with the <A HREF="options.html#'ignorecase'">'ignorecase'</A> option
+off.  Still, <A HREF="motion.html#it">it</A> keeps the value that the user had set.  (Another way to <A HREF="diff.html#do">do</A>
+this would be to add &quot;\C&quot; to the <A HREF="pattern.html#pattern">pattern</A>, see |<A HREF="pattern.html#/\C">/\C</A>|.)
+
+
+MATHEMATICS
+
+It becomes more interesting if we combine these basic items.  Let's start with
+mathematics on numbers:
+
+	a + <A HREF="motion.html#b">b</A>		add
+	a - <A HREF="motion.html#b">b</A>		subtract
+	a &#42; <A HREF="motion.html#b">b</A>		multiply
+	a / <A HREF="motion.html#b">b</A>		divide
+	a <A HREF="motion.html#&#37;">&#37;</A> <A HREF="motion.html#b">b</A>		modulo
+
+The usual precedence is used.  Example:
+
+<B>	echo 10 + 5 * 2</B>
+<B><FONT COLOR="PURPLE"> 	20 </FONT></B>
+
+Grouping is done with parentheses.  No surprises here.  Example:
+
+<B>	echo (10 + 5) * 2</B>
+<B><FONT COLOR="PURPLE"> 	30 </FONT></B>
+
+
+OTHERS
+
+Strings can be concatenated with &quot;..&quot; (see |<A HREF="eval.html#expr6">expr6</A>|).  Example:
+
+<B>	echo "Name: " .. name</B>
+<B>	Name: Peter</B>
+
+When the &quot;echo&quot; command gets multiple arguments, <A HREF="motion.html#it">it</A> separates them with a
+space.  In the example the argument is a single <A HREF="eval.html#expression">expression</A>, thus no space is
+inserted.
+
+If you don't like the concatenation you can use the $&quot;string&quot; form, which
+accepts an <A HREF="eval.html#expression">expression</A> in curly braces:
+<B>	echo $"Name: {name}"</B>
+
+See |<A HREF="eval.html#interp-string">interp-string</A>| for more information.
+
+Borrowed from the C language is the conditional <A HREF="eval.html#expression">expression</A>:
+
+<B>	a ? b : c</B>
+
+If &quot;<A HREF="insert.html#a">a</A>&quot; evaluates to <A HREF="vim9.html#true">true</A> &quot;<A HREF="motion.html#b">b</A>&quot; is used, otherwise &quot;<A HREF="change.html#c">c</A>&quot; is used.  Example:
+
+<B>	var nr = 4</B>
+<B>	echo nr &gt; 5 ? "nr is big" : "nr is small"</B>
+<B><FONT COLOR="PURPLE"> 	nr is small </FONT></B>
+
+The three parts of the constructs are always evaluated first, thus you could
+see <A HREF="motion.html#it">it</A> works <A HREF="motion.html#as">as</A>:
+
+<B>	(a) ? (b) : (c)</B>
+
+There is also the <A HREF="eval.html#falsy">falsy</A> <A HREF="motion.html#operator">operator</A>:
+<B>	echo name ?? "No name given"</B>
+See |<A HREF="eval.html#??">??</A>|.
+
+==============================================================================
+
+*<A NAME="41.4"></A><B>41.4</B>*	Conditionals
+
+The `if` commands executes the following statements, until the matching
+`endif`, only when a condition is met.  The generic form is:
+
+	if {condition}
+	   {statements}
+	endif
+
+Only when the <A HREF="eval.html#expression">expression</A> {condition} evaluates to <A HREF="vim9.html#true">true</A> or one will the
+{statements} be executed.  If they are not executed they must still be valid
+commands.  If they contain garbage, Vim won't be able to find the matching
+`endif`.
+
+You can also use `else`.  The generic form for this is:
+
+	if {condition}
+	   {statements}
+	else
+	   {statements}
+	endif
+
+The second {statements} block is only executed if the first one isn't.
+
+Finally, there is `elseif`
+
+	if {condition}
+	   {statements}
+	elseif {condition}
+	   {statements}
+	endif
+
+This works just like using `else` and then `if`, but without the need for an
+extra `endif`.
+
+A useful example for your <A HREF="starting.html#vimrc">vimrc</A> file is checking the <A HREF="options.html#'term'">'term'</A> option and doing
+something depending upon its value:
+
+<B>	if &amp;term == "xterm"</B>
+<B>	  # Do stuff for xterm</B>
+<B>	elseif &amp;term == "vt100"</B>
+<B>	  # Do stuff for a vt100 terminal</B>
+<B>	else</B>
+<B>	  # Do something for other terminals</B>
+<B>	endif</B>
+
+This uses &quot;<A HREF="pattern.html##">#</A>&quot; to start a comment, more about that later.
+
+
+LOGIC OPERATIONS
+
+We already used some of them in the examples.  These are the most often used
+ones:
+
+	a <A HREF="change.html#==">==</A> <A HREF="motion.html#b">b</A>		equal to
+	a != <A HREF="motion.html#b">b</A>		not equal to
+	a <A HREF="change.html#&gt;">&gt;</A>  <A HREF="motion.html#b">b</A>		greater than
+	a &gt;= <A HREF="motion.html#b">b</A>		greater than or equal to
+	a <A HREF="change.html#&lt;">&lt;</A>  <A HREF="motion.html#b">b</A>		<A HREF="various.html#less">less</A> than
+	a &lt;= <A HREF="motion.html#b">b</A>		<A HREF="various.html#less">less</A> than or equal to
+
+The result is <A HREF="vim9.html#true">true</A> if the condition is met and <A HREF="vim9.html#false">false</A> otherwise.  An example:
+
+<B>	if v:version &gt;= 800</B>
+<B>	  echo "congratulations"</B>
+<B>	else</B>
+<B>	  echo "you are using an old version, upgrade!"</B>
+<B>	endif</B>
+
+Here &quot;<A HREF="eval.html#v:version">v:version</A>&quot; is a variable defined by Vim, which has the value of the Vim
+version.  800 is for version 8.0, version 8.1 has the value 801.  This is
+useful to write a <A HREF="#script">script</A> that works with multiple versions of Vim.
+See |<A HREF="eval.html#v:version">v:version</A>|.  You can also check for a specific feature with `has()` or a
+specific patch, see |<A HREF="builtin.html#has-patch">has-patch</A>|.
+
+The logic operators work both for numbers and strings.  When comparing two
+strings, the mathematical difference is used.  This compares byte values,
+which may not be right for some languages.
+
+If you try to compare a <A HREF="eval.html#string">string</A> with a number you will get an error.
+
+For strings there are two more useful items:
+
+	str =~ pat		matches with
+	str !~ pat		does not match with
+
+The left item &quot;str&quot; is used <A HREF="motion.html#as">as</A> a <A HREF="eval.html#string">string</A>.  The right item &quot;pat&quot; is used <A HREF="motion.html#as">as</A> a
+<A HREF="pattern.html#pattern">pattern</A>, like what's used for searching.  Example:
+
+<B>	if str =~ " "</B>
+<B>	  echo "str contains a space"</B>
+<B>	endif</B>
+<B>	if str !~ '\.$'</B>
+<B>	  echo "str does not end in a full stop"</B>
+<B>	endif</B>
+
+Notice the use of a single-quote <A HREF="eval.html#string">string</A> for the <A HREF="pattern.html#pattern">pattern</A>.  This is useful,
+because patterns tend to contain many backslashes and backslashes need to be
+doubled in a double-quote <A HREF="eval.html#string">string</A>.
+
+The match is not anchored, if you want to match the whole <A HREF="eval.html#string">string</A> start with
+&quot;<A HREF="motion.html#^">^</A>&quot; and end with &quot;<A HREF="motion.html#$">$</A>&quot;.
+
+The <A HREF="options.html#'ignorecase'">'ignorecase'</A> option is not used when comparing strings.  When you <A HREF="diff.html#do">do</A> want
+to ignore <A HREF="change.html#case">case</A> append &quot;<A HREF="pattern.html#?">?</A>&quot;.  Thus &quot;==?&quot; compares two strings to be equal while
+ignoring <A HREF="change.html#case">case</A>.  For the full table see |<A HREF="eval.html#expr-==">expr-==</A>|.
+
+
+MORE LOOPING
+
+The `while` command was already mentioned.  Two more statements can be used in
+between the `while` and the `endwhile`:
+
+	continue		Jump back to the start of the while loop; the
+				loop continues.
+	break			Jump forward to the `endwhile`; the loop is
+				discontinued.
+
+Example:
+
+<B>	var counter = 1</B>
+<B>	while counter &lt; 40</B>
+<B>	  if skip_number(counter)</B>
+<B>	    continue</B>
+<B>	  endif</B>
+<B>	  if last_number(counter)</B>
+<B>	    break</B>
+<B>	  endif</B>
+<B>	  sleep 50m</B>
+<B>	  ++counter</B>
+<B>	endwhile</B>
+
+The `sleep` command makes Vim take a nap.  The &quot;50m&quot; specifies fifty
+milliseconds.  Another example is `sleep 4`, which sleeps for four seconds.
+
+`continue` and `break` can also be used in between `for` and `endfor`.
+Even more looping can be done with the `for` command, see below in |<A HREF="#41.8">41.8</A>|.
+
+==============================================================================
+
+*<A NAME="41.5"></A><B>41.5</B>*	Executing an <A HREF="eval.html#expression">expression</A>
+
+So far the commands in the <A HREF="#script">script</A> were executed by Vim directly.  The
+`execute` command allows executing the result of an <A HREF="eval.html#expression">expression</A>.  This is a
+very powerful way to build commands and execute them.
+
+An example is to jump to a <A HREF="tagsrch.html#tag">tag</A>, which is contained in a variable:
+
+<B>	execute "tag " .. tag_name</B>
+
+The &quot;..&quot; is used to concatenate the <A HREF="eval.html#string">string</A> &quot;<A HREF="tagsrch.html#tag">tag</A> &quot; with the value of variable
+&quot;tag_name&quot;.  Suppose &quot;tag_name&quot; has the value &quot;get_cmd&quot;, then the command that
+will be executed is:
+
+<B>	tag get_cmd</B>
+
+The `execute` command can only execute <A HREF="intro.html#Ex">Ex</A> commands.  The `normal` command
+executes <A HREF="intro.html#Normal">Normal</A> mode commands.  However, its argument is not an <A HREF="eval.html#expression">expression</A> but
+the literal command characters.  Example:
+
+<B>	normal gg=G</B>
+
+This jumps to the first line with &quot;<A HREF="motion.html#gg">gg</A>&quot; and formats all lines with the &quot;<A HREF="change.html#=">=</A>&quot;
+<A HREF="motion.html#operator">operator</A> and the &quot;<A HREF="motion.html#G">G</A>&quot; <A HREF="intro.html#movement">movement</A>.
+
+To make `normal` work with an <A HREF="eval.html#expression">expression</A>, combine `execute` with <A HREF="motion.html#it">it</A>.
+Example:
+
+<B>	execute "normal " .. count .. "j"</B>
+
+This will move the cursor &quot;<A HREF="intro.html#count">count</A>&quot; lines down.
+
+Make sure that the argument for `normal` is a complete command.  Otherwise
+Vim will run into the end of the argument and silently abort the command.  For
+example, if you start the delete <A HREF="motion.html#operator">operator</A>, you must give the <A HREF="intro.html#movement">movement</A> command
+also.  This works:
+
+<B>	normal d$</B>
+
+This does nothing:
+
+<B>	normal d</B>
+
+If you start <A HREF="insert.html#Insert">Insert</A> mode and <A HREF="diff.html#do">do</A> not end <A HREF="motion.html#it">it</A> with Esc, <A HREF="motion.html#it">it</A> will end anyway.  This
+works to insert &quot;new text&quot;:
+
+<B>	execute "normal inew text"</B>
+
+If you want to <A HREF="diff.html#do">do</A> something after <A HREF="insert.html#inserting">inserting</A> text you <A HREF="diff.html#do">do</A> need to end <A HREF="insert.html#Insert">Insert</A>
+mode:
+
+<B>	execute "normal inew text\&lt;Esc&gt;b"</B>
+
+This inserts &quot;new text&quot; and puts the cursor on the first <A HREF="print.html#letter">letter</A> of &quot;text&quot;.
+Notice the use of the special key &quot;\&lt;Esc&gt;&quot;.  This avoids having to enter a
+real <A HREF="intro.html#&lt;Esc&gt;">&lt;Esc&gt;</A> character in your <A HREF="#script">script</A>.  That is where `execute` with a
+double-quote <A HREF="eval.html#string">string</A> comes in handy.
+
+If you don't want to execute a <A HREF="eval.html#string">string</A> <A HREF="motion.html#as">as</A> a command but evaluate <A HREF="motion.html#it">it</A> to get the
+result of the <A HREF="eval.html#expression">expression</A>, you can use the <A HREF="builtin.html#eval()">eval()</A> function:
+
+<B>	var optname = "path"</B>
+<B>	var optvalue = eval('&amp;' .. optname)</B>
+
+A &quot;<A HREF="change.html#&amp;">&amp;</A>&quot; character is prepended to &quot;path&quot;, thus the argument to <A HREF="builtin.html#eval()">eval()</A> is
+&quot;&amp;path&quot;.  The result will then be the value of the <A HREF="options.html#'path'">'path'</A> option.
+
+==============================================================================
+
+*<A NAME="41.6"></A><B>41.6</B>*	Using <A HREF="eval.html#functions">functions</A>
+
+Vim defines many <A HREF="eval.html#functions">functions</A> and provides a large amount of functionality that
+way.  A few examples will be given in this section.  You can find the whole
+list below: |<A HREF="#function-list">function-list</A>|.
+
+A function is called with the parameters in between parentheses, separated by
+commas.  Example:
+
+<B>	search("Date: ", "W")</B>
+
+This calls the <A HREF="builtin.html#search()">search()</A> function, with arguments &quot;Date: &quot; and &quot;<A HREF="motion.html#W">W</A>&quot;.  The
+<A HREF="builtin.html#search()">search()</A> function uses its first argument <A HREF="motion.html#as">as</A> a search <A HREF="pattern.html#pattern">pattern</A> and the second
+one <A HREF="motion.html#as">as</A> flags.  The &quot;<A HREF="motion.html#W">W</A>&quot; flag means the search doesn't wrap around the end of
+the file.
+
+Using the  `call` command is optional in |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A>.  It is required in
+legacy <A HREF="#script">script</A> and on the command line:
+
+<B>	call search("Date: ", "W")</B>
+
+A function can be called in an <A HREF="eval.html#expression">expression</A>.  Example:
+
+<B>	var line = getline(".")</B>
+<B>	var repl = substitute(line, '\a', "*", "g")</B>
+<B>	setline(".", repl)</B>
+
+The <A HREF="builtin.html#getline()">getline()</A> function obtains a line from the current buffer.  Its argument
+is a specification of the line number.  In this <A HREF="change.html#case">case</A> &quot;<A HREF="repeat.html#.">.</A>&quot; is used, which means
+the line where the cursor is.
+
+The <A HREF="builtin.html#substitute()">substitute()</A> function does something similar to the `:substitute` command.
+The first argument &quot;line&quot; is the <A HREF="eval.html#string">string</A> on which to perform the substitution.
+The second argument '\a' is the <A HREF="pattern.html#pattern">pattern</A>, the third &quot;*&quot; is the replacement
+<A HREF="eval.html#string">string</A>.  Finally, the last argument &quot;<A HREF="index.html#g">g</A>&quot; is the flags.
+
+The <A HREF="builtin.html#setline()">setline()</A> function sets the line, specified by the first argument, to a
+new <A HREF="eval.html#string">string</A>, the second argument.  In this example the line under the cursor is
+replaced with the result of the <A HREF="builtin.html#substitute()">substitute()</A>.  Thus the effect of the three
+statements is equal to:
+
+<B>	:substitute/\a/*/g</B>
+
+Using the <A HREF="eval.html#functions">functions</A> becomes interesting when you <A HREF="diff.html#do">do</A> more work before and
+after the <A HREF="builtin.html#substitute()">substitute()</A> call.
+
+
+
+FUNCTIONS						*<A NAME="function-list"></A><B>function-list</B>*
+
+There are many <A HREF="eval.html#functions">functions</A>.  We will mention them here, grouped by what they are
+used for.  You can find an alphabetical list here: |<A HREF="builtin.html#builtin-function-list">builtin-function-list</A>|.
+Use <A HREF="tagsrch.html#CTRL-]">CTRL-]</A> on the function name to jump to detailed help on <A HREF="motion.html#it">it</A>.
+
+
+<A HREF="eval.html#String">String</A> manipulation:					*<A NAME="string-functions"></A><B>string-functions</B>*
+	<A HREF="builtin.html#nr2char()">nr2char()</A>		get a character by its number value
+	<A HREF="builtin.html#list2str()">list2str()</A>		get a character <A HREF="eval.html#string">string</A> from a <A HREF="eval.html#list">list</A> of numbers
+	<A HREF="builtin.html#char2nr()">char2nr()</A>		get number value of a character
+	<A HREF="builtin.html#str2list()">str2list()</A>		get <A HREF="eval.html#list">list</A> of numbers from a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#str2nr()">str2nr()</A>		convert a <A HREF="eval.html#string">string</A> to a <A HREF="eval.html#Number">Number</A>
+	<A HREF="builtin.html#str2float()">str2float()</A>		convert a <A HREF="eval.html#string">string</A> to a <A HREF="eval.html#Float">Float</A>
+	<A HREF="builtin.html#printf()">printf()</A>		format a <A HREF="eval.html#string">string</A> according to <A HREF="motion.html#&#37;">&#37;</A> items
+	<A HREF="builtin.html#escape()">escape()</A>		<A HREF="intro.html#escape">escape</A> characters in a <A HREF="eval.html#string">string</A> with a '\'
+	<A HREF="builtin.html#shellescape()">shellescape()</A>		<A HREF="intro.html#escape">escape</A> a <A HREF="eval.html#string">string</A> for use with a shell command
+	<A HREF="builtin.html#fnameescape()">fnameescape()</A>		<A HREF="intro.html#escape">escape</A> a file name for use with a Vim command
+	<A HREF="builtin.html#tr()">tr()</A>			translate characters from one set to another
+	<A HREF="builtin.html#strtrans()">strtrans()</A>		translate a <A HREF="eval.html#string">string</A> to make <A HREF="motion.html#it">it</A> printable
+	<A HREF="builtin.html#tolower()">tolower()</A>		turn a <A HREF="eval.html#string">string</A> to <A HREF="change.html#lowercase">lowercase</A>
+	<A HREF="builtin.html#toupper()">toupper()</A>		turn a <A HREF="eval.html#string">string</A> to <A HREF="change.html#uppercase">uppercase</A>
+	<A HREF="builtin.html#charclass()">charclass()</A>		class of a character
+	<A HREF="builtin.html#match()">match()</A>			position where a <A HREF="pattern.html#pattern">pattern</A> matches in a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#matchend()">matchend()</A>		position where a <A HREF="pattern.html#pattern">pattern</A> match ends in a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#matchfuzzy()">matchfuzzy()</A>		fuzzy matches a <A HREF="eval.html#string">string</A> in a <A HREF="eval.html#list">list</A> of strings
+	<A HREF="builtin.html#matchfuzzypos()">matchfuzzypos()</A>		fuzzy matches a <A HREF="eval.html#string">string</A> in a <A HREF="eval.html#list">list</A> of strings
+	<A HREF="builtin.html#matchstr()">matchstr()</A>		match of a <A HREF="pattern.html#pattern">pattern</A> in a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#matchstrpos()">matchstrpos()</A>		match and positions of a <A HREF="pattern.html#pattern">pattern</A> in a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#matchlist()">matchlist()</A>		like <A HREF="builtin.html#matchstr()">matchstr()</A> and also return submatches
+	<A HREF="builtin.html#stridx()">stridx()</A>		first index of a short <A HREF="eval.html#string">string</A> in a long <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#strridx()">strridx()</A>		last index of a short <A HREF="eval.html#string">string</A> in a long <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#strlen()">strlen()</A>		length of a <A HREF="eval.html#string">string</A> in bytes
+	<A HREF="builtin.html#strcharlen()">strcharlen()</A>		length of a <A HREF="eval.html#string">string</A> in characters
+	<A HREF="builtin.html#strchars()">strchars()</A>		number of characters in a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#strwidth()">strwidth()</A>		size of <A HREF="eval.html#string">string</A> when displayed
+	<A HREF="builtin.html#strdisplaywidth()">strdisplaywidth()</A>	size of <A HREF="eval.html#string">string</A> when displayed, deals with tabs
+	<A HREF="builtin.html#setcellwidths()">setcellwidths()</A>		set character cell width overrides
+	<A HREF="builtin.html#substitute()">substitute()</A>		substitute a <A HREF="pattern.html#pattern">pattern</A> match with a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#submatch()">submatch()</A>		get a specific match in &quot;<A HREF="change.html#:s">:s</A>&quot; and <A HREF="builtin.html#substitute()">substitute()</A>
+	<A HREF="builtin.html#strpart()">strpart()</A>		get part of a <A HREF="eval.html#string">string</A> using byte index
+	<A HREF="builtin.html#strcharpart()">strcharpart()</A>		get part of a <A HREF="eval.html#string">string</A> using char index
+	<A HREF="builtin.html#slice()">slice()</A>			take a <A HREF="eval.html#slice">slice</A> of a <A HREF="eval.html#string">string</A>, using char index in
+				<A HREF="vim9.html#Vim9">Vim9</A> <A HREF="#script">script</A>
+	<A HREF="builtin.html#strgetchar()">strgetchar()</A>		get character from a <A HREF="eval.html#string">string</A> using char index
+	<A HREF="builtin.html#expand()">expand()</A>		expand special keywords
+	<A HREF="builtin.html#expandcmd()">expandcmd()</A>		expand a command like done for `:edit`
+	<A HREF="builtin.html#iconv()">iconv()</A>			convert text from one encoding to another
+	<A HREF="builtin.html#byteidx()">byteidx()</A>		byte index of a character in a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#byteidxcomp()">byteidxcomp()</A>		like <A HREF="builtin.html#byteidx()">byteidx()</A> but <A HREF="intro.html#count">count</A> composing characters
+	<A HREF="builtin.html#charidx()">charidx()</A>		character index of a byte in a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#repeat()">repeat()</A>		repeat a <A HREF="eval.html#string">string</A> multiple times
+	<A HREF="builtin.html#eval()">eval()</A>			evaluate a <A HREF="eval.html#string">string</A> <A HREF="eval.html#expression">expression</A>
+	<A HREF="builtin.html#execute()">execute()</A>		execute an <A HREF="intro.html#Ex">Ex</A> command and get the output
+	<A HREF="builtin.html#win_execute()">win_execute()</A>		like <A HREF="builtin.html#execute()">execute()</A> but in a specified <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#trim()">trim()</A>			trim characters from a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#gettext()">gettext()</A>		lookup message translation
+
+
+<A HREF="eval.html#List">List</A> manipulation:					*<A NAME="list-functions"></A><B>list-functions</B>*
+	<A HREF="builtin.html#get()">get()</A>			get an item without error for wrong index
+	<A HREF="builtin.html#len()">len()</A>			number of items in a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#empty()">empty()</A>			check if <A HREF="eval.html#List">List</A> is empty
+	<A HREF="builtin.html#insert()">insert()</A>		insert an item somewhere in a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#add()">add()</A>			append an item to a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#extend()">extend()</A>		append a <A HREF="eval.html#List">List</A> to a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#extendnew()">extendnew()</A>		make a new <A HREF="eval.html#List">List</A> and append items
+	<A HREF="builtin.html#remove()">remove()</A>		remove one or more items from a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#copy()">copy()</A>			make a shallow copy of a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#deepcopy()">deepcopy()</A>		make a full copy of a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#filter()">filter()</A>		remove selected items from a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#map()">map()</A>			change each <A HREF="eval.html#List">List</A> item
+	<A HREF="builtin.html#mapnew()">mapnew()</A>		make a new <A HREF="eval.html#List">List</A> with changed items
+	<A HREF="builtin.html#reduce()">reduce()</A>		reduce a <A HREF="eval.html#List">List</A> to a value
+	<A HREF="builtin.html#slice()">slice()</A>			take a <A HREF="eval.html#slice">slice</A> of a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#sort()">sort()</A>			sort a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#reverse()">reverse()</A>		reverse the order of a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#uniq()">uniq()</A>			remove copies of repeated adjacent items
+	<A HREF="builtin.html#split()">split()</A>			split a <A HREF="eval.html#String">String</A> into a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#join()">join()</A>			join <A HREF="eval.html#List">List</A> items into a <A HREF="eval.html#String">String</A>
+	<A HREF="builtin.html#range()">range()</A>			return a <A HREF="eval.html#List">List</A> with a sequence of numbers
+	<A HREF="builtin.html#string()">string()</A>		<A HREF="eval.html#String">String</A> representation of a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#call()">call()</A>			call a function with <A HREF="eval.html#List">List</A> <A HREF="motion.html#as">as</A> arguments
+	<A HREF="builtin.html#index()">index()</A>			index of a value in a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#max()">max()</A>			maximum value in a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#min()">min()</A>			minimum value in a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#count()">count()</A>			<A HREF="intro.html#count">count</A> number of times a value appears in a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#repeat()">repeat()</A>		repeat a <A HREF="eval.html#List">List</A> multiple times
+	<A HREF="builtin.html#flatten()">flatten()</A>		flatten a <A HREF="eval.html#List">List</A>
+	<A HREF="builtin.html#flattennew()">flattennew()</A>		flatten a copy of a <A HREF="eval.html#List">List</A>
+
+
+<A HREF="eval.html#Dictionary">Dictionary</A> manipulation:				*<A NAME="dict-functions"></A><B>dict-functions</B>*
+	<A HREF="builtin.html#get()">get()</A>			get an entry without an error for a wrong key
+	<A HREF="builtin.html#len()">len()</A>			number of entries in a <A HREF="eval.html#Dictionary">Dictionary</A>
+	<A HREF="builtin.html#has_key()">has_key()</A>		check whether a key appears in a <A HREF="eval.html#Dictionary">Dictionary</A>
+	<A HREF="builtin.html#empty()">empty()</A>			check if <A HREF="eval.html#Dictionary">Dictionary</A> is empty
+	<A HREF="builtin.html#remove()">remove()</A>		remove an entry from a <A HREF="eval.html#Dictionary">Dictionary</A>
+	<A HREF="builtin.html#extend()">extend()</A>		add entries from one <A HREF="eval.html#Dictionary">Dictionary</A> to another
+	<A HREF="builtin.html#extendnew()">extendnew()</A>		make a new <A HREF="eval.html#Dictionary">Dictionary</A> and append items
+	<A HREF="builtin.html#filter()">filter()</A>		remove selected entries from a <A HREF="eval.html#Dictionary">Dictionary</A>
+	<A HREF="builtin.html#map()">map()</A>			change each <A HREF="eval.html#Dictionary">Dictionary</A> entry
+	<A HREF="builtin.html#mapnew()">mapnew()</A>		make a new <A HREF="eval.html#Dictionary">Dictionary</A> with changed items
+	<A HREF="builtin.html#keys()">keys()</A>			get <A HREF="eval.html#List">List</A> of <A HREF="eval.html#Dictionary">Dictionary</A> keys
+	<A HREF="builtin.html#values()">values()</A>		get <A HREF="eval.html#List">List</A> of <A HREF="eval.html#Dictionary">Dictionary</A> values
+	<A HREF="builtin.html#items()">items()</A>			get <A HREF="eval.html#List">List</A> of <A HREF="eval.html#Dictionary">Dictionary</A> key-value pairs
+	<A HREF="builtin.html#copy()">copy()</A>			make a shallow copy of a <A HREF="eval.html#Dictionary">Dictionary</A>
+	<A HREF="builtin.html#deepcopy()">deepcopy()</A>		make a full copy of a <A HREF="eval.html#Dictionary">Dictionary</A>
+	<A HREF="builtin.html#string()">string()</A>		<A HREF="eval.html#String">String</A> representation of a <A HREF="eval.html#Dictionary">Dictionary</A>
+	<A HREF="builtin.html#max()">max()</A>			maximum value in a <A HREF="eval.html#Dictionary">Dictionary</A>
+	<A HREF="builtin.html#min()">min()</A>			minimum value in a <A HREF="eval.html#Dictionary">Dictionary</A>
+	<A HREF="builtin.html#count()">count()</A>			<A HREF="intro.html#count">count</A> number of times a value appears
+
+
+Floating point computation:				*<A NAME="float-functions"></A><B>float-functions</B>*
+	<A HREF="builtin.html#float2nr()">float2nr()</A>		convert <A HREF="eval.html#Float">Float</A> to <A HREF="eval.html#Number">Number</A>
+	<A HREF="builtin.html#abs()">abs()</A>			absolute value (also works for <A HREF="eval.html#Number">Number</A>)
+	<A HREF="builtin.html#round()">round()</A>			round off
+	<A HREF="builtin.html#ceil()">ceil()</A>			round up
+	<A HREF="builtin.html#floor()">floor()</A>			round down
+	<A HREF="builtin.html#trunc()">trunc()</A>			remove value after decimal point
+	<A HREF="builtin.html#fmod()">fmod()</A>			remainder of division
+	<A HREF="builtin.html#exp()">exp()</A>			exponential
+	<A HREF="builtin.html#log()">log()</A>			natural logarithm (logarithm to base <A HREF="motion.html#e">e</A>)
+	<A HREF="builtin.html#log10()">log10()</A>			logarithm to base 10
+	<A HREF="builtin.html#pow()">pow()</A>			value of <A HREF="change.html#x">x</A> to the exponent <A HREF="change.html#y">y</A>
+	<A HREF="builtin.html#sqrt()">sqrt()</A>			square root
+	<A HREF="builtin.html#sin()">sin()</A>			sine
+	<A HREF="builtin.html#cos()">cos()</A>			cosine
+	<A HREF="builtin.html#tan()">tan()</A>			tangent
+	<A HREF="builtin.html#asin()">asin()</A>			arc sine
+	<A HREF="builtin.html#acos()">acos()</A>			arc cosine
+	<A HREF="builtin.html#atan()">atan()</A>			arc tangent
+	<A HREF="builtin.html#atan2()">atan2()</A>			arc tangent
+	<A HREF="builtin.html#sinh()">sinh()</A>			hyperbolic sine
+	<A HREF="builtin.html#cosh()">cosh()</A>			hyperbolic cosine
+	<A HREF="builtin.html#tanh()">tanh()</A>			hyperbolic tangent
+	<A HREF="builtin.html#isinf()">isinf()</A>			check for infinity
+	<A HREF="builtin.html#isnan()">isnan()</A>			check for not a number
+
+
+<A HREF="eval.html#Blob">Blob</A> manipulation:					*<A NAME="blob-functions"></A><B>blob-functions</B>*
+	<A HREF="builtin.html#blob2list()">blob2list()</A>		get a <A HREF="eval.html#list">list</A> of numbers from a <A HREF="eval.html#blob">blob</A>
+	<A HREF="builtin.html#list2blob()">list2blob()</A>		get a <A HREF="eval.html#blob">blob</A> from a <A HREF="eval.html#list">list</A> of numbers
+
+
+Other computation:					*<A NAME="bitwise-function"></A><B>bitwise-function</B>*
+	<A HREF="builtin.html#and()">and()</A>			bitwise AND
+	<A HREF="builtin.html#invert()">invert()</A>		bitwise invert
+	<A HREF="builtin.html#or()">or()</A>			bitwise OR
+	<A HREF="builtin.html#xor()">xor()</A>			bitwise XOR
+	<A HREF="builtin.html#sha256()">sha256()</A>		SHA-256 hash
+	<A HREF="builtin.html#rand()">rand()</A>			get a pseudo-random number
+	<A HREF="builtin.html#srand()">srand()</A>			initialize seed used by <A HREF="builtin.html#rand()">rand()</A>
+
+
+Variables:						*<A NAME="var-functions"></A><B>var-functions</B>*
+	<A HREF="builtin.html#type()">type()</A>			type of a variable <A HREF="motion.html#as">as</A> a number
+	<A HREF="builtin.html#typename()">typename()</A>		type of a variable <A HREF="motion.html#as">as</A> text
+	<A HREF="builtin.html#islocked()">islocked()</A>		check if a variable is locked
+	<A HREF="builtin.html#funcref()">funcref()</A>		get a <A HREF="eval.html#Funcref">Funcref</A> for a function reference
+	<A HREF="builtin.html#function()">function()</A>		get a <A HREF="eval.html#Funcref">Funcref</A> for a function name
+	<A HREF="builtin.html#getbufvar()">getbufvar()</A>		get a variable value from a specific buffer
+	<A HREF="builtin.html#setbufvar()">setbufvar()</A>		set a variable in a specific buffer
+	<A HREF="builtin.html#getwinvar()">getwinvar()</A>		get a variable from specific <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#gettabvar()">gettabvar()</A>		get a variable from specific <A HREF="intro.html#tab">tab</A> page
+	<A HREF="builtin.html#gettabwinvar()">gettabwinvar()</A>		get a variable from specific <A HREF="windows.html#window">window</A> <A HREF="change.html#&amp;">&amp;</A> <A HREF="intro.html#tab">tab</A> page
+	<A HREF="builtin.html#setwinvar()">setwinvar()</A>		set a variable in a specific <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#settabvar()">settabvar()</A>		set a variable in a specific <A HREF="intro.html#tab">tab</A> page
+	<A HREF="builtin.html#settabwinvar()">settabwinvar()</A>		set a variable in a specific <A HREF="windows.html#window">window</A> <A HREF="change.html#&amp;">&amp;</A> <A HREF="intro.html#tab">tab</A> page
+	<A HREF="builtin.html#garbagecollect()">garbagecollect()</A>	possibly free memory
+
+
+Cursor and <A HREF="motion.html#mark">mark</A> position:		*<A NAME="cursor-functions"></A><B>cursor-functions</B>* *<A NAME="mark-functions"></A><B>mark-functions</B>*
+	<A HREF="builtin.html#col()">col()</A>			column number of the cursor or a <A HREF="motion.html#mark">mark</A>
+	<A HREF="builtin.html#virtcol()">virtcol()</A>		screen column of the cursor or a <A HREF="motion.html#mark">mark</A>
+	<A HREF="builtin.html#line()">line()</A>			line number of the cursor or <A HREF="motion.html#mark">mark</A>
+	<A HREF="builtin.html#wincol()">wincol()</A>		<A HREF="windows.html#window">window</A> column number of the cursor
+	<A HREF="builtin.html#winline()">winline()</A>		<A HREF="windows.html#window">window</A> line number of the cursor
+	<A HREF="builtin.html#cursor()">cursor()</A>		position the cursor at a line/column
+	<A HREF="builtin.html#screencol()">screencol()</A>		get screen column of the cursor
+	<A HREF="builtin.html#screenrow()">screenrow()</A>		get screen row of the cursor
+	<A HREF="builtin.html#screenpos()">screenpos()</A>		screen row and col of a text character
+	<A HREF="builtin.html#virtcol2col()">virtcol2col()</A>		byte index of a text character on screen
+	<A HREF="builtin.html#getcurpos()">getcurpos()</A>		get position of the cursor
+	<A HREF="builtin.html#getpos()">getpos()</A>		get position of cursor, <A HREF="motion.html#mark">mark</A>, etc.
+	<A HREF="builtin.html#setpos()">setpos()</A>		set position of cursor, <A HREF="motion.html#mark">mark</A>, etc.
+	<A HREF="builtin.html#getmarklist()">getmarklist()</A>		<A HREF="eval.html#list">list</A> of global/local marks
+	<A HREF="builtin.html#byte2line()">byte2line()</A>		get line number at a specific byte <A HREF="intro.html#count">count</A>
+	<A HREF="builtin.html#line2byte()">line2byte()</A>		byte <A HREF="intro.html#count">count</A> at a specific line
+	<A HREF="builtin.html#diff_filler()">diff_filler()</A>		get the number of filler lines above a line
+	<A HREF="builtin.html#screenattr()">screenattr()</A>		get attribute at a screen line/row
+	<A HREF="builtin.html#screenchar()">screenchar()</A>		get character code at a screen line/row
+	<A HREF="builtin.html#screenchars()">screenchars()</A>		get character codes at a screen line/row
+	<A HREF="builtin.html#screenstring()">screenstring()</A>		get <A HREF="eval.html#string">string</A> of characters at a screen line/row
+	<A HREF="builtin.html#charcol()">charcol()</A>		character number of the cursor or a <A HREF="motion.html#mark">mark</A>
+	<A HREF="builtin.html#getcharpos()">getcharpos()</A>		get character position of cursor, <A HREF="motion.html#mark">mark</A>, etc.
+	<A HREF="builtin.html#setcharpos()">setcharpos()</A>		set character position of cursor, <A HREF="motion.html#mark">mark</A>, etc.
+	<A HREF="builtin.html#getcursorcharpos()">getcursorcharpos()</A>	get character position of the cursor
+	<A HREF="builtin.html#setcursorcharpos()">setcursorcharpos()</A>	set character position of the cursor
+
+
+Working with text in the current buffer:		*<A NAME="text-functions"></A><B>text-functions</B>*
+	<A HREF="builtin.html#getline()">getline()</A>		get a line or <A HREF="eval.html#list">list</A> of lines from the buffer
+	<A HREF="builtin.html#setline()">setline()</A>		replace a line in the buffer
+	<A HREF="builtin.html#append()">append()</A>		append line or <A HREF="eval.html#list">list</A> of lines in the buffer
+	<A HREF="builtin.html#indent()">indent()</A>		indent of a specific line
+	<A HREF="builtin.html#cindent()">cindent()</A>		indent according to C indenting
+	<A HREF="builtin.html#lispindent()">lispindent()</A>		indent according to Lisp indenting
+	<A HREF="builtin.html#nextnonblank()">nextnonblank()</A>		find next non-blank line
+	<A HREF="builtin.html#prevnonblank()">prevnonblank()</A>		find previous non-blank line
+	<A HREF="builtin.html#search()">search()</A>		find a match for a <A HREF="pattern.html#pattern">pattern</A>
+	<A HREF="builtin.html#searchpos()">searchpos()</A>		find a match for a <A HREF="pattern.html#pattern">pattern</A>
+	<A HREF="builtin.html#searchcount()">searchcount()</A>		get number of matches before/after the cursor
+	<A HREF="builtin.html#searchpair()">searchpair()</A>		find the other end of a start/skip/end
+	<A HREF="builtin.html#searchpairpos()">searchpairpos()</A>		find the other end of a start/skip/end
+	<A HREF="builtin.html#searchdecl()">searchdecl()</A>		search for the declaration of a name
+	<A HREF="builtin.html#getcharsearch()">getcharsearch()</A>		return character search information
+	<A HREF="builtin.html#setcharsearch()">setcharsearch()</A>		set character search information
+
+Working with text in another buffer:
+	<A HREF="builtin.html#getbufline()">getbufline()</A>		get a <A HREF="eval.html#list">list</A> of lines from the specified buffer
+	<A HREF="builtin.html#setbufline()">setbufline()</A>		replace a line in the specified buffer
+	<A HREF="builtin.html#appendbufline()">appendbufline()</A>		append a <A HREF="eval.html#list">list</A> of lines in the specified buffer
+	<A HREF="builtin.html#deletebufline()">deletebufline()</A>		delete lines from a specified buffer
+
+
+					*<A NAME="system-functions"></A><B>system-functions</B>* *<A NAME="file-functions"></A><B>file-functions</B>*
+System <A HREF="eval.html#functions">functions</A> and manipulation of files:
+	<A HREF="builtin.html#glob()">glob()</A>			expand <A HREF="editing.html#wildcards">wildcards</A>
+	<A HREF="builtin.html#globpath()">globpath()</A>		expand <A HREF="editing.html#wildcards">wildcards</A> in a number of directories
+	<A HREF="builtin.html#glob2regpat()">glob2regpat()</A>		convert a glob <A HREF="pattern.html#pattern">pattern</A> into a search <A HREF="pattern.html#pattern">pattern</A>
+	<A HREF="builtin.html#findfile()">findfile()</A>		find a file in a <A HREF="eval.html#list">list</A> of directories
+	<A HREF="builtin.html#finddir()">finddir()</A>		find a directory in a <A HREF="eval.html#list">list</A> of directories
+	<A HREF="builtin.html#resolve()">resolve()</A>		find out where a shortcut points to
+	<A HREF="builtin.html#fnamemodify()">fnamemodify()</A>		modify a file name
+	<A HREF="builtin.html#pathshorten()">pathshorten()</A>		shorten directory names in a path
+	<A HREF="builtin.html#simplify()">simplify()</A>		simplify a path without <A HREF="change.html#changing">changing</A> its meaning
+	<A HREF="builtin.html#executable()">executable()</A>		check if an executable program exists
+	<A HREF="builtin.html#exepath()">exepath()</A>		full path of an executable program
+	<A HREF="builtin.html#filereadable()">filereadable()</A>		check if a file can be read
+	<A HREF="builtin.html#filewritable()">filewritable()</A>		check if a file can be written to
+	<A HREF="builtin.html#getfperm()">getfperm()</A>		get the permissions of a file
+	<A HREF="builtin.html#setfperm()">setfperm()</A>		set the permissions of a file
+	<A HREF="builtin.html#getftype()">getftype()</A>		get the kind of a file
+	<A HREF="builtin.html#isabsolutepath()">isabsolutepath()</A>	check if a path is absolute
+	<A HREF="builtin.html#isdirectory()">isdirectory()</A>		check if a directory exists
+	<A HREF="builtin.html#getfsize()">getfsize()</A>		get the size of a file
+	<A HREF="builtin.html#getcwd()">getcwd()</A>		get the current working directory
+	<A HREF="builtin.html#haslocaldir()">haslocaldir()</A>		check if current <A HREF="windows.html#window">window</A> used |<A HREF="editing.html#:lcd">:lcd</A>| or |<A HREF="editing.html#:tcd">:tcd</A>|
+	<A HREF="builtin.html#tempname()">tempname()</A>		get the name of a temporary file
+	<A HREF="builtin.html#mkdir()">mkdir()</A>			create a new directory
+	<A HREF="builtin.html#chdir()">chdir()</A>			change current working directory
+	<A HREF="builtin.html#delete()">delete()</A>		delete a file
+	<A HREF="builtin.html#rename()">rename()</A>		rename a file
+	<A HREF="builtin.html#system()">system()</A>		get the result of a shell command <A HREF="motion.html#as">as</A> a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#systemlist()">systemlist()</A>		get the result of a shell command <A HREF="motion.html#as">as</A> a <A HREF="eval.html#list">list</A>
+	<A HREF="builtin.html#environ()">environ()</A>		get all environment <A HREF="eval.html#variables">variables</A>
+	<A HREF="builtin.html#getenv()">getenv()</A>		get one environment variable
+	<A HREF="builtin.html#setenv()">setenv()</A>		set an environment variable
+	<A HREF="builtin.html#hostname()">hostname()</A>		name of the system
+	<A HREF="builtin.html#readfile()">readfile()</A>		read a file into a <A HREF="eval.html#List">List</A> of lines
+	<A HREF="builtin.html#readblob()">readblob()</A>		read a file into a <A HREF="eval.html#Blob">Blob</A>
+	<A HREF="builtin.html#readdir()">readdir()</A>		get a <A HREF="eval.html#List">List</A> of file names in a directory
+	<A HREF="builtin.html#readdirex()">readdirex()</A>		get a <A HREF="eval.html#List">List</A> of file information in a directory
+	<A HREF="builtin.html#writefile()">writefile()</A>		write a <A HREF="eval.html#List">List</A> of lines or <A HREF="eval.html#Blob">Blob</A> into a file
+
+
+Date and Time:				*<A NAME="date-functions"></A><B>date-functions</B>* *<A NAME="time-functions"></A><B>time-functions</B>*
+	<A HREF="builtin.html#getftime()">getftime()</A>		get last modification time of a file
+	<A HREF="builtin.html#localtime()">localtime()</A>		get current time in seconds
+	<A HREF="builtin.html#strftime()">strftime()</A>		convert time to a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#strptime()">strptime()</A>		convert a date/time <A HREF="eval.html#string">string</A> to time
+	<A HREF="builtin.html#reltime()">reltime()</A>		get the current or elapsed time accurately
+	<A HREF="builtin.html#reltimestr()">reltimestr()</A>		convert <A HREF="builtin.html#reltime()">reltime()</A> result to a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#reltimefloat()">reltimefloat()</A>		convert <A HREF="builtin.html#reltime()">reltime()</A> result to a <A HREF="eval.html#Float">Float</A>
+
+
+Autocmds:					*<A NAME="autocmd-functions"></A><B>autocmd-functions</B>*
+	<A HREF="builtin.html#autocmd_add()">autocmd_add()</A>		add a <A HREF="eval.html#list">list</A> of autocmds and groups
+	<A HREF="builtin.html#autocmd_delete()">autocmd_delete()</A>	delete a <A HREF="eval.html#list">list</A> of autocmds and groups
+	<A HREF="builtin.html#autocmd_get()">autocmd_get()</A>		return a <A HREF="eval.html#list">list</A> of autocmds
+
+
+			*<A NAME="buffer-functions"></A><B>buffer-functions</B>* *<A NAME="window-functions"></A><B>window-functions</B>* *<A NAME="arg-functions"></A><B>arg-functions</B>*
+Buffers, <A HREF="windows.html#windows">windows</A> and the argument <A HREF="eval.html#list">list</A>:
+	<A HREF="builtin.html#argc()">argc()</A>			number of entries in the argument <A HREF="eval.html#list">list</A>
+	<A HREF="builtin.html#argidx()">argidx()</A>		current position in the argument <A HREF="eval.html#list">list</A>
+	<A HREF="builtin.html#arglistid()">arglistid()</A>		get id of the argument <A HREF="eval.html#list">list</A>
+	<A HREF="builtin.html#argv()">argv()</A>			get one entry from the argument <A HREF="eval.html#list">list</A>
+	<A HREF="builtin.html#bufadd()">bufadd()</A>		add a file to the <A HREF="eval.html#list">list</A> of <A HREF="windows.html#buffers">buffers</A>
+	<A HREF="builtin.html#bufexists()">bufexists()</A>		check if a buffer exists
+	<A HREF="builtin.html#buflisted()">buflisted()</A>		check if a buffer exists and is listed
+	<A HREF="builtin.html#bufload()">bufload()</A>		ensure a buffer is loaded
+	<A HREF="builtin.html#bufloaded()">bufloaded()</A>		check if a buffer exists and is loaded
+	<A HREF="builtin.html#bufname()">bufname()</A>		get the name of a specific buffer
+	<A HREF="builtin.html#bufnr()">bufnr()</A>			get the buffer number of a specific buffer
+	<A HREF="builtin.html#tabpagebuflist()">tabpagebuflist()</A>	return <A HREF="eval.html#List">List</A> of <A HREF="windows.html#buffers">buffers</A> in a <A HREF="intro.html#tab">tab</A> page
+	<A HREF="builtin.html#tabpagenr()">tabpagenr()</A>		get the number of a <A HREF="intro.html#tab">tab</A> page
+	<A HREF="builtin.html#tabpagewinnr()">tabpagewinnr()</A>		like <A HREF="builtin.html#winnr()">winnr()</A> for a specified <A HREF="intro.html#tab">tab</A> page
+	<A HREF="builtin.html#winnr()">winnr()</A>			get the <A HREF="windows.html#window">window</A> number for the current <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#bufwinid()">bufwinid()</A>		get the <A HREF="windows.html#window">window</A> ID of a specific buffer
+	<A HREF="builtin.html#bufwinnr()">bufwinnr()</A>		get the <A HREF="windows.html#window">window</A> number of a specific buffer
+	<A HREF="builtin.html#winbufnr()">winbufnr()</A>		get the buffer number of a specific <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#listener_add()">listener_add()</A>		add a callback to listen to changes
+	<A HREF="builtin.html#listener_flush()">listener_flush()</A>	invoke listener callbacks
+	<A HREF="builtin.html#listener_remove()">listener_remove()</A>	remove a listener callback
+	<A HREF="builtin.html#win_findbuf()">win_findbuf()</A>		find <A HREF="windows.html#windows">windows</A> containing a buffer
+	<A HREF="builtin.html#win_getid()">win_getid()</A>		get <A HREF="windows.html#window">window</A> ID of a <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#win_gettype()">win_gettype()</A>		get type of <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#win_gotoid()">win_gotoid()</A>		go to <A HREF="windows.html#window">window</A> with ID
+	<A HREF="builtin.html#win_id2tabwin()">win_id2tabwin()</A>		get <A HREF="intro.html#tab">tab</A> and <A HREF="windows.html#window">window</A> nr from <A HREF="windows.html#window">window</A> ID
+	<A HREF="builtin.html#win_id2win()">win_id2win()</A>		get <A HREF="windows.html#window">window</A> nr from <A HREF="windows.html#window">window</A> ID
+	<A HREF="builtin.html#win_move_separator()">win_move_separator()</A>	move <A HREF="windows.html#window">window</A> vertical separator
+	<A HREF="builtin.html#win_move_statusline()">win_move_statusline()</A>	move <A HREF="windows.html#window">window</A> status line
+	<A HREF="builtin.html#win_splitmove()">win_splitmove()</A>		move <A HREF="windows.html#window">window</A> to a split of another <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#getbufinfo()">getbufinfo()</A>		get a <A HREF="eval.html#list">list</A> with buffer information
+	<A HREF="builtin.html#gettabinfo()">gettabinfo()</A>		get a <A HREF="eval.html#list">list</A> with <A HREF="intro.html#tab">tab</A> page information
+	<A HREF="builtin.html#getwininfo()">getwininfo()</A>		get a <A HREF="eval.html#list">list</A> with <A HREF="windows.html#window">window</A> information
+	<A HREF="builtin.html#getchangelist()">getchangelist()</A>		get a <A HREF="eval.html#list">list</A> of change <A HREF="eval.html#list">list</A> entries
+	<A HREF="builtin.html#getjumplist()">getjumplist()</A>		get a <A HREF="eval.html#list">list</A> of jump <A HREF="eval.html#list">list</A> entries
+	<A HREF="builtin.html#swapinfo()">swapinfo()</A>		information about a swap file
+	<A HREF="builtin.html#swapname()">swapname()</A>		get the swap file path of a buffer
+
+
+Command line:					*<A NAME="command-line-functions"></A><B>command-line-functions</B>*
+	<A HREF="builtin.html#getcmdcompltype()">getcmdcompltype()</A>	get the type of the current command line
+				completion
+	<A HREF="builtin.html#getcmdline()">getcmdline()</A>		get the current command line
+	<A HREF="builtin.html#getcmdpos()">getcmdpos()</A>		get position of the cursor in the command line
+	<A HREF="builtin.html#getcmdscreenpos()">getcmdscreenpos()</A>	get screen position of the cursor in the
+				command line
+	<A HREF="builtin.html#setcmdpos()">setcmdpos()</A>		set position of the cursor in the command line
+	<A HREF="builtin.html#getcmdtype()">getcmdtype()</A>		return the current command-line type
+	<A HREF="builtin.html#getcmdwintype()">getcmdwintype()</A>		return the current command-line <A HREF="windows.html#window">window</A> type
+	<A HREF="builtin.html#getcompletion()">getcompletion()</A>		<A HREF="eval.html#list">list</A> of command-line completion matches
+	<A HREF="builtin.html#fullcommand()">fullcommand()</A>		get full command name
+
+
+<A HREF="quickfix.html#Quickfix">Quickfix</A> and location lists:			*<A NAME="quickfix-functions"></A><B>quickfix-functions</B>*
+	<A HREF="builtin.html#getqflist()">getqflist()</A>		<A HREF="eval.html#list">list</A> of <A HREF="quickfix.html#quickfix">quickfix</A> <A HREF="message.html#errors">errors</A>
+	<A HREF="builtin.html#setqflist()">setqflist()</A>		modify a <A HREF="quickfix.html#quickfix">quickfix</A> <A HREF="eval.html#list">list</A>
+	<A HREF="builtin.html#getloclist()">getloclist()</A>		<A HREF="eval.html#list">list</A> of location <A HREF="eval.html#list">list</A> items
+	<A HREF="builtin.html#setloclist()">setloclist()</A>		modify a location <A HREF="eval.html#list">list</A>
+
+
+<A HREF="insert.html#Insert">Insert</A> mode completion:				*<A NAME="completion-functions"></A><B>completion-functions</B>*
+	<A HREF="builtin.html#complete()">complete()</A>		set found matches
+	<A HREF="builtin.html#complete_add()">complete_add()</A>		add to found matches
+	<A HREF="builtin.html#complete_check()">complete_check()</A>	check if completion should be aborted
+	<A HREF="builtin.html#complete_info()">complete_info()</A>		get current completion information
+	<A HREF="builtin.html#pumvisible()">pumvisible()</A>		check if the <A HREF="popup.html#popup">popup</A> menu is displayed
+	<A HREF="builtin.html#pum_getpos()">pum_getpos()</A>		position and size of <A HREF="popup.html#popup">popup</A> menu if visible
+
+
+<A HREF="fold.html#Folding">Folding</A>:					*<A NAME="folding-functions"></A><B>folding-functions</B>*
+	<A HREF="builtin.html#foldclosed()">foldclosed()</A>		check for a closed fold at a specific line
+	<A HREF="builtin.html#foldclosedend()">foldclosedend()</A>		like <A HREF="builtin.html#foldclosed()">foldclosed()</A> but return the last line
+	<A HREF="builtin.html#foldlevel()">foldlevel()</A>		check for the fold level at a specific line
+	<A HREF="builtin.html#foldtext()">foldtext()</A>		generate the line displayed for a closed fold
+	<A HREF="builtin.html#foldtextresult()">foldtextresult()</A>	get the text displayed for a closed fold
+
+
+<A HREF="autocmd.html#Syntax">Syntax</A> and highlighting:	  *<A NAME="syntax-functions"></A><B>syntax-functions</B>* *<A NAME="highlighting-functions"></A><B>highlighting-functions</B>*
+	<A HREF="builtin.html#clearmatches()">clearmatches()</A>		clear all matches defined by |<A HREF="builtin.html#matchadd()">matchadd()</A>| and
+				the |<A HREF="pattern.html#:match">:match</A>| commands
+	<A HREF="builtin.html#getmatches()">getmatches()</A>		get all matches defined by |<A HREF="builtin.html#matchadd()">matchadd()</A>| and
+				the |<A HREF="pattern.html#:match">:match</A>| commands
+	<A HREF="builtin.html#hlexists()">hlexists()</A>		check if a highlight group exists
+	<A HREF="builtin.html#hlget()">hlget()</A>			get highlight group attributes
+	<A HREF="builtin.html#hlset()">hlset()</A>			set highlight group attributes
+	<A HREF="builtin.html#hlID()">hlID()</A>			get ID of a highlight group
+	<A HREF="builtin.html#synID()">synID()</A>			get <A HREF="syntax.html#syntax">syntax</A> ID at a specific position
+	<A HREF="builtin.html#synIDattr()">synIDattr()</A>		get a specific attribute of a <A HREF="syntax.html#syntax">syntax</A> ID
+	<A HREF="builtin.html#synIDtrans()">synIDtrans()</A>		get translated <A HREF="syntax.html#syntax">syntax</A> ID
+	<A HREF="builtin.html#synstack()">synstack()</A>		get <A HREF="eval.html#list">list</A> of <A HREF="syntax.html#syntax">syntax</A> IDs at a specific position
+	<A HREF="builtin.html#synconcealed()">synconcealed()</A>		get info about concealing
+	<A HREF="builtin.html#diff_hlID()">diff_hlID()</A>		get highlight ID for <A HREF="diff.html#diff">diff</A> mode at a position
+	<A HREF="builtin.html#matchadd()">matchadd()</A>		define a <A HREF="pattern.html#pattern">pattern</A> to highlight (a &quot;match&quot;)
+	<A HREF="builtin.html#matchaddpos()">matchaddpos()</A>		define a <A HREF="eval.html#list">list</A> of positions to highlight
+	<A HREF="builtin.html#matcharg()">matcharg()</A>		get info about |<A HREF="pattern.html#:match">:match</A>| arguments
+	<A HREF="builtin.html#matchdelete()">matchdelete()</A>		delete a match defined by |<A HREF="builtin.html#matchadd()">matchadd()</A>| or a
+				|<A HREF="pattern.html#:match">:match</A>| command
+	<A HREF="builtin.html#setmatches()">setmatches()</A>		restore a <A HREF="eval.html#list">list</A> of matches saved by
+				|<A HREF="builtin.html#getmatches()">getmatches()</A>|
+
+
+Spelling:					*<A NAME="spell-functions"></A><B>spell-functions</B>*
+	<A HREF="builtin.html#spellbadword()">spellbadword()</A>		locate badly spelled <A HREF="motion.html#word">word</A> at or after cursor
+	<A HREF="builtin.html#spellsuggest()">spellsuggest()</A>		return suggested spelling corrections
+	<A HREF="builtin.html#soundfold()">soundfold()</A>		return the sound-a-like equivalent of a <A HREF="motion.html#word">word</A>
+
+
+History:					*<A NAME="history-functions"></A><B>history-functions</B>*
+	<A HREF="builtin.html#histadd()">histadd()</A>		add an item to a <A HREF="cmdline.html#history">history</A>
+	<A HREF="builtin.html#histdel()">histdel()</A>		delete an item from a <A HREF="cmdline.html#history">history</A>
+	<A HREF="builtin.html#histget()">histget()</A>		get an item from a <A HREF="cmdline.html#history">history</A>
+	<A HREF="builtin.html#histnr()">histnr()</A>		get highest index of a <A HREF="cmdline.html#history">history</A> <A HREF="eval.html#list">list</A>
+
+
+Interactive:					*<A NAME="interactive-functions"></A><B>interactive-functions</B>*
+	<A HREF="builtin.html#browse()">browse()</A>		put up a file requester
+	<A HREF="builtin.html#browsedir()">browsedir()</A>		put up a directory requester
+	<A HREF="builtin.html#confirm()">confirm()</A>		let the user make a choice
+	<A HREF="builtin.html#getchar()">getchar()</A>		get a character from the user
+	<A HREF="builtin.html#getcharstr()">getcharstr()</A>		get a character from the user <A HREF="motion.html#as">as</A> a <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#getcharmod()">getcharmod()</A>		get modifiers for the last typed character
+	<A HREF="builtin.html#getmousepos()">getmousepos()</A>		get last known mouse position
+	<A HREF="builtin.html#echoraw()">echoraw()</A>		output characters as-is
+	<A HREF="builtin.html#feedkeys()">feedkeys()</A>		put characters in the typeahead queue
+	<A HREF="builtin.html#input()">input()</A>			get a line from the user
+	<A HREF="builtin.html#inputlist()">inputlist()</A>		let the user pick an entry from a <A HREF="eval.html#list">list</A>
+	<A HREF="builtin.html#inputsecret()">inputsecret()</A>		get a line from the user without showing <A HREF="motion.html#it">it</A>
+	<A HREF="builtin.html#inputdialog()">inputdialog()</A>		get a line from the user in a <A HREF="gui_w32.html#dialog">dialog</A>
+	<A HREF="builtin.html#inputsave()">inputsave()</A>		save and clear typeahead
+	<A HREF="builtin.html#inputrestore()">inputrestore()</A>		restore typeahead
+
+
+<A HREF="gui.html#GUI">GUI</A>:						*<A NAME="gui-functions"></A><B>gui-functions</B>*
+	<A HREF="builtin.html#getfontname()">getfontname()</A>		get name of current font being used
+	<A HREF="builtin.html#getwinpos()">getwinpos()</A>		position of the Vim <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#getwinposx()">getwinposx()</A>		X position of the Vim <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#getwinposy()">getwinposy()</A>		<A HREF="change.html#Y">Y</A> position of the Vim <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#balloon_show()">balloon_show()</A>		set the balloon content
+	<A HREF="builtin.html#balloon_split()">balloon_split()</A>		split a message for a balloon
+	<A HREF="builtin.html#balloon_gettext()">balloon_gettext()</A>	get the text in the balloon
+
+
+Vim server:					*<A NAME="server-functions"></A><B>server-functions</B>*
+	<A HREF="builtin.html#serverlist()">serverlist()</A>		return the <A HREF="eval.html#list">list</A> of server names
+	<A HREF="builtin.html#remote_startserver()">remote_startserver()</A>	run a server
+	<A HREF="builtin.html#remote_send()">remote_send()</A>		send command characters to a Vim server
+	<A HREF="builtin.html#remote_expr()">remote_expr()</A>		evaluate an <A HREF="eval.html#expression">expression</A> in a Vim server
+	<A HREF="builtin.html#server2client()">server2client()</A>		send a reply to a client of a Vim server
+	<A HREF="builtin.html#remote_peek()">remote_peek()</A>		check if there is a reply from a Vim server
+	<A HREF="builtin.html#remote_read()">remote_read()</A>		read a reply from a Vim server
+	<A HREF="builtin.html#foreground()">foreground()</A>		move the Vim <A HREF="windows.html#window">window</A> to the foreground
+	<A HREF="builtin.html#remote_foreground()">remote_foreground()</A>	move the Vim server <A HREF="windows.html#window">window</A> to the foreground
+
+
+Window size and position:			*<A NAME="window-size-functions"></A><B>window-size-functions</B>*
+	<A HREF="builtin.html#winheight()">winheight()</A>		get height of a specific <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#winwidth()">winwidth()</A>		get width of a specific <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#win_screenpos()">win_screenpos()</A>		get screen position of a <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#winlayout()">winlayout()</A>		get layout of <A HREF="windows.html#windows">windows</A> in a <A HREF="intro.html#tab">tab</A> page
+	<A HREF="builtin.html#winrestcmd()">winrestcmd()</A>		return command to restore <A HREF="windows.html#window">window</A> sizes
+	<A HREF="builtin.html#winsaveview()">winsaveview()</A>		get <A HREF="starting.html#view">view</A> of current <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#winrestview()">winrestview()</A>		restore saved <A HREF="starting.html#view">view</A> of current <A HREF="windows.html#window">window</A>
+
+
+Mappings and Menus:			    *<A NAME="mapping-functions"></A><B>mapping-functions</B>*
+	<A HREF="builtin.html#digraph_get()">digraph_get()</A>		get |<A HREF="digraph.html#digraph">digraph</A>|
+	<A HREF="builtin.html#digraph_getlist()">digraph_getlist()</A>	get all |<A HREF="digraph.html#digraph">digraph</A>|<A HREF="change.html#s">s</A>
+	<A HREF="builtin.html#digraph_set()">digraph_set()</A>		<A HREF="sponsor.html#register">register</A> |<A HREF="digraph.html#digraph">digraph</A>|
+	<A HREF="builtin.html#digraph_setlist()">digraph_setlist()</A>	<A HREF="sponsor.html#register">register</A> multiple |<A HREF="digraph.html#digraph">digraph</A>|<A HREF="change.html#s">s</A>
+	<A HREF="builtin.html#hasmapto()">hasmapto()</A>		check if a <A HREF="map.html#mapping">mapping</A> exists
+	<A HREF="builtin.html#mapcheck()">mapcheck()</A>		check if a matching <A HREF="map.html#mapping">mapping</A> exists
+	<A HREF="builtin.html#maparg()">maparg()</A>		get rhs of a <A HREF="map.html#mapping">mapping</A>
+	<A HREF="builtin.html#maplist()">maplist()</A>		get <A HREF="eval.html#list">list</A> of all mappings
+	<A HREF="builtin.html#mapset()">mapset()</A>		restore a <A HREF="map.html#mapping">mapping</A>
+	<A HREF="builtin.html#menu_info()">menu_info()</A>		get information about a menu item
+	<A HREF="builtin.html#wildmenumode()">wildmenumode()</A>		check if the wildmode is active
+
+
+Testing:				    *<A NAME="test-functions"></A><B>test-functions</B>*
+	<A HREF="testing.html#assert_equal()">assert_equal()</A>		assert that two expressions values are equal
+	<A HREF="testing.html#assert_equalfile()">assert_equalfile()</A>	assert that two file contents are equal
+	<A HREF="testing.html#assert_notequal()">assert_notequal()</A>	assert that two expressions values are not equal
+	<A HREF="testing.html#assert_inrange()">assert_inrange()</A>	assert that an <A HREF="eval.html#expression">expression</A> is inside a range
+	<A HREF="testing.html#assert_match()">assert_match()</A>		assert that a <A HREF="pattern.html#pattern">pattern</A> matches the value
+	<A HREF="testing.html#assert_notmatch()">assert_notmatch()</A>	assert that a <A HREF="pattern.html#pattern">pattern</A> does not match the value
+	<A HREF="testing.html#assert_false()">assert_false()</A>		assert that an <A HREF="eval.html#expression">expression</A> is <A HREF="vim9.html#false">false</A>
+	<A HREF="testing.html#assert_true()">assert_true()</A>		assert that an <A HREF="eval.html#expression">expression</A> is <A HREF="vim9.html#true">true</A>
+	<A HREF="testing.html#assert_exception()">assert_exception()</A>	assert that a command throws an exception
+	<A HREF="testing.html#assert_beeps()">assert_beeps()</A>		assert that a command beeps
+	<A HREF="testing.html#assert_nobeep()">assert_nobeep()</A>		assert that a command does not cause a beep
+	<A HREF="testing.html#assert_fails()">assert_fails()</A>		assert that a command fails
+	<A HREF="testing.html#assert_report()">assert_report()</A>		report a test failure
+	<A HREF="testing.html#test_alloc_fail()">test_alloc_fail()</A>	make memory allocation fail
+	<A HREF="testing.html#test_autochdir()">test_autochdir()</A>	enable <A HREF="options.html#'autochdir'">'autochdir'</A> during <A HREF="starting.html#startup">startup</A>
+	<A HREF="testing.html#test_override()">test_override()</A>		test with Vim internal overrides
+	<A HREF="testing.html#test_garbagecollect_now()">test_garbagecollect_now()</A>   free memory right now
+	<A HREF="testing.html#test_garbagecollect_soon()">test_garbagecollect_soon()</A>  set a flag to free memory soon
+	<A HREF="testing.html#test_getvalue()">test_getvalue()</A>		get value of an internal variable
+	<A HREF="testing.html#test_gui_event()">test_gui_event()</A>	generate a <A HREF="gui.html#GUI">GUI</A> event for <A HREF="testing.html#testing">testing</A>
+	<A HREF="testing.html#test_ignore_error()">test_ignore_error()</A>	ignore a specific error message
+	<A HREF="testing.html#test_null_blob()">test_null_blob()</A>	return a <A HREF="vim9.html#null">null</A> <A HREF="eval.html#Blob">Blob</A>
+	<A HREF="testing.html#test_null_channel()">test_null_channel()</A>	return a <A HREF="vim9.html#null">null</A> <A HREF="eval.html#Channel">Channel</A>
+	<A HREF="testing.html#test_null_dict()">test_null_dict()</A>	return a <A HREF="vim9.html#null">null</A> <A HREF="eval.html#Dict">Dict</A>
+	<A HREF="testing.html#test_null_function()">test_null_function()</A>	return a <A HREF="vim9.html#null">null</A> <A HREF="eval.html#Funcref">Funcref</A>
+	<A HREF="testing.html#test_null_job()">test_null_job()</A>		return a <A HREF="vim9.html#null">null</A> <A HREF="eval.html#Job">Job</A>
+	<A HREF="testing.html#test_null_list()">test_null_list()</A>	return a <A HREF="vim9.html#null">null</A> <A HREF="eval.html#List">List</A>
+	<A HREF="testing.html#test_null_partial()">test_null_partial()</A>	return a <A HREF="vim9.html#null">null</A> <A HREF="eval.html#Partial">Partial</A> function
+	<A HREF="testing.html#test_null_string()">test_null_string()</A>	return a <A HREF="vim9.html#null">null</A> <A HREF="eval.html#String">String</A>
+	<A HREF="testing.html#test_settime()">test_settime()</A>		set the time Vim uses internally
+	<A HREF="testing.html#test_setmouse()">test_setmouse()</A>		set the mouse position
+	<A HREF="testing.html#test_feedinput()">test_feedinput()</A>	add key sequence to input buffer
+	<A HREF="testing.html#test_option_not_set()">test_option_not_set()</A>	reset flag indicating option was set
+	<A HREF="testing.html#test_refcount()">test_refcount()</A>		return an expression's reference <A HREF="intro.html#count">count</A>
+	<A HREF="testing.html#test_srand_seed()">test_srand_seed()</A>	set the seed value for <A HREF="builtin.html#srand()">srand()</A>
+	<A HREF="testing.html#test_unknown()">test_unknown()</A>		return a value with unknown type
+	<A HREF="testing.html#test_void()">test_void()</A>		return a value with void type
+
+
+Inter-process communication:		    *<A NAME="channel-functions"></A><B>channel-functions</B>*
+	<A HREF="channel.html#ch_canread()">ch_canread()</A>		check if there is something to read
+	<A HREF="channel.html#ch_open()">ch_open()</A>		open a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_close()">ch_close()</A>		close a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_close_in()">ch_close_in()</A>		close the in part of a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_read()">ch_read()</A>		read a message from a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_readblob()">ch_readblob()</A>		read a <A HREF="eval.html#Blob">Blob</A> from a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_readraw()">ch_readraw()</A>		read a raw message from a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_sendexpr()">ch_sendexpr()</A>		send a JSON message over a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_sendraw()">ch_sendraw()</A>		send a raw message over a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_evalexpr()">ch_evalexpr()</A>		evaluate an <A HREF="eval.html#expression">expression</A> over <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_evalraw()">ch_evalraw()</A>		evaluate a raw <A HREF="eval.html#string">string</A> over <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_status()">ch_status()</A>		get status of a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_getbufnr()">ch_getbufnr()</A>		get the buffer number of a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_getjob()">ch_getjob()</A>		get the <A HREF="channel.html#job">job</A> associated with a <A HREF="channel.html#channel">channel</A>
+	<A HREF="channel.html#ch_info()">ch_info()</A>		get <A HREF="channel.html#channel">channel</A> information
+	<A HREF="channel.html#ch_log()">ch_log()</A>		write a message in the <A HREF="channel.html#channel">channel</A> log file
+	<A HREF="channel.html#ch_logfile()">ch_logfile()</A>		set the <A HREF="channel.html#channel">channel</A> log file
+	<A HREF="channel.html#ch_setoptions()">ch_setoptions()</A>		set the <A HREF="options.html#options">options</A> for a <A HREF="channel.html#channel">channel</A>
+	<A HREF="builtin.html#json_encode()">json_encode()</A>		encode an <A HREF="eval.html#expression">expression</A> to a JSON <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#json_decode()">json_decode()</A>		decode a JSON <A HREF="eval.html#string">string</A> to Vim types
+	<A HREF="builtin.html#js_encode()">js_encode()</A>		encode an <A HREF="eval.html#expression">expression</A> to a JSON <A HREF="eval.html#string">string</A>
+	<A HREF="builtin.html#js_decode()">js_decode()</A>		decode a JSON <A HREF="eval.html#string">string</A> to Vim types
+
+
+<A HREF="eval.html#Jobs">Jobs</A>:						*<A NAME="job-functions"></A><B>job-functions</B>*
+	<A HREF="channel.html#job_start()">job_start()</A>		start a <A HREF="channel.html#job">job</A>
+	<A HREF="channel.html#job_stop()">job_stop()</A>		stop a <A HREF="channel.html#job">job</A>
+	<A HREF="channel.html#job_status()">job_status()</A>		get the status of a <A HREF="channel.html#job">job</A>
+	<A HREF="channel.html#job_getchannel()">job_getchannel()</A>	get the <A HREF="channel.html#channel">channel</A> used by a <A HREF="channel.html#job">job</A>
+	<A HREF="channel.html#job_info()">job_info()</A>		get information about a <A HREF="channel.html#job">job</A>
+	<A HREF="channel.html#job_setoptions()">job_setoptions()</A>	set <A HREF="options.html#options">options</A> for a <A HREF="channel.html#job">job</A>
+
+
+Signs:						*<A NAME="sign-functions"></A><B>sign-functions</B>*
+	<A HREF="sign.html#sign_define()">sign_define()</A>		define or update a sign
+	<A HREF="sign.html#sign_getdefined()">sign_getdefined()</A>	get a <A HREF="eval.html#list">list</A> of defined <A HREF="sign.html#signs">signs</A>
+	<A HREF="sign.html#sign_getplaced()">sign_getplaced()</A>	get a <A HREF="eval.html#list">list</A> of placed <A HREF="sign.html#signs">signs</A>
+	<A HREF="sign.html#sign_jump()">sign_jump()</A>		jump to a sign
+	<A HREF="sign.html#sign_place()">sign_place()</A>		place a sign
+	<A HREF="sign.html#sign_placelist()">sign_placelist()</A>	place a <A HREF="eval.html#list">list</A> of <A HREF="sign.html#signs">signs</A>
+	<A HREF="sign.html#sign_undefine()">sign_undefine()</A>		undefine a sign
+	<A HREF="sign.html#sign_unplace()">sign_unplace()</A>		unplace a sign
+	<A HREF="sign.html#sign_unplacelist()">sign_unplacelist()</A>	unplace a <A HREF="eval.html#list">list</A> of <A HREF="sign.html#signs">signs</A>
+
+
+Terminal <A HREF="windows.html#window">window</A>:				*<A NAME="terminal-functions"></A><B>terminal-functions</B>*
+	<A HREF="terminal.html#term_start()">term_start()</A>		open a <A HREF="terminal.html#terminal">terminal</A> <A HREF="windows.html#window">window</A> and run a <A HREF="channel.html#job">job</A>
+	<A HREF="terminal.html#term_list()">term_list()</A>		get the <A HREF="eval.html#list">list</A> of <A HREF="terminal.html#terminal">terminal</A> <A HREF="windows.html#buffers">buffers</A>
+	<A HREF="terminal.html#term_sendkeys()">term_sendkeys()</A>		send keystrokes to a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_wait()">term_wait()</A>		wait for screen to be updated
+	<A HREF="terminal.html#term_getjob()">term_getjob()</A>		get the <A HREF="channel.html#job">job</A> associated with a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_scrape()">term_scrape()</A>		get row of a <A HREF="terminal.html#terminal">terminal</A> screen
+	<A HREF="terminal.html#term_getline()">term_getline()</A>		get a line of text from a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_getattr()">term_getattr()</A>		get the value of attribute {what}
+	<A HREF="terminal.html#term_getcursor()">term_getcursor()</A>	get the cursor position of a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_getscrolled()">term_getscrolled()</A>	get the scroll <A HREF="intro.html#count">count</A> of a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_getaltscreen()">term_getaltscreen()</A>	get the alternate screen flag
+	<A HREF="terminal.html#term_getsize()">term_getsize()</A>		get the size of a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_getstatus()">term_getstatus()</A>	get the status of a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_gettitle()">term_gettitle()</A>		get the title of a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_gettty()">term_gettty()</A>		get the tty name of a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_setansicolors()">term_setansicolors()</A>	set 16 ANSI colors, used for <A HREF="gui.html#GUI">GUI</A>
+	<A HREF="terminal.html#term_getansicolors()">term_getansicolors()</A>	get 16 ANSI colors, used for <A HREF="gui.html#GUI">GUI</A>
+	<A HREF="terminal.html#term_dumpdiff()">term_dumpdiff()</A>		display difference between two screen dumps
+	<A HREF="terminal.html#term_dumpload()">term_dumpload()</A>		load a <A HREF="terminal.html#terminal">terminal</A> screen dump in a <A HREF="windows.html#window">window</A>
+	<A HREF="terminal.html#term_dumpwrite()">term_dumpwrite()</A>	dump contents of a <A HREF="terminal.html#terminal">terminal</A> screen to a file
+	<A HREF="terminal.html#term_setkill()">term_setkill()</A>		set signal to stop <A HREF="channel.html#job">job</A> in a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_setrestore()">term_setrestore()</A>	set command to restore a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_setsize()">term_setsize()</A>		set the size of a <A HREF="terminal.html#terminal">terminal</A>
+	<A HREF="terminal.html#term_setapi()">term_setapi()</A>		set <A HREF="terminal.html#terminal">terminal</A> JSON API function name prefix
+
+
+Popup <A HREF="windows.html#window">window</A>:					*<A NAME="popup-window-functions"></A><B>popup-window-functions</B>*
+	<A HREF="popup.html#popup_create()">popup_create()</A>		create <A HREF="popup.html#popup">popup</A> centered in the screen
+	<A HREF="popup.html#popup_atcursor()">popup_atcursor()</A>	create <A HREF="popup.html#popup">popup</A> just above the cursor position,
+				closes when the cursor moves away
+	<A HREF="popup.html#popup_beval()">popup_beval()</A>		at the position indicated by v:beval_
+				<A HREF="eval.html#variables">variables</A>, closes when the mouse moves away
+	<A HREF="popup.html#popup_notification()">popup_notification()</A>	show a notification for three seconds
+	<A HREF="popup.html#popup_dialog()">popup_dialog()</A>		create <A HREF="popup.html#popup">popup</A> centered with padding and border
+	<A HREF="popup.html#popup_menu()">popup_menu()</A>		prompt for selecting an item from a <A HREF="eval.html#list">list</A>
+	<A HREF="popup.html#popup_hide()">popup_hide()</A>		hide a <A HREF="popup.html#popup">popup</A> temporarily
+	<A HREF="popup.html#popup_show()">popup_show()</A>		show a previously hidden <A HREF="popup.html#popup">popup</A>
+	<A HREF="popup.html#popup_move()">popup_move()</A>		change the position and size of a <A HREF="popup.html#popup">popup</A>
+	<A HREF="popup.html#popup_setoptions()">popup_setoptions()</A>	override <A HREF="options.html#options">options</A> of a <A HREF="popup.html#popup">popup</A>
+	<A HREF="popup.html#popup_settext()">popup_settext()</A>		replace the <A HREF="popup.html#popup">popup</A> buffer contents
+	<A HREF="popup.html#popup_close()">popup_close()</A>		close one <A HREF="popup.html#popup">popup</A>
+	<A HREF="popup.html#popup_clear()">popup_clear()</A>		close all popups
+	<A HREF="popup.html#popup_filter_menu()">popup_filter_menu()</A>	select from a <A HREF="eval.html#list">list</A> of items
+	<A HREF="popup.html#popup_filter_yesno()">popup_filter_yesno()</A>	block until '<A HREF="change.html#y">y</A>' or '<A HREF="pattern.html#n">n</A>' is pressed
+	<A HREF="popup.html#popup_getoptions()">popup_getoptions()</A>	get current <A HREF="options.html#options">options</A> for a <A HREF="popup.html#popup">popup</A>
+	<A HREF="popup.html#popup_getpos()">popup_getpos()</A>		get actual position and size of a <A HREF="popup.html#popup">popup</A>
+	<A HREF="popup.html#popup_findinfo()">popup_findinfo()</A>	get <A HREF="windows.html#window">window</A> ID for <A HREF="popup.html#popup">popup</A> info <A HREF="windows.html#window">window</A>
+	<A HREF="popup.html#popup_findpreview()">popup_findpreview()</A>	get <A HREF="windows.html#window">window</A> ID for <A HREF="popup.html#popup">popup</A> preview <A HREF="windows.html#window">window</A>
+	<A HREF="popup.html#popup_list()">popup_list()</A>		get <A HREF="eval.html#list">list</A> of all <A HREF="popup.html#popup">popup</A> <A HREF="windows.html#window">window</A> IDs
+	<A HREF="popup.html#popup_locate()">popup_locate()</A>		get <A HREF="popup.html#popup">popup</A> <A HREF="windows.html#window">window</A> ID from its screen position
+
+
+Timers:						*<A NAME="timer-functions"></A><B>timer-functions</B>*
+	<A HREF="builtin.html#timer_start()">timer_start()</A>		create a <A HREF="builtin.html#timer">timer</A>
+	<A HREF="builtin.html#timer_pause()">timer_pause()</A>		pause or unpause a <A HREF="builtin.html#timer">timer</A>
+	<A HREF="builtin.html#timer_stop()">timer_stop()</A>		stop a <A HREF="builtin.html#timer">timer</A>
+	<A HREF="builtin.html#timer_stopall()">timer_stopall()</A>		stop all <A HREF="builtin.html#timers">timers</A>
+	<A HREF="builtin.html#timer_info()">timer_info()</A>		get information about <A HREF="builtin.html#timers">timers</A>
+
+
+Tags:						*<A NAME="tag-functions"></A><B>tag-functions</B>*
+	<A HREF="builtin.html#taglist()">taglist()</A>		get <A HREF="eval.html#list">list</A> of matching <A HREF="tagsrch.html#tags">tags</A>
+	<A HREF="builtin.html#tagfiles()">tagfiles()</A>		get a <A HREF="eval.html#list">list</A> of <A HREF="tagsrch.html#tags">tags</A> files
+	<A HREF="builtin.html#gettagstack()">gettagstack()</A>		get the <A HREF="tagsrch.html#tag">tag</A> stack of a <A HREF="windows.html#window">window</A>
+	<A HREF="builtin.html#settagstack()">settagstack()</A>		modify the <A HREF="tagsrch.html#tag">tag</A> stack of a <A HREF="windows.html#window">window</A>
+
+
+Prompt Buffer:					*<A NAME="promptbuffer-functions"></A><B>promptbuffer-functions</B>*
+	<A HREF="builtin.html#prompt_getprompt()">prompt_getprompt()</A>	get the effective prompt text for a buffer
+	<A HREF="builtin.html#prompt_setcallback()">prompt_setcallback()</A>	set prompt callback for a buffer
+	<A HREF="builtin.html#prompt_setinterrupt()">prompt_setinterrupt()</A>	set interrupt callback for a buffer
+	<A HREF="builtin.html#prompt_setprompt()">prompt_setprompt()</A>	set the prompt text for a buffer
+
+
+Text Properties:				*<A NAME="text-property-functions"></A><B>text-property-functions</B>*
+	<A HREF="textprop.html#prop_add()">prop_add()</A>		attach a property at a position
+	<A HREF="textprop.html#prop_add_list()">prop_add_list()</A>		attach a property at multiple positions
+	<A HREF="textprop.html#prop_clear()">prop_clear()</A>		remove all properties from a line or lines
+	<A HREF="textprop.html#prop_find()">prop_find()</A>		search for a property
+	<A HREF="textprop.html#prop_list()">prop_list()</A>		return a <A HREF="eval.html#list">list</A> of all properties in a line
+	<A HREF="textprop.html#prop_remove()">prop_remove()</A>		remove a property from a line
+	<A HREF="textprop.html#prop_type_add()">prop_type_add()</A>		add/define a property type
+	<A HREF="textprop.html#prop_type_change()">prop_type_change()</A>	change properties of a type
+	<A HREF="textprop.html#prop_type_delete()">prop_type_delete()</A>	remove a text property type
+	<A HREF="textprop.html#prop_type_get()">prop_type_get()</A>		return the properties of a type
+	<A HREF="textprop.html#prop_type_list()">prop_type_list()</A>	return a <A HREF="eval.html#list">list</A> of all property types
+
+
+Sound:							*<A NAME="sound-functions"></A><B>sound-functions</B>*
+	<A HREF="builtin.html#sound_clear()">sound_clear()</A>		stop playing all sounds
+	<A HREF="builtin.html#sound_playevent()">sound_playevent()</A>	play an event's sound
+	<A HREF="builtin.html#sound_playfile()">sound_playfile()</A>	play a sound file
+	<A HREF="builtin.html#sound_stop()">sound_stop()</A>		stop playing a sound
+
+
+Various:					*<A NAME="various-functions"></A><B>various-functions</B>*
+	<A HREF="builtin.html#mode()">mode()</A>			get current editing mode
+	<A HREF="builtin.html#state()">state()</A>			get current busy state
+	<A HREF="builtin.html#visualmode()">visualmode()</A>		last visual mode used
+	<A HREF="builtin.html#exists()">exists()</A>		check if a variable, function, etc. exists
+	<A HREF="builtin.html#exists_compiled()">exists_compiled()</A>	like <A HREF="builtin.html#exists()">exists()</A> but check at compile time
+	<A HREF="builtin.html#has()">has()</A>			check if a feature is supported in Vim
+	<A HREF="builtin.html#changenr()">changenr()</A>		return number of most recent change
+	<A HREF="builtin.html#cscope_connection()">cscope_connection()</A>	check if a <A HREF="if_cscop.html#cscope">cscope</A> connection exists
+	<A HREF="builtin.html#did_filetype()">did_filetype()</A>		check if a <A HREF="autocmd.html#FileType">FileType</A> <A HREF="autocmd.html#autocommand">autocommand</A> was used
+	<A HREF="builtin.html#eventhandler()">eventhandler()</A>		check if invoked by an event handler
+	<A HREF="builtin.html#getpid()">getpid()</A>		get process ID of Vim
+	<A HREF="builtin.html#getimstatus()">getimstatus()</A>		check if <A HREF="mbyte.html#IME">IME</A> status is active
+	<A HREF="builtin.html#interrupt()">interrupt()</A>		interrupt <A HREF="#script">script</A> execution
+	<A HREF="builtin.html#windowsversion()">windowsversion()</A>	get <A HREF="os_win32.html#MS-Windows">MS-Windows</A> version
+	<A HREF="builtin.html#terminalprops()">terminalprops()</A>		properties of the <A HREF="terminal.html#terminal">terminal</A>
+
+	<A HREF="builtin.html#libcall()">libcall()</A>		call a function in an external library
+	<A HREF="builtin.html#libcallnr()">libcallnr()</A>		idem, returning a number
+
+	<A HREF="builtin.html#undofile()">undofile()</A>		get the name of the <A HREF="undo.html#undo">undo</A> file
+	<A HREF="builtin.html#undotree()">undotree()</A>		return the state of the <A HREF="undo.html#undo">undo</A> tree
+
+	<A HREF="builtin.html#getreg()">getreg()</A>		get contents of a <A HREF="sponsor.html#register">register</A>
+	<A HREF="builtin.html#getreginfo()">getreginfo()</A>		get information about a <A HREF="sponsor.html#register">register</A>
+	<A HREF="builtin.html#getregtype()">getregtype()</A>		get type of a <A HREF="sponsor.html#register">register</A>
+	<A HREF="builtin.html#setreg()">setreg()</A>		set contents and type of a <A HREF="sponsor.html#register">register</A>
+	<A HREF="builtin.html#reg_executing()">reg_executing()</A>		return the name of the <A HREF="sponsor.html#register">register</A> being executed
+	<A HREF="builtin.html#reg_recording()">reg_recording()</A>		return the name of the <A HREF="sponsor.html#register">register</A> being recorded
+
+	<A HREF="builtin.html#shiftwidth()">shiftwidth()</A>		effective value of <A HREF="options.html#'shiftwidth'">'shiftwidth'</A>
+
+	<A HREF="builtin.html#wordcount()">wordcount()</A>		get byte/word/char <A HREF="intro.html#count">count</A> of buffer
+
+	<A HREF="builtin.html#luaeval()">luaeval()</A>		evaluate |<A HREF="if_lua.html#Lua">Lua</A>| <A HREF="eval.html#expression">expression</A>
+	<A HREF="builtin.html#mzeval()">mzeval()</A>		evaluate |<A HREF="if_mzsch.html#MzScheme">MzScheme</A>| <A HREF="eval.html#expression">expression</A>
+	<A HREF="builtin.html#perleval()">perleval()</A>		evaluate <A HREF="if_perl.html#Perl">Perl</A> <A HREF="eval.html#expression">expression</A> (|<A HREF="various.html#+perl">+perl</A>|)
+	<A HREF="builtin.html#py3eval()">py3eval()</A>		evaluate <A HREF="if_pyth.html#Python">Python</A> <A HREF="eval.html#expression">expression</A> (|<A HREF="various.html#+python3">+python3</A>|)
+	<A HREF="builtin.html#pyeval()">pyeval()</A>		evaluate <A HREF="if_pyth.html#Python">Python</A> <A HREF="eval.html#expression">expression</A> (|<A HREF="various.html#+python">+python</A>|)
+	<A HREF="builtin.html#pyxeval()">pyxeval()</A>		evaluate |<A HREF="if_pyth.html#python_x">python_x</A>| <A HREF="eval.html#expression">expression</A>
+	<A HREF="builtin.html#rubyeval()">rubyeval()</A>		evaluate |<A HREF="if_ruby.html#Ruby">Ruby</A>| <A HREF="eval.html#expression">expression</A>
+
+	<A HREF="builtin.html#debugbreak()">debugbreak()</A>		interrupt a program being debugged
+
+==============================================================================
+
+*<A NAME="41.7"></A><B>41.7</B>*	Defining a function
+
+Vim enables you to define your own <A HREF="eval.html#functions">functions</A>.  The basic function declaration
+begins <A HREF="motion.html#as">as</A> follows:
+
+<B>	def {name}({var1}, {var2}, ...): return-type</B>
+<B>	  {body}</B>
+<B>	enddef</B>
+ 
+	Note:
+	Function names must begin with a capital <A HREF="print.html#letter">letter</A>.
+
+Let's define a short function to return the smaller of two numbers.  It starts
+with this line:
+
+<B>	def Min(num1: number, num2: number): number</B>
+
+This tells Vim that the function is named &quot;Min&quot;, <A HREF="motion.html#it">it</A> takes two arguments that
+are numbers: &quot;num1&quot; and &quot;num2&quot; and returns a number.
+
+The first thing you need to <A HREF="diff.html#do">do</A> is to check to see which number is smaller:
+  
+<B>	if num1 &lt; num2</B>
+
+Let's assign the variable &quot;smaller&quot; the value of the smallest number:
+
+<B>	var smaller: number</B>
+<B>	if num1 &lt; num2</B>
+<B>	  smaller = num1</B>
+<B>	else</B>
+<B>	  smaller = num2</B>
+<B>	endif</B>
+
+The variable &quot;smaller&quot; is a local variable.  It is declared to be a number,
+that way Vim can warn you for any mistakes.  Variables used inside a function
+are local unless prefixed by something like &quot;<A HREF="eval.html#g:">g:</A>&quot;, &quot;<A HREF="eval.html#w:">w:</A>&quot;, or &quot;<A HREF="eval.html#b:">b:</A>&quot;.
+
+	Note:
+	To access a global variable from inside a function you must prepend
+	&quot;<A HREF="eval.html#g:">g:</A>&quot; to <A HREF="motion.html#it">it</A>.  Thus &quot;g:today&quot; inside a function is used for the global
+	variable &quot;today&quot;, and &quot;today&quot; is another variable, local to the
+	function or the <A HREF="#script">script</A>.
+
+You now use the `return` statement to return the smallest number to the user.
+Finally, you end the function:
+
+<B>	  return smaller</B>
+<B>	enddef</B>
+
+The complete function definition is <A HREF="motion.html#as">as</A> follows:
+
+<B>	def Min(num1: number, num2: number): number</B>
+<B>	  var smaller: number</B>
+<B>	  if num1 &lt; num2</B>
+<B>	    smaller = num1</B>
+<B>	  else</B>
+<B>	    smaller = num2</B>
+<B>	  endif</B>
+<B>	  return smaller</B>
+<B>	enddef</B>
+
+Obviously this is a <A HREF="starting.html#verbose">verbose</A> example.  You can make <A HREF="motion.html#it">it</A> shorter by using two
+return commands:
+
+<B>	def Min(num1: number, num2: number): number</B>
+<B>	  if num1 &lt; num2</B>
+<B>	    return num1</B>
+<B>	  endif</B>
+<B>	  return num2</B>
+<B>	enddef</B>
+
+And if you remember the conditional <A HREF="eval.html#expression">expression</A>, you need only one line:
+
+<B>	def Min(num1: number, num2: number): number</B>
+<B>	  return num1 &lt; num2 ? num1 : num2</B>
+<B>	enddef</B>
+
+A user defined function is called in exactly the same way <A HREF="motion.html#as">as</A> a built-in
+function.  Only the name is different.  The Min function can be used like
+this:
+
+<B>	echo Min(5, 8)</B>
+
+Only now will the function be executed and the lines be parsed by Vim.
+If there are mistakes, like using an undefined variable or function, you will
+now get an error message.  When defining the function these <A HREF="message.html#errors">errors</A> are not
+detected.  To get the <A HREF="message.html#errors">errors</A> sooner you can tell Vim to compile all the
+<A HREF="eval.html#functions">functions</A> in the <A HREF="#script">script</A>:
+
+<B>	defcompile</B>
+
+Compiling <A HREF="eval.html#functions">functions</A> takes a little time, but does report <A HREF="message.html#errors">errors</A> early.  You
+could use `:defcompile` at the end of your <A HREF="#script">script</A> while working on <A HREF="motion.html#it">it</A>, and
+comment <A HREF="motion.html#it">it</A> out when everything is fine.
+
+For a function that does not return anything simply leave out the return type:
+
+<B>	def SayIt(text: string)</B>
+<B>	  echo text</B>
+<B>	enddef</B>
+
+If you want to return any kind of value, you can use the &quot;any&quot; return type:
+<B>	def GetValue(): any</B>
+This disables type checking for the return value, use only when needed.
+
+It is also possible to define a legacy function with `function` and
+`endfunction`.  These <A HREF="diff.html#do">do</A> not have types and are not compiled.  Therefore they
+execute much slower.
+
+
+USING A RANGE
+
+A line range can be used with a function call.  The function will be called
+once for every line in the range, with the cursor in that line.  Example:
+
+<B>	def Number()</B>
+<B>	  echo "line " .. line(".") .. " contains: " .. getline(".")</B>
+<B>	enddef</B>
+
+If you call this function with:
+
+<B>	:10,15Number()</B>
+
+The function will be called six times, starting on line 10 and ending on line
+15.
+
+
+LISTING FUNCTIONS
+
+The `function` command lists the names and arguments of all user-defined
+<A HREF="eval.html#functions">functions</A>:
+
+<B>	:function</B>
+<B><FONT COLOR="PURPLE"> 	def &lt;SNR&gt;86_Show(start: string, ...items: list&lt;string&gt;) </FONT></B>
+<B><FONT COLOR="PURPLE">	function GetVimIndent() </FONT></B>
+<B><FONT COLOR="PURPLE">	function SetSyn(name) </FONT></B>
+
+The &quot;<A HREF="map.html#&lt;SNR&gt;">&lt;SNR&gt;</A>&quot; prefix means that a function is <A HREF="map.html#script-local">script-local</A>.  |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="eval.html#functions">functions</A>
+will start with &quot;def&quot; and include argument and return types.  Legacy <A HREF="eval.html#functions">functions</A>
+are listed with &quot;function&quot;.
+
+To see what a function does, use its name <A HREF="motion.html#as">as</A> an argument for `function`:
+
+<B>	:function SetSyn</B>
+<B><FONT COLOR="PURPLE"> 	1     if &amp;syntax == '' </FONT></B>
+<B><FONT COLOR="PURPLE">	2       let &amp;syntax = a:name </FONT></B>
+<B><FONT COLOR="PURPLE">	3     endif </FONT></B>
+<B><FONT COLOR="PURPLE">	   endfunction </FONT></B>
+
+To see the &quot;Show&quot; function you need to include the <A HREF="#script">script</A> prefix, since
+multiple &quot;Show&quot; <A HREF="eval.html#functions">functions</A> can be defined in different scripts.  To find
+the exact name you can use `function`, but the result may be a very long <A HREF="eval.html#list">list</A>.
+To only get the <A HREF="eval.html#functions">functions</A> matching a <A HREF="pattern.html#pattern">pattern</A> you can use the `filter` prefix:
+
+<B>	:filter Show function</B>
+<B><FONT COLOR="PURPLE"> 	def &lt;SNR&gt;86_Show(start: string, ...items: list&lt;string&gt;) </FONT></B>
+
+<B>	:function &lt;SNR&gt;86_Show</B>
+<B><FONT COLOR="PURPLE"> 	1    echohl Title </FONT></B>
+<B><FONT COLOR="PURPLE">	2    echo "start is " .. start </FONT></B>
+	etc.
+
+
+DEBUGGING
+
+The line number is useful for when you get an error message or when debugging.
+See |<A HREF="repeat.html#debug-scripts">debug-scripts</A>| about debugging mode.
+
+You can also set the <A HREF="options.html#'verbose'">'verbose'</A> option to 12 or higher to see all function
+calls.  Set <A HREF="motion.html#it">it</A> to 15 or higher to see every executed line.
+
+
+DELETING A FUNCTION
+
+To delete the SetSyn() function:
+
+<B>	:delfunction SetSyn</B>
+
+Deleting only works for global <A HREF="eval.html#functions">functions</A> and <A HREF="eval.html#functions">functions</A> in legacy <A HREF="#script">script</A>, not
+for <A HREF="eval.html#functions">functions</A> defined in a |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A>.
+
+You get an error when the function doesn't exist or cannot be deleted.
+
+
+FUNCTION REFERENCES
+
+Sometimes <A HREF="motion.html#it">it</A> can be useful to have a variable point to one function or
+another.  You can <A HREF="diff.html#do">do</A> <A HREF="motion.html#it">it</A> with a function reference variable.  Often shortened
+to &quot;funcref&quot;.  Example:
+
+<B>	def Right(): string</B>
+<B>	  return 'Right!'</B>
+<B>	enddef</B>
+<B>	def Wrong(): string</B>
+<B>	  return 'Wrong!'</B>
+<B>	enddef</B>
+
+<B>	var Afunc = g:result == 1 ? Right : Wrong</B>
+<B>	echo Afunc()</B>
+<B><FONT COLOR="PURPLE"> 	Wrong! </FONT></B>
+
+This assumes &quot;g:result&quot; is not one.  See |<A HREF="eval.html#Funcref">Funcref</A>| for details.
+
+Note that the name of a variable that holds a function reference must start
+with a capital.  Otherwise <A HREF="motion.html#it">it</A> could be confused with the name of a builtin
+function.
+
+
+FURTHER READING
+
+Using a variable number of arguments is introduced in section |<A HREF="usr_50.html#50.2">50.2</A>|.
+
+More information about defining your own functions here: |<A HREF="eval.html#user-functions">user-functions</A>|.
+
+==============================================================================
+
+*<A NAME="41.8"></A><B>41.8</B>*	<A HREF="eval.html#Lists">Lists</A> and <A HREF="eval.html#Dictionaries">Dictionaries</A>
+
+So far we have used the basic types <A HREF="eval.html#String">String</A> and <A HREF="eval.html#Number">Number</A>.  Vim also supports two
+composite types: <A HREF="eval.html#List">List</A> and <A HREF="eval.html#Dictionary">Dictionary</A>.
+
+A <A HREF="eval.html#List">List</A> is an ordered sequence of items.  The items can be any kind of value,
+thus you can make a <A HREF="eval.html#List">List</A> of numbers, a <A HREF="eval.html#List">List</A> of <A HREF="eval.html#Lists">Lists</A> and even a <A HREF="eval.html#List">List</A> of mixed
+items.  To create a <A HREF="eval.html#List">List</A> with three strings:
+
+<B>	var alist = ['aap', 'noot', 'mies']</B>
+
+The <A HREF="eval.html#List">List</A> items are enclosed in square brackets and separated by commas.  To
+create an empty <A HREF="eval.html#List">List</A>:
+
+<B>	var alist = []</B>
+
+You can add items to a <A HREF="eval.html#List">List</A> with the <A HREF="builtin.html#add()">add()</A> function:
+
+<B>	var alist = []</B>
+<B>	add(alist, 'foo')</B>
+<B>	add(alist, 'bar')</B>
+<B>	echo alist</B>
+<B><FONT COLOR="PURPLE"> 	['foo', 'bar'] </FONT></B>
+
+<A HREF="eval.html#List">List</A> concatenation is done with +:
+
+<B>	var alist = ['foo', 'bar']</B>
+<B>	alist = alist + ['and', 'more']</B>
+<B>	echo alist</B>
+<B><FONT COLOR="PURPLE"> 	['foo', 'bar', 'and', 'more'] </FONT></B>
+
+Or, if you want to extend a <A HREF="eval.html#List">List</A> with a function, use `extend()`:
+
+<B>	var alist = ['one']</B>
+<B>	extend(alist, ['two', 'three'])</B>
+<B>	echo alist</B>
+<B><FONT COLOR="PURPLE"> 	['one', 'two', 'three'] </FONT></B>
+
+Notice that using `add()` will have a different effect than `extend()`:
+
+<B>	var alist = ['one']</B>
+<B>	add(alist, ['two', 'three'])</B>
+<B>	echo alist</B>
+<B><FONT COLOR="PURPLE"> 	['one', ['two', 'three']] </FONT></B>
+
+The second argument of <A HREF="builtin.html#add()">add()</A> is added <A HREF="motion.html#as">as</A> an item, now you have a nested <A HREF="eval.html#list">list</A>.
+
+
+FOR LOOP
+
+One of the nice things you can <A HREF="diff.html#do">do</A> with a <A HREF="eval.html#List">List</A> is iterate over <A HREF="motion.html#it">it</A>:
+
+<B>	var alist = ['one', 'two', 'three']</B>
+<B>	for n in alist</B>
+<B>	  echo n</B>
+<B>	endfor</B>
+<B><FONT COLOR="PURPLE"> 	one </FONT></B>
+<B><FONT COLOR="PURPLE">	two </FONT></B>
+<B><FONT COLOR="PURPLE">	three </FONT></B>
+
+This will loop over each element in <A HREF="eval.html#List">List</A> &quot;alist&quot;, assigning each value to
+variable &quot;<A HREF="pattern.html#n">n</A>&quot;.  The generic form of a for loop is:
+
+<B>	for {varname} in {list-expression}</B>
+<B>	  {commands}</B>
+<B>	endfor</B>
+
+To loop a certain number of times you need a <A HREF="eval.html#List">List</A> of a specific length.  The
+<A HREF="builtin.html#range()">range()</A> function creates one for you:
+
+<B>	for a in range(3)</B>
+<B>	  echo a</B>
+<B>	endfor</B>
+<B><FONT COLOR="PURPLE"> 	0 </FONT></B>
+<B><FONT COLOR="PURPLE">	1 </FONT></B>
+<B><FONT COLOR="PURPLE">	2 </FONT></B>
+
+Notice that the first item of the <A HREF="eval.html#List">List</A> that <A HREF="builtin.html#range()">range()</A> produces is zero, thus the
+last item is one <A HREF="various.html#less">less</A> than the length of the <A HREF="eval.html#list">list</A>.  Detail: Internally <A HREF="builtin.html#range()">range()</A>
+does not actually create the <A HREF="eval.html#list">list</A>, so that a large range used in a for loop
+works efficiently.  When used elsewhere, the range is turned into an actual
+<A HREF="eval.html#list">list</A>, which takes more time for a long <A HREF="eval.html#list">list</A>.
+
+You can also specify the maximum value, the stride and even go backwards:
+
+<B>	for a in range(8, 4, -2)</B>
+<B>	  echo a</B>
+<B>	endfor</B>
+<B><FONT COLOR="PURPLE"> 	8 </FONT></B>
+<B><FONT COLOR="PURPLE">	6 </FONT></B>
+<B><FONT COLOR="PURPLE">	4 </FONT></B>
+
+A more useful example, looping over all the lines in the buffer:
+
+<B>	for line in getline(1, 50)</B>
+<B>	  if line =~ "Date: "</B>
+<B>	    echo line</B>
+<B>	  endif</B>
+<B>	endfor</B>
+
+This looks into lines 1 to 50 (inclusive) and echoes any date found in there.
+
+For further reading see |<A HREF="eval.html#Lists">Lists</A>|.
+
+
+DICTIONARIES
+
+A <A HREF="eval.html#Dictionary">Dictionary</A> stores key-value pairs.  You can quickly lookup a value if you
+know the key.  A <A HREF="eval.html#Dictionary">Dictionary</A> is created with curly braces:
+
+<B>	var uk2nl = {one: 'een', two: 'twee', three: 'drie'}</B>
+
+Now you can lookup words by putting the key in square brackets:
+
+<B>	echo uk2nl['two']</B>
+<B><FONT COLOR="PURPLE"> 	twee </FONT></B>
+
+If the key does not have special characters, you can use the dot <A HREF="intro.html#notation">notation</A>:
+
+<B>	echo uk2nl.two</B>
+<B><FONT COLOR="PURPLE"> 	twee </FONT></B>
+
+The generic form for defining a <A HREF="eval.html#Dictionary">Dictionary</A> is:
+
+<B>	{&lt;key&gt; : &lt;value&gt;, ...}</B>
+
+An empty <A HREF="eval.html#Dictionary">Dictionary</A> is one without any keys:
+
+<B>	{}</B>
+
+The possibilities with <A HREF="eval.html#Dictionaries">Dictionaries</A> are numerous.  There are various <A HREF="eval.html#functions">functions</A>
+for them <A HREF="motion.html#as">as</A> well.  For example, you can obtain a <A HREF="eval.html#list">list</A> of the keys and loop
+over them:
+
+<B>	for key in keys(uk2nl)</B>
+<B>	  echo key</B>
+<B>	endfor</B>
+<B><FONT COLOR="PURPLE"> 	three </FONT></B>
+<B><FONT COLOR="PURPLE">	one </FONT></B>
+<B><FONT COLOR="PURPLE">	two </FONT></B>
+
+You will notice the keys are not ordered.  You can sort the <A HREF="eval.html#list">list</A> to get a
+specific order:
+
+<B>	for key in sort(keys(uk2nl))</B>
+<B>	  echo key</B>
+<B>	endfor</B>
+<B><FONT COLOR="PURPLE"> 	one </FONT></B>
+<B><FONT COLOR="PURPLE">	three </FONT></B>
+<B><FONT COLOR="PURPLE">	two </FONT></B>
+
+But you can never get back the order in which items are defined.  For that you
+need to use a <A HREF="eval.html#List">List</A>, <A HREF="motion.html#it">it</A> stores items in an ordered sequence.
+
+For further reading see |<A HREF="eval.html#Dictionaries">Dictionaries</A>|.
+
+==============================================================================
+
+*<A NAME="41.9"></A><B>41.9</B>*	White space
+
+Blank lines are allowed in a <A HREF="#script">script</A> and ignored.
+
+Leading <A HREF="pattern.html#whitespace">whitespace</A> characters (blanks and TABs) are ignored, except when using
+|<A HREF="eval.html#:let-heredoc">:let-heredoc</A>| without &quot;trim&quot;.
+
+Trailing <A HREF="pattern.html#whitespace">whitespace</A> is often ignored, but not always.  One command that
+includes <A HREF="motion.html#it">it</A> is `map`.  You have to watch out for that, <A HREF="motion.html#it">it</A> can cause hard to
+understand mistakes.  A generic solution is to never use trailing white space,
+unless you really need <A HREF="motion.html#it">it</A>.
+
+To include a <A HREF="pattern.html#whitespace">whitespace</A> character in the value of an option, <A HREF="motion.html#it">it</A> must be
+escaped by a &quot;\&quot; (backslash)  <A HREF="motion.html#as">as</A> in the following example:
+
+<B>	:set tags=my\ nice\ file</B>
+
+If <A HREF="motion.html#it">it</A> would be written <A HREF="motion.html#as">as</A>:
+
+<B>	:set tags=my nice file</B>
+
+This will issue an error, because <A HREF="motion.html#it">it</A> is interpreted <A HREF="motion.html#as">as</A>:
+
+<B>	:set tags=my</B>
+<B>	:set nice</B>
+<B>	:set file</B>
+
+|<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A> is very picky when <A HREF="motion.html#it">it</A> comes to white space.  This was done
+intentionally to make sure scripts are <A HREF="starting.html#easy">easy</A> to read and to avoid mistakes.
+If you use white space sensibly <A HREF="motion.html#it">it</A> will just work.  When not you will get an
+error message telling you where white space is missing or should be removed.
+
+==============================================================================
+
+*<A NAME="41.10"></A><B>41.10</B>*	Line continuation
+
+In legacy Vim <A HREF="#script">script</A> line continuation is done by preceding a continuation
+line with a <A HREF="intro.html#backslash">backslash</A>:
+<B>	let mylist = [</B>
+<B>			\ 'one',</B>
+<B>			\ 'two',</B>
+<B>			\ ]</B>
+
+This requires the <A HREF="options.html#'cpo'">'cpo'</A> option to exclude the &quot;<A HREF="change.html#C">C</A>&quot; flag.  Normally this is done
+by putting this at the start of the <A HREF="#script">script</A>:
+<B>	let s:save_cpo = &amp;cpo</B>
+<B>	set cpo&amp;vim</B>
+
+And restore the option at the end of the <A HREF="#script">script</A>:
+<B>	let &amp;cpo = s:save_cpo</B>
+<B>	unlet s:save_cpo</B>
+
+A few more details can be found here: |<A HREF="repeat.html#line-continuation">line-continuation</A>|.
+
+In |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A> the <A HREF="intro.html#backslash">backslash</A> can still be used, but in most places <A HREF="motion.html#it">it</A> is not
+needed:
+<B>	var mylist = [</B>
+<B>			'one',</B>
+<B>			'two',</B>
+<B>			]</B>
+
+Also, the <A HREF="options.html#'cpo'">'cpo'</A> option does not need to be changed.  See
+|<A HREF="vim9.html#vim9-line-continuation">vim9-line-continuation</A>| for details.
+
+==============================================================================
+
+*<A NAME="41.11"></A><B>41.11</B>*	Comments
+
+In |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A> the character # starts a comment.  That character and
+everything after <A HREF="motion.html#it">it</A> until the end-of-line is considered a comment and
+is ignored, except for commands that don't consider comments, <A HREF="motion.html#as">as</A> shown in
+examples below.  A comment can start on any character position on the line,
+but not when <A HREF="motion.html#it">it</A> is part of the command, e.g. inside a <A HREF="eval.html#string">string</A>.
+
+The character &quot; (the double <A HREF="change.html#quote">quote</A> <A HREF="motion.html#mark">mark</A>) starts a comment in legacy <A HREF="#script">script</A>.
+This involves some cleverness to make sure double quoted strings are not
+recognized <A HREF="motion.html#as">as</A> comments (just one reason to prefer |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="#script">script</A>).
+
+There is a little &quot;catch&quot; with comments for some commands.  Examples:
+
+<B>	abbrev dev development	# shorthand</B>
+<B>	map &lt;F3&gt; o#include	# insert include</B>
+<B>	execute cmd		# do it</B>
+<B>	!ls *.c			# list C files</B>
+
+- The abbreviation 'dev' will be expanded to 'development  # shorthand'.
+- The <A HREF="map.html#mapping">mapping</A> of <A HREF="term.html#&lt;F3&gt;">&lt;F3&gt;</A> will actually be the whole line after the 'o# ....'
+  including the '# insert include'.
+- The `execute` command will give an error.
+- The `!` command will send everything after <A HREF="motion.html#it">it</A> to the shell, most likely
+  causing an error.
+
+There can be no comment after `map`, `abbreviate`, `execute` and `!` commands
+(there are a few more commands with this restriction).  For the `map`,
+`abbreviate` and `execute` commands there is a trick:
+
+<B>	abbrev dev development|# shorthand</B>
+<B>	map &lt;F3&gt; o#include|# insert include</B>
+<B>	execute '!ls *.c'	|# do it</B>
+
+With the '&#124;' character the command is separated from the next one.  And that
+next command is only a comment.  The last command, using `execute` is a
+general solution, <A HREF="motion.html#it">it</A> works for all commands that <A HREF="diff.html#do">do</A> not accept a comment or a
+'&#124;' to separate the next command.
+
+Notice that there is no white space before the '&#124;' in the abbreviation and
+<A HREF="map.html#mapping">mapping</A>.  For these commands, any character until the end-of-line or '&#124;' is
+included.  As a consequence of this behavior, you don't always see that
+trailing <A HREF="pattern.html#whitespace">whitespace</A> is included:
+
+<B>	map &lt;F4&gt; o#include  </B>
+
+Here <A HREF="motion.html#it">it</A> is intended, in other cases <A HREF="motion.html#it">it</A> might be accidental.  To spot these
+problems, you can highlight trailing spaces:
+<B>	match Search /\s\+$/</B>
+
+For <A HREF="os_unix.html#Unix">Unix</A> there is one special way to comment a line, that allows making a Vim
+<A HREF="#script">script</A> executable, and <A HREF="motion.html#it">it</A> also works in legacy <A HREF="#script">script</A>:
+<B>	#!/usr/bin/env vim -S</B>
+<B>	echo "this is a Vim script"</B>
+<B>	quit</B>
+
+==============================================================================
+
+*<A NAME="41.12"></A><B>41.12</B>*	Fileformat
+
+The end-of-line character depends on the system.  For Vim scripts <A HREF="motion.html#it">it</A> is
+recommended to always use the <A HREF="os_unix.html#Unix">Unix</A> fileformat.  Lines are then separated with
+the Newline character.  This also works on any other system.  That way you can
+copy your Vim scripts from <A HREF="os_win32.html#MS-Windows">MS-Windows</A> to <A HREF="os_unix.html#Unix">Unix</A> and they still work.  See
+|<A HREF="repeat.html#:source_crnl">:source_crnl</A>|.  To be sure <A HREF="motion.html#it">it</A> is set right, <A HREF="diff.html#do">do</A> this before <A HREF="editing.html#writing">writing</A> the file:
+
+<B>	:setlocal fileformat=unix</B>
+
+When using &quot;<A HREF="os_dos.html#dos">dos</A>&quot; fileformat, lines are separated with CR-NL, two characters.
+The CR character causes various problems, better avoid this.
+
+==============================================================================
+
+Advance information about <A HREF="editing.html#writing">writing</A> Vim <A HREF="#script">script</A> is in |<A HREF="usr_50.html">usr_50.txt</A>|.
+
+Next chapter: |<A HREF="usr_42.html">usr_42.txt</A>|  Add new <A HREF="gui.html#menus">menus</A>
+
+Copyright: see |<A HREF="usr_01.html#manual-copyright">manual-copyright</A>|  vim:tw=78:ts=8:noet:ft=help:norl:
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

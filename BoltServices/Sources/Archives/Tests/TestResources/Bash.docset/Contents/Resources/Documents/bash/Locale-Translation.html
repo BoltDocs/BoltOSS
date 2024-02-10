@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Locale Translation</title>
+
+<meta name="description" content="Locale Translation (Bash Reference Manual)">
+<meta name="keywords" content="Locale Translation (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Quoting.html" rel="up" title="Quoting">
+<link href="ANSI_002dC-Quoting.html" rel="prev" title="ANSI-C Quoting">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<div class="subsubsection" id="Locale-Translation">
+<div class="header">
+<p>
+Previous: <a href="ANSI_002dC-Quoting.html" accesskey="p" rel="prev">ANSI-C Quoting</a>, Up: <a href="Quoting.html" accesskey="u" rel="up">Quoting</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Locale_002dSpecific-Translation"></span><h4 class="subsubsection">3.1.2.5 Locale-Specific Translation</h4>
+<span id="index-localization"></span>
+<span id="index-internationalization"></span>
+<span id="index-native-languages"></span>
+<span id="index-translation_002c-native-languages"></span>
+
+<p>Prefixing a double-quoted string with a dollar sign (&lsquo;<samp>$</samp>&rsquo;), such
+as <tt>$&quot;hello, world&quot;</tt>,
+will cause the string to be translated according to the current locale.
+The <code>gettext</code> infrastructure performs the lookup and 
+translation, using the <code>LC_MESSAGES</code>, <code>TEXTDOMAINDIR</code>,
+and <code>TEXTDOMAIN</code> shell variables, as explained below.
+See the gettext documentation for additional details not covered here.
+If the current locale is <code>C</code> or <code>POSIX</code>,
+if there are no translations available,
+of if the string is not translated,
+the dollar sign is ignored.
+Since this is a form of double quoting, the string remains double-quoted
+by default, whether or not it is translated and replaced.
+If the <code>noexpand_translation</code> option is enabled
+using the <code>shopt</code> builtin (see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>),
+translated strings are single-quoted instead of double-quoted.
+</p>
+<p>The rest of this section is a brief overview of how you use gettext to
+create translations for strings in a shell script named <var>scriptname</var>.
+There are more details in the gettext documentation.
+</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,394 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6B593CBA2B6DEED20042E688 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B593CBB2B6DEED20042E688 /* Main.storyboard */; };
+		712D75AD25285EBF006E34C3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99F6F62EA199149DBDDAE5B /* SceneDelegate.swift */; };
+		712D75B825285EC1006E34C3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99F69794F42F3CD90B542D4 /* AppDelegate.swift */; };
+		716D6AA62498A68400EE68B2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 716D6AA52498A68400EE68B2 /* LaunchScreen.storyboard */; };
+		716E2A1A26DB29A0002DE710 /* BoltFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 716E2A1926DB29A0002DE710 /* BoltFramework */; };
+		716E2A1B26DB29A0002DE710 /* BoltFramework in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 716E2A1926DB29A0002DE710 /* BoltFramework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		718B0149252978BA0060ACBC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 718B0148252978BA0060ACBC /* Assets.xcassets */; };
+		71C540CB25B9ADC100BAB830 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C540CA25B9ADC100BAB830 /* InitialViewController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		716E2A1C26DB29A1002DE710 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				716E2A1B26DB29A0002DE710 /* BoltFramework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		6B0DC7312AEE77F4004280C7 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
+		6B0DC7322AEE77F4004280C7 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
+		6B0DC7332AEE77F4004280C7 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
+		6B11970E28C5107300E5F710 /* Manual */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Manual; path = Thirdparty/licenseplist/Manual; sourceTree = "<group>"; };
+		6B593CBB2B6DEED20042E688 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		6B73D7942AEE7D1300CC98AB /* BuildScripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BuildScripts; sourceTree = "<group>"; };
+		6B73D7952AEE7D5A00CC98AB /* Bolt.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Bolt.xcconfig; sourceTree = "<group>"; };
+		6B73D7962AEE7D5A00CC98AB /* Bolt-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Bolt-Debug.xcconfig"; sourceTree = "<group>"; };
+		6B73D7972AEE7D5A00CC98AB /* Bolt-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Bolt-Release.xcconfig"; sourceTree = "<group>"; };
+		6B87A8112765CE35003731CD /* BoltLocalizations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BoltLocalizations; sourceTree = "<group>"; };
+		6BCE13DE2B63F20C008C5285 /* BoltUtils */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltUtils; sourceTree = "<group>"; };
+		6BD4A11927A5602A007FC756 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		6BD55A852AC65EE00096ACB9 /* BoltRxSwift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltRxSwift; sourceTree = "<group>"; };
+		6BDA6C2E2827D30700D932FD /* BoltServices */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltServices; sourceTree = "<group>"; };
+		6BE3738B28BA836000B18B0C /* BoltUnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = BoltUnitTests.xctestplan; path = Bolt/BoltUnitTests.xctestplan; sourceTree = "<group>"; };
+		712FC48F2517185700C31537 /* BoltDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BoltDebug.entitlements; sourceTree = "<group>"; };
+		715F6A26247B65F700AB1300 /* Bolt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bolt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		715F6A37247B65FA00AB1300 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		716D6AA52498A68400EE68B2 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		71799FC026DB28F6001A2811 /* BoltFramework */ = {isa = PBXFileReference; lastKnownFileType = text; path = BoltFramework; sourceTree = SOURCE_ROOT; };
+		718B0148252978BA0060ACBC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		71C540CA25B9ADC100BAB830 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
+		71CA68B024B8B04300EA9E0A /* BoltRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BoltRelease.entitlements; sourceTree = "<group>"; };
+		71EB39A227415E7200286761 /* license_plist.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = license_plist.yml; path = Thirdparty/licenseplist/license_plist.yml; sourceTree = "<group>"; };
+		B99F69794F42F3CD90B542D4 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		B99F6F62EA199149DBDDAE5B /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		715F6A23247B65F700AB1300 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				716E2A1A26DB29A0002DE710 /* BoltFramework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6B0DC7302AEE77F4004280C7 /* BuildConfigurations */ = {
+			isa = PBXGroup;
+			children = (
+				6B0DC7322AEE77F4004280C7 /* Project.xcconfig */,
+				6B0DC7332AEE77F4004280C7 /* Project-Debug.xcconfig */,
+				6B0DC7312AEE77F4004280C7 /* Project-Release.xcconfig */,
+				6B73D7952AEE7D5A00CC98AB /* Bolt.xcconfig */,
+				6B73D7962AEE7D5A00CC98AB /* Bolt-Debug.xcconfig */,
+				6B73D7972AEE7D5A00CC98AB /* Bolt-Release.xcconfig */,
+			);
+			path = BuildConfigurations;
+			sourceTree = "<group>";
+		};
+		715A5F0F247BCCD100CB39DD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				718B0148252978BA0060ACBC /* Assets.xcassets */,
+				716D6AA52498A68400EE68B2 /* LaunchScreen.storyboard */,
+				6B593CBB2B6DEED20042E688 /* Main.storyboard */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		715F6A1D247B65F700AB1300 = {
+			isa = PBXGroup;
+			children = (
+				6BE3738B28BA836000B18B0C /* BoltUnitTests.xctestplan */,
+				6BD4A11927A5602A007FC756 /* .swiftlint.yml */,
+				71EB39A227415E7200286761 /* license_plist.yml */,
+				6B11970E28C5107300E5F710 /* Manual */,
+				6B73D7942AEE7D1300CC98AB /* BuildScripts */,
+				6B0DC7302AEE77F4004280C7 /* BuildConfigurations */,
+				6BD55A852AC65EE00096ACB9 /* BoltRxSwift */,
+				6B87A8112765CE35003731CD /* BoltLocalizations */,
+				6BCE13DE2B63F20C008C5285 /* BoltUtils */,
+				6BDA6C2E2827D30700D932FD /* BoltServices */,
+				71799FC026DB28F6001A2811 /* BoltFramework */,
+				715F6A28247B65F700AB1300 /* Bolt */,
+				715F6A27247B65F700AB1300 /* Products */,
+				716E2A1826DB29A0002DE710 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		715F6A27247B65F700AB1300 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				715F6A26247B65F700AB1300 /* Bolt.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		715F6A28247B65F700AB1300 /* Bolt */ = {
+			isa = PBXGroup;
+			children = (
+				719B5ECC250C9CE900249759 /* Sources */,
+				715A5F0F247BCCD100CB39DD /* Resources */,
+				718DF53C2529D1C100F99CC4 /* Supporting Files */,
+			);
+			path = Bolt;
+			sourceTree = "<group>";
+		};
+		716E2A1826DB29A0002DE710 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		718DF53C2529D1C100F99CC4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				712FC48F2517185700C31537 /* BoltDebug.entitlements */,
+				71CA68B024B8B04300EA9E0A /* BoltRelease.entitlements */,
+				715F6A37247B65FA00AB1300 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		719B5ECC250C9CE900249759 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				B99F69794F42F3CD90B542D4 /* AppDelegate.swift */,
+				B99F6F62EA199149DBDDAE5B /* SceneDelegate.swift */,
+				71C540CA25B9ADC100BAB830 /* InitialViewController.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		715F6A25247B65F700AB1300 /* Bolt */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 715F6A3A247B65FA00AB1300 /* Build configuration list for PBXNativeTarget "Bolt" */;
+			buildPhases = (
+				715F6A22247B65F700AB1300 /* Sources */,
+				715F6A23247B65F700AB1300 /* Frameworks */,
+				715F6A24247B65F700AB1300 /* Resources */,
+				7108E1F426D6A1DF00EA2E20 /* Generate Thirdparty Licenses */,
+				7183887F247BFACE00DADD5D /* Run SwiftLint */,
+				716E2A1C26DB29A1002DE710 /* Embed Frameworks */,
+				719F7DA0252D599300E18C05 /* [Release Only] Version Tracking */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6B2056002B62B4A200F90415 /* PBXTargetDependency */,
+				716E2A1E26DB29A8002DE710 /* PBXTargetDependency */,
+			);
+			name = Bolt;
+			packageProductDependencies = (
+				716E2A1926DB29A0002DE710 /* BoltFramework */,
+			);
+			productName = Bolt;
+			productReference = 715F6A26247B65F700AB1300 /* Bolt.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		715F6A1E247B65F700AB1300 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 1200;
+				LastUpgradeCheck = 1500;
+				ORGANIZATIONNAME = "Bolt Project";
+				TargetAttributes = {
+					715F6A25247B65F700AB1300 = {
+						CreatedOnToolsVersion = 11.5;
+					};
+				};
+			};
+			buildConfigurationList = 715F6A21247B65F700AB1300 /* Build configuration list for PBXProject "Bolt" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = 715F6A1D247B65F700AB1300;
+			packageReferences = (
+			);
+			productRefGroup = 715F6A27247B65F700AB1300 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				715F6A25247B65F700AB1300 /* Bolt */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		715F6A24247B65F700AB1300 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				716D6AA62498A68400EE68B2 /* LaunchScreen.storyboard in Resources */,
+				6B593CBA2B6DEED20042E688 /* Main.storyboard in Resources */,
+				718B0149252978BA0060ACBC /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7108E1F426D6A1DF00EA2E20 /* Generate Thirdparty Licenses */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Thirdparty Licenses";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$SRCROOT/BuildScripts/gen_licenses.sh\"\n";
+		};
+		7183887F247BFACE00DADD5D /* Run SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run SwiftLint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$SRCROOT/BuildScripts/swiftlint.sh\"\n";
+		};
+		719F7DA0252D599300E18C05 /* [Release Only] Version Tracking */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Release Only] Version Tracking";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$SRCROOT/BuildScripts/version_tracking.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		715F6A22247B65F700AB1300 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				71C540CB25B9ADC100BAB830 /* InitialViewController.swift in Sources */,
+				712D75B825285EC1006E34C3 /* AppDelegate.swift in Sources */,
+				712D75AD25285EBF006E34C3 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6B2056002B62B4A200F90415 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 6B2055FF2B62B4A200F90415 /* ValidateStringsPlugin */;
+		};
+		716E2A1E26DB29A8002DE710 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 716E2A1D26DB29A8002DE710 /* BoltFramework */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		715F6A38247B65FA00AB1300 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B0DC7332AEE77F4004280C7 /* Project-Debug.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		715F6A39247B65FA00AB1300 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B0DC7312AEE77F4004280C7 /* Project-Release.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		715F6A3B247B65FA00AB1300 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B73D7962AEE7D5A00CC98AB /* Bolt-Debug.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		715F6A3C247B65FA00AB1300 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B73D7972AEE7D5A00CC98AB /* Bolt-Release.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		715F6A21247B65F700AB1300 /* Build configuration list for PBXProject "Bolt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				715F6A38247B65FA00AB1300 /* Debug */,
+				715F6A39247B65FA00AB1300 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		715F6A3A247B65FA00AB1300 /* Build configuration list for PBXNativeTarget "Bolt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				715F6A3B247B65FA00AB1300 /* Debug */,
+				715F6A3C247B65FA00AB1300 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6B2055FF2B62B4A200F90415 /* ValidateStringsPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "plugin:ValidateStringsPlugin";
+		};
+		716E2A1926DB29A0002DE710 /* BoltFramework */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BoltFramework;
+		};
+		716E2A1D26DB29A8002DE710 /* BoltFramework */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BoltFramework;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 715F6A1E247B65F700AB1300 /* Project object */;
+}

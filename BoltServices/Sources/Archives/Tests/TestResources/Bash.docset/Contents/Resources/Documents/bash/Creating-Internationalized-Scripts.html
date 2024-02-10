@@ -1,0 +1,175 @@
+<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Creating Internationalized Scripts</title>
+
+<meta name="description" content="Creating Internationalized Scripts (Bash Reference Manual)">
+<meta name="keywords" content="Creating Internationalized Scripts (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<span id="Creating-Internationalized-Scripts"></span><div class="header">
+<p>
+ &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<h4 class="node-heading">Creating Internationalized Scripts</h4>
+<span id="index-internationalized-scripts"></span>
+<span id="index-string-translations"></span>
+<p>Once you’ve marked the strings in your script
+that you want to translate using $"...",
+you create a gettext "template" file using the command
+</p>
+<div class="example">
+<pre class="example">bash --dump-po-strings <var>scriptname</var> &gt; <var>domain</var>.pot
+</pre></div>
+
+<p>The <var>domain</var> is your <em>message domain</em>.
+It’s just an arbitrary string that’s used to identify the files gettext
+needs, like a package or script name.
+It needs to be unique among all
+the message domains on systems where you install the translations, so
+gettext knows which translations correspond to your script.
+You’ll use the template file to create translations for each target language.
+The template file conventionally has the suffix ‘<samp>.pot</samp>’.
+</p>
+<p>You copy this template file to a separate file for each target language
+you want to support (called "PO" files, which use the suffix ‘<samp>.po</samp>’).
+PO files use various naming conventions, but
+when you are working to translate a template file into a particular
+language, you first copy the template file to a file whose name is the
+language you want to target, with the ‘<samp>.po</samp>’ suffix.
+For instance, the Spanish translations of your strings would be
+in a file named ‘<samp>es.po</samp>’, and to get started using a message
+domain named "example," you would run
+</p>
+<div class="example">
+<pre class="example">cp example.pot es.po
+</pre></div>
+
+<p>Ultimately, PO files are often named <var>domain</var>.po and installed in
+directories that contain multiple translation files for a particular language.
+</p>
+<p>Whichever naming convention you choose, you will need to translate the
+strings in the PO files into the appropriate languages.
+This has to be done manually.
+</p>
+<p>When you have the translations and PO files complete, you’ll use the
+gettext tools to produce what are called "MO" files, which are compiled
+versions of the PO files the gettext tools use to look up translations
+efficiently.
+MO files are also called "message catalog" files.
+You use the <code>msgfmt</code> program to do this.
+For instance, if you had a file with Spanish translations, you could run
+</p>
+<div class="example">
+<pre class="example">msgfmt -o es.mo es.po
+</pre></div>
+
+<p>to produce the corresponding MO file.
+</p>
+<p>Once you have the MO files, you decide where to install them and use the
+<code>TEXTDOMAINDIR</code> shell variable to tell the gettext tools where they are.
+Make sure to use the same message domain to name the MO files 
+as you did for the PO files when you install them.
+</p>
+<a class="dashAnchor" name="//apple_ref/Variable/LANG"></a><span id="index-LANG"></span>
+<a class="dashAnchor" name="//apple_ref/Variable/LC%5FMESSAGES"></a><span id="index-LC_005fMESSAGES"></span>
+<a class="dashAnchor" name="//apple_ref/Variable/TEXTDOMAIN"></a><span id="index-TEXTDOMAIN"></span>
+<a class="dashAnchor" name="//apple_ref/Variable/TEXTDOMAINDIR"></a><span id="index-TEXTDOMAINDIR"></span>
+<p>Your users will use the <code>LANG</code> or <code>LC_MESSAGES</code> shell variables to
+select the desired language.
+</p>
+<p>You set the <code>TEXTDOMAIN</code> variable to the script’s message domain.
+As above, you use the message domain to name your translation files.
+</p>
+<p>You, or possibly your users, set the <code>TEXTDOMAINDIR</code> variable to the
+name of a directory where the message catalog files are stored.
+If you install the message files into the system’s standard message catalog
+directory, you don’t need to worry about this variable.
+</p>
+<p>The directory where the message catalog files are stored varies between
+systems.
+Some use the message catalog selected by the <code>LC_MESSAGES</code>
+shell variable.
+Others create the name of the message catalog from the value of the
+<code>TEXTDOMAIN</code> shell variable, possibly adding the ‘<samp>.mo</samp>’ suffix.
+If you use the <code>TEXTDOMAIN</code> variable, you may need to set the
+<code>TEXTDOMAINDIR</code> variable to the location of the message catalog files,
+as above.
+It’s common to use both variables in this fashion:
+<code>$TEXTDOMAINDIR</code>/<code>$LC_MESSAGES</code>/LC_MESSAGES/<code>$TEXTDOMAIN</code>.mo.
+</p>
+<p>If you used that last convention, and you wanted to store the message
+catalog files with Spanish (es) and Esperanto (eo) translations into a
+local directory you use for custom translation files, you could run
+</p>
+<div class="example">
+<pre class="example">TEXTDOMAIN=example
+TEXTDOMAINDIR=/usr/local/share/locale
+
+cp es.mo ${TEXTDOMAINDIR}/es/LC_MESSAGES/${TEXTDOMAIN}.mo
+cp eo.mo ${TEXTDOMAINDIR}/eo/LC_MESSAGES/${TEXTDOMAIN}.mo
+</pre></div>
+
+<p>When all of this is done, and the message catalog files containing the
+compiled translations are installed in the correct location,
+your users will be able to see translated strings
+in any of the supported languages by setting the <code>LANG</code> or
+<code>LC_MESSAGES</code> environment variables before running your script.
+</p>
+<hr>
+<div class="header">
+<p>
+ &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+
+
+</body></html>

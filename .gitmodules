@@ -1,0 +1,3 @@
+[submodule "BoltLocalizations"]
+	path = BoltLocalizations
+	url = git@github.com:BoltDocs/BoltLocalizations.git

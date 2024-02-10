@@ -1,0 +1,2339 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: vim9</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: vim9</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="vim9.txt"></A><B>vim9.txt</B>*	For Vim version 9.0.  Last change: 2022 Jun 25
+
+
+		  VIM REFERENCE MANUAL	  by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+
+
+<A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> commands and expressions.			*<A NAME="Vim9"></A><B>Vim9</B>* *<A NAME="vim9"></A><B>vim9</B>*
+
+Most <A HREF="eval.html#expression">expression</A> help is in |<A HREF="eval.html">eval.txt</A>|.  This file is about the new <A HREF="syntax.html#syntax">syntax</A> and
+features in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>.
+
+
+
+1.  What is Vim9 script?		|<A HREF="#Vim9-script">Vim9-script</A>|
+2.  Differences				|<A HREF="#vim9-differences">vim9-differences</A>|
+3.  New style functions			|<A HREF="#fast-functions">fast-functions</A>|
+4.  Types				|<A HREF="#vim9-types">vim9-types</A>|
+5.  Namespace, Import and Export	|<A HREF="#vim9script">vim9script</A>|
+6.  Future work: classes		|<A HREF="#vim9-classes">vim9-classes</A>|
+
+9.  Rationale				|<A HREF="#vim9-rationale">vim9-rationale</A>|
+
+==============================================================================
+
+
+1. What is <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>?					*<A NAME="Vim9-script"></A><B>Vim9-script</B>*
+
+Vim <A HREF="usr_41.html#script">script</A> has been growing over time, while preserving backwards
+compatibility.  That means bad choices from the past often can't be changed
+and compatibility with <A HREF="intro.html#Vi">Vi</A> restricts possible solutions.  Execution is quite
+slow, each line is parsed every time <A HREF="motion.html#it">it</A> is executed.
+
+The main goal of <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> is to drastically improve performance.  This is
+accomplished by compiling commands into instructions that can be efficiently
+executed.  An increase in execution speed of 10 to 100 times can be expected.
+
+A secondary goal is to avoid Vim-specific constructs and get closer to
+commonly used programming languages, such <A HREF="motion.html#as">as</A> JavaScript, TypeScript and Java.
+
+The performance improvements can only be achieved by not being 100&#37; backwards
+compatible.  For example, making function arguments available in the &quot;a:&quot;
+dictionary adds quite a lot of overhead.  In a <A HREF="#Vim9">Vim9</A> function this dictionary
+is not available.  Other differences are more subtle, such <A HREF="motion.html#as">as</A> how <A HREF="message.html#errors">errors</A> are
+handled.
+
+The <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> <A HREF="syntax.html#syntax">syntax</A> and semantics are used in:
+- a function defined with the `:def` command
+- a <A HREF="usr_41.html#script">script</A> file where the first command is `vim9script`
+- an <A HREF="autocmd.html#autocommand">autocommand</A> defined in the context of the above
+- a command prefixed with the `vim9cmd` command modifier
+
+When using `:function` in a <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> file the legacy <A HREF="syntax.html#syntax">syntax</A> is used, with
+the highest |<A HREF="eval.html#scriptversion">scriptversion</A>|.  However, this can be confusing and is therefore
+discouraged.
+
+<A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> and legacy Vim <A HREF="usr_41.html#script">script</A> can be mixed.  There is no requirement to
+rewrite old scripts, they keep working <A HREF="motion.html#as">as</A> before.  You may want to use a few
+`:def` <A HREF="eval.html#functions">functions</A> for code that needs to be fast.
+
+
+:vim9[cmd] {cmd}				*<A NAME=":vim9"></A><B>:vim9</B>* *<A NAME=":vim9cmd"></A><B>:vim9cmd</B>* *<A NAME="E1164"></A><B>E1164</B>*
+		Evaluate and execute {cmd} using <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> <A HREF="syntax.html#syntax">syntax</A> and
+		semantics.  Useful when typing a command and in a legacy
+		<A HREF="usr_41.html#script">script</A> or function.
+
+
+:leg[acy] {cmd}					*<A NAME=":leg"></A><B>:leg</B>* *<A NAME=":legacy"></A><B>:legacy</B>* *<A NAME="E1189"></A><B>E1189</B>* *<A NAME="E1234"></A><B>E1234</B>*
+		Evaluate and execute {cmd} using legacy <A HREF="usr_41.html#script">script</A> <A HREF="syntax.html#syntax">syntax</A> and
+		semantics.  Only useful in a <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> or a <A HREF="#:def">:def</A> function.
+		Note that {cmd} cannot use local <A HREF="eval.html#variables">variables</A>, since <A HREF="motion.html#it">it</A> is parsed
+		with legacy <A HREF="eval.html#expression">expression</A> <A HREF="syntax.html#syntax">syntax</A>.
+
+==============================================================================
+
+
+2. Differences from legacy Vim <A HREF="usr_41.html#script">script</A>			*<A NAME="vim9-differences"></A><B>vim9-differences</B>*
+
+<B><FONT COLOR="PURPLE">Overview </FONT></B>
+
+							*<A NAME="E1146"></A><B>E1146</B>*
+Brief summary of the differences you will most often encounter when using <A HREF="#Vim9">Vim9</A>
+<A HREF="usr_41.html#script">script</A> and `:def` <A HREF="eval.html#functions">functions</A>; details are below:
+- Comments start with #, not &quot;:
+<B>	echo "hello"   # comment</B>
+- Using a <A HREF="intro.html#backslash">backslash</A> for line continuation is hardly ever needed:
+<B>	echo "hello "</B>
+<B>	     .. yourName</B>
+<B>	     .. ", how are you?"</B>
+- White space is required in many places to improve readability.
+
+- Assign values without `:let` *<A NAME="E1126"></A><B>E1126</B>* , declare <A HREF="eval.html#variables">variables</A> with `:var`:
+<B>	var count = 0</B>
+<B>	count += 3</B>
+- Constants can be declared with `:final` and `:const`:
+<B>	final matches = []		  # add to the list later</B>
+<B>	const names = ['Betty', 'Peter']  # cannot be changed</B>
+- `:final` cannot be used <A HREF="motion.html#as">as</A> an abbreviation of `:finally`.
+- Variables and <A HREF="eval.html#functions">functions</A> are <A HREF="map.html#script-local">script-local</A> by default.
+- Functions are declared with argument types and return type:
+<B>	def CallMe(count: number, message: string): bool</B>
+- Call <A HREF="eval.html#functions">functions</A> without `:call`:
+<B>	writefile(['done'], 'file.txt')</B>
+- You cannot use old <A HREF="intro.html#Ex">Ex</A> commands:
+	`:Print`
+	`:append`
+	`:change`
+	`:d`  directly followed by '<A HREF="change.html#d">d</A>' or '<A HREF="change.html#p">p</A>'.
+	`:insert`
+	`:k`
+	`:mode`
+	`:open`
+	`:s`  with only flags
+	`:t`
+  	`:xit`
+- Some commands, especially those used for flow <A HREF="intro.html#control">control</A>, cannot be shortened.
+
+  E.g., `:throw` cannot be written <A HREF="motion.html#as">as</A> `:th`. *<A NAME="E839"></A><B>E839</B>*
+- You cannot use curly-braces names.
+- A range before a command must be prefixed with a colon:
+<B>	:%s/this/that</B>
+- Executing a <A HREF="sponsor.html#register">register</A> with &quot;<A HREF="eval.html#@r">@r</A>&quot; does not work, you can prepend a colon or use
+  `:exe`:
+<B>  	:exe @a</B>
+- Unless mentioned specifically, the highest |<A HREF="eval.html#scriptversion">scriptversion</A>| is used.
+- When defining an <A HREF="eval.html#expression">expression</A> <A HREF="map.html#mapping">mapping</A>, the <A HREF="eval.html#expression">expression</A> will be evaluated in the
+  context of the <A HREF="usr_41.html#script">script</A> where <A HREF="motion.html#it">it</A> was defined.
+
+
+<B><FONT COLOR="PURPLE">Comments starting with # </FONT></B>
+
+In legacy Vim <A HREF="usr_41.html#script">script</A> comments start with double <A HREF="change.html#quote.">quote.</A>  In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>
+comments start with #.
+<B>	# declarations</B>
+<B>	var count = 0  # number of occurrences</B>
+
+The reason is that a double <A HREF="change.html#quote">quote</A> can also be the start of a <A HREF="eval.html#string">string</A>. In many
+places, especially halfway through an <A HREF="eval.html#expression">expression</A> with a line break, it's hard
+to tell what the meaning is, since both a <A HREF="eval.html#string">string</A> and a comment can be followed
+by arbitrary text.  To avoid confusion only # comments are recognized.  This
+is the same <A HREF="motion.html#as">as</A> in shell scripts and <A HREF="if_pyth.html#Python">Python</A> programs.
+
+In <A HREF="intro.html#Vi">Vi</A> # is a command to <A HREF="eval.html#list">list</A> text with numbers.  In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> you can use
+`:number` for that.
+<B>	:101 number</B>
+
+To improve readability there must be a space between a command and the #
+that starts a comment:
+<B>	var name = value # comment</B>
+<B>	var name = value# error!</B>
+
+ 							*<A NAME="E1170"></A><B>E1170</B>*
+Do not start a comment with #{, <A HREF="motion.html#it">it</A> looks like the legacy dictionary literal
+and produces an error where this might be confusing.  #{{ or #{{{ are OK,
+these can be used to start a fold.
+
+In legacy Vim <A HREF="usr_41.html#script">script</A> # is also used for the alternate file name.  In <A HREF="#Vim9">Vim9</A>
+<A HREF="usr_41.html#script">script</A> you need to use &#37;&#37; instead.  Instead of ## use &#37;&#37;&#37; (stands for all
+arguments).
+
+
+<B><FONT COLOR="PURPLE">Vim9 functions </FONT></B>
+
+							*<A NAME="E1099"></A><B>E1099</B>*
+A function defined with `:def` is compiled.  Execution is many times faster,
+often 10 to 100 times.
+
+Many <A HREF="message.html#errors">errors</A> are already found when compiling, before the function is executed.
+The <A HREF="syntax.html#syntax">syntax</A> is strict, to enforce code that is <A HREF="starting.html#easy">easy</A> to read and understand.
+
+Compilation is done when any of these is encountered:
+- the first time the function is called
+- when the `:defcompile` command is encountered in the <A HREF="usr_41.html#script">script</A> after the
+  function was defined
+- `:disassemble` is used for the function.
+- a function that is compiled calls the function or uses <A HREF="motion.html#it">it</A> <A HREF="motion.html#as">as</A> a function
+  reference (so that the argument and return types can be checked)
+
+						*<A NAME="E1091"></A><B>E1091</B>* *<A NAME="E1191"></A><B>E1191</B>*
+If compilation fails <A HREF="motion.html#it">it</A> is not tried again on the next call, instead this
+error is given: &quot;E1091: Function is not compiled: {name}&quot;.
+Compilation will fail when encountering a user command that has not been
+created yet.  In this <A HREF="change.html#case">case</A> you can call `execute()` to invoke <A HREF="motion.html#it">it</A> at runtime.
+<B>	def MyFunc()</B>
+<B>	  execute('DefinedLater')</B>
+<B>	enddef</B>
+
+`:def` has no <A HREF="options.html#options">options</A> like `:function` does: &quot;range&quot;, &quot;abort&quot;, &quot;<A HREF="eval.html#dict">dict</A>&quot; or
+&quot;<A HREF="eval.html#closure">closure</A>&quot;.  A `:def` function always aborts on an error (unless `:silent!` was
+used for the command or the error was caught a `:try` block), does not get a
+range passed, cannot be a &quot;<A HREF="eval.html#dict">dict</A>&quot; function, and can always be a <A HREF="eval.html#closure">closure</A>.
+
+						*<A NAME="vim9-no-dict-function"></A><B>vim9-no-dict-function</B>*
+Later classes will be added, which replaces the &quot;<A HREF="eval.html#dict">dict</A> function&quot; mechanism.
+For now you will need to pass the dictionary explicitly:
+<B>	def DictFunc(self: dict&lt;any&gt;, arg: string)</B>
+<B>	   echo self[arg]</B>
+<B>	enddef</B>
+<B>	var ad = {item: 'value', func: DictFunc}</B>
+<B>	ad.func(ad, 'item')</B>
+
+You can call a legacy <A HREF="eval.html#dict">dict</A> function though:
+<B>	func Legacy() dict</B>
+<B>	  echo self.value</B>
+<B>	endfunc</B>
+<B>	def CallLegacy()</B>
+<B>	  var d = {func: Legacy, value: 'text'}</B>
+<B>	  d.func()</B>
+<B>	enddef</B>
+
+ 						*<A NAME="E1096"></A><B>E1096</B>* *<A NAME="E1174"></A><B>E1174</B>* *<A NAME="E1175"></A><B>E1175</B>*
+The argument types and return type need to be specified.  The &quot;any&quot; type can
+be used, type checking will then be done at runtime, like with legacy
+<A HREF="eval.html#functions">functions</A>.
+
+							*<A NAME="E1106"></A><B>E1106</B>*
+Arguments are accessed by name, without &quot;a:&quot;, just like any other language.
+There is no &quot;a:&quot; dictionary or &quot;<A HREF="eval.html#a:000">a:000</A>&quot; <A HREF="eval.html#list">list</A>.
+
+			*<A NAME="vim9-variable-arguments"></A><B>vim9-variable-arguments</B>* *<A NAME="E1055"></A><B>E1055</B>* *<A NAME="E1160"></A><B>E1160</B>* *<A NAME="E1180"></A><B>E1180</B>*
+Variable arguments are defined <A HREF="motion.html#as">as</A> the last argument, with a name and have a
+<A HREF="eval.html#list">list</A> type, similar to TypeScript.  For example, a <A HREF="eval.html#list">list</A> of numbers:
+<B>	def MyFunc(...itemlist: list&lt;number&gt;)</B>
+<B>	   for item in itemlist</B>
+<B>	     ...</B>
+
+When a function argument is optional (it has a default value) passing `v:none`
+<A HREF="motion.html#as">as</A> the argument results in using the default value.  This is useful when you
+want to specify a value for an argument that comes after an argument that
+should use its default value.  Example:
+<B>	def MyFunc(one = 'one', last = 'last')</B>
+<B>	  ...</B>
+<B>	enddef</B>
+<B>	MyFunc(v:none, 'LAST')  # first argument uses default value 'one'</B>
+ 
+
+					*<A NAME="vim9-ignored-argument"></A><B>vim9-ignored-argument</B>* *<A NAME="E1181"></A><B>E1181</B>*
+The argument &quot;<A HREF="motion.html#_">_</A>&quot; (an underscore) can be used to ignore the argument.  This is
+most useful in callbacks where you don't need <A HREF="motion.html#it">it</A>, but <A HREF="diff.html#do">do</A> need to give an
+argument to match the call.  E.g. when using <A HREF="builtin.html#map()">map()</A> two arguments are passed,
+the key and the value, to ignore the key:
+<B>	map(numberList, (_, v) =&gt; v * 2)</B>
+There is no error for using the &quot;<A HREF="motion.html#_">_</A>&quot; argument multiple times.  No type needs to
+be given.
+
+
+<B><FONT COLOR="PURPLE">Functions and variables are script-local by default </FONT></B>
+
+							*<A NAME="vim9-scopes"></A><B>vim9-scopes</B>*
+When using `:function` or `:def` to specify a new function at the <A HREF="usr_41.html#script">script</A> level
+in a <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>, the function is local to the <A HREF="usr_41.html#script">script</A>.  Like prefixing &quot;s:&quot; in
+legacy <A HREF="usr_41.html#script">script</A>.  To define a global function or variable the &quot;<A HREF="eval.html#g:">g:</A>&quot; prefix must
+be used.  For <A HREF="eval.html#functions">functions</A> in a <A HREF="usr_41.html#script">script</A> that is to be imported and in an <A HREF="eval.html#autoload">autoload</A>
+<A HREF="usr_41.html#script">script</A> &quot;export&quot; needs to be used for those to be used elsewhere.
+<B>	def ThisFunction()          # script-local</B>
+<B>	def g:ThatFunction()        # global</B>
+<B>	export def Function()       # for import and import autoload</B>
+
+ 						*<A NAME="E1058"></A><B>E1058</B>* *<A NAME="E1075"></A><B>E1075</B>*
+When using `:function` or `:def` to specify a nested function inside a `:def`
+function and no namespace was given, this nested function is local to the code
+block <A HREF="motion.html#it">it</A> is defined in.  It cannot be used in `function()` with a <A HREF="eval.html#string">string</A>
+argument, pass the function reference itself:
+<B>	def Outer()</B>
+<B>	  def Inner()</B>
+<B>	    echo 'inner'</B>
+<B>	  enddef</B>
+<B>	  var Fok = function(Inner)     # OK</B>
+<B>	  var Fbad = function('Inner')  # does not work</B>
+
+Detail: this is because &quot;Inner&quot; will actually become a function reference to a
+function with a generated name.
+
+It is not possible to define a <A HREF="map.html#script-local">script-local</A> function in a function.  You can
+define a local function and assign <A HREF="motion.html#it">it</A> to a <A HREF="map.html#script-local">script-local</A> funcref (it must have
+been declared at the <A HREF="usr_41.html#script">script</A> level).  It is possible to define a global
+function by using the &quot;<A HREF="eval.html#g:">g:</A>&quot; prefix.
+
+When referring to a function and no &quot;s:&quot; or &quot;<A HREF="eval.html#g:">g:</A>&quot; prefix is used, Vim will
+search for the function:
+- in the function scope, in block scopes
+- in the <A HREF="usr_41.html#script">script</A> scope
+
+Imported <A HREF="eval.html#functions">functions</A> are found with the prefix from the `:import` command.
+
+Since a <A HREF="map.html#script-local">script-local</A> function reference can be used without &quot;s:&quot; the name must
+start with an upper <A HREF="change.html#case">case</A> <A HREF="print.html#letter">letter</A> even when using the &quot;s:&quot; prefix.  In legacy
+<A HREF="usr_41.html#script">script</A> &quot;s:funcref&quot; could be used, because <A HREF="motion.html#it">it</A> could not be referred to with
+&quot;funcref&quot;.  In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> <A HREF="motion.html#it">it</A> can, therefore &quot;s:Funcref&quot; must be used to avoid
+that the name interferes with builtin <A HREF="eval.html#functions">functions</A>.
+
+							*<A NAME="vim9-s-namespace"></A><B>vim9-s-namespace</B>*
+The use of the &quot;s:&quot; prefix is not supported at the <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> level.  All
+<A HREF="eval.html#functions">functions</A> and <A HREF="eval.html#variables">variables</A> without a prefix are <A HREF="map.html#script-local">script-local</A>.
+
+In <A HREF="#:def">:def</A> <A HREF="eval.html#functions">functions</A> the use of &quot;s:&quot; depends on the <A HREF="usr_41.html#script">script</A>: Script-local
+<A HREF="eval.html#variables">variables</A> and <A HREF="eval.html#functions">functions</A> in a legacy <A HREF="usr_41.html#script">script</A> <A HREF="diff.html#do">do</A> use &quot;s:&quot;, while in a <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>
+they <A HREF="diff.html#do">do</A> not use &quot;s:&quot;.  This matches what you see in the rest of the file.
+
+In legacy <A HREF="eval.html#functions">functions</A> the use of &quot;s:&quot; for <A HREF="usr_41.html#script">script</A> items is required, <A HREF="motion.html#as">as</A> before.
+No matter if the <A HREF="usr_41.html#script">script</A> is <A HREF="#Vim9">Vim9</A> or legacy.
+
+In all cases the function must be defined before used.  That is when <A HREF="motion.html#it">it</A> is
+called, when `:defcompile` causes <A HREF="motion.html#it">it</A> to be compiled, or when code that calls
+<A HREF="motion.html#it">it</A> is being compiled (to figure out the return type).
+
+The result is that <A HREF="eval.html#functions">functions</A> and <A HREF="eval.html#variables">variables</A> without a namespace can usually be
+found in the <A HREF="usr_41.html#script">script</A>, either defined there or imported.  Global <A HREF="eval.html#functions">functions</A> and
+<A HREF="eval.html#variables">variables</A> could be defined anywhere (good luck finding out where!  You can
+often see where <A HREF="motion.html#it">it</A> was last set using |<A HREF="various.html#:verbose">:verbose</A>|).
+
+							*<A NAME="E1102"></A><B>E1102</B>*
+Global <A HREF="eval.html#functions">functions</A> can still be defined and deleted at nearly any time.  In
+<A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> <A HREF="map.html#script-local">script-local</A> <A HREF="eval.html#functions">functions</A> are defined once when the <A HREF="usr_41.html#script">script</A> is sourced
+and cannot be deleted or replaced by itself (it can be by reloading the
+<A HREF="usr_41.html#script">script</A>).
+
+When compiling a function and a function call is encountered for a function
+that is not (yet) defined, the |<A HREF="autocmd.html#FuncUndefined">FuncUndefined</A>| <A HREF="autocmd.html#autocommand">autocommand</A> is not triggered.
+You can use an <A HREF="eval.html#autoload">autoload</A> function if needed, or call a legacy function and have
+|<A HREF="autocmd.html#FuncUndefined">FuncUndefined</A>| triggered there.
+
+
+<B><FONT COLOR="PURPLE">Reloading a Vim9 script clears functions and variables by default </FONT></B>
+
+						*<A NAME="vim9-reload"></A><B>vim9-reload</B>* *<A NAME="E1149"></A><B>E1149</B>* *<A NAME="E1150"></A><B>E1150</B>*
+When loading a legacy Vim <A HREF="usr_41.html#script">script</A> a second time nothing is removed, the
+commands will replace existing <A HREF="eval.html#variables">variables</A> and <A HREF="eval.html#functions">functions</A>, create new ones, and
+leave removed things hanging around.
+
+When loading a <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> a second time all existing <A HREF="map.html#script-local">script-local</A> <A HREF="eval.html#functions">functions</A>
+and <A HREF="eval.html#variables">variables</A> are deleted, thus you start with a clean slate.  This is useful
+if you are developing a <A HREF="usr_05.html#plugin">plugin</A> and want to try a new version.  If you renamed
+something you don't have to worry about the old name still hanging around.
+
+If you <A HREF="diff.html#do">do</A> want to keep items, use:
+<B>	vim9script noclear</B>
+
+You want to use this in scripts that use a `finish` command to bail out at
+some point when loaded again.  E.g. when a buffer local option is set to a
+function, the function does not need to be defined more than once:
+<B>	vim9script noclear</B>
+<B>	setlocal completefunc=SomeFunc</B>
+<B>	if exists('*SomeFunc')</B>
+<B>	  finish</B>
+<B>	endif</B>
+<B>	def SomeFunc()</B>
+<B>	....</B>
+
+
+<B><FONT COLOR="PURPLE">Variable declarations with :var, :final and :const </FONT></B>
+
+				*<A NAME="vim9-declaration"></A><B>vim9-declaration</B>* *<A NAME=":var"></A><B>:var</B>* *<A NAME="E1079"></A><B>E1079</B>*
+
+				*<A NAME="E1017"></A><B>E1017</B>* *<A NAME="E1020"></A><B>E1020</B>* *<A NAME="E1054"></A><B>E1054</B>* *<A NAME="E1087"></A><B>E1087</B>* *<A NAME="E1108"></A><B>E1108</B>* *<A NAME="E1124"></A><B>E1124</B>*
+Local <A HREF="eval.html#variables">variables</A> need to be declared with `:var`.  Local constants need to be
+declared with `:final` or `:const`.  We refer to both <A HREF="motion.html#as">as</A> &quot;<A HREF="eval.html#variables">variables</A>&quot; in this
+section.
+
+Variables can be local to a <A HREF="usr_41.html#script">script</A>, function or code block:
+<B>	vim9script</B>
+<B>	var script_var = 123</B>
+<B>	def SomeFunc()</B>
+<B>	  var func_var = script_var</B>
+<B>	  if cond</B>
+<B>	    var block_var = func_var</B>
+<B>	  ...</B>
+
+The <A HREF="eval.html#variables">variables</A> are only visible in the block where they are defined and nested
+blocks.  Once the block ends the variable is no longer accessible:
+<B>	if cond</B>
+<B>	   var inner = 5</B>
+<B>	else</B>
+<B>	   var inner = 0</B>
+<B>	endif</B>
+<B>	echo inner  # Error!</B>
+
+The declaration must be done earlier:
+<B>	var inner: number</B>
+<B>	if cond</B>
+<B>	   inner = 5</B>
+<B>	else</B>
+<B>	   inner = 0</B>
+<B>	endif</B>
+<B>	echo inner</B>
+
+Although this is shorter and faster for simple values:
+<B>	var inner = 0</B>
+<B>	if cond</B>
+<B>	   inner = 5</B>
+<B>	endif</B>
+<B>	echo inner</B>
+
+ 							*<A NAME="E1025"></A><B>E1025</B>* *<A NAME="E1128"></A><B>E1128</B>*
+To intentionally hide a variable from code that follows, a block can be
+used:
+<B>	{</B>
+<B>	   var temp = 'temp'</B>
+<B>	   ...</B>
+<B>	}</B>
+<B>	echo temp  # Error!</B>
+
+This is especially useful in a user command:
+
+<B>	command -range Rename {</B>
+<B>		 var save = @a</B>
+<B>		 @a = 'some expression'</B>
+<B>		 echo 'do something with ' .. @a</B>
+<B>		 @a = save</B>
+<B>	    }</B>
+
+And with <A HREF="autocmd.html#autocommands">autocommands</A>:
+
+<B>   au BufWritePre *.go {</B>
+<B>		 var save = winsaveview()</B>
+<B>		 silent! exe ':%! some formatting command'</B>
+<B>		 winrestview(save)</B>
+<B>	   }</B>
+
+Although using a <A HREF="#:def">:def</A> function probably works better.
+
+
+				*<A NAME="E1022"></A><B>E1022</B>* *<A NAME="E1103"></A><B>E1103</B>* *<A NAME="E1130"></A><B>E1130</B>* *<A NAME="E1131"></A><B>E1131</B>* *<A NAME="E1133"></A><B>E1133</B>*
+
+				*<A NAME="E1134"></A><B>E1134</B>*
+Declaring a variable with a type but without an initializer will initialize to
+<A HREF="#false">false</A> (for bool), empty (for <A HREF="eval.html#string">string</A>, <A HREF="eval.html#list">list</A>, <A HREF="eval.html#dict">dict</A>, etc.) or zero (for number,
+any, etc.).  This matters especially when using the &quot;any&quot; type, the value will
+default to the number zero.  For example, when declaring a <A HREF="eval.html#list">list</A>, items can be
+added:
+<B>	var myList: list&lt;number&gt;</B>
+<B>	myList-&gt;add(7)</B>
+
+Initializing a variable to a <A HREF="#null">null</A> value, e.g. `null_list`, differs from not
+initializing the variable.  This throws an error:
+<B>	var myList = null_list</B>
+<B>	myList-&gt;add(7)  # E1130: Cannot add to null list</B>
+
+
+ 						*<A NAME="E1016"></A><B>E1016</B>* *<A NAME="E1052"></A><B>E1052</B>* *<A NAME="E1066"></A><B>E1066</B>*
+In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> `:let` cannot be used.  An existing variable is assigned to
+without any command.  The same for global, <A HREF="windows.html#window">window</A>, <A HREF="intro.html#tab">tab</A>, buffer and Vim
+<A HREF="eval.html#variables">variables</A>, because they are not really declared.  Those can also be deleted
+with `:unlet`.
+
+							*<A NAME="E1065"></A><B>E1065</B>*
+You cannot use `:va` to declare a variable, <A HREF="motion.html#it">it</A> must be written with the full
+name `:var`.  Just to make sure <A HREF="motion.html#it">it</A> is <A HREF="starting.html#easy">easy</A> to read.
+
+							*<A NAME="E1178"></A><B>E1178</B>*
+`:lockvar` does not work on local <A HREF="eval.html#variables">variables</A>.  Use `:const` and `:final`
+instead.
+
+The `exists()` and `exists_compiled()` <A HREF="eval.html#functions">functions</A> <A HREF="diff.html#do">do</A> not work on local <A HREF="eval.html#variables">variables</A>
+or arguments.
+
+				*<A NAME="E1006"></A><B>E1006</B>* *<A NAME="E1041"></A><B>E1041</B>* *<A NAME="E1167"></A><B>E1167</B>* *<A NAME="E1168"></A><B>E1168</B>* *<A NAME="E1213"></A><B>E1213</B>*
+Variables, <A HREF="eval.html#functions">functions</A> and function arguments cannot shadow previously defined
+or imported <A HREF="eval.html#variables">variables</A> and <A HREF="eval.html#functions">functions</A> in the same <A HREF="usr_41.html#script">script</A> file.
+Variables may shadow <A HREF="intro.html#Ex">Ex</A> commands, rename the variable if needed.
+
+Global <A HREF="eval.html#variables">variables</A> must be prefixed with &quot;<A HREF="eval.html#g:">g:</A>&quot;, also at the <A HREF="usr_41.html#script">script</A> level.
+<B>	vim9script</B>
+<B>	var script_local = 'text'</B>
+<B>	g:global = 'value'</B>
+<B>	var Funcref = g:ThatFunction</B>
+
+Global <A HREF="eval.html#functions">functions</A> must be prefixed with &quot;<A HREF="eval.html#g:">g:</A>&quot;:
+<B>	vim9script</B>
+<B>	def g:GlobalFunc(): string</B>
+<B>	  return 'text'</B>
+<B>	enddef</B>
+<B>	echo g:GlobalFunc()</B>
+The &quot;<A HREF="eval.html#g:">g:</A>&quot; prefix is not needed for auto-load <A HREF="eval.html#functions">functions</A>.
+
+
+					*<A NAME="vim9-function-defined-later"></A><B>vim9-function-defined-later</B>*
+Although global <A HREF="eval.html#functions">functions</A> can be called without the &quot;<A HREF="eval.html#g:">g:</A>&quot; prefix, they must
+exist when compiled.  By adding the &quot;<A HREF="eval.html#g:">g:</A>&quot; prefix the function can be defined
+later.  Example:
+<B>	def CallPluginFunc()</B>
+<B>	  if exists('g:loaded_plugin')</B>
+<B>	    g:PluginFunc()</B>
+<B>	  endif</B>
+<B>	enddef</B>
+
+If you <A HREF="diff.html#do">do</A> <A HREF="motion.html#it">it</A> like this, you get an error at compile time that &quot;PluginFunc&quot;
+does not exist, even when &quot;g:loaded_plugin&quot; does not exist:
+<B>	def CallPluginFunc()</B>
+<B>	  if exists('g:loaded_plugin')</B>
+<B>	    PluginFunc()   # Error - function not found</B>
+<B>	  endif</B>
+<B>	enddef</B>
+
+You can use <A HREF="builtin.html#exists_compiled()">exists_compiled()</A> to avoid the error, but then the function would
+not be called, even when &quot;g:loaded_plugin&quot; is defined later:
+<B>	def CallPluginFunc()</B>
+<B>	  if exists_compiled('g:loaded_plugin')</B>
+<B>	    PluginFunc()   # Function may never be called</B>
+<B>	  endif</B>
+<B>	enddef</B>
+
+Since `&amp;opt = value` is now assigning a value to option &quot;opt&quot;, &quot;<A HREF="change.html#:&amp;">:&amp;</A>&quot; cannot be
+used to repeat a `:substitute` command.
+
+							*<A NAME="vim9-unpack-ignore"></A><B>vim9-unpack-ignore</B>*
+For an unpack assignment the underscore can be used to ignore a <A HREF="eval.html#list">list</A> item,
+similar to how a function argument can be ignored:
+<B>	[a, _, c] = theList</B>
+To ignore any remaining items:
+<B>	[a, b; _] = longList</B>
+
+ 							*<A NAME="E1163"></A><B>E1163</B>* *<A NAME="E1080"></A><B>E1080</B>*
+Declaring more than one variable at a time, using the unpack <A HREF="intro.html#notation">notation</A>, is
+possible.  Each variable can have a type or infer <A HREF="motion.html#it">it</A> from the value:
+<B>	var [v1: number, v2] = GetValues()</B>
+Use this only when there is a <A HREF="eval.html#list">list</A> with values, declaring one variable per
+line is much easier to read and change later.
+
+
+<B><FONT COLOR="PURPLE">Constants </FONT></B>
+
+						*<A NAME="vim9-const"></A><B>vim9-const</B>* *<A NAME="vim9-final"></A><B>vim9-final</B>*
+How constants work varies between languages.  Some consider a variable that
+can't be assigned another value a constant.  JavaScript is an example.  Others
+also make the value immutable, thus when a constant uses a <A HREF="eval.html#list">list</A>, the <A HREF="eval.html#list">list</A>
+cannot be changed.  In <A HREF="#Vim9">Vim9</A> we can use both.
+
+							*<A NAME="E1021"></A><B>E1021</B>*
+`:const` is used for making both the variable and the value a constant.  Use
+this for composite structures that you want to make sure will not be modified.
+Example:
+<B>	const myList = [1, 2]</B>
+<B>	myList = [3, 4]		# Error!</B>
+<B>	myList[0] = 9		# Error!</B>
+<B>	myList-&gt;add(3)		# Error!</B>
+
+ 							*<A NAME=":final"></A><B>:final</B>* *<A NAME="E1125"></A><B>E1125</B>*
+`:final` is used for making only the variable a constant, the value can be
+changed.  This is well known from Java.  Example:
+<B>	final myList = [1, 2]</B>
+<B>	myList = [3, 4]		# Error!</B>
+<B>	myList[0] = 9		# OK</B>
+<B>	myList-&gt;add(3)		# OK</B>
+
+It is common to write constants <A HREF="motion.html#as">as</A> ALL_CAPS, but you don't have to.
+
+The constant only applies to the value itself, not what <A HREF="motion.html#it">it</A> refers to.
+<B>	final females = ["Mary"]</B>
+<B>	const NAMES = [["John", "Peter"], females]</B>
+<B>	NAMES[0] = ["Jack"]     # Error!</B>
+<B>	NAMES[0][0] = "Jack"    # Error!</B>
+<B>	NAMES[1] = ["Emma"]     # Error!</B>
+<B>	NAMES[1][0] = "Emma"    # OK, now females[0] == "Emma"</B>
+
+
+<B><FONT COLOR="PURPLE">Omitting :call and :eval </FONT></B>
+
+							*<A NAME="E1190"></A><B>E1190</B>*
+Functions can be called without `:call`:
+<B>	writefile(lines, 'file')</B>
+Using `:call` is still possible, but this is discouraged.
+
+A <A HREF="eval.html#method">method</A> call without `eval` is possible, so long <A HREF="motion.html#as">as</A> the start is an
+identifier or can't be an <A HREF="intro.html#Ex">Ex</A> command.  For a function either &quot;<A HREF="motion.html#(">(</A>&quot; or &quot;<A HREF="eval.html#-&gt;">-&gt;</A>&quot; must
+be following, without a line break.  Examples:
+<B>	myList-&gt;add(123)</B>
+<B>	g:myList-&gt;add(123)</B>
+<B>	[1, 2, 3]-&gt;Process()</B>
+<B>	{a: 1, b: 2}-&gt;Process()</B>
+<B>	"foobar"-&gt;Process()</B>
+<B>	("foobar")-&gt;Process()</B>
+<B>	'foobar'-&gt;Process()</B>
+<B>	('foobar')-&gt;Process()</B>
+
+In the rare <A HREF="change.html#case">case</A> there is ambiguity between a function name and an <A HREF="intro.html#Ex">Ex</A> command,
+prepend &quot;<A HREF="cmdline.html#:">:</A>&quot; to make clear you want to use the <A HREF="intro.html#Ex">Ex</A> command.  For example, there
+is both the `:substitute` command and the `substitute()` function.  When the
+line starts with `substitute(` this will use the function. Prepend a colon to
+use the command instead:
+<B>	:substitute(pattern (replacement (</B>
+
+If the <A HREF="eval.html#expression">expression</A> starts with &quot;<A HREF="change.html#!">!</A>&quot; this is interpreted <A HREF="motion.html#as">as</A> a shell command, not
+negation of a condition.  Thus this is a shell command:
+<B>	!shellCommand-&gt;something</B>
+Put the <A HREF="eval.html#expression">expression</A> in parentheses to use the &quot;<A HREF="change.html#!">!</A>&quot; for negation:
+<B>	(!expression)-&gt;Method()</B>
+
+Note that while <A HREF="eval.html#variables">variables</A> need to be defined before they can be used,
+<A HREF="eval.html#functions">functions</A> can be called before being defined.  This is required to allow
+for cyclic dependencies between <A HREF="eval.html#functions">functions</A>.  It is slightly <A HREF="various.html#less">less</A> efficient,
+since the function has to be looked up by name.  And a typo in the function
+name will only be found when the function is called.
+
+
+<B><FONT COLOR="PURPLE">Omitting function() </FONT></B>
+
+A user defined function can be used <A HREF="motion.html#as">as</A> a function reference in an <A HREF="eval.html#expression">expression</A>
+without `function()`. The argument types and return type will then be checked.
+The function must already have been defined.
+
+<B>	var Funcref = MyFunction</B>
+
+When using `function()` the resulting type is &quot;func&quot;, a function with any
+number of arguments and any return type (including void).  The function can be
+defined later if the argument is in <A HREF="quotes.html#quotes">quotes</A>.
+
+
+<B><FONT COLOR="PURPLE">Lambda using =&gt; instead of -&gt; </FONT></B>
+
+							*<A NAME="vim9-lambda"></A><B>vim9-lambda</B>*
+In legacy <A HREF="usr_41.html#script">script</A> there can be confusion between using &quot;<A HREF="eval.html#-&gt;">-&gt;</A>&quot; for a <A HREF="eval.html#method">method</A> call
+and for a <A HREF="eval.html#lambda">lambda</A>.  Also, when a &quot;<A HREF="motion.html#{">{</A>&quot; is found the parser needs to figure out if
+<A HREF="motion.html#it">it</A> is the start of a <A HREF="eval.html#lambda">lambda</A> or a dictionary, which is now more complicated
+because of the use of argument types.
+
+To avoid these problems <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> uses a different <A HREF="syntax.html#syntax">syntax</A> for a <A HREF="eval.html#lambda">lambda</A>,
+which is similar to JavaScript:
+<B>	var Lambda = (arg) =&gt; expression</B>
+<B>	var Lambda = (arg): type =&gt; expression</B>
+
+ 							*<A NAME="E1157"></A><B>E1157</B>*
+No line break is allowed in the arguments of a <A HREF="eval.html#lambda">lambda</A> up to and including the
+&quot;=&gt;&quot; (so that Vim can tell the difference between an <A HREF="eval.html#expression">expression</A> in parentheses
+and <A HREF="eval.html#lambda">lambda</A> arguments).  This is OK:
+<B>	filter(list, (k, v) =&gt;</B>
+<B>			v &gt; 0)</B>
+This does not work:
+<B>	filter(list, (k, v)</B>
+<B>			=&gt; v &gt; 0)</B>
+This also does not work:
+<B>	filter(list, (k,</B>
+<B>			v) =&gt; v &gt; 0)</B>
+But you can use a <A HREF="intro.html#backslash">backslash</A> to concatenate the lines before parsing:
+<B>	filter(list, (k,</B>
+<B>		\	v)</B>
+<B>		\	=&gt; v &gt; 0)</B>
+
+ 					*<A NAME="vim9-lambda-arguments"></A><B>vim9-lambda-arguments</B>* *<A NAME="E1172"></A><B>E1172</B>*
+In legacy <A HREF="usr_41.html#script">script</A> a <A HREF="eval.html#lambda">lambda</A> could be called with any number of extra arguments,
+there was no way to warn for not using them.  In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> the number of
+arguments must match.  If you <A HREF="diff.html#do">do</A> want to accept any arguments, or any further
+arguments, use &quot;..._&quot;, which makes the function accept
+|<A HREF="#vim9-variable-arguments">vim9-variable-arguments</A>|.  Example:
+<B>	var Callback = (..._) =&gt; 'anything'</B>
+<B>	echo Callback(1, 2, 3)  # displays "anything"</B>
+
+
+ 						*<A NAME="inline-function"></A><B>inline-function</B>* *<A NAME="E1171"></A><B>E1171</B>*
+Additionally, a <A HREF="eval.html#lambda">lambda</A> can contain statements in <A HREF="intro.html#{}">{}</A>:
+<B>	var Lambda = (arg) =&gt; {</B>
+<B>		g:was_called = 'yes'</B>
+<B>		return expression</B>
+<B>	    }</B>
+This can be useful for a <A HREF="builtin.html#timer">timer</A>, for example:
+<B>	var count = 0</B>
+<B> 	var timer = timer_start(500, (_) =&gt; {</B>
+<B>		 count += 1</B>
+<B>		 echom 'Handler called ' .. count</B>
+<B>	     }, {repeat: 3})</B>
+
+The ending &quot;<A HREF="motion.html#}">}</A>&quot; must be at the start of a line.  It can be followed by other
+characters, e.g.:
+<B>	var d = mapnew(dict, (k, v): string =&gt; {</B>
+<B>	     return 'value'</B>
+<B>	   })</B>
+No command can follow the &quot;<A HREF="motion.html#{">{</A>&quot;, only a comment can be used there.
+
+
+						*<A NAME="command-block"></A><B>command-block</B>* *<A NAME="E1026"></A><B>E1026</B>*
+The block can also be used for defining a user command.  Inside the block <A HREF="#Vim9">Vim9</A>
+<A HREF="syntax.html#syntax">syntax</A> will be used.
+
+If the statements include a dictionary, its closing bracket must not be
+written at the start of a line.  Otherwise, <A HREF="motion.html#it">it</A> would be parsed <A HREF="motion.html#as">as</A> the end of
+the block.  This does not work:
+<B>	command NewCommand {</B>
+<B>	     g:mydict = {</B>
+<B>	       'key': 'value',</B>
+<B>	       }  # ERROR: will be recognized as the end of the block</B>
+<B>	   }</B>
+Put the '<A HREF="motion.html#}">}</A>' after the last item to avoid this:
+<B>	command NewCommand {</B>
+<B>	     g:mydict = {</B>
+<B>	       'key': 'value' }</B>
+<B>	   }</B>
+
+Rationale: The &quot;<A HREF="motion.html#}">}</A>&quot; cannot be after a command because <A HREF="motion.html#it">it</A> would require parsing
+the commands to find <A HREF="motion.html#it">it</A>.  For consistency with that no command can follow the
+&quot;<A HREF="motion.html#{">{</A>&quot;.  Unfortunately this means using &quot;() =&gt; {  command  }&quot; does not work, line
+breaks are always required.
+
+
+							*<A NAME="vim9-curly"></A><B>vim9-curly</B>*
+To avoid the &quot;<A HREF="motion.html#{">{</A>&quot; of a dictionary literal to be recognized <A HREF="motion.html#as">as</A> a statement block
+wrap <A HREF="motion.html#it">it</A> in parentheses:
+<B>	var Lambda = (arg) =&gt; ({key: 42})</B>
+
+Also when confused with the start of a command block:
+<B>	({</B>
+<B>	    key: value</B>
+<B>	 })-&gt;method()</B>
+
+
+<B><FONT COLOR="PURPLE">Automatic line continuation </FONT></B>
+
+					*<A NAME="vim9-line-continuation"></A><B>vim9-line-continuation</B>* *<A NAME="E1097"></A><B>E1097</B>*
+In many cases <A HREF="motion.html#it">it</A> is obvious that an <A HREF="eval.html#expression">expression</A> continues on the next line.  In
+those cases there is no need to prefix the line with a <A HREF="intro.html#backslash">backslash</A> (see
+|<A HREF="repeat.html#line-continuation">line-continuation</A>|).  For example, when a <A HREF="eval.html#list">list</A> spans multiple lines:
+<B>	var mylist = [</B>
+<B>		'one',</B>
+<B>		'two',</B>
+<B>		]</B>
+And when a <A HREF="eval.html#dict">dict</A> spans multiple lines:
+<B>	var mydict = {</B>
+<B>		one: 1,</B>
+<B>		two: 2,</B>
+<B>		}</B>
+With a function call:
+<B>	var result = Func(</B>
+<B>			arg1,</B>
+<B>			arg2</B>
+<B>			)</B>
+
+For binary operators in expressions not in <A HREF="motion.html#[]">[]</A>, <A HREF="intro.html#{}">{}</A> or () a line break is
+possible just before or after the <A HREF="motion.html#operator">operator</A>.  For example:
+<B>	var text = lead</B>
+<B>		   .. middle</B>
+<B>		   .. end</B>
+<B>	var total = start +</B>
+<B>		    end -</B>
+<B>		    correction</B>
+<B>	var result = positive</B>
+<B>			? PosFunc(arg)</B>
+<B>			: NegFunc(arg)</B>
+
+For a <A HREF="eval.html#method">method</A> call using &quot;<A HREF="eval.html#-&gt;">-&gt;</A>&quot; and a member using a dot, a line break is allowed
+before <A HREF="motion.html#it">it</A>:
+<B>	var result = GetBuilder()</B>
+<B>			-&gt;BuilderSetWidth(333)</B>
+<B>			-&gt;BuilderSetHeight(777)</B>
+<B>			-&gt;BuilderBuild()</B>
+<B>	var result = MyDict</B>
+<B>			.member</B>
+
+For commands that have an argument that is a <A HREF="eval.html#list">list</A> of commands, the &#124; character
+at the start of the line indicates line continuation:
+<B>	autocmd BufNewFile *.match if condition</B>
+<B>		|   echo 'match'</B>
+<B>		| endif</B>
+
+Note that this means that in heredoc the first line cannot start with a <A HREF="motion.html#bar">bar</A>:
+<B>	var lines =&lt;&lt; trim END</B>
+<B>	   | this doesn't work</B>
+<B>	END</B>
+Either use an empty line at the start or <A HREF="diff.html#do">do</A> not use heredoc.  Or temporarily
+add the &quot;<A HREF="change.html#C">C</A>&quot; flag to <A HREF="options.html#'cpoptions'">'cpoptions'</A>:
+<B>	set cpo+=C</B>
+<B>	var lines =&lt;&lt; trim END</B>
+<B>	   | this works</B>
+<B>	END</B>
+<B>	set cpo-=C</B>
+If the heredoc is inside a function <A HREF="options.html#'cpoptions'">'cpoptions'</A> must be set before <A HREF="#:def">:def</A> and
+restored after the <A HREF="#:enddef">:enddef</A>.
+
+In places where line continuation with a <A HREF="intro.html#backslash">backslash</A> is still needed, such <A HREF="motion.html#as">as</A>
+splitting up a long <A HREF="intro.html#Ex">Ex</A> command, comments can start with '#\ '':
+<B>	syn region Text</B>
+<B>	      \ start='foo'</B>
+<B>	      #\ comment</B>
+<B>	      \ end='bar'</B>
+Like with legacy <A HREF="usr_41.html#script">script</A> &#39;&#34;'\ '' is used.  This is also needed when line
+continuation is used without a <A HREF="intro.html#backslash">backslash</A> and a line starts with a <A HREF="motion.html#bar">bar</A>:
+<B>	au CursorHold * echom 'BEFORE bar'</B>
+<B>	      #\ some comment</B>
+<B>	      | echom 'AFTER bar'</B>
+ 
+
+							*<A NAME="E1050"></A><B>E1050</B>*
+To make <A HREF="motion.html#it">it</A> possible for the <A HREF="motion.html#operator">operator</A> at the start of the line to be
+recognized, <A HREF="motion.html#it">it</A> is required to put a colon before a range.  This example will
+add &quot;start&quot; and print:
+<B>	var result = start</B>
+<B>	+ print</B>
+Like this:
+<B>	var result = start + print</B>
+
+This will assign &quot;start&quot; and print a line:
+<B>	var result = start</B>
+<B>	:+ print</B>
+
+After the range an <A HREF="intro.html#Ex">Ex</A> command must follow.  Without the colon you can call a
+function without `:call`, but after a range you <A HREF="diff.html#do">do</A> need <A HREF="motion.html#it">it</A>:
+<B>	MyFunc()</B>
+<B>	:% call MyFunc()</B>
+
+Note that the colon is not required for the |<A HREF="editing.html#+cmd">+cmd</A>| argument:
+<B>	edit +6 fname</B>
+
+It is also possible to split a function header over multiple lines, in between
+arguments:
+<B>	def MyFunc(</B>
+<B>		text: string,</B>
+<B>		separator = '-'</B>
+<B>		): string</B>
+
+Since a continuation line cannot be easily recognized the parsing of commands
+has been made stricter.  E.g., because of the error in the first line, the
+second line is seen <A HREF="motion.html#as">as</A> a separate command:
+<B>	popup_create(some invalid expression, {</B>
+<B>	   exit_cb: Func})</B>
+Now &quot;exit_cb: Func})&quot; is actually a valid command: save any changes to the
+file &quot;_cb: Func})&quot; and exit.  To avoid this kind of mistake in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>
+there must be white space between most command names and the argument.
+
+*<A NAME="E1144"></A><B>E1144</B>*
+
+However, the argument of a command that is a command won't be recognized.  For
+example, after &quot;windo echo expr&quot; a line break inside &quot;<A HREF="eval.html#expr">expr</A>&quot; will not be seen.
+
+
+Notes:
+- &quot;enddef&quot; cannot be used at the start of a continuation line, <A HREF="motion.html#it">it</A> ends the
+  current function.
+- No line break is allowed in the LHS of an assignment.  Specifically when
+  unpacking a <A HREF="eval.html#list">list</A> |<A HREF="eval.html#:let-unpack">:let-unpack</A>|. This is OK:
+<B>	[var1, var2] =</B>
+<B>		Func()</B>
+   This does not work:
+<B>	[var1,</B>
+<B>	    var2] =</B>
+<B>		Func()</B>
+- No line break is allowed in between arguments of an `:echo`, `:execute` and
+  similar commands.  This is OK:
+<B>	echo [1,</B>
+<B>		2] [3,</B>
+<B>			4]</B>
+   This does not work:
+<B>	echo [1, 2]</B>
+<B>		[3, 4]</B>
+- In some cases <A HREF="motion.html#it">it</A> is difficult for Vim to parse a command, especially when
+  commands are used <A HREF="motion.html#as">as</A> an argument to another command, such <A HREF="motion.html#as">as</A> `windo`.  In
+  those cases the line continuation with a <A HREF="intro.html#backslash">backslash</A> has to be used.
+
+
+<B><FONT COLOR="PURPLE">White space </FONT></B>
+
+			*<A NAME="E1004"></A><B>E1004</B>* *<A NAME="E1068"></A><B>E1068</B>* *<A NAME="E1069"></A><B>E1069</B>* *<A NAME="E1074"></A><B>E1074</B>* *<A NAME="E1127"></A><B>E1127</B>* *<A NAME="E1202"></A><B>E1202</B>*
+<A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> enforces proper use of white space.  This is no longer allowed:
+<B>	var name=234	# Error!</B>
+<B>	var name= 234	# Error!</B>
+<B>	var name =234	# Error!</B>
+There must be white space before and after the &quot;<A HREF="change.html#=">=</A>&quot;:
+<B>	var name = 234	# OK</B>
+White space must also be put before the # that starts a comment after a
+command:
+<B>	var name = 234# Error!</B>
+<B>	var name = 234 # OK</B>
+
+White space is required around most operators.
+
+White space is required in a <A HREF="eval.html#sublist">sublist</A> (list <A HREF="eval.html#slice">slice</A>) around the &quot;<A HREF="cmdline.html#:">:</A>&quot;, except at
+the start and end:
+<B>	otherlist = mylist[v : count]  	# v:count has a different meaning</B>
+<B>	otherlist = mylist[:]		# make a copy of the List</B>
+<B>	otherlist = mylist[v :]</B>
+<B>	otherlist = mylist[: v]</B>
+
+White space is not allowed:
+- Between a function name and the &quot;<A HREF="motion.html#(">(</A>&quot;:
+<B>	Func (arg)	   # Error!</B>
+<B>	Func</B>
+<B>	     \ (arg)	   # Error!</B>
+<B>	Func</B>
+<B>	      (arg)	   # Error!</B>
+<B>	Func(arg)	   # OK</B>
+<B>	Func(</B>
+<B>	      arg)	   # OK</B>
+<B>	Func(</B>
+<B>	      arg	   # OK</B>
+<B>	      )</B>
+
+ 							*<A NAME="E1205"></A><B>E1205</B>*
+White space is not allowed in a `:set` command between the option name and a
+following &quot;<A HREF="change.html#&amp;">&amp;</A>&quot;, &quot;<A HREF="change.html#!">!</A>&quot;, &quot;<A HREF="change.html#&lt;">&lt;</A>&quot;, &quot;<A HREF="change.html#=">=</A>&quot;, &quot;+=&quot;, &quot;-=&quot; or &quot;^=&quot;.
+
+
+<B><FONT COLOR="PURPLE">No curly braces expansion </FONT></B>
+
+|<A HREF="eval.html#curly-braces-names">curly-braces-names</A>| cannot be used.
+
+
+<B><FONT COLOR="PURPLE">Command modifiers are not ignored </FONT></B>
+
+								*<A NAME="E1176"></A><B>E1176</B>*
+Using a command modifier for a command that does not use <A HREF="motion.html#it">it</A> gives an error.
+
+
+<B><FONT COLOR="PURPLE">Dictionary literals </FONT></B>
+
+						*<A NAME="vim9-literal-dict"></A><B>vim9-literal-dict</B>* *<A NAME="E1014"></A><B>E1014</B>*
+Traditionally Vim has supported dictionary literals with a <A HREF="intro.html#{}">{}</A> <A HREF="syntax.html#syntax">syntax</A>:
+<B>	let dict = {'key': value}</B>
+
+Later <A HREF="motion.html#it">it</A> became clear that using a simple text key is very common, thus
+literal dictionaries were introduced in a backwards compatible way:
+<B>	let dict = #{key: value}</B>
+
+However, this <A HREF="eval.html##{}">#{}</A> <A HREF="syntax.html#syntax">syntax</A> is unlike any existing language.  As <A HREF="motion.html#it">it</A> turns out
+that using a literal key is much more common than using an <A HREF="eval.html#expression">expression</A>, and
+considering that JavaScript uses this <A HREF="syntax.html#syntax">syntax</A>, using the <A HREF="intro.html#{}">{}</A> form for dictionary
+literals is considered a much more useful <A HREF="syntax.html#syntax">syntax</A>.  In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> the <A HREF="intro.html#{}">{}</A> form
+uses literal keys:
+<B>	var dict = {key: value}</B>
+
+This works for alphanumeric characters, underscore and dash.  If you want to
+use another character, use a single or double quoted <A HREF="eval.html#string">string</A>:
+<B>	var dict = {'key with space': value}</B>
+<B>	var dict = {"key\twith\ttabs": value}</B>
+<B>	var dict = {'': value}  		# empty key</B>
+
+ 							*<A NAME="E1139"></A><B>E1139</B>*
+In <A HREF="change.html#case">case</A> the key needs to be an <A HREF="eval.html#expression">expression</A>, square brackets can be used, just
+like in JavaScript:
+<B>	var dict = {["key" .. nr]: value}</B>
+
+The key type can be <A HREF="eval.html#string">string</A>, number, bool or float.  Other types result in an
+error.  Without using <A HREF="motion.html#[]">[]</A> the value is used <A HREF="motion.html#as">as</A> a <A HREF="eval.html#string">string</A>, keeping leading zeros.
+An <A HREF="eval.html#expression">expression</A> given with <A HREF="motion.html#[]">[]</A> is evaluated and then converted to a <A HREF="eval.html#string">string</A>.
+Leading zeros will then be dropped:
+<B>	var dict = {000123: 'without', [000456]: 'with'}</B>
+<B>	echo dict</B>
+<B>	{'456': 'with', '000123': 'without'}</B>
+A float only works inside <A HREF="motion.html#[]">[]</A> because the dot is not accepted otherwise:
+<B>	var dict = {[00.013]: 'float'}</B>
+<B>	echo dict</B>
+<B>	{'0.013': 'float'}</B>
+
+
+<B><FONT COLOR="PURPLE">No :xit, :t, :k, :append, :change or :insert </FONT></B>
+
+							*<A NAME="E1100"></A><B>E1100</B>*
+These commands are too easily confused with local variable names.
+Instead of `:x` or `:xit` you can use `:exit`.
+Instead of `:t` you can use `:copy`.
+Instead of `:k` you can use `:mark`.
+
+
+<B><FONT COLOR="PURPLE">Comparators </FONT></B>
+
+The <A HREF="options.html#'ignorecase'">'ignorecase'</A> option is not used for comparators that use strings.
+Thus &quot;=~&quot; works like &quot;=~#&quot;.
+
+
+<B><FONT COLOR="PURPLE">Abort after error </FONT></B>
+
+In legacy <A HREF="usr_41.html#script">script</A>, when an error is encountered, Vim continues to execute
+following lines.  This can lead to a long sequence of <A HREF="message.html#errors">errors</A> and need to type
+<A HREF="pattern.html#CTRL-C">CTRL-C</A> to stop <A HREF="motion.html#it">it</A>.  In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> execution of commands stops at the first
+error.  Example:
+<B>	vim9script</B>
+<B>	var x = does-not-exist</B>
+<B>	echo 'not executed'</B>
+
+
+<B><FONT COLOR="PURPLE">For loop </FONT></B>
+
+							*<A NAME="E1254"></A><B>E1254</B>*
+The loop variable must not be declared yet:
+<B>	var i = 1</B>
+<B>	for i in [1, 2, 3]   # Error!</B>
+
+It is possible to use a global variable though:
+<B>	g:i = 1</B>
+<B>	for g:i in [1, 2, 3]</B>
+<B>	  echo g:i</B>
+<B>	endfor</B>
+
+Legacy Vim <A HREF="usr_41.html#script">script</A> has some tricks to make a for loop over a <A HREF="eval.html#list">list</A> handle
+<A HREF="change.html#deleting">deleting</A> items at the current or previous item.  In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> <A HREF="motion.html#it">it</A> just uses
+the index, if items are deleted then items in the <A HREF="eval.html#list">list</A> will be skipped.
+Example legacy <A HREF="usr_41.html#script">script</A>:
+<B>	let l = [1, 2, 3, 4]</B>
+<B>	for i in l</B>
+<B>	   echo i</B>
+<B>	   call remove(l, index(l, i))</B>
+<B>	endfor</B>
+Would echo:
+	1
+	2
+	3
+	4
+In compiled <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> you get:
+	1
+	3
+Generally, you should not change the <A HREF="eval.html#list">list</A> that is iterated over.  Make a copy
+first if needed.
+
+
+<B><FONT COLOR="PURPLE">Conditions and expressions </FONT></B>
+
+						*<A NAME="vim9-boolean"></A><B>vim9-boolean</B>*
+Conditions and expressions are mostly working like they <A HREF="diff.html#do">do</A> in other languages.
+Some values are different from legacy Vim <A HREF="usr_41.html#script">script</A>:
+<B><FONT COLOR="PURPLE">	value		legacy Vim script	Vim9 script </FONT></B>
+	0		<A HREF="eval.html#falsy">falsy</A>			<A HREF="eval.html#falsy">falsy</A>
+	1		<A HREF="eval.html#truthy">truthy</A>			<A HREF="eval.html#truthy">truthy</A>
+	99		<A HREF="eval.html#truthy">truthy</A>			Error!
+	&quot;<A HREF="motion.html#0">0</A>&quot;		<A HREF="eval.html#falsy">falsy</A>			Error!
+	&quot;99&quot;		<A HREF="eval.html#truthy">truthy</A>			Error!
+	&quot;text&quot;		<A HREF="eval.html#falsy">falsy</A>			Error!
+
+For the &quot;<A HREF="eval.html#??">??</A>&quot; <A HREF="motion.html#operator">operator</A> and when using &quot;<A HREF="change.html#!">!</A>&quot; then there is no error, every value
+is either <A HREF="eval.html#falsy">falsy</A> or <A HREF="eval.html#truthy">truthy</A>.  This is mostly like JavaScript, except that an
+empty <A HREF="eval.html#list">list</A> and <A HREF="eval.html#dict">dict</A> is <A HREF="eval.html#falsy">falsy</A>:
+
+<B><FONT COLOR="PURPLE">	type		truthy when </FONT></B>
+	bool		<A HREF="#true">true</A>, <A HREF="eval.html#v:true">v:true</A> or 1
+	number		non-zero
+	float		non-zero
+	<A HREF="eval.html#string">string</A>		non-empty
+	<A HREF="eval.html#blob">blob</A>		non-empty
+	<A HREF="eval.html#list">list</A>		non-empty (different from JavaScript)
+	dictionary	non-empty (different from JavaScript)
+	func		when there is a function name
+	special		<A HREF="#true">true</A> or <A HREF="eval.html#v:true">v:true</A>
+	<A HREF="channel.html#job">job</A>		when not NULL
+	<A HREF="channel.html#channel">channel</A>		when not NULL
+	class		when not NULL
+	object		when not NULL (TODO: when isTrue() returns <A HREF="#true">true</A>)
+
+The <A HREF="options.html#boolean">boolean</A> operators &quot;&#124;&#124;&quot; and &quot;&amp;&amp;&quot; expect the values to be <A HREF="options.html#boolean">boolean</A>, zero or
+one:
+<B>	1 || false   == true</B>
+<B>	0 || 1       == true</B>
+<B>	0 || false   == false</B>
+<B>	1 &amp;&amp; true    == true</B>
+<B>	0 &amp;&amp; 1       == false</B>
+<B>	8 || 0	     Error!</B>
+<B>	'yes' &amp;&amp; 0   Error!</B>
+<B>	[] || 99     Error!</B>
+
+When using &quot;<A HREF="change.html#!">!</A>&quot; for inverting, there is no error for using any type and the
+result is a <A HREF="options.html#boolean">boolean</A>.  &quot;<A HREF="change.html#!!">!!</A>&quot; can be used to turn any value into <A HREF="options.html#boolean">boolean</A>:
+<B>	!'yes'			== false</B>
+<B>	!![]			== false</B>
+<B>	!![1, 2, 3]		== true</B>
+
+When using &quot;`..&quot;` for <A HREF="eval.html#string">string</A> concatenation arguments of simple types are
+always converted to <A HREF="eval.html#string">string</A>:
+<B>	'hello ' .. 123  == 'hello 123'</B>
+<B>	'hello ' .. v:true  == 'hello true'</B>
+
+Simple types are <A HREF="eval.html#Number">Number</A>, <A HREF="eval.html#Float">Float</A>, <A HREF="eval.html#Special">Special</A> and Bool.  For other types |<A HREF="builtin.html#string()">string()</A>|
+should be used.
+
+						*<A NAME="false"></A><B>false</B>* *<A NAME="true"></A><B>true</B>* *<A NAME="null"></A><B>null</B>* *<A NAME="E1034"></A><B>E1034</B>*
+In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> one can use the following predefined values:
+<B>	true</B>
+<B>	false</B>
+<B>	null</B>
+<B>	null_blob</B>
+<B>	null_channel</B>
+<B>	null_dict</B>
+<B>	null_function</B>
+<B>	null_job</B>
+<B>	null_list</B>
+<B>	null_partial</B>
+<B>	null_string</B>
+`true` is the same <A HREF="motion.html#as">as</A> `v:true`, `false` the same <A HREF="motion.html#as">as</A> `v:false`, `null` the same
+<A HREF="motion.html#as">as</A> `v:null`.
+
+While `null` has the type &quot;special&quot;, the other &quot;null_&quot; types have the type
+indicated by their name.  Quite often a <A HREF="#null">null</A> value is handled the same <A HREF="motion.html#as">as</A> an
+empty value, but not always.  The values can be useful to clear a <A HREF="map.html#script-local">script-local</A>
+variable, since they cannot be deleted with `:unlet`.  E.g.:
+<B>	var theJob = job_start(...)</B>
+<B>	# let the job do its work</B>
+<B>	theJob = null_job</B>
+
+The values can also be useful <A HREF="motion.html#as">as</A> the default value for an argument:
+<B>	def MyFunc(b: blob = null_blob)</B>
+<B>	   if b == null_blob</B>
+<B>	      # b argument was not given</B>
+
+It is possible to compare `null`  with any value, this will not give a type
+error.  However, comparing `null` with a number, float or bool will always
+result in `false`.  This is different from legacy <A HREF="usr_41.html#script">script</A>, where comparing
+`null` with zero or `false` would return `true`.
+
+When converting a <A HREF="options.html#boolean">boolean</A> to a <A HREF="eval.html#string">string</A> `false` and `true` are used, not
+`v:false` and `v:true` like in legacy <A HREF="usr_41.html#script">script</A>.  `v:none` has no `none`
+replacement, <A HREF="motion.html#it">it</A> has no equivalent in other languages.
+
+Indexing a <A HREF="eval.html#string">string</A> with [idx] or taking a <A HREF="eval.html#slice">slice</A> with [idx : idx] uses character
+indexes instead of byte indexes.  Composing characters are included.
+Example:
+<B>	echo 'bár'[1]</B>
+In legacy <A HREF="usr_41.html#script">script</A> this results in the character 0xc3 (an illegal byte), in <A HREF="#Vim9">Vim9</A>
+<A HREF="usr_41.html#script">script</A> this results in the <A HREF="eval.html#string">string</A> 'á'.
+A negative index is counting from the end, &quot;[-1]&quot; is the last character.
+To exclude the last character use |<A HREF="builtin.html#slice()">slice()</A>|.
+To <A HREF="intro.html#count">count</A> composing characters separately use |<A HREF="builtin.html#strcharpart()">strcharpart()</A>|.
+If the index is out of range then an empty <A HREF="eval.html#string">string</A> results.
+
+In legacy <A HREF="usr_41.html#script">script</A> &quot;++var&quot; and &quot;--var&quot; would be silently accepted and have no
+effect.  This is an error in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>.
+
+Numbers starting with zero are not considered to be <A HREF="eval.html#octal">octal</A>, only numbers
+starting with &quot;<A HREF="eval.html#0o">0o</A>&quot; are <A HREF="eval.html#octal">octal</A>: &quot;0o744&quot;. |<A HREF="eval.html#scriptversion-4">scriptversion-4</A>|
+
+
+<B><FONT COLOR="PURPLE">What to watch out for </FONT></B>
+
+							*<A NAME="vim9-gotchas"></A><B>vim9-gotchas</B>*
+<A HREF="#Vim9">Vim9</A> was designed to be closer to often used programming languages, but at the
+same time tries to support the legacy Vim commands.  Some compromises had to
+be made.  Here is a summary of what might be unexpected.
+
+<A HREF="intro.html#Ex">Ex</A> command ranges need to be prefixed with a colon.
+<B>	-&gt;		  legacy Vim: shifts the previous line to the right</B>
+<B>	-&gt;func()	  Vim9: method call in a continuation line</B>
+<B>	:-&gt;		  Vim9: shifts the previous line to the right</B>
+
+<B>	%s/a/b		  legacy Vim: substitute on all lines</B>
+<B>	x = alongname</B>
+<B>	     % another	  Vim9: modulo operator in a continuation line</B>
+<B>	:%s/a/b		  Vim9: substitute on all lines</B>
+<B>	't		  legacy Vim: jump to mark t</B>
+<B>	'text'-&gt;func()	  Vim9: method call</B>
+<B>	:'t		  Vim9: jump to mark t</B>
+
+Some <A HREF="intro.html#Ex">Ex</A> commands can be confused with assignments in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>:
+<B>	g:name = value    # assignment</B>
+<B>	:g:pattern:cmd	  # :global command</B>
+
+To avoid confusion between a `:global` or `:substitute` command and an
+<A HREF="eval.html#expression">expression</A> or assignment, a few separators cannot be used when these commands
+are abbreviated to a single character: '<A HREF="cmdline.html#:">:</A>', '<A HREF="motion.html#-">-</A>' and '<A HREF="repeat.html#.">.</A>'.
+<B>	g:pattern:cmd	  # invalid command - ERROR</B>
+<B>	s:pattern:repl	  # invalid command - ERROR</B>
+<B>	g-pattern-cmd	  # invalid command - ERROR</B>
+<B>	s-pattern-repl	  # invalid command - ERROR</B>
+<B>	g.pattern.cmd	  # invalid command - ERROR</B>
+<B>	s.pattern.repl	  # invalid command - ERROR</B>
+
+Also, there cannot be a space between the command and the separator:
+<B>	g /pattern/cmd	  # invalid command - ERROR</B>
+<B>	s /pattern/repl	  # invalid command - ERROR</B>
+
+Functions defined with `:def` compile the whole function.  Legacy <A HREF="eval.html#functions">functions</A>
+can bail out, and the following lines are not parsed:
+<B>	func Maybe()</B>
+<B>	  if !has('feature')</B>
+<B>	    return</B>
+<B>	  endif</B>
+<B>	  use-feature</B>
+<B>	endfunc</B>
+<A HREF="#Vim9">Vim9</A> <A HREF="eval.html#functions">functions</A> are compiled <A HREF="motion.html#as">as</A> a whole:
+<B>	def Maybe()</B>
+<B>	  if !has('feature')</B>
+<B>	    return</B>
+<B>	  endif</B>
+<B>	  use-feature  # May give a compilation error</B>
+<B>	enddef</B>
+For a workaround, split <A HREF="motion.html#it">it</A> in two <A HREF="eval.html#functions">functions</A>:
+<B>	func Maybe()</B>
+<B>	  if has('feature')</B>
+<B>	    call MaybeInner()</B>
+<B>	  endif</B>
+<B>	endfunc</B>
+<B>	if has('feature')</B>
+<B>	  def MaybeInner()</B>
+<B>	    use-feature</B>
+<B>	  enddef</B>
+<B>	endif</B>
+Or put the unsupported code inside an `if` with a constant <A HREF="eval.html#expression">expression</A> that
+evaluates to <A HREF="#false">false</A>:
+<B>	def Maybe()</B>
+<B>	  if has('feature')</B>
+<B>	    use-feature</B>
+<B>	  endif</B>
+<B>	enddef</B>
+The `exists_compiled()` function can also be used for this.
+
+							*<A NAME="vim9-user-command"></A><B>vim9-user-command</B>*
+Another side effect of compiling a function is that the presence of a user
+command is checked at compile time.  If the user command is defined later an
+error will result.  This works:
+<B>	command -nargs=1 MyCommand echom &lt;q-args&gt;</B>
+<B>	def Works()</B>
+<B>	  MyCommand 123</B>
+<B>	enddef</B>
+This will give an error for &quot;MyCommand&quot; not being defined:
+<B>	def Works()</B>
+<B>	  command -nargs=1 MyCommand echom &lt;q-args&gt;</B>
+<B>	  MyCommand 123</B>
+<B>	enddef</B>
+A workaround is to invoke the command indirectly with `:execute`:
+<B>	def Works()</B>
+<B>	  command -nargs=1 MyCommand echom &lt;q-args&gt;</B>
+<B>	  execute 'MyCommand 123'</B>
+<B>	enddef</B>
+
+Note that for unrecognized commands there is no check for &quot;|&quot; and a following
+command.  This will give an error for missing `endif`:
+<B>	def Maybe()</B>
+<B>	  if has('feature') | use-feature | endif</B>
+<B>	enddef</B>
+
+<B><FONT COLOR="PURPLE">Other differences </FONT></B>
+
+Patterns are used like <A HREF="options.html#'magic'">'magic'</A> is set, unless explicitly overruled.
+The <A HREF="options.html#'edcompatible'">'edcompatible'</A> option value is not used.
+The <A HREF="options.html#'gdefault'">'gdefault'</A> option value is not used.
+
+You may also find this wiki useful.  It was written by an early adopter of
+<A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>: https://github.com/lacygoill/wiki/blob/master/vim/vim9.md
+
+
+							*<A NAME=":++"></A><B>:++</B>* *<A NAME=":--"></A><B>:--</B>*
+The ++ and <A HREF="starting.html#--">--</A> commands have been added.  They are very similar to adding or
+subtracting one:
+<B>		++var</B>
+<B>		var += 1</B>
+<B>		--var</B>
+<B>		var -= 1</B>
+
+Using ++var or --var in an <A HREF="eval.html#expression">expression</A> is not supported yet.
+
+==============================================================================
+
+
+3. New style <A HREF="eval.html#functions">functions</A>					*<A NAME="fast-functions"></A><B>fast-functions</B>*
+
+
+							*<A NAME=":def"></A><B>:def</B>* *<A NAME="E1028"></A><B>E1028</B>*
+:def[!] {name}([arguments])[: {return-type}]
+			Define a new function by the name {name}.  The body of
+			the function follows in the next lines, until the
+
+			matching `:enddef`. *<A NAME="E1073"></A><B>E1073</B>*
+
+							*<A NAME="E1011"></A><B>E1011</B>*
+			The {name} must be <A HREF="various.html#less">less</A> than 100 bytes long.
+
+					*<A NAME="E1003"></A><B>E1003</B>* *<A NAME="E1027"></A><B>E1027</B>* *<A NAME="E1056"></A><B>E1056</B>* *<A NAME="E1059"></A><B>E1059</B>*
+			The type of value used with `:return` must match
+			{return-type}.  When {return-type} is omitted or is
+			&quot;void&quot; the function is not expected to return
+			anything.
+
+							*<A NAME="E1077"></A><B>E1077</B>* *<A NAME="E1123"></A><B>E1123</B>*
+			{arguments} is a sequence of zero or more argument
+			declarations.  There are three forms:
+				{name}: {type}
+				{name} = {value}
+				{name}: {type} = {value}
+			The first form is a mandatory argument, the caller
+			must always provide them.
+			The second and third form are optional arguments.
+			When the caller omits an argument the {value} is used.
+
+			The function will be compiled into instructions when
+			called, or when `:disassemble` or `:defcompile` is
+			used.  <A HREF="autocmd.html#Syntax">Syntax</A> and type <A HREF="message.html#errors">errors</A> will be produced at that
+			time.
+
+			It is possible to nest `:def` inside another `:def` or
+			`:function` up to about 50 levels deep.
+
+							*<A NAME="E1117"></A><B>E1117</B>*
+			[!] is used <A HREF="motion.html#as">as</A> with `:function`.  Note that
+			<A HREF="map.html#script-local">script-local</A> <A HREF="eval.html#functions">functions</A> cannot be deleted or redefined
+			later in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>.  They can only be removed by
+			reloading the same <A HREF="usr_41.html#script">script</A>.
+
+
+					*<A NAME=":enddef"></A><B>:enddef</B>* *<A NAME="E1057"></A><B>E1057</B>* *<A NAME="E1152"></A><B>E1152</B>* *<A NAME="E1173"></A><B>E1173</B>*
+<A HREF="#:enddef">:enddef</A>			End of a function defined with `:def`. It should be on
+			a line by its own.
+
+You may also find this wiki useful.  It was written by an early adopter of
+<A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>: https://github.com/lacygoill/wiki/blob/master/vim/vim9.md
+
+If the <A HREF="usr_41.html#script">script</A> the function is defined in is <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>, then <A HREF="map.html#script-local">script-local</A>
+<A HREF="eval.html#variables">variables</A> can be accessed without the &quot;s:&quot; prefix.  They must be defined
+before the function is compiled.  If the <A HREF="usr_41.html#script">script</A> the function is defined in is
+legacy <A HREF="usr_41.html#script">script</A>, then <A HREF="map.html#script-local">script-local</A> <A HREF="eval.html#variables">variables</A> must be accessed with the &quot;s:&quot;
+prefix if they <A HREF="diff.html#do">do</A> not exist at the time of compiling.
+
+
+						*<A NAME=":defc"></A><B>:defc</B>* *<A NAME=":defcompile"></A><B>:defcompile</B>*
+:defc[ompile]		Compile <A HREF="eval.html#functions">functions</A> defined in the current <A HREF="usr_41.html#script">script</A> that
+			were not compiled yet.
+			This will report any <A HREF="message.html#errors">errors</A> found during compilation.
+
+:defc[ompile] {func}
+:defc[ompile] debug {func}
+:defc[ompile] <A HREF="repeat.html#profile">profile</A> {func}
+			Compile function {func}, if needed.  Use &quot;debug&quot; and
+			&quot;<A HREF="repeat.html#profile">profile</A>&quot; to specify the compilation mode.
+			This will report any <A HREF="message.html#errors">errors</A> found during compilation.
+
+
+						*<A NAME=":disa"></A><B>:disa</B>* *<A NAME=":disassemble"></A><B>:disassemble</B>*
+:disa[ssemble] {func}	Show the instructions generated for {func}.
+
+			This is for debugging and <A HREF="testing.html#testing">testing</A>. *<A NAME="E1061"></A><B>E1061</B>*
+			Note that for command line completion of {func} you
+			can prepend &quot;s:&quot; to find <A HREF="map.html#script-local">script-local</A> <A HREF="eval.html#functions">functions</A>.
+
+:disa[ssemble] <A HREF="repeat.html#profile">profile</A> {func}
+			Like `:disassemble` but with the instructions used for
+			<A HREF="repeat.html#profiling">profiling</A>.
+
+:disa[ssemble] debug {func}
+			Like `:disassemble` but with the instructions used for
+			debugging.
+
+<B><FONT COLOR="PURPLE">Limitations </FONT></B>
+
+Local <A HREF="eval.html#variables">variables</A> will not be visible to <A HREF="eval.html#string">string</A> evaluation.  For example:
+<B>	def MapList(): list&lt;string&gt;</B>
+<B>	  var list = ['aa', 'bb', 'cc', 'dd']</B>
+<B>	  return range(1, 2)-&gt;map('list[v:val]')</B>
+<B>	enddef</B>
+
+The map argument is a <A HREF="eval.html#string">string</A> <A HREF="eval.html#expression">expression</A>, which is evaluated without the
+function scope.  Instead, use a <A HREF="eval.html#lambda">lambda</A>:
+<B>	def MapList(): list&lt;string&gt;</B>
+<B>	  var list = ['aa', 'bb', 'cc', 'dd']</B>
+<B>	  return range(1, 2)-&gt;map((_, v) =&gt; list[v])</B>
+<B>	enddef</B>
+
+For commands that are not compiled, such <A HREF="motion.html#as">as</A> `:edit`, backtick expansion can be
+used and <A HREF="motion.html#it">it</A> can use the local scope.  Example:
+<B>	def Replace()</B>
+<B>	  var fname = 'blah.txt'</B>
+<B>	  edit `=fname`</B>
+<B>	enddef</B>
+
+Closures defined in a loop will share the same context.  For example:
+<B>	var flist: list&lt;func&gt;</B>
+<B>	for i in range(5)</B>
+<B>	  var inloop = i</B>
+<B>	  flist[i] = () =&gt; inloop</B>
+<B>	endfor</B>
+<B>	echo range(5)-&gt;map((i, _) =&gt; flist[i]())</B>
+<B>	# Result: [4, 4, 4, 4, 4]</B>
+
+ 							*<A NAME="E1271"></A><B>E1271</B>*
+A <A HREF="eval.html#closure">closure</A> must be compiled in the context that <A HREF="motion.html#it">it</A> is defined in, so that
+<A HREF="eval.html#variables">variables</A> in that context can be found.  This mostly happens correctly, except
+when a function is marked for debugging with `breakadd` after <A HREF="motion.html#it">it</A> was compiled.
+Make sure to define the breakpoint before compiling the outer function.
+
+The &quot;inloop&quot; variable will exist only once, all closures put in the <A HREF="eval.html#list">list</A> refer
+to the same instance, which in the end will have the value 4.  This is
+efficient, also when looping many times.  If you <A HREF="diff.html#do">do</A> want a separate context
+for each <A HREF="eval.html#closure">closure</A> call a function to define <A HREF="motion.html#it">it</A>:
+<B>	def GetClosure(i: number): func</B>
+<B>	  var infunc = i</B>
+<B>	  return () =&gt; infunc</B>
+<B>	enddef</B>
+
+<B>	var flist: list&lt;func&gt;</B>
+<B>	for i in range(5)</B>
+<B>	  flist[i] = GetClosure(i)</B>
+<B>	endfor</B>
+<B>	echo range(5)-&gt;map((i, _) =&gt; flist[i]())</B>
+<B>	# Result: [0, 1, 2, 3, 4]</B>
+
+In some situations, especially when calling a <A HREF="#Vim9">Vim9</A> <A HREF="eval.html#closure">closure</A> from legacy
+
+context, the evaluation will fail.  *<A NAME="E1248"></A><B>E1248</B>*
+
+
+<B><FONT COLOR="PURPLE">Converting a function from legacy to Vim9 </FONT></B>
+
+					*<A NAME="convert_legacy_function_to_vim9"></A><B>convert_legacy_function_to_vim9</B>*
+These are the most changes that need to be made to convert a legacy function
+to a <A HREF="#Vim9">Vim9</A> function:
+
+- Change `func` or `function` to `def`.
+- Change `endfunc` or `endfunction` to `enddef`.
+- Add types to the function arguments.
+- If the function returns something, add the return type.
+- Change comments to start with # instead of &quot;.
+
+  For example, a legacy function:
+<B>	func MyFunc(text)</B>
+<B>	  " function body</B>
+<B>	endfunc</B>
+   Becomes:
+<B>	def MyFunc(text: string): number</B>
+<B>	  # function body</B>
+<B>	enddef</B>
+
+- Remove &quot;a:&quot; used for arguments. E.g.:
+<B>	return len(a:text)</B>
+   Becomes:
+<B>	return len(text)</B>
+
+- Change `let` used to declare a variable to `var`.
+- Remove `let` used to assign a value to a variable.  This is for local
+  <A HREF="eval.html#variables">variables</A> already declared and <A HREF="eval.html#b:">b:</A> <A HREF="eval.html#w:">w:</A> <A HREF="eval.html#g:">g:</A> and <A HREF="eval.html#t:">t:</A> <A HREF="eval.html#variables">variables</A>.
+
+  For example, legacy function:
+<B>	  let lnum = 1</B>
+<B>	  let lnum += 3</B>
+<B>	  let b:result = 42</B>
+   Becomes:
+<B>	  var lnum = 1</B>
+<B>	  lnum += 3</B>
+<B>	  b:result = 42</B>
+
+- <A HREF="insert.html#Insert">Insert</A> white space in expressions where needed.
+- Change &quot;<A HREF="repeat.html#.">.</A>&quot; used for concatenation to &quot;..&quot;.
+
+  For example, legacy function:
+<B>	  echo line(1).line(2)</B>
+   Becomes:
+<B>	  echo line(1) .. line(2)</B>
+
+- line continuation does not always require a <A HREF="intro.html#backslash">backslash</A>:
+<B>  	echo ['one',</B>
+<B>		\ 'two',</B>
+<B>		\ 'three'</B>
+<B>		\ ]</B>
+   Becomes:
+<B>	echo ['one',</B>
+<B>		'two',</B>
+<B>		'three'</B>
+<B>		]</B>
+
+==============================================================================
+
+
+4. Types					*<A NAME="vim9-types"></A><B>vim9-types</B>*
+
+					*<A NAME="E1008"></A><B>E1008</B>* *<A NAME="E1009"></A><B>E1009</B>* *<A NAME="E1010"></A><B>E1010</B>* *<A NAME="E1012"></A><B>E1012</B>*
+
+					*<A NAME="E1013"></A><B>E1013</B>* *<A NAME="E1029"></A><B>E1029</B>* *<A NAME="E1030"></A><B>E1030</B>*
+The following builtin types are supported:
+	bool
+	number
+	float
+	<A HREF="eval.html#string">string</A>
+	<A HREF="eval.html#blob">blob</A>
+	list&lt;{type}&gt;
+	dict&lt;{type}&gt;
+	<A HREF="channel.html#job">job</A>
+	<A HREF="channel.html#channel">channel</A>
+	func
+	func: {type}
+	func({type}, <A HREF="eval.html#...">...</A>)
+	func({type}, ...): {type}
+	void
+
+Not supported yet:
+	tuple&lt;a: {type}, <A HREF="eval.html#b:">b:</A> {type}, ...&gt;
+
+These types can be used in declarations, but no simple value will actually
+have the &quot;void&quot; type.  Trying to use a void (e.g. a function without a
+
+return value) results in error *<A NAME="E1031"></A><B>E1031</B>*  *<A NAME="E1186"></A><B>E1186</B>* .
+
+There is no array type, use list&lt;{type}&gt; instead.  For a <A HREF="eval.html#list">list</A> constant an
+efficient implementation is used that avoids allocating lot of small pieces of
+memory.
+
+							*<A NAME="E1005"></A><B>E1005</B>* *<A NAME="E1007"></A><B>E1007</B>*
+A <A HREF="builtin.html#partial">partial</A> and function can be declared in more or <A HREF="various.html#less">less</A> specific ways:
+func				any kind of function reference, no type
+				checking for arguments or return value
+func: void			any number and type of arguments, no return
+				value
+func: {type}			any number and type of arguments with specific
+				return type
+
+func()				function with no argument, does not return a
+				value
+func(): void			same
+func(): {type}			function with no argument and return type
+
+func({type})			function with argument type, does not return
+				a value
+func({type}): {type}		function with argument type and return type
+func(?{type})			function with type of optional argument, does
+				not return a value
+func(...{type})			function with type of variable number of
+				arguments, does not return a value
+func({type}, ?{type}, ...{type}): {type}
+				function with:
+				- type of mandatory argument
+				- type of optional argument
+				- type of variable number of arguments
+				- return type
+
+If the return type is &quot;void&quot; the function does not return a value.
+
+The reference can also be a |<A HREF="eval.html#Partial">Partial</A>|, in which <A HREF="change.html#case">case</A> <A HREF="motion.html#it">it</A> stores extra arguments
+and/or a dictionary, which are not visible to the caller.  Since they are
+called in the same way the declaration is the same.
+
+Custom types can be defined with `:type`:
+<B>	:type MyList list&lt;string&gt;</B>
+Custom types must start with a capital <A HREF="print.html#letter">letter</A>, to avoid name clashes with
+builtin types added later, similarly to user <A HREF="eval.html#functions">functions</A>.
+{not implemented yet}
+
+And classes and interfaces can be used <A HREF="motion.html#as">as</A> types:
+<B>	:class MyClass</B>
+<B>	:var mine: MyClass</B>
+
+<B>	:interface MyInterface</B>
+<B>	:var mine: MyInterface</B>
+
+<B>	:class MyTemplate&lt;Targ&gt;</B>
+<B>	:var mine: MyTemplate&lt;number&gt;</B>
+<B>	:var mine: MyTemplate&lt;string&gt;</B>
+
+<B>	:class MyInterface&lt;Targ&gt;</B>
+<B>	:var mine: MyInterface&lt;number&gt;</B>
+<B>	:var mine: MyInterface&lt;string&gt;</B>
+{not implemented yet}
+
+
+<B><FONT COLOR="PURPLE">Variable types and type casting	</FONT></B>
+
+							*<A NAME="variable-types"></A><B>variable-types</B>*
+Variables declared in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> or in a `:def` function have a type, either
+specified explicitly or inferred from the <A HREF="starting.html#initialization">initialization</A>.
+
+Global, buffer, <A HREF="windows.html#window">window</A> and <A HREF="intro.html#tab">tab</A> page <A HREF="eval.html#variables">variables</A> <A HREF="diff.html#do">do</A> not have a specific type, the
+value can be changed at any time, possibly <A HREF="change.html#changing">changing</A> the type.  Therefore, in
+compiled code the &quot;any&quot; type is assumed.
+
+This can be a problem when the &quot;any&quot; type is undesired and the actual type is
+expected to always be the same.  For example, when declaring a <A HREF="eval.html#list">list</A>:
+<B>	var l: list&lt;number&gt; = [1, g:two]</B>
+At compile time Vim doesn't know the type of &quot;g:two&quot; and the <A HREF="eval.html#expression">expression</A> type
+becomes list&lt;any&gt;.  An instruction is generated to check the <A HREF="eval.html#list">list</A> type before
+doing the assignment, which is a bit inefficient.
+
+						*<A NAME="type-casting"></A><B>type-casting</B>* *<A NAME="E1104"></A><B>E1104</B>*
+To avoid this, use a type cast:
+<B>	var l: list&lt;number&gt; = [1, &lt;number&gt;g:two]</B>
+The compiled code will then only check that &quot;g:two&quot; is a number and give an
+error if <A HREF="motion.html#it">it</A> isn't.  This is called type casting.
+
+The <A HREF="syntax.html#syntax">syntax</A> of a type cast is:  &quot;<A HREF="change.html#&lt;">&lt;</A>&quot; {type} &quot;<A HREF="change.html#&gt;">&gt;</A>&quot;.  There cannot be white space
+after the &quot;<A HREF="change.html#&lt;">&lt;</A>&quot; or before the &quot;<A HREF="change.html#&gt;">&gt;</A>&quot; (to avoid them being confused with
+smaller-than and bigger-than operators).
+
+The semantics is that, if needed, a runtime type check is performed.  The
+value is not actually changed.  If you need to change the type, e.g. to change
+<A HREF="motion.html#it">it</A> to a string, use the |<A HREF="builtin.html#string()">string()</A>| function.  Or use |<A HREF="builtin.html#str2nr()">str2nr()</A>| to convert a
+<A HREF="eval.html#string">string</A> to a number.
+
+
+<B><FONT COLOR="PURPLE">Type inference </FONT></B>
+
+							*<A NAME="type-inference"></A><B>type-inference</B>*
+In general: Whenever the type is clear <A HREF="motion.html#it">it</A> can be omitted.  For example, when
+declaring a variable and giving <A HREF="motion.html#it">it</A> a value:
+<B>	var name = 0		# infers number type</B>
+<B>	var name = 'hello'	# infers string type</B>
+
+The type of a <A HREF="eval.html#list">list</A> and dictionary comes from the common type of the values.
+If the values all have the same type, that type is used for the <A HREF="eval.html#list">list</A> or
+dictionary.  If there is a mix of types, the &quot;any&quot; type is used.
+<B>	[1, 2, 3]	list&lt;number&gt;</B>
+<B>	['a', 'b', 'c']	list&lt;string&gt;</B>
+<B>	[1, 'x', 3]	list&lt;any&gt;</B>
+
+The common type of function references, if they <A HREF="diff.html#do">do</A> not all have the same
+number of arguments, uses &quot;(...)&quot; to indicate the number of arguments is not
+specified.  For example:
+<B>	def Foo(x: bool)</B>
+<B>	enddef</B>
+<B>	def Bar(x: bool, y: bool)</B>
+<B>	enddef</B>
+<B>	var funclist = [Foo, Bar]</B>
+<B>	echo funclist-&gt;typename()</B>
+Results in:
+	list&lt;func(...)&gt;
+
+For <A HREF="map.html#script-local">script-local</A> <A HREF="eval.html#variables">variables</A> in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> the type is checked, also when the
+variable was declared in a legacy function.
+
+When a type has been declared this is attached to a <A HREF="eval.html#List">List</A> or <A HREF="eval.html#Dictionary">Dictionary</A>.  When
+later some <A HREF="eval.html#expression">expression</A> attempts to change the type an error will be given:
+<B>	var ll: list&lt;number&gt; = [1, 2, 3]</B>
+<B>	ll-&gt;extend(['x'])  # Error, 'x' is not a number</B>
+
+If the type is not declared then <A HREF="motion.html#it">it</A> is allowed to change:
+<B>	[1, 2, 3]-&gt;extend(['x'])  # result: [1, 2, 3, 'x']</B>
+
+For a variable declaration an inferred type matters:
+<B>	var ll = [1, 2, 3]</B>
+<B>	ll-&gt;extend(['x'])  # Error, 'x' is not a number</B>
+That is because the declaration looks like a <A HREF="eval.html#list">list</A> of numbers, thus is
+equivalent to:
+<B>	var ll: list&lt;number&gt; = [1, 2, 3]</B>
+If you <A HREF="diff.html#do">do</A> want a more permissive <A HREF="eval.html#list">list</A> you need to declare the type:
+<B>	var ll: list&lt;any = [1, 2, 3]</B>
+<B>	ll-&gt;extend(['x'])  # OK</B>
+
+
+<B><FONT COLOR="PURPLE">Stricter type checking </FONT></B>
+
+							*<A NAME="type-checking"></A><B>type-checking</B>*
+In legacy Vim <A HREF="usr_41.html#script">script</A>, where a number was expected, a <A HREF="eval.html#string">string</A> would be
+automatically converted to a number.  This was convenient for an actual number
+such <A HREF="motion.html#as">as</A> &quot;123&quot;, but leads to unexpected problems (and no error message) if the
+<A HREF="eval.html#string">string</A> doesn't start with a number.  Quite often this leads to hard-to-find
+bugs. e.g.:
+<B>	echo 123 == '123'</B>
+<B><FONT COLOR="PURPLE"> 	1 </FONT></B>
+With an accidental space:
+<B>	echo 123 == ' 123'</B>
+<B><FONT COLOR="PURPLE"> 	0 </FONT></B>
+
+							*<A NAME="E1206"></A><B>E1206</B>* *<A NAME="E1210"></A><B>E1210</B>* *<A NAME="E1212"></A><B>E1212</B>*
+In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> this has been made stricter.  In most places <A HREF="motion.html#it">it</A> works just <A HREF="motion.html#as">as</A>
+before if the value used matches the expected type.  There will sometimes be
+an error, thus breaking backwards compatibility.  For example:
+
+- Using a number other than 0 or 1 where a <A HREF="options.html#boolean">boolean</A> is expected.  *<A NAME="E1023"></A><B>E1023</B>*
+- Using a <A HREF="eval.html#string">string</A> value when setting a number option.
+
+- Using a number where a <A HREF="eval.html#string">string</A> is expected.   *<A NAME="E1024"></A><B>E1024</B>* *<A NAME="E1105"></A><B>E1105</B>*
+
+One consequence is that the item type of a <A HREF="eval.html#list">list</A> or <A HREF="eval.html#dict">dict</A> given to |<A HREF="builtin.html#map()">map()</A>| must
+not change, if the type was declared.  This will give an error in <A HREF="#Vim9">Vim9</A>
+<A HREF="usr_41.html#script">script</A>:
+<B>	var mylist: list&lt;number&gt; = [1, 2, 3]</B>
+<B>	echo map(mylist, (i, v) =&gt; 'item ' .. i)</B>
+<B><FONT COLOR="PURPLE"> 	E1012: Type mismatch; expected number but got string in map() </FONT></B>
+
+Instead use |<A HREF="builtin.html#mapnew()">mapnew()</A>|, <A HREF="motion.html#it">it</A> creates a new <A HREF="eval.html#list">list</A>:
+<B>	var mylist: list&lt;number&gt; = [1, 2, 3]</B>
+<B>	echo mapnew(mylist, (i, v) =&gt; 'item ' .. i)</B>
+<B><FONT COLOR="PURPLE"> 	['item 0', 'item 1', 'item 2'] </FONT></B>
+
+If the item type was not declared or determined to be &quot;any&quot; <A HREF="motion.html#it">it</A> can change to a
+more specific type.  E.g. when a <A HREF="eval.html#list">list</A> of mixed types gets changed to a <A HREF="eval.html#list">list</A> of
+strings:
+<B>	var mylist = [1, 2.0, '3']</B>
+<B>	# typename(mylist) == "list&lt;any&gt;"</B>
+<B>	map(mylist, (i, v) =&gt; 'item ' .. i)</B>
+<B>	# typename(mylist) == "list&lt;string&gt;", no error</B>
+
+There is a subtle difference between using a <A HREF="eval.html#list">list</A> constant directly and
+through a variable declaration.  Because of type inference, when using a <A HREF="eval.html#list">list</A>
+constant to initialize a variable, this also sets the declared type:
+<B>	var mylist = [1, 2, 3]</B>
+<B>	# typename(mylist) == "list&lt;number&gt;"</B>
+<B>	echo map(mylist, (i, v) =&gt; 'item ' .. i)  # Error!</B>
+
+When using the <A HREF="eval.html#list">list</A> constant directly, the type is not declared and is allowed
+to change:
+<B>	echo map([1, 2, 3], (i, v) =&gt; 'item ' .. i)  # OK</B>
+
+The reasoning behind this is that when a type is declared and the <A HREF="eval.html#list">list</A> is
+passed around and changed, the declaration must always hold.  So that you can
+rely on the type to match the declared type.  For a constant this is not
+needed.
+
+
+								*<A NAME="E1158"></A><B>E1158</B>*
+Same for |<A HREF="builtin.html#extend()">extend()</A>|, use |<A HREF="builtin.html#extendnew()">extendnew()</A>| instead, and for |<A HREF="builtin.html#flatten()">flatten()</A>|, use
+|<A HREF="builtin.html#flattennew()">flattennew()</A>| instead.  Since |<A HREF="builtin.html#flatten()">flatten()</A>| is intended to always change the
+type, <A HREF="motion.html#it">it</A> can not be used in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>.
+
+
+			 *<A NAME="E1211"></A><B>E1211</B>* *<A NAME="E1217"></A><B>E1217</B>* *<A NAME="E1218"></A><B>E1218</B>* *<A NAME="E1219"></A><B>E1219</B>* *<A NAME="E1220"></A><B>E1220</B>* *<A NAME="E1221"></A><B>E1221</B>*
+
+			 *<A NAME="E1222"></A><B>E1222</B>* *<A NAME="E1223"></A><B>E1223</B>* *<A NAME="E1224"></A><B>E1224</B>* *<A NAME="E1225"></A><B>E1225</B>* *<A NAME="E1226"></A><B>E1226</B>* *<A NAME="E1227"></A><B>E1227</B>*
+
+			 *<A NAME="E1228"></A><B>E1228</B>* *<A NAME="E1238"></A><B>E1238</B>* *<A NAME="E1250"></A><B>E1250</B>* *<A NAME="E1251"></A><B>E1251</B>* *<A NAME="E1252"></A><B>E1252</B>* *<A NAME="E1253"></A><B>E1253</B>*
+
+			 *<A NAME="E1256"></A><B>E1256</B>*
+Types are checked for most builtin <A HREF="eval.html#functions">functions</A> to make <A HREF="motion.html#it">it</A> easier to spot
+mistakes.
+
+==============================================================================
+
+5. Namespace, Import and Export
+
+					*<A NAME="vim9script"></A><B>vim9script</B>* *<A NAME="vim9-export"></A><B>vim9-export</B>* *<A NAME="vim9-import"></A><B>vim9-import</B>*
+
+A <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> can be written to be imported.  This means that some items are
+intentionally exported, made available to other scripts.  When the exporting
+<A HREF="usr_41.html#script">script</A> is imported in another <A HREF="usr_41.html#script">script</A>, these exported items can then be used in
+that <A HREF="usr_41.html#script">script</A>.  All the other items remain <A HREF="map.html#script-local">script-local</A> in the exporting <A HREF="usr_41.html#script">script</A>
+and cannot be accessed by the importing <A HREF="usr_41.html#script">script</A>.
+
+This mechanism exists for <A HREF="editing.html#writing">writing</A> a <A HREF="usr_41.html#script">script</A> that can be sourced (imported) by
+other scripts, while making sure these other scripts only have access to what
+you want them to.  This also avoids using the global namespace, which has a
+risk of name collisions.  For example when you have two plugins with similar
+functionality.
+
+You can cheat by using the global namespace explicitly.  That should be done
+only for things that really are global.
+
+
+<B><FONT COLOR="PURPLE">Namespace </FONT></B>
+
+							*<A NAME="vim9-namespace"></A><B>vim9-namespace</B>*
+To recognize a file that can be imported the `vim9script` statement must
+appear <A HREF="motion.html#as">as</A> the first statement in the file (see |<A HREF="#vim9-mix">vim9-mix</A>| for an exception).
+It tells Vim to interpret the <A HREF="usr_41.html#script">script</A> in its own namespace, instead of the
+global namespace.  If a file starts with:
+<B>	vim9script</B>
+<B>	var myvar = 'yes'</B>
+Then &quot;myvar&quot; will only exist in this file.  While without `vim9script` <A HREF="motion.html#it">it</A> would
+be available <A HREF="motion.html#as">as</A> `g:myvar` from any other <A HREF="usr_41.html#script">script</A> and function.
+
+							*<A NAME="E1101"></A><B>E1101</B>*
+The <A HREF="eval.html#variables">variables</A> at the file level are very much like the <A HREF="map.html#script-local">script-local</A> &quot;s:&quot;
+<A HREF="eval.html#variables">variables</A> in legacy Vim <A HREF="usr_41.html#script">script</A>, but the &quot;s:&quot; is omitted.  And they cannot be
+deleted.
+
+In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> the global &quot;<A HREF="eval.html#g:">g:</A>&quot; namespace can still be used <A HREF="motion.html#as">as</A> before.  And the
+&quot;<A HREF="eval.html#w:">w:</A>&quot;, &quot;<A HREF="eval.html#b:">b:</A>&quot; and &quot;<A HREF="eval.html#t:">t:</A>&quot; namespaces.  These have in common that <A HREF="eval.html#variables">variables</A> are not
+declared and they can be deleted.
+
+A side effect of `:vim9script` is that the <A HREF="options.html#'cpoptions'">'cpoptions'</A> option is set to the
+Vim default value, like with:
+<B>	:set cpo&amp;vim</B>
+One of the effects is that |<A HREF="repeat.html#line-continuation">line-continuation</A>| is always enabled.
+The original value of <A HREF="options.html#'cpoptions'">'cpoptions'</A> is restored at the end of the <A HREF="usr_41.html#script">script</A>, while
+flags added or removed in the <A HREF="usr_41.html#script">script</A> are also added to or removed from the
+original value to get the same effect.  The order of flags may change.
+In the |<A HREF="starting.html#vimrc">vimrc</A>| file sourced on <A HREF="starting.html#startup">startup</A> this does not happen.
+
+
+							*<A NAME="vim9-mix"></A><B>vim9-mix</B>*
+There is one way to use both legacy and <A HREF="#Vim9">Vim9</A> <A HREF="syntax.html#syntax">syntax</A> in one <A HREF="usr_41.html#script">script</A> file:
+<B>	" comments may go here</B>
+<B>	if !has('vim9script')</B>
+<B>	   " legacy script commands go here</B>
+<B>	   finish</B>
+<B>	endif</B>
+<B>	vim9script</B>
+<B>	# Vim9 script commands go here</B>
+This allows for <A HREF="editing.html#writing">writing</A> a <A HREF="usr_41.html#script">script</A> that takes advantage of the <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>
+<A HREF="syntax.html#syntax">syntax</A> if possible, but will also work on a Vim version without <A HREF="motion.html#it">it</A>.
+
+This can only work in two ways:
+1. The &quot;if&quot; statement evaluates to <A HREF="#false">false</A>, the commands up to `endif` are
+   skipped and `vim9script` is then the first command actually executed.
+2. The &quot;if&quot; statement evaluates to <A HREF="#true">true</A>, the commands up to `endif` are
+   executed and `finish` bails out before reaching `vim9script`.
+
+
+<B><FONT COLOR="PURPLE">Export </FONT></B>
+
+							*<A NAME=":export"></A><B>:export</B>* *<A NAME=":exp"></A><B>:exp</B>*
+Exporting an item can be written <A HREF="motion.html#as">as</A>:
+<B>	export const EXPORTED_CONST = 1234</B>
+<B>	export var someValue = ...</B>
+<B>	export final someValue = ...</B>
+<B>	export const someValue = ...</B>
+<B>	export def MyFunc() ...</B>
+<B>	export class MyClass ...</B>
+<B>	export interface MyClass ...</B>
+
+ 							*<A NAME="E1043"></A><B>E1043</B>* *<A NAME="E1044"></A><B>E1044</B>*
+As this suggests, only constants, <A HREF="eval.html#variables">variables</A>, `:def` <A HREF="eval.html#functions">functions</A> and classes can
+be exported. {not implemented yet: class, interface}
+
+
+							*<A NAME="E1042"></A><B>E1042</B>*
+`:export` can only be used in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>, at the <A HREF="usr_41.html#script">script</A> level.
+
+
+<B><FONT COLOR="PURPLE">Import </FONT></B>
+
+					*<A NAME=":import"></A><B>:import</B>* *<A NAME=":imp"></A><B>:imp</B>* *<A NAME="E1094"></A><B>E1094</B>* *<A NAME="E1047"></A><B>E1047</B>* *<A NAME="E1262"></A><B>E1262</B>*
+
+					*<A NAME="E1048"></A><B>E1048</B>* *<A NAME="E1049"></A><B>E1049</B>* *<A NAME="E1053"></A><B>E1053</B>* *<A NAME="E1071"></A><B>E1071</B>* *<A NAME="E1236"></A><B>E1236</B>*
+The exported items can be imported in another <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>:
+<B>	import "myscript.vim"</B>
+
+This makes each item available <A HREF="motion.html#as">as</A> &quot;myscript.item&quot;.
+
+						*<A NAME=":import-as"></A><B>:import-as</B>* *<A NAME="E1257"></A><B>E1257</B>* *<A NAME="E1261"></A><B>E1261</B>*
+In <A HREF="change.html#case">case</A> the name is long or ambiguous, another name can be specified:
+<B>	import "thatscript.vim" as that</B>
+
+ 						*<A NAME="E1060"></A><B>E1060</B>* *<A NAME="E1258"></A><B>E1258</B>* *<A NAME="E1259"></A><B>E1259</B>* *<A NAME="E1260"></A><B>E1260</B>*
+Then you can use &quot;that.EXPORTED_CONST&quot;, &quot;that.someValue&quot;, etc.  You are free
+to choose the name &quot;that&quot;.  Use something that will be recognized <A HREF="motion.html#as">as</A> referring
+to the imported <A HREF="usr_41.html#script">script</A>.  Avoid command names, command modifiers and builtin
+function names, because the name will shadow them.
+If the name starts with a capital <A HREF="print.html#letter">letter</A> <A HREF="motion.html#it">it</A> can also shadow global user
+commands and <A HREF="eval.html#functions">functions</A>.  Also, you cannot use the name for something else in
+the <A HREF="usr_41.html#script">script</A>, such <A HREF="motion.html#as">as</A> a function or variable name.
+
+In <A HREF="change.html#case">case</A> the dot in the name is undesired, a local reference can be made for a
+function:
+<B>	var LongFunc = that.LongFuncName</B>
+
+This also works for constants:
+<B>	const MAXLEN = that.MAX_LEN_OF_NAME</B>
+
+This does not work for <A HREF="eval.html#variables">variables</A>, since the value would be copied once and
+when <A HREF="change.html#changing">changing</A> the variable the copy will change, not the original variable.
+You will need to use the full name, with the dot.
+
+The full <A HREF="syntax.html#syntax">syntax</A> of the command is:
+	import {filename} [as {name}]
+Where {filename} is an <A HREF="eval.html#expression">expression</A> that must evaluate to a <A HREF="eval.html#string">string</A>.  Without the
+&quot;<A HREF="motion.html#as">as</A> {name}&quot; part <A HREF="motion.html#it">it</A> must end in &quot;.vim&quot;.  {name} must consist of letters,
+digits and '<A HREF="motion.html#_">_</A>', like |<A HREF="eval.html#internal-variables">internal-variables</A>|.
+
+`:import` can also be used in legacy Vim <A HREF="usr_41.html#script">script</A>.  The imported items still
+become <A HREF="map.html#script-local">script-local</A>, even when the &quot;s:&quot; prefix is not given.
+
+`:import` can not be used in a function.  Imported items are intended to exist
+at the <A HREF="usr_41.html#script">script</A> level and only imported once.
+
+The <A HREF="usr_41.html#script">script</A> name after `import` can be:
+- A relative path, starting &quot;<A HREF="repeat.html#.">.</A>&quot; or &quot;..&quot;.  This finds a file relative to the
+  location of the <A HREF="usr_41.html#script">script</A> file itself.  This is useful to split up a large
+  <A HREF="usr_05.html#plugin">plugin</A> into several files.
+- An absolute path, starting with &quot;<A HREF="pattern.html#/">/</A>&quot; on <A HREF="os_unix.html#Unix">Unix</A> or &quot;D:/&quot; on <A HREF="os_win32.html#MS-Windows">MS-Windows</A>.  This
+  will rarely be used.
+- A path not being relative or absolute.  This will be found in the
+  &quot;import&quot; subdirectories of <A HREF="options.html#'runtimepath'">'runtimepath'</A> entries.  The name will usually be
+  longer and unique, to avoid loading the wrong file.
+  Note that &quot;after/import&quot; is not used.
+
+If the name does not end in &quot;.vim&quot; then the use of &quot;<A HREF="motion.html#as">as</A> name&quot; is required.
+
+Once a <A HREF="#vim9">vim9</A> <A HREF="usr_41.html#script">script</A> file has been imported, the result is cached and used the
+next time the same <A HREF="usr_41.html#script">script</A> is imported.  It will not be read again.
+
+It is not allowed to import the same <A HREF="usr_41.html#script">script</A> <A HREF="if_cscop.html#twice">twice</A>, also when using two
+different &quot;<A HREF="motion.html#as">as</A>&quot; names.
+
+When using the imported name the dot and the item name must be in the same
+line, there can be no line break:
+<B>	echo that.</B>
+<B>		name   # Error!</B>
+<B>	echo that</B>
+<B>		.name  # Error!</B>
+
+To refer to a function in an imported <A HREF="usr_41.html#script">script</A> in a <A HREF="map.html#mapping">mapping</A>, |<A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A>| can be
+used:
+<B>	noremap &lt;silent&gt; ,a :call &lt;SID&gt;name.Function()&lt;CR&gt;</B>
+
+When the <A HREF="map.html#mapping">mapping</A> is defined &quot;&lt;SID&gt;name.&quot; will be replaced with <A HREF="map.html#&lt;SNR&gt;">&lt;SNR&gt;</A> and the
+<A HREF="usr_41.html#script">script</A> ID of the imported <A HREF="usr_41.html#script">script</A>.
+An even simpler solution is using YXXY&lt;ScriptCmd&gt;|:
+<B>	noremap ,a &lt;ScriptCmd&gt;name.Function()&lt;CR&gt;</B>
+ 
+
+							*<A NAME=":import-cycle"></A><B>:import-cycle</B>*
+The `import` commands are executed when encountered.  If <A HREF="usr_41.html#script">script</A> A imports
+<A HREF="usr_41.html#script">script</A> <A HREF="motion.html#B">B</A>, and <A HREF="motion.html#B">B</A> (directly or indirectly) imports A, this will be skipped over.
+At this point items in A after &quot;import B&quot; will not have been processed and
+defined yet.  Therefore cyclic imports can exist and not result in an error
+directly, but may result in an error for items in A after &quot;import B&quot; not being
+defined.  This does not apply to <A HREF="eval.html#autoload">autoload</A> imports, see the next section.
+
+
+<B><FONT COLOR="PURPLE">Importing an autoload script </FONT></B>
+
+							*<A NAME="vim9-autoload"></A><B>vim9-autoload</B>*
+For optimal <A HREF="starting.html#startup">startup</A> speed, loading scripts should be postponed until they are
+actually needed.  Using the <A HREF="eval.html#autoload">autoload</A> mechanism is recommended:
+
+							*<A NAME="E1264"></A><B>E1264</B>*
+1. In the <A HREF="usr_05.html#plugin">plugin</A> define user commands, <A HREF="eval.html#functions">functions</A> and/or mappings that refer to
+   items imported from an <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A>.
+<B>	import autoload 'for/search.vim'</B>
+<B>	command -nargs=1 SearchForStuff search.Stuff(&lt;f-args&gt;)</B>
+
+    This goes in .../plugin/anyname.vim.  &quot;anyname.vim&quot; can be freely chosen.
+   The &quot;SearchForStuff&quot; command is now available to the user.
+
+   The &quot;<A HREF="eval.html#autoload">autoload</A>&quot; argument to `:import` means that the <A HREF="usr_41.html#script">script</A> is not loaded
+   until one of the items is actually used.  The <A HREF="usr_41.html#script">script</A> will be found under
+   the &quot;<A HREF="eval.html#autoload">autoload</A>&quot; directory in <A HREF="options.html#'runtimepath'">'runtimepath'</A> instead of the &quot;import&quot;
+   directory.  Alternatively a relative or absolute name can be used, see
+   below.
+
+2. In the <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> put the bulk of the code.
+<B>	vim9script</B>
+<B>	export def Stuff(arg: string)</B>
+<B>	  ...</B>
+
+    This goes in .../autoload/for/search.vim.
+
+   Putting the &quot;search.vim&quot; <A HREF="usr_41.html#script">script</A> under the &quot;/autoload/for/&quot; directory has
+   the effect that &quot;for#search#&quot; will be prefixed to every exported item.  The
+   prefix is obtained from the file name, <A HREF="motion.html#as">as</A> you would to manually in a
+   legacy <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A>.  Thus the exported function can be found with
+   &quot;for#search#Stuff&quot;, but you would normally use `import autoload` and not
+   use the prefix (which has the side effect of loading the <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A>
+   when compiling a function that encounters this name).
+
+   You can split up the functionality and import other scripts from the
+   <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> <A HREF="motion.html#as">as</A> you like.  This way you can share code between plugins.
+
+Searching for the <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> in all entries in <A HREF="options.html#'runtimepath'">'runtimepath'</A> can be a bit
+slow.  If the <A HREF="usr_05.html#plugin">plugin</A> knows where the <A HREF="usr_41.html#script">script</A> is located, quite often a relative
+path can be used.  This avoids the search and should be quite a bit faster.
+Another advantage is that the <A HREF="usr_41.html#script">script</A> name does not need to be unique.  An
+absolute path is also possible.  Examples:
+<B>	import autoload '../lib/implement.vim'</B>
+<B>	import autoload MyScriptsDir .. '/lib/implement.vim'</B>
+
+For defining a <A HREF="map.html#mapping">mapping</A> that uses the imported <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> the special key
+|<A HREF="map.html#&lt;ScriptCmd&gt;">&lt;ScriptCmd&gt;</A>| is useful.  It allows for a command in a <A HREF="map.html#mapping">mapping</A> to use the
+<A HREF="usr_41.html#script">script</A> context of where the <A HREF="map.html#mapping">mapping</A> was defined.
+
+When compiling a `:def` function and a function in an <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> is
+encountered, the <A HREF="usr_41.html#script">script</A> is not loaded until the `:def` function is called.
+This also means you get any <A HREF="message.html#errors">errors</A> only at runtime, since the argument and
+return types are not known yet.  If you would use the name with '<A HREF="pattern.html##">#</A>' characters
+then the <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> IS loaded.
+
+Be careful to not refer to an item in an <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> that does trigger
+loading <A HREF="motion.html#it">it</A> unintentionally.  For example, when setting an option that takes a
+function name, make sure to use a <A HREF="eval.html#string">string</A>, not a function reference:
+<B>	import autoload 'qftf.vim'</B>
+<B>	&amp;quickfixtextfunc = 'qftf.Func'  # autoload script NOT loaded</B>
+<B>	&amp;quickfixtextfunc = qftf.Func    # autoload script IS loaded</B>
+On the other hand, <A HREF="motion.html#it">it</A> can be useful to load the <A HREF="usr_41.html#script">script</A> early, at a time when
+any <A HREF="message.html#errors">errors</A> should be given.
+
+For <A HREF="testing.html#testing">testing</A> the |<A HREF="testing.html#test_override()">test_override()</A>| function can be used to have the
+`import autoload` load the <A HREF="usr_41.html#script">script</A> right away, so that the items and types can
+be checked without waiting for them to be actually used:
+<B>	test_override('autoload', 1)</B>
+Reset <A HREF="motion.html#it">it</A> later with:
+<B>	test_override('autoload', 0)</B>
+Or:
+<B>	test_override('ALL', 0)</B>
+
+
+==============================================================================
+
+
+6. Future work: classes					*<A NAME="vim9-classes"></A><B>vim9-classes</B>*
+
+Above &quot;class&quot; was mentioned a few times, but <A HREF="motion.html#it">it</A> has not been implemented yet.
+Most of <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> can be created without this functionality, and since
+implementing classes is going to be a lot of work, <A HREF="motion.html#it">it</A> is left for the future.
+For now we'll just make sure classes can be added later.
+
+Thoughts:
+- `class` / `endclass`, the whole class must be in one file
+- Class names are always CamelCase (to avoid a name clash with builtin types)
+- A single constructor called &quot;constructor&quot;
+- Single inheritance with `class ThisClass extends BaseClass`
+- `abstract class` (class with incomplete implementation)
+- `interface` / `endinterface` (abstract class without any implementation)
+- `class SomeClass implements SomeInterface`
+- Generics for class: `class &lt;Tkey, Tentry&gt;`
+- Generics for function: `def &lt;Tkey&gt; GetLast(key: Tkey)`
+
+Again, much of this is from TypeScript with a slightly different <A HREF="syntax.html#syntax">syntax</A>.
+
+Some things that look like good additions:
+- Use a class <A HREF="motion.html#as">as</A> an interface (like Dart)
+- Extend a class with methods, using an import (like Dart)
+- Mixins
+- For <A HREF="testing.html#testing">testing</A>: Mock mechanism
+
+An important class that will be provided is &quot;Promise&quot;.  Since Vim is single
+threaded, connecting asynchronous operations is a natural way of allowing
+plugins to <A HREF="diff.html#do">do</A> their work without blocking the user.  It's a uniform way to
+invoke callbacks and handle timeouts and <A HREF="message.html#errors">errors</A>.
+
+Some commands have already been reserved:
+
+	*<A NAME=":class"></A><B>:class</B>*
+
+	*<A NAME=":endclass"></A><B>:endclass</B>*
+
+	*<A NAME=":abstract"></A><B>:abstract</B>*
+
+	*<A NAME=":enum"></A><B>:enum</B>*
+
+	*<A NAME=":endenum"></A><B>:endenum</B>*
+
+	*<A NAME=":interface"></A><B>:interface</B>*
+
+	*<A NAME=":endinterface"></A><B>:endinterface</B>*
+
+	*<A NAME=":static"></A><B>:static</B>*
+
+	*<A NAME=":type"></A><B>:type</B>*
+
+Some examples:
+
+<B>	abstract class Person </B>
+<B>	    static const prefix = 'xxx'</B>
+<B>	    var name: string</B>
+<B>	    </B>
+<B>	    def constructor(name: string)</B>
+<B>		this.name = name</B>
+<B>	    enddef</B>
+
+<B>	    def display(): void</B>
+<B>		echo name</B>
+<B>	    enddef</B>
+
+<B>	    abstract def find(string): Person</B>
+<B>	endclass</B>
+
+==============================================================================
+
+
+9. Rationale						*<A NAME="vim9-rationale"></A><B>vim9-rationale</B>*
+
+<B><FONT COLOR="PURPLE">The :def command </FONT></B>
+
+Plugin writers have asked for much faster Vim <A HREF="usr_41.html#script">script</A>.  Investigations have
+shown that keeping the existing semantics of function calls make this close to
+impossible, because of the overhead involved with calling a function, setting
+up the local function scope and executing lines.  There are many details that
+need to be handled, such <A HREF="motion.html#as">as</A> error <A HREF="message.html#messages">messages</A> and exceptions.  The need to create
+a dictionary for a: and <A HREF="eval.html#l:">l:</A> scopes, the <A HREF="eval.html#a:000">a:000</A> <A HREF="eval.html#list">list</A> and several others add too
+much overhead that cannot be avoided.
+
+Therefore the `:def` <A HREF="eval.html#method">method</A> to define a new-style function had to be added,
+which allows for a function with different semantics.  Most things still work
+<A HREF="motion.html#as">as</A> before, but some parts <A HREF="diff.html#do">do</A> not.  A new way to define a function was
+considered the best way to separate the legacy style code from <A HREF="#Vim9">Vim9</A> style code.
+
+Using &quot;def&quot; to define a function comes from <A HREF="if_pyth.html#Python">Python</A>. Other languages use
+&quot;function&quot; which clashes with legacy Vim <A HREF="usr_41.html#script">script</A>.
+
+
+<B><FONT COLOR="PURPLE">Type checking </FONT></B>
+
+When compiling lines of Vim commands into instructions <A HREF="motion.html#as">as</A> much <A HREF="motion.html#as">as</A> possible
+should be done at compile time.  Postponing <A HREF="motion.html#it">it</A> to runtime makes the execution
+slower and means mistakes are found only later.  For example, when
+encountering the &quot;<A HREF="motion.html#+">+</A>&quot; character and compiling this into a generic add
+instruction, at runtime the instruction would have to inspect the type of the
+arguments and decide what kind of addition to <A HREF="diff.html#do">do</A>.  And when the type is
+dictionary throw an error.  If the types are known to be numbers then an &quot;add
+number&quot; instruction can be used, which is faster.  The error can be given at
+compile time, no error handling is needed at runtime, since adding two numbers
+cannot fail.
+
+The <A HREF="syntax.html#syntax">syntax</A> for types, using &lt;type&gt; for compound types, is similar to Java.  It
+is <A HREF="starting.html#easy">easy</A> to understand and widely used.  The type names are what were used in
+Vim before, with some additions such <A HREF="motion.html#as">as</A> &quot;void&quot; and &quot;bool&quot;.
+
+
+<B><FONT COLOR="PURPLE">Removing clutter and weirdness </FONT></B>
+
+Once decided that `:def` <A HREF="eval.html#functions">functions</A> have different <A HREF="syntax.html#syntax">syntax</A> than legacy <A HREF="eval.html#functions">functions</A>,
+we are free to add improvements to make the code more familiar for users who
+know popular programming languages.  In other words: remove weird things that
+only Vim does.
+
+We can also remove clutter, mainly things that were done to make Vim <A HREF="usr_41.html#script">script</A>
+backwards compatible with the good old <A HREF="intro.html#Vi">Vi</A> commands.
+
+Examples:
+- Drop `:call` for calling a function and `:eval` for evaluating an
+  <A HREF="eval.html#expression">expression</A>.
+- Drop using a leading <A HREF="intro.html#backslash">backslash</A> for line continuation, automatically figure
+  out where an <A HREF="eval.html#expression">expression</A> ends.
+
+However, this does require that some things need to change:
+- Comments start with # instead of &quot;<A HREF="motion.html#,">,</A> to avoid confusing them with strings.
+  This is good anyway, <A HREF="motion.html#it">it</A> is also used by several popular languages.
+- <A HREF="intro.html#Ex">Ex</A> command ranges need to be prefixed with a colon, to avoid confusion with
+  expressions (single <A HREF="change.html#quote">quote</A> can be a <A HREF="eval.html#string">string</A> or a <A HREF="motion.html#mark">mark</A>, &quot;<A HREF="pattern.html#/">/</A>&quot; can be divide or a
+  search command, etc.).
+
+Goal is to limit the differences.  A good criteria is that when the old <A HREF="syntax.html#syntax">syntax</A>
+is accidentally used you are very likely to get an error message.
+
+
+<B><FONT COLOR="PURPLE">Syntax and semantics from popular languages </FONT></B>
+
+Script writers have complained that the Vim <A HREF="usr_41.html#script">script</A> <A HREF="syntax.html#syntax">syntax</A> is unexpectedly
+different from what they are used to.  To reduce this complaint popular
+languages are used <A HREF="motion.html#as">as</A> an example.  At the same time, we <A HREF="diff.html#do">do</A> not want to <A HREF="editing.html#abandon">abandon</A>
+the well-known parts of legacy Vim <A HREF="usr_41.html#script">script</A>.
+
+For many things TypeScript is followed.  It's a recent language that is
+gaining popularity and has similarities with Vim <A HREF="usr_41.html#script">script</A>.  It also has a
+mix of static typing (a variable always has a known value type) and dynamic
+typing (a variable can have different types, this changes at runtime).  Since
+legacy Vim <A HREF="usr_41.html#script">script</A> is dynamically typed and a lot of existing functionality
+(esp. builtin <A HREF="eval.html#functions">functions</A>) depends on that, while static typing allows for much
+faster execution, we need to have this mix in <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>.
+
+There is no intention to completely match TypeScript <A HREF="syntax.html#syntax">syntax</A> and semantics.  We
+just want to take those parts that we can use for Vim and we expect Vim users
+will be happy with.  TypeScript is a complex language with its own <A HREF="cmdline.html#history">history</A>,
+advantages and disadvantages.  To get an idea of the disadvantages read the
+<A HREF="intro.html#book">book</A>: &quot;JavaScript: The Good Parts&quot;.  Or find the article &quot;TypeScript: the good
+parts&quot; and read the &quot;Things to avoid&quot; section.
+
+People familiar with other languages (Java, <A HREF="if_pyth.html#Python">Python</A>, etc.) will also find
+things in TypeScript that they <A HREF="diff.html#do">do</A> not like or <A HREF="diff.html#do">do</A> not understand.  We'll try to
+avoid those things.
+
+Specific items from TypeScript we avoid:
+- Overloading &quot;<A HREF="motion.html#+">+</A>&quot;, using <A HREF="motion.html#it">it</A> both for addition and <A HREF="eval.html#string">string</A> concatenation.  This
+  goes against legacy Vim <A HREF="usr_41.html#script">script</A> and often leads to mistakes.  For that reason
+  we will keep using &quot;..&quot; for <A HREF="eval.html#string">string</A> concatenation.  <A HREF="if_lua.html#Lua">Lua</A> also uses &quot;..&quot; this
+  way.  And <A HREF="motion.html#it">it</A> allows for conversion to <A HREF="eval.html#string">string</A> for more values.
+- TypeScript can use an <A HREF="eval.html#expression">expression</A> like &quot;99 &#124;&#124; 'yes&#39;&#34;' in a condition, but
+  cannot assign the value to a <A HREF="options.html#boolean">boolean</A>.  That is inconsistent and can be
+  annoying.  Vim recognizes an <A HREF="eval.html#expression">expression</A> with &amp;&amp; or &#124;&#124; and allows using the
+  result <A HREF="motion.html#as">as</A> a bool.  The |<A HREF="eval.html#falsy-operator">falsy-operator</A>| was added for the mechanism to use a
+  default value.
+- TypeScript considers an empty <A HREF="eval.html#string">string</A> <A HREF="motion.html#as">as</A> Falsy, but an empty <A HREF="eval.html#list">list</A> or <A HREF="eval.html#dict">dict</A> <A HREF="motion.html#as">as</A>
+  Truthy.  That is inconsistent.  In Vim an empty <A HREF="eval.html#list">list</A> and <A HREF="eval.html#dict">dict</A> are also
+  Falsy.
+- TypeScript has various &quot;Readonly&quot; types, which have limited usefulness,
+  since a type cast can remove the immutable nature.  Vim locks the value,
+  which is more flexible, but is only checked at runtime.
+- TypeScript has a complicated &quot;import&quot; statement that does not match how the
+  Vim import mechanism works.  A much simpler mechanism is used instead, which
+  matches that the imported <A HREF="usr_41.html#script">script</A> is only sourced once.
+
+
+<B><FONT COLOR="PURPLE">Declarations </FONT></B>
+
+Legacy Vim <A HREF="usr_41.html#script">script</A> uses `:let` for every assignment, while in <A HREF="#Vim9">Vim9</A> declarations
+are used.  That is different, thus it's good to use a different command:
+`:var`.  This is used in many languages.  The semantics might be slightly
+different, but it's easily recognized <A HREF="motion.html#as">as</A> a declaration.
+
+Using `:const`  for constants is common, but the semantics varies.  Some
+languages only make the variable immutable, others also make the value
+immutable.  Since &quot;final&quot; is well known from Java for only making the variable
+immutable we decided to use that.  And then `:const` can be used for making
+both immutable.  This was also used in legacy Vim <A HREF="usr_41.html#script">script</A> and the meaning is
+almost the same.
+
+What we end up with is very similar to Dart:
+<B>	:var name	# mutable variable and value</B>
+<B>	:final name	# immutable variable, mutable value</B>
+<B>	:const name	# immutable variable and value</B>
+
+Since legacy and <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> will be mixed and global <A HREF="eval.html#variables">variables</A> will be
+shared, optional type checking is desirable.  Also, type inference will avoid
+the need for specifying the type in many cases.  The TypeScript <A HREF="syntax.html#syntax">syntax</A> fits
+best for adding types to declarations:
+<B>	var name: string	  # string type is specified</B>
+<B>	...</B>
+<B>	name = 'John'</B>
+<B>	const greeting = 'hello'  # string type is inferred</B>
+
+This is how we put types in a declaration:
+<B>	var mylist: list&lt;string&gt;</B>
+<B>	final mylist: list&lt;string&gt; = ['foo']</B>
+<B>	def Func(arg1: number, arg2: string): bool</B>
+
+Two alternatives were considered:
+1. Put the type before the name, like Dart:
+<B>	var list&lt;string&gt; mylist</B>
+<B>	final list&lt;string&gt; mylist = ['foo']</B>
+<B>	def Func(number arg1, string arg2) bool</B>
+2. Put the type after the variable name, but <A HREF="diff.html#do">do</A> not use a colon, like Go:
+<B>	var mylist list&lt;string&gt;</B>
+<B>	final mylist list&lt;string&gt; = ['foo']</B>
+<B>	def Func(arg1 number, arg2 string) bool</B>
+
+The first is more familiar for anyone used to C or Java.  The second one
+doesn't really have an advantage over the first, so let's <A HREF="editing.html#discard">discard</A> the second.
+
+Since we use type inference the type can be left out when <A HREF="motion.html#it">it</A> can be inferred
+from the value.  This means that after `var` we don't know if a type or a name
+follows.  That makes parsing harder, not only for Vim but also for humans.
+Also, <A HREF="motion.html#it">it</A> will not be allowed to use a variable name that could be a type name,
+using `var <A HREF="eval.html#string">string</A> string` is too confusing.
+
+The chosen <A HREF="syntax.html#syntax">syntax</A>, using a colon to separate the name from the type, adds
+punctuation, but <A HREF="motion.html#it">it</A> actually makes <A HREF="motion.html#it">it</A> easier to recognize the parts of a
+declaration.
+
+
+<B><FONT COLOR="PURPLE">Expressions </FONT></B>
+
+Expression evaluation was already close to what other languages are doing.
+Some details are unexpected and can be improved.  For example a <A HREF="options.html#boolean">boolean</A>
+condition would accept a <A HREF="eval.html#string">string</A>, convert <A HREF="motion.html#it">it</A> to a number and check if the
+number is non-zero.  This is unexpected and often leads to mistakes, since
+text not starting with a number would be converted to zero, which is
+considered <A HREF="#false">false</A>.  Thus using a <A HREF="eval.html#string">string</A> for a condition would often not give an
+error and be considered <A HREF="#false">false</A>.  That is confusing.
+
+In <A HREF="#Vim9">Vim9</A> type checking is stricter to avoid mistakes.  Where a condition is
+used, e.g. with the `:if` command and the `&#124;&#124;` <A HREF="motion.html#operator">operator</A>, only boolean-like
+values are accepted:
+	<A HREF="#true">true</A>:  `true`, `v:true`, `1`, <A HREF="motion.html#`0">`0</A> <A HREF="change.html#&lt;">&lt;</A> 9`
+	<A HREF="#false">false</A>: `false`, `v:false`, `0`, <A HREF="motion.html#`0">`0</A> <A HREF="change.html#&gt;">&gt;</A> 9`
+Note that the number zero is <A HREF="#false">false</A> and the number one is <A HREF="#true">true</A>.  This is more
+permissive than most other languages.  It was done because many builtin
+<A HREF="eval.html#functions">functions</A> return these values, and <A HREF="change.html#changing">changing</A> that causes more problems than <A HREF="motion.html#it">it</A>
+solves.  After using this for a while <A HREF="motion.html#it">it</A> turned out to work well.
+
+If you have any type of value and want to use <A HREF="motion.html#it">it</A> <A HREF="motion.html#as">as</A> a <A HREF="options.html#boolean">boolean</A>, use the `!!`
+<A HREF="motion.html#operator">operator</A>:
+	<A HREF="#true">true</A>: `!!'text'`   `!![99]`   `!!{'x': 1}`   `!!99`
+	<A HREF="#false">false</A>: `!!''`   `!![]`   `!!{}`
+
+From a language like JavaScript we have this handy construct:
+<B>	GetName() || 'unknown'</B>
+However, this conflicts with only allowing a <A HREF="options.html#boolean">boolean</A> for a condition.
+Therefore the &quot;<A HREF="eval.html#??">??</A>&quot; <A HREF="motion.html#operator">operator</A> was added:
+<B>	GetName() ?? 'unknown'</B>
+Here you can explicitly express your intention to use the value as-is and not
+result in a <A HREF="options.html#boolean">boolean</A>. This is called the |<A HREF="eval.html#falsy-operator">falsy-operator</A>|.
+
+
+<B><FONT COLOR="PURPLE">Import and Export </FONT></B>
+
+A problem of legacy Vim <A HREF="usr_41.html#script">script</A> is that by default all <A HREF="eval.html#functions">functions</A> and <A HREF="eval.html#variables">variables</A>
+are global.  It is possible to make them <A HREF="map.html#script-local">script-local</A>, but then they are not
+available in other scripts.  This defies the concept of a package that only
+exports selected items and keeps the rest local.
+
+In <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> a mechanism very similar to the JavaScript import and export
+mechanism is supported.  It is a variant to the existing `:source` command
+that works like one would expect:
+- Instead of making everything global by default, everything is <A HREF="map.html#script-local">script-local</A>,
+  some of these are exported.
+- When importing a <A HREF="usr_41.html#script">script</A> the symbols that are imported are explicitly listed,
+  avoiding name conflicts and failures if functionality is added later.
+- The mechanism allows for <A HREF="editing.html#writing">writing</A> a big, long <A HREF="usr_41.html#script">script</A> with a very clear API:
+  the exported <A HREF="eval.html#functions">functions</A>, <A HREF="eval.html#variables">variables</A> and classes.
+- By using relative paths loading can be much faster for an import inside of a
+  package, no need to search many directories.
+- Once an import has been used, its items are cached and loading <A HREF="motion.html#it">it</A> again is
+  not needed.
+- The Vim-specific use of &quot;s:&quot; to make things <A HREF="map.html#script-local">script-local</A> can be dropped.
+
+When sourcing a <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> (from a <A HREF="#Vim9">Vim9</A> or legacy script), only the items
+defined globally can be used, not the exported items.  Alternatives
+considered:
+- All the exported items become available <A HREF="motion.html#as">as</A> <A HREF="map.html#script-local">script-local</A> items.  This makes
+  <A HREF="motion.html#it">it</A> uncontrollable what items get defined and likely soon leads to trouble.
+- Use the exported items and make them global.  Disadvantage is that it's then
+  not possible to avoid name clashes in the global namespace.
+- Completely disallow sourcing a <A HREF="#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>, require using `:import`.  That
+  makes <A HREF="motion.html#it">it</A> difficult to use scripts for <A HREF="testing.html#testing">testing</A>, or sourcing them from the
+  command line to try them out.
+Note that you CAN also use `:import` in legacy Vim <A HREF="usr_41.html#script">script</A>, see above.
+
+
+<B><FONT COLOR="PURPLE">Compiling functions early </FONT></B>
+
+Functions are compiled when called or when `:defcompile` is used.  Why not
+compile them early, so that <A HREF="syntax.html#syntax">syntax</A> and type <A HREF="message.html#errors">errors</A> are reported early?
+
+The <A HREF="eval.html#functions">functions</A> can't be compiled right away when encountered, because there may
+be forward references to <A HREF="eval.html#functions">functions</A> defined later.  Consider defining <A HREF="eval.html#functions">functions</A>
+A, <A HREF="motion.html#B">B</A> and C, where A calls <A HREF="motion.html#B">B</A>, <A HREF="motion.html#B">B</A> calls C, and C calls A again.  It's impossible
+to reorder the <A HREF="eval.html#functions">functions</A> to avoid forward references.
+
+An alternative would be to first scan through the file to locate items and
+figure out their type, so that forward references are found, and only then
+execute the <A HREF="usr_41.html#script">script</A> and compile the <A HREF="eval.html#functions">functions</A>.  This means the <A HREF="usr_41.html#script">script</A> has to be
+parsed <A HREF="if_cscop.html#twice">twice</A>, which is slower, and some conditions at the <A HREF="usr_41.html#script">script</A> level, such
+<A HREF="motion.html#as">as</A> checking if a feature is supported, are hard to use.  An attempt was made
+to see if <A HREF="motion.html#it">it</A> works, but <A HREF="motion.html#it">it</A> turned out to be impossible to make work well.
+
+It would be possible to compile all the <A HREF="eval.html#functions">functions</A> at the end of the <A HREF="usr_41.html#script">script</A>.
+The drawback is that if a function never gets called, the overhead of
+compiling <A HREF="motion.html#it">it</A> counts anyway.  Since <A HREF="starting.html#startup">startup</A> speed is very important, in most
+cases it's better to <A HREF="diff.html#do">do</A> <A HREF="motion.html#it">it</A> later and accept that <A HREF="syntax.html#syntax">syntax</A> and type <A HREF="message.html#errors">errors</A> are
+only reported then.  In <A HREF="change.html#case">case</A> these <A HREF="message.html#errors">errors</A> should be found early, e.g. when
+<A HREF="testing.html#testing">testing</A>, a `:defcompile` command at the end of the <A HREF="usr_41.html#script">script</A> will help out.
+
+
+<B><FONT COLOR="PURPLE">Why not use an existing embedded language? </FONT></B>
+
+Vim supports interfaces to <A HREF="if_perl.html#Perl">Perl</A>, <A HREF="if_pyth.html#Python">Python</A>, <A HREF="if_lua.html#Lua">Lua</A>, <A HREF="if_tcl.html#Tcl">Tcl</A> and a few others.  But
+these interfaces have never become widely used, for various reasons.  When
+<A HREF="#Vim9">Vim9</A> was designed a decision was made to make these interfaces lower priority
+and concentrate on Vim <A HREF="usr_41.html#script">script</A>.
+
+Still, <A HREF="usr_05.html#plugin">plugin</A> writers may find other languages more familiar, want to use
+existing libraries or see a performance benefit.  We encourage <A HREF="usr_05.html#plugin">plugin</A> authors
+to write code in any language and run <A HREF="motion.html#it">it</A> <A HREF="motion.html#as">as</A> an external process, using jobs
+and channels.  We can try to make this easier somehow.
+
+Using an external tool also has disadvantages.  An alternative is to convert
+the tool into Vim <A HREF="usr_41.html#script">script</A>.  For that to be possible without too much
+translation, and keeping the code fast at the same time, the constructs of the
+tool need to be supported.  Since most languages support classes the lack of
+support for classes in Vim is then a problem.
+
+
+<B><FONT COLOR="PURPLE">Classes </FONT></B>
+
+Vim supports a kind-of object oriented programming by adding methods to a
+dictionary.  With some care this can be made to work, but <A HREF="motion.html#it">it</A> does not look
+like real classes.  On top of that, it's quite slow, because of the use of
+dictionaries.
+
+It would be good to support real classes, and this is planned for a later
+version.  The support is a &quot;minimal common functionality&quot; of class support in
+most languages.  It will work much like Java, which is the most popular
+programming language.
+
+
+
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

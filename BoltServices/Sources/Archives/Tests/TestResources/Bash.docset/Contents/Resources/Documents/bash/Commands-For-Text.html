@@ -1,0 +1,174 @@
+<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Commands For Text</title>
+
+<meta name="description" content="Commands For Text (Bash Reference Manual)">
+<meta name="keywords" content="Commands For Text (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Bindable-Readline-Commands.html" rel="up" title="Bindable Readline Commands">
+<link href="Commands-For-Killing.html" rel="next" title="Commands For Killing">
+<link href="Commands-For-History.html" rel="prev" title="Commands For History">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<div class="subsection" id="Commands-For-Text">
+<div class="header">
+<p>
+Next: <a href="Commands-For-Killing.html" accesskey="n" rel="next">Killing And Yanking</a>, Previous: <a href="Commands-For-History.html" accesskey="p" rel="prev">Commands For Manipulating The History</a>, Up: <a href="Bindable-Readline-Commands.html" accesskey="u" rel="up">Bindable Readline Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Commands-For-Changing-Text"></span><h4 class="subsection">8.4.3 Commands For Changing Text</h4>
+
+<dl compact="compact">
+<a class="dashAnchor" name="//apple_ref/Function/end%2Dof%2Dfile%20%28usually%20C%2Dd%29"></a><dt id="index-end_002dof_002dfile-_0028usually-C_002dd_0029"><span><code><i>end-of-file</i> (usually C-d)</code><a href="#index-end_002dof_002dfile-_0028usually-C_002dd_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>The character indicating end-of-file as set, for example, by
+<code>stty</code>.  If this character is read when there are no characters
+on the line, and point is at the beginning of the line, Readline
+interprets it as the end of input and returns <small>EOF</small>.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/delete%2Dchar%20%28C%2Dd%29"></a><dt id="index-delete_002dchar-_0028C_002dd_0029"><span><code>delete-char (C-d)</code><a href="#index-delete_002dchar-_0028C_002dd_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Delete the character at point.  If this function is bound to the
+same character as the tty <small>EOF</small> character, as <kbd>C-d</kbd>
+commonly is, see above for the effects.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/backward%2Ddelete%2Dchar%20%28Rubout%29"></a><dt id="index-backward_002ddelete_002dchar-_0028Rubout_0029"><span><code>backward-delete-char (Rubout)</code><a href="#index-backward_002ddelete_002dchar-_0028Rubout_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Delete the character behind the cursor.  A numeric argument means
+to kill the characters instead of deleting them.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/forward%2Dbackward%2Ddelete%2Dchar%20%28%29"></a><dt id="index-forward_002dbackward_002ddelete_002dchar-_0028_0029"><span><code>forward-backward-delete-char ()</code><a href="#index-forward_002dbackward_002ddelete_002dchar-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Delete the character under the cursor, unless the cursor is at the
+end of the line, in which case the character behind the cursor is
+deleted.  By default, this is not bound to a key.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/quoted%2Dinsert%20%28C%2Dq%20or%20C%2Dv%29"></a><dt id="index-quoted_002dinsert-_0028C_002dq-or-C_002dv_0029"><span><code>quoted-insert (C-q or C-v)</code><a href="#index-quoted_002dinsert-_0028C_002dq-or-C_002dv_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Add the next character typed to the line verbatim.  This is
+how to insert key sequences like <kbd>C-q</kbd>, for example.
+</p>
+
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/self%2Dinsert%20%28a%2C%20b%2C%20A%2C%201%2C%20%21%2C%20%E2%80%A6%29"></a><dt id="index-self_002dinsert-_0028a_002c-b_002c-A_002c-1_002c-_0021_002c-_2026_0029"><span><code>self-insert (a, b, A, 1, !, …)</code><a href="#index-self_002dinsert-_0028a_002c-b_002c-A_002c-1_002c-_0021_002c-_2026_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Insert yourself.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/bracketed%2Dpaste%2Dbegin%20%28%29"></a><dt id="index-bracketed_002dpaste_002dbegin-_0028_0029"><span><code>bracketed-paste-begin ()</code><a href="#index-bracketed_002dpaste_002dbegin-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>This function is intended to be bound to the "bracketed paste" escape
+sequence sent by some terminals, and such a binding is assigned by default.
+It allows Readline to insert the pasted text as a single unit without treating
+each character as if it had been read from the keyboard.  The characters
+are inserted as if each one was bound to <code>self-insert</code> instead of
+executing any editing commands.
+</p>
+<p>Bracketed paste sets the region (the characters between point and the mark)
+to the inserted text. It uses the concept of an <em>active mark</em>: when the
+mark is active, Readline redisplay uses the terminal’s standout mode to
+denote the region.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/transpose%2Dchars%20%28C%2Dt%29"></a><dt id="index-transpose_002dchars-_0028C_002dt_0029"><span><code>transpose-chars (C-t)</code><a href="#index-transpose_002dchars-_0028C_002dt_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Drag the character before the cursor forward over
+the character at the cursor, moving the
+cursor forward as well.  If the insertion point
+is at the end of the line, then this
+transposes the last two characters of the line.
+Negative arguments have no effect.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/transpose%2Dwords%20%28M%2Dt%29"></a><dt id="index-transpose_002dwords-_0028M_002dt_0029"><span><code>transpose-words (M-t)</code><a href="#index-transpose_002dwords-_0028M_002dt_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Drag the word before point past the word after point,
+moving point past that word as well.
+If the insertion point is at the end of the line, this transposes
+the last two words on the line.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/upcase%2Dword%20%28M%2Du%29"></a><dt id="index-upcase_002dword-_0028M_002du_0029"><span><code>upcase-word (M-u)</code><a href="#index-upcase_002dword-_0028M_002du_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Uppercase the current (or following) word.  With a negative argument,
+uppercase the previous word, but do not move the cursor.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/downcase%2Dword%20%28M%2Dl%29"></a><dt id="index-downcase_002dword-_0028M_002dl_0029"><span><code>downcase-word (M-l)</code><a href="#index-downcase_002dword-_0028M_002dl_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Lowercase the current (or following) word.  With a negative argument,
+lowercase the previous word, but do not move the cursor.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/capitalize%2Dword%20%28M%2Dc%29"></a><dt id="index-capitalize_002dword-_0028M_002dc_0029"><span><code>capitalize-word (M-c)</code><a href="#index-capitalize_002dword-_0028M_002dc_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Capitalize the current (or following) word.  With a negative argument,
+capitalize the previous word, but do not move the cursor.
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Function/overwrite%2Dmode%20%28%29"></a><dt id="index-overwrite_002dmode-_0028_0029"><span><code>overwrite-mode ()</code><a href="#index-overwrite_002dmode-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><p>Toggle overwrite mode.  With an explicit positive numeric argument,
+switches to overwrite mode.  With an explicit non-positive numeric
+argument, switches to insert mode.  This command affects only
+<code>emacs</code> mode; <code>vi</code> mode does overwrite differently.
+Each call to <code>readline()</code> starts in insert mode.
+</p>
+<p>In overwrite mode, characters bound to <code>self-insert</code> replace
+the text at point rather than pushing the text to the right.
+Characters bound to <code>backward-delete-char</code> replace the character
+before point with a space.
+</p>
+<p>By default, this command is unbound.
+</p>
+</dd>
+</dl>
+
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Commands-For-Killing.html">Killing And Yanking</a>, Previous: <a href="Commands-For-History.html">Commands For Manipulating The History</a>, Up: <a href="Bindable-Readline-Commands.html">Bindable Readline Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+
+
+</body></html>

@@ -1,0 +1,113 @@
+<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Command Grouping</title>
+
+<meta name="description" content="Command Grouping (Bash Reference Manual)">
+<meta name="keywords" content="Command Grouping (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compound-Commands.html" rel="up" title="Compound Commands">
+<link href="Conditional-Constructs.html" rel="prev" title="Conditional Constructs">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<div class="subsubsection" id="Command-Grouping">
+<div class="header">
+<p>
+Previous: <a href="Conditional-Constructs.html" accesskey="p" rel="prev">Conditional Constructs</a>, Up: <a href="Compound-Commands.html" accesskey="u" rel="up">Compound Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Grouping-Commands"></span><h4 class="subsubsection">3.2.5.3 Grouping Commands</h4>
+<span id="index-commands_002c-grouping"></span>
+
+<p>Bash provides two ways to group a list of commands to be executed
+as a unit.  When commands are grouped, redirections may be applied
+to the entire command list.  For example, the output of all the
+commands in the list may be redirected to a single stream.
+</p>
+<dl compact="compact">
+<dt><span><code>()</code></span></dt>
+<dd><div class="example">
+<pre class="example">( <var>list</var> )
+</pre></div>
+
+<p>Placing a list of commands between parentheses forces the shell to create
+a subshell (see <a href="Command-Execution-Environment.html">Command Execution Environment</a>), and each
+of the commands in <var>list</var> is executed in that subshell environment.
+Since the <var>list</var> is executed in a subshell, variable assignments do not
+remain in effect after the subshell completes. 
+</p>
+</dd>
+<a class="dashAnchor" name="//apple_ref/Word/%7B"></a><dt id="index-_007b"><span><code>{}</code><a href="#index-_007b" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dd><a class="dashAnchor" name="//apple_ref/Word/%7D"></a><span id="index-_007d"></span>
+<div class="example">
+<pre class="example">{ <var>list</var>; }
+</pre></div>
+
+<p>Placing a list of commands between curly braces causes the list to
+be executed in the current shell context.  No subshell is created.
+The semicolon (or newline) following <var>list</var> is required.
+</p></dd>
+</dl>
+
+<p>In addition to the creation of a subshell, there is a subtle difference
+between these two constructs due to historical reasons.  The braces
+are reserved words, so they must be separated from the <var>list</var>
+by <code>blank</code>s or other shell metacharacters.
+The parentheses are operators, and are
+recognized as separate tokens by the shell even if they are not separated
+from the <var>list</var> by whitespace.
+</p>
+<p>The exit status of both of these constructs is the exit status of
+<var>list</var>.
+</p>
+</div>
+
+
+
+
+
+</body></html>

@@ -1,0 +1,368 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: usr_52</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: usr_52</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="usr_52.txt"></A><B>usr_52.txt</B>*	For Vim version 9.0.  Last change: 2022 Jun 04
+
+		     VIM USER MANUAL - by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+		       Write larger plugins
+
+When plugins <A HREF="diff.html#do">do</A> more than simple things, they tend to grow big.  This file
+explains how to make sure they still load fast and how to split them up in
+smaller parts.
+
+|<A HREF="#52.1">52.1</A>|	Export and import
+|<A HREF="#52.2">52.2</A>|	Autoloading
+|<A HREF="#52.3">52.3</A>|	Autoloading without import/export
+|<A HREF="#52.4">52.4</A>|	Other mechanisms to use
+|<A HREF="#52.5">52.5</A>|	Using a <A HREF="vim9.html#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> from legacy <A HREF="usr_41.html#script">script</A>
+
+     Next chapter: |<A HREF="usr_90.html">usr_90.txt</A>|  Installing Vim
+ Previous chapter: |<A HREF="usr_51.html">usr_51.txt</A>|  Create a <A HREF="usr_05.html#plugin">plugin</A>
+Table of contents: |<A HREF="usr_toc.html">usr_toc.txt</A>|
+
+==============================================================================
+
+*<A NAME="52.1"></A><B>52.1</B>*	Export and import
+
+<A HREF="vim9.html#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> was designed to make <A HREF="motion.html#it">it</A> easier to write large Vim scripts.  It
+looks more like other <A HREF="usr_41.html#script">script</A> languages, especially Typescript.  Also,
+<A HREF="eval.html#functions">functions</A> are compiled into instructions that can be executed quickly.  This
+makes <A HREF="vim9.html#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> a lot faster, up to a 100 times.
+
+The basic idea is that a <A HREF="usr_41.html#script">script</A> file has items that are private, only used
+inside the <A HREF="usr_41.html#script">script</A> file, and items that are exported, which can be used by
+scripts that import them.  That makes very clear what is defined where.
+
+Let's start with an example, a <A HREF="usr_41.html#script">script</A> that exports one function and has one
+private function:
+
+<B>	vim9script</B>
+
+<B>	export def GetMessage(count: string): string</B>
+<B>	   var nr = str2nr(count)</B>
+<B>	   var result = $'To {nr} we say '</B>
+<B>	   result ..= GetReply(nr)</B>
+<B>	   return result</B>
+<B>	enddef</B>
+
+<B>	def GetReply(nr: number): string</B>
+<B>	  if nr == 42</B>
+<B>	     return 'yes'</B>
+<B>	  elseif nr = 22</B>
+<B>	     return 'maybe'</B>
+<B>	  else</B>
+<B>	     return 'no'</B>
+<B>	  endif</B>
+<B>	enddef</B>
+
+The `vim9script` command is required, `export` only works in a |<A HREF="vim9.html#Vim9">Vim9</A>| <A HREF="usr_41.html#script">script</A>.
+
+The `export def GetMessage(...` line starts with `export`, meaning that this
+function can be called by other scripts.  The line `def GetReply(...` does not
+start with `export`, this is a <A HREF="map.html#script-local">script-local</A> function, <A HREF="motion.html#it">it</A> can only be used
+inside this <A HREF="usr_41.html#script">script</A> file.
+
+Now about the <A HREF="usr_41.html#script">script</A> where this is imported.  In this example we use this
+layout, which works well for a <A HREF="usr_05.html#plugin">plugin</A> below the &quot;pack&quot; directory:
+	.../plugin/theplugin.vim
+	.../lib/getmessage.vim
+
+Assuming the &quot;<A HREF="eval.html#...">...</A>&quot; directory has been added to <A HREF="options.html#'runtimepath'">'runtimepath'</A>, Vim will look
+for plugins in the &quot;<A HREF="usr_05.html#plugin">plugin</A>&quot; directory and source &quot;theplugin.vim&quot;.  Vim does
+not recognize the &quot;lib&quot; directory, you can put any scripts there.
+
+The above <A HREF="usr_41.html#script">script</A> that exports GetMessage() goes in lib/getmessage.vim.  The
+GetMessage() function is used in plugin/theplugin.vim:
+
+<B>	vim9script</B>
+
+<B>	import "../lib/getmessage.vim"</B>
+<B>	command -nargs=1 ShowMessage echomsg getmessage.GetMessage(&lt;f-args&gt;)</B>
+
+The `import` command uses a relative path, <A HREF="motion.html#it">it</A> starts with &quot;../&quot;, which means
+to go one directory up.  For other kinds of paths see the `:import` command.
+
+How we can try out the command that the <A HREF="usr_05.html#plugin">plugin</A> provides:
+<B>	ShowMessage 1</B>
+<B><FONT COLOR="PURPLE"> 	To 1 we say no </FONT></B>
+
+<B>	ShowMessage 22</B>
+<B><FONT COLOR="PURPLE"> 	To 22 we say maybe </FONT></B>
+
+Notice that the function GetMessage() is prefixed with the imported <A HREF="usr_41.html#script">script</A>
+name &quot;getmessage&quot;.  That way, for every imported function used, you know what
+<A HREF="usr_41.html#script">script</A> <A HREF="motion.html#it">it</A> was imported from.  If you import several scripts each of them could
+define a GetMessage() function:
+
+<B>	vim9script</B>
+
+<B>	import "../lib/getmessage.vim"</B>
+<B>	import "../lib/getother.vim"</B>
+<B>	command -nargs=1 ShowMessage echomsg getmessage.GetMessage(&lt;f-args&gt;)</B>
+<B>	command -nargs=1 ShowOther echomsg getother.GetMessage(&lt;f-args&gt;)</B>
+
+If the imported <A HREF="usr_41.html#script">script</A> name is long or you use <A HREF="motion.html#it">it</A> in many places, you can
+shorten <A HREF="motion.html#it">it</A> by adding an &quot;<A HREF="motion.html#as">as</A>&quot; argument:
+<B>	import "../lib/getmessage.vim" as msg</B>
+<B>	command -nargs=1 ShowMessage echomsg msg.GetMessage(&lt;f-args&gt;)</B>
+
+
+RELOADING
+
+One thing to keep in mind: the imported &quot;lib/getmessage.vim&quot; <A HREF="usr_41.html#script">script</A> will be
+sourced only once.  When <A HREF="motion.html#it">it</A> is imported a second time sourcing <A HREF="motion.html#it">it</A> will be
+skipped, since the items in <A HREF="motion.html#it">it</A> have already been created.  It does not matter
+if this import command is in another <A HREF="usr_41.html#script">script</A>, or in the same <A HREF="usr_41.html#script">script</A> that is
+sourced again.
+
+This is efficient when using a <A HREF="usr_05.html#plugin">plugin</A>, but when still developing a <A HREF="usr_05.html#plugin">plugin</A> <A HREF="motion.html#it">it</A>
+means that <A HREF="change.html#changing">changing</A> &quot;lib/getmessage.vim&quot; after <A HREF="motion.html#it">it</A> has been imported will have
+no effect.  You need to quit Vim and start <A HREF="motion.html#it">it</A> again. (Rationale: the items
+defined in the <A HREF="usr_41.html#script">script</A> could be used in a compiled function, sourcing the
+<A HREF="usr_41.html#script">script</A> again may break those <A HREF="eval.html#functions">functions</A>).
+
+
+USING GLOBALS
+
+Sometimes you will want to use global <A HREF="eval.html#variables">variables</A> or <A HREF="eval.html#functions">functions</A>, so that they can
+be used anywhere.  A good example is a global variable that passes a
+preference to a <A HREF="usr_05.html#plugin">plugin</A>.  To avoid other scripts using the same name, use a
+prefix that is very unlikely to be used elsewhere.  For example, if you have a
+&quot;mytags&quot; <A HREF="usr_05.html#plugin">plugin</A>, you could use:
+
+<B>	g:mytags_location = '$HOME/project'</B>
+<B>	g:mytags_style = 'fast'</B>
+
+==============================================================================
+
+*<A NAME="52.2"></A><B>52.2</B>*	Autoloading
+
+After splitting your large <A HREF="usr_41.html#script">script</A> into pieces, all the lines will still be
+loaded and executed the moment the <A HREF="usr_41.html#script">script</A> is used.  Every `import` loads the
+imported <A HREF="usr_41.html#script">script</A> to find the items defined there.  Although that is good for
+finding <A HREF="message.html#errors">errors</A> early, <A HREF="motion.html#it">it</A> also takes time.  Which is wasted if the
+functionality is not often used.
+
+Instead of having `import` load the <A HREF="usr_41.html#script">script</A> immediately, <A HREF="motion.html#it">it</A> can be postponed
+until needed.  Using the example above, only one change needs to be made in
+the plugin/theplugin.vim <A HREF="usr_41.html#script">script</A>:
+<B>	import autoload "../lib/getmessage.vim"</B>
+
+Nothing in the rest of the <A HREF="usr_41.html#script">script</A> needs to change.  However, the types will
+not be checked.  Not even the existence of the GetMessage() function is
+checked until <A HREF="motion.html#it">it</A> is used.  You will have to decide what is more important for
+your <A HREF="usr_41.html#script">script</A>: fast <A HREF="starting.html#startup">startup</A> or getting <A HREF="message.html#errors">errors</A> early.  You can also add the
+&quot;<A HREF="eval.html#autoload">autoload</A>&quot; argument later, after you have checked everything works.
+
+
+AUTOLOAD DIRECTORY
+
+Another form is to use <A HREF="eval.html#autoload">autoload</A> with a <A HREF="usr_41.html#script">script</A> name that is not an absolute or
+relative path:
+<B>	import autload "monthlib.vim"</B>
+
+This will search for the <A HREF="usr_41.html#script">script</A> &quot;monthlib.vim&quot; in the <A HREF="eval.html#autoload">autoload</A> directories of
+<A HREF="options.html#'runtimepath'">'runtimepath'</A>.  With <A HREF="os_unix.html#Unix">Unix</A> one of the directories often is &quot;~/.vim/autoload&quot;.
+
+The main advantage of this is that this <A HREF="usr_41.html#script">script</A> can be easily shared with other
+scripts.  You <A HREF="diff.html#do">do</A> need to make sure that the <A HREF="usr_41.html#script">script</A> name is unique, since Vim
+will search all the &quot;<A HREF="eval.html#autoload">autoload</A>&quot; directories in <A HREF="options.html#'runtimepath'">'runtimepath'</A>, and if you are
+using several plugins with a <A HREF="usr_05.html#plugin">plugin</A> manager, <A HREF="motion.html#it">it</A> may add a directory to
+<A HREF="options.html#'runtimepath'">'runtimepath'</A>, each of which might have an &quot;<A HREF="eval.html#autoload">autoload</A>&quot; directory.
+
+Without <A HREF="eval.html#autoload">autoload</A>:
+<B>	import "monthlib.vim"</B>
+
+Vim will search for the <A HREF="usr_41.html#script">script</A> &quot;monthlib.vim&quot; in the import directories of
+<A HREF="options.html#'runtimepath'">'runtimepath'</A>.  Note that in this <A HREF="change.html#case">case</A> adding or removing &quot;<A HREF="eval.html#autoload">autoload</A>&quot; changes
+where the <A HREF="usr_41.html#script">script</A> is found.  With a relative or absolute path the location does
+not change.
+
+==============================================================================
+
+*<A NAME="52.3"></A><B>52.3</B>*	Autoloading without import/export
+
+
+						*<A NAME="write-library-script"></A><B>write-library-script</B>*
+A mechanism from before import/export is still useful and some users may find
+<A HREF="motion.html#it">it</A> a bit simpler.  The idea is that you call a function with a special name.
+That function is then in an <A HREF="eval.html#autoload">autoload</A> <A HREF="usr_41.html#script">script</A>.  We will call that one <A HREF="usr_41.html#script">script</A> a
+library <A HREF="usr_41.html#script">script</A>.
+
+The <A HREF="eval.html#autoload">autoload</A> mechanism is based on a function name that has &quot;<A HREF="pattern.html##">#</A>&quot; characters:
+
+<B>	mylib#myfunction(arg)</B>
+
+Vim will recognize the function name by the embedded &quot;<A HREF="pattern.html##">#</A>&quot; character and when
+<A HREF="motion.html#it">it</A> is not defined yet search for the <A HREF="usr_41.html#script">script</A> &quot;autoload/mylib.vim&quot; in
+<A HREF="options.html#'runtimepath'">'runtimepath'</A>.  That <A HREF="usr_41.html#script">script</A> must define the &quot;mylib#myfunction()&quot; function.
+Obviously the name &quot;mylib&quot; is the part before the &quot;<A HREF="pattern.html##">#</A>&quot; and is used <A HREF="motion.html#as">as</A> the name
+of the <A HREF="usr_41.html#script">script</A>, adding &quot;.vim&quot;.
+
+You can put many other <A HREF="eval.html#functions">functions</A> in the mylib.vim <A HREF="usr_41.html#script">script</A>, you are free to
+organize your <A HREF="eval.html#functions">functions</A> in library scripts.  But you must use function names
+where the part before the '<A HREF="pattern.html##">#</A>' matches the <A HREF="usr_41.html#script">script</A> name.  Otherwise Vim would
+not know what <A HREF="usr_41.html#script">script</A> to load.  This is where <A HREF="motion.html#it">it</A> differs from the import/export
+mechanism.
+
+If you get really enthusiastic and write lots of library scripts, you may
+want to use subdirectories.  Example:
+
+<B>	netlib#ftp#read('somefile')</B>
+
+Here the <A HREF="usr_41.html#script">script</A> name is taken from the function name up to the last &quot;<A HREF="pattern.html##">#</A>&quot;. The
+&quot;<A HREF="pattern.html##">#</A>&quot; in the middle are replaced by a slash, the last one by &quot;.vim&quot;.  Thus you
+get &quot;netlib/ftp.vim&quot;.  For <A HREF="os_unix.html#Unix">Unix</A> the library <A HREF="usr_41.html#script">script</A> used for this could be:
+
+	~/.vim/autoload/netlib/ftp.vim
+
+Where the function is defined like this:
+
+<B>	def netlib#ftp#read(fname: string)</B>
+<B>		#  Read the file fname through ftp</B>
+<B>	enddef</B>
+
+Notice that the name the function is defined with is exactly the same <A HREF="motion.html#as">as</A> the
+name used for calling the function.  And the part before the last '<A HREF="pattern.html##">#</A>'
+exactly matches the subdirectory and <A HREF="usr_41.html#script">script</A> name.
+
+You can use the same mechanism for <A HREF="eval.html#variables">variables</A>:
+
+<B>	var weekdays = dutch#weekdays</B>
+
+This will load the <A HREF="usr_41.html#script">script</A> &quot;autoload/dutch.vim&quot;, which should contain something
+like:
+
+<B>	var dutch#weekdays = ['zondag', 'maandag', 'dinsdag', 'woensdag',</B>
+<B>		\ 'donderdag', 'vrijdag', 'zaterdag']</B>
+
+Further reading: |<A HREF="eval.html#autoload">autoload</A>|.
+
+==============================================================================
+
+*<A NAME="52.4"></A><B>52.4</B>*	Other mechanisms to use
+
+Some may find the use of several files a hassle and prefer to keep everything
+together in one <A HREF="usr_41.html#script">script</A>.  To avoid this resulting in slow <A HREF="starting.html#startup">startup</A> there is a
+mechanism that only defines a small part and postpones the rest to when <A HREF="motion.html#it">it</A> is
+
+actually used.  *<A NAME="write-plugin-quickload"></A><B>write-plugin-quickload</B>*
+
+The basic idea is that the <A HREF="usr_05.html#plugin">plugin</A> is loaded <A HREF="if_cscop.html#twice">twice</A>.  The first time user
+commands and mappings are defined that offer the functionality.  The second
+time the <A HREF="eval.html#functions">functions</A> that implement the functionality are defined.
+
+It may sound surprising that quickload means loading a <A HREF="usr_41.html#script">script</A> <A HREF="if_cscop.html#twice">twice</A>.  What we
+mean is that <A HREF="motion.html#it">it</A> loads quickly the first time, postponing the bulk of the
+<A HREF="usr_41.html#script">script</A> to the second time, which only happens when you actually use <A HREF="motion.html#it">it</A>.  When
+you always use the functionality <A HREF="motion.html#it">it</A> actually gets slower!
+
+This uses a <A HREF="autocmd.html#FuncUndefined">FuncUndefined</A> <A HREF="autocmd.html#autocommand">autocommand</A>.  This works differently from the
+|<A HREF="eval.html#autoload">autoload</A>| functionality explained above.
+
+The following example shows how it's done:
+
+<B>	" Vim global plugin for demonstrating quick loading</B>
+<B>	" Last Change:	2005 Feb 25</B>
+<B>	" Maintainer:	Bram Moolenaar &lt;Bram@vim.org&gt;</B>
+<B>	" License:	This file is placed in the public domain.</B>
+
+<B>	if !exists("s:did_load")</B>
+<B>		command -nargs=* BNRead  call BufNetRead(&lt;f-args&gt;)</B>
+<B>		map &lt;F19&gt; :call BufNetWrite('something')&lt;CR&gt;</B>
+
+<B>		let s:did_load = 1</B>
+<B>		exe 'au FuncUndefined BufNet* source ' .. expand('&lt;sfile&gt;')</B>
+<B>		finish</B>
+<B>	endif</B>
+
+<B>	function BufNetRead(...)</B>
+<B>		echo 'BufNetRead(' .. string(a:000) .. ')'</B>
+<B>		" read functionality here</B>
+<B>	endfunction</B>
+
+<B>	function BufNetWrite(...)</B>
+<B>		echo 'BufNetWrite(' .. string(a:000) .. ')'</B>
+<B>		" write functionality here</B>
+<B>	endfunction</B>
+
+When the <A HREF="usr_41.html#script">script</A> is first loaded &quot;s:did_load&quot; is not set.  The commands between
+the &quot;if&quot; and &quot;endif&quot; will be executed.  This ends in a |<A HREF="repeat.html#:finish">:finish</A>| command, thus
+the rest of the <A HREF="usr_41.html#script">script</A> is not executed.
+
+The second time the <A HREF="usr_41.html#script">script</A> is loaded &quot;s:did_load&quot; exists and the commands
+after the &quot;endif&quot; are executed.  This defines the (possible long)
+BufNetRead() and BufNetWrite() <A HREF="eval.html#functions">functions</A>.
+
+If you drop this <A HREF="usr_41.html#script">script</A> in your <A HREF="usr_05.html#plugin">plugin</A> directory Vim will execute <A HREF="motion.html#it">it</A> on
+<A HREF="starting.html#startup">startup</A>.  This is the sequence of events that happens:
+
+1. The &quot;BNRead&quot; command is defined and the <A HREF="term.html#&lt;F19&gt;">&lt;F19&gt;</A> key is mapped when the <A HREF="usr_41.html#script">script</A>
+   is sourced at <A HREF="starting.html#startup">startup</A>.  A |<A HREF="autocmd.html#FuncUndefined">FuncUndefined</A>| <A HREF="autocmd.html#autocommand">autocommand</A> is defined.  The
+   &quot;<A HREF="repeat.html#:finish">:finish</A>&quot; command causes the <A HREF="usr_41.html#script">script</A> to terminate early.
+
+2. The user types the BNRead command or presses the <A HREF="term.html#&lt;F19&gt;">&lt;F19&gt;</A> key.  The
+   BufNetRead() or BufNetWrite() function will be called.
+
+3. Vim can't find the function and triggers the |<A HREF="autocmd.html#FuncUndefined">FuncUndefined</A>| <A HREF="autocmd.html#autocommand">autocommand</A>
+   event.  Since the <A HREF="pattern.html#pattern">pattern</A> &quot;BufNet*&quot; matches the invoked function, the
+   command &quot;source fname&quot; will be executed.  &quot;fname&quot; will be equal to the name
+   of the <A HREF="usr_41.html#script">script</A>, no matter where <A HREF="motion.html#it">it</A> is located, because <A HREF="motion.html#it">it</A> comes from
+   expanding &quot;<A HREF="cmdline.html#&lt;sfile&gt;">&lt;sfile&gt;</A>&quot; (see |<A HREF="builtin.html#expand()">expand()</A>|).
+
+4. The <A HREF="usr_41.html#script">script</A> is sourced again, the &quot;s:did_load&quot; variable exists and the
+   <A HREF="eval.html#functions">functions</A> are defined.
+
+Notice that the <A HREF="eval.html#functions">functions</A> that are loaded afterwards match the <A HREF="pattern.html#pattern">pattern</A> in the
+|<A HREF="autocmd.html#FuncUndefined">FuncUndefined</A>| <A HREF="autocmd.html#autocommand">autocommand</A>.  You must make sure that no other <A HREF="usr_05.html#plugin">plugin</A> defines
+<A HREF="eval.html#functions">functions</A> that match this <A HREF="pattern.html#pattern">pattern</A>.
+
+==============================================================================
+
+*<A NAME="52.5"></A><B>52.5</B>*	Using a <A HREF="vim9.html#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> from legacy <A HREF="usr_41.html#script">script</A>		*<A NAME="source-vim9-script"></A><B>source-vim9-script</B>*
+
+In some cases you have a legacy Vim <A HREF="usr_41.html#script">script</A> where you want to use items from a
+<A HREF="vim9.html#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>.  For example in your <A HREF="starting.html#.vimrc">.vimrc</A> you want to initialize a <A HREF="usr_05.html#plugin">plugin</A>.  The
+best way to <A HREF="diff.html#do">do</A> this is to use `:import`.  For example:
+
+<B>	import 'myNicePlugin.vim'</B>
+<B>	call myNicePlugin.NiceInit('today')</B>
+
+This finds the exported function &quot;NiceInit&quot; in the <A HREF="vim9.html#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A> file and makes
+<A HREF="motion.html#it">it</A> available <A HREF="motion.html#as">as</A> <A HREF="map.html#script-local">script-local</A> item &quot;myNicePlugin.NiceInit&quot;. `:import` always
+uses the <A HREF="usr_41.html#script">script</A> namespace, even when &quot;s:&quot; is not given.  If &quot;myNicePlugin.vim&quot;
+was already sourced <A HREF="motion.html#it">it</A> is not sourced again.
+
+Besides avoiding putting any items in the global namespace (where name clashes
+can cause unexpected errors), this also means the <A HREF="usr_41.html#script">script</A> is sourced only once,
+no matter how many times items from <A HREF="motion.html#it">it</A> are imported.
+
+In some cases, e.g. for <A HREF="testing.html#testing">testing</A>, you may just want to source the <A HREF="vim9.html#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>.
+That is OK, but then only global items will be available.  The <A HREF="vim9.html#Vim9">Vim9</A> <A HREF="usr_41.html#script">script</A>
+will have to make sure to use a unique name for these global items. Example:
+<B>	source ~/.vim/extra/myNicePlugin.vim</B>
+<B>	call g:NicePluginTest()</B>
+
+==============================================================================
+
+Next chapter: |<A HREF="usr_90.html">usr_90.txt</A>|  Installing Vim
+
+
+Copyright: see |<A HREF="usr_01.html#manual-copyright">manual-copyright</A>|  vim:tw=78:ts=8:noet:ft=help:norl:
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Aliases</title>
+
+<meta name="description" content="Aliases (Bash Reference Manual)">
+<meta name="keywords" content="Aliases (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Bash-Features.html" rel="up" title="Bash Features">
+<link href="Arrays.html" rel="next" title="Arrays">
+<link href="Shell-Arithmetic.html" rel="prev" title="Shell Arithmetic">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<div class="section" id="Aliases">
+<div class="header">
+<p>
+Next: <a href="Arrays.html" accesskey="n" rel="next">Arrays</a>, Previous: <a href="Shell-Arithmetic.html" accesskey="p" rel="prev">Shell Arithmetic</a>, Up: <a href="Bash-Features.html" accesskey="u" rel="up">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Aliases-1"></span><h3 class="section">6.6 Aliases</h3>
+<span id="index-alias-expansion"></span>
+
+<p><em>Aliases</em> allow a string to be substituted for a word when it is used
+as the first word of a simple command.
+The shell maintains a list of aliases that may be set and unset with
+the <code>alias</code> and <code>unalias</code> builtin commands.
+</p>
+<p>The first word of each simple command, if unquoted, is checked to see
+if it has an alias.
+If so, that word is replaced by the text of the alias.
+The characters &lsquo;<samp>/</samp>&rsquo;, &lsquo;<samp>$</samp>&rsquo;, &lsquo;<samp>`</samp>&rsquo;, &lsquo;<samp>=</samp>&rsquo; and any of the
+shell metacharacters or quoting characters listed above may not appear
+in an alias name.
+The replacement text may contain any valid
+shell input, including shell metacharacters.
+The first word of the replacement text is tested for
+aliases, but a word that is identical to an alias being expanded
+is not expanded a second time.
+This means that one may alias <code>ls</code> to <code>&quot;ls -F&quot;</code>,
+for instance, and Bash does not try to recursively expand the
+replacement text.
+If the last character of the alias value is a
+<code>blank</code>, then the next command word following the
+alias is also checked for alias expansion.
+</p>
+<p>Aliases are created and listed with the <code>alias</code>
+command, and removed with the <code>unalias</code> command.
+</p>
+<p>There is no mechanism for using arguments in the replacement text,
+as in <code>csh</code>.
+If arguments are needed, use a shell function
+(see <a href="Shell-Functions.html">Shell Functions</a>).
+</p>
+<p>Aliases are not expanded when the shell is not interactive,
+unless the <code>expand_aliases</code> shell option is set using
+<code>shopt</code> (see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
+</p>
+<p>The rules concerning the definition and use of aliases are
+somewhat confusing. Bash
+always reads at least one complete line of input,
+and all lines that make up a compound command,
+before executing any of the commands on that line or the compound command.
+Aliases are expanded when a
+command is read, not when it is executed.  Therefore, an
+alias definition appearing on the same line as another
+command does not take effect until the next line of input is read.
+The commands following the alias definition
+on that line are not affected by the new alias.
+This behavior is also an issue when functions are executed.
+Aliases are expanded when a function definition is read,
+not when the function is executed, because a function definition
+is itself a command.  As a consequence, aliases
+defined in a function are not available until after that
+function is executed.  To be safe, always put
+alias definitions on a separate line, and do not use <code>alias</code>
+in compound commands.
+</p>
+<p>For almost every purpose, shell functions are preferred over aliases.
+</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Arrays.html">Arrays</a>, Previous: <a href="Shell-Arithmetic.html">Shell Arithmetic</a>, Up: <a href="Bash-Features.html">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

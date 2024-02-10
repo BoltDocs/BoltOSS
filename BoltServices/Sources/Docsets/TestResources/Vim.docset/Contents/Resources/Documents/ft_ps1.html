@@ -1,0 +1,87 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: ft_ps1</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: ft_ps1</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="ft_ps1.txt"></A><B>ft_ps1.txt</B>*  A Windows PowerShell <A HREF="syntax.html#syntax">syntax</A> <A HREF="usr_05.html#plugin">plugin</A> for Vim
+
+Author:  Peter Provost &lt;https://www.github.com/PProvost&gt;
+License: Apache 2.0
+URL:     https://github.com/PProvost/vim-ps1
+
+
+INTRODUCTION                                                    *<A NAME="ps1-syntax"></A><B>ps1-syntax</B>*
+
+This <A HREF="usr_05.html#plugin">plugin</A> provides Vim <A HREF="syntax.html#syntax">syntax</A>, indent and <A HREF="filetype.html#filetype">filetype</A> detection for Windows
+PowerShell scripts, modules, and XML configuration files.
+
+
+
+ABOUT                                                           *<A NAME="ps1-about"></A><B>ps1-about</B>*
+
+Grab the latest version or report a bug on GitHub:
+
+https://github.com/PProvost/vim-ps1
+
+
+
+FOLDING                                                         *<A NAME="ps1-folding"></A><B>ps1-folding</B>*
+
+The ps1 <A HREF="syntax.html#syntax">syntax</A> file provides <A HREF="syntax.html#syntax">syntax</A> <A HREF="fold.html#folding">folding</A> (see |<A HREF="syntax.html#:syn-fold">:syn-fold</A>|) for <A HREF="usr_41.html#script">script</A> blocks
+and digital signatures in scripts.
+
+When <A HREF="options.html#'foldmethod'">'foldmethod'</A> is set to &quot;<A HREF="syntax.html#syntax">syntax</A>&quot; then function <A HREF="usr_41.html#script">script</A> blocks will be
+folded unless you use the following in your <A HREF="starting.html#.vimrc">.vimrc</A> or before opening a <A HREF="usr_41.html#script">script</A>:
+
+<B>    :let g:ps1_nofold_blocks = 1</B>
+ 
+Digital signatures in scripts will also be folded unless you use:
+
+<B>    :let g:ps1_nofold_sig = 1</B>
+ 
+Note: <A HREF="syntax.html#syntax">syntax</A> <A HREF="fold.html#folding">folding</A> might slow down <A HREF="syntax.html#syntax">syntax</A> highlighting significantly,
+especially for large files.
+
+
+
+COMPILER                                                        *<A NAME="ps1-compiler"></A><B>ps1-compiler</B>*
+
+The powershell `:compiler` <A HREF="usr_41.html#script">script</A> configures |<A HREF="quickfix.html#:make">:make</A>| to execute the <A HREF="usr_41.html#script">script</A> in
+PowerShell.
+
+It tries to pick a smart default PowerShell command: `pwsh` if available and
+`powershell` otherwise, but you can customize the command:
+
+<B>    :let g:ps1_makeprg_cmd = '/path/to/pwsh'</B>
+ 
+To configure whether to show the exception type information:
+
+<B>    :let g:ps1_efm_show_error_categories = 1</B>
+ 
+
+
+KEYWORD LOOKUP                                                 *<A NAME="ps1-keyword"></A><B>ps1-keyword</B>*
+
+To look up keywords using PowerShell's Get-Help, press the |<A HREF="various.html#K">K</A>| key. For more
+convenient paging, the <A HREF="message.html#pager">pager</A> `less` should be installed, which is included in
+many Linux distributions and in macOS.
+
+Many other distributions are available for Windows like
+https://chocolatey.org/packages/less/. Make sure `less` is in a directory
+listed in the `PATH` environment variable, which chocolatey above does.
+
+------------------------------------------------------------------------------
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

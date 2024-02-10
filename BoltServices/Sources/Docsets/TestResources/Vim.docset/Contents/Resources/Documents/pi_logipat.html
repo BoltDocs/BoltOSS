@@ -1,0 +1,154 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: pi_logipat</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: pi_logipat</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="pi_logipat.txt"></A><B>pi_logipat.txt</B>*	Logical Patterns			May 01, 2019
+
+Author:  Charles <A HREF="motion.html#E">E</A>. Campbell  &lt;NcampObell@SdrPchip.AorgM-NOSPAM&gt;
+
+Copyright: (c) 2004-2016 by Charles <A HREF="motion.html#E">E</A>. Campbell	*<A NAME="logiPat-copyright"></A><B>logiPat-copyright</B>*
+           The VIM LICENSE applies to LogiPat.vim and LogiPat.txt
+           (see |<A HREF="uganda.html#copyright">copyright</A>|) except use &quot;LogiPat&quot; instead of &quot;Vim&quot;
+	   No warranty, express or implied.  Use At-Your-Own-Risk.
+
+==============================================================================
+
+1. <A HREF="quickref.html#Contents">Contents</A>					*<A NAME="logiPat"></A><B>logiPat</B>* *<A NAME="logiPat-contents"></A><B>logiPat-contents</B>*
+
+	1. Contents.................: |<A HREF="#logiPat-contents">logiPat-contents</A>|
+	2. LogiPat Manual...........: |<A HREF="#logiPat-manual">logiPat-manual</A>|
+	3. LogiPat Examples.........: |<A HREF="#logiPat-examples">logiPat-examples</A>|
+	4. Caveat...................: |<A HREF="#logiPat-caveat">logiPat-caveat</A>|
+	5. LogiPat History..........: |<A HREF="#logiPat-history">logiPat-history</A>|
+
+
+==============================================================================
+
+2. LogiPat Manual			*<A NAME="logiPat-manual"></A><B>logiPat-manual</B>* *<A NAME="logiPat-man"></A><B>logiPat-man</B>*
+
+
+	*<A NAME="logiPat-arg"></A><B>logiPat-arg</B>* *<A NAME="logiPat-input"></A><B>logiPat-input</B>* *<A NAME="logiPat-pattern"></A><B>logiPat-pattern</B>* *<A NAME="logiPat-operators"></A><B>logiPat-operators</B>*
+	<A HREF="eval.html#Boolean">Boolean</A> logic patterns are composed of
+
+			operators  ! = not
+			           &#124; = logical-or
+			           <A HREF="change.html#&amp;">&amp;</A> = logical-and
+			grouping   ( <A HREF="eval.html#...">...</A> )
+			patterns   &quot;<A HREF="pattern.html#pattern">pattern</A>&quot;
+
+
+	*<A NAME="logiPat-cmd"></A><B>logiPat-cmd</B>*
+
+	<A HREF="#:LogiPat">:LogiPat</A> {boolean-logic pattern}		*<A NAME=":LogiPat"></A><B>:LogiPat</B>*
+		<A HREF="#:LogiPat">:LogiPat</A> is a command which takes a boolean-logic
+		argument (|<A HREF="#logiPat-arg">logiPat-arg</A>|).
+
+
+	<A HREF="#:LP">:LP</A> {boolean-logic pattern}			*<A NAME=":LP"></A><B>:LP</B>*
+		<A HREF="#:LP">:LP</A> is a shorthand command version of <A HREF="#:LogiPat">:LogiPat</A>
+		(|<A HREF="#logiPat-cmd">logiPat-cmd</A>|).
+
+
+	<A HREF="#:LPE">:LPE</A> {boolean-logic pattern}			*<A NAME=":LPE"></A><B>:LPE</B>*
+		No search is done, but the conversion from the
+		<A HREF="options.html#boolean">boolean</A> logic <A HREF="pattern.html#pattern">pattern</A> to the regular <A HREF="eval.html#expression">expression</A>
+		is performed and echoed onto the display.
+
+
+	:LogiPatFlags {search flags}			*<A NAME="LogiPat-flags"></A><B>LogiPat-flags</B>*
+		LogiPat uses the |<A HREF="builtin.html#search()">search()</A>| command.  The flags
+		passed to that call to <A HREF="builtin.html#search()">search()</A> may be specified
+		by the :LogiPatFlags command.
+
+
+	<A HREF="#:LPF">:LPF</A> {search flags}				*<A NAME=":LPF"></A><B>:LPF</B>*
+		<A HREF="#:LPF">:LPF</A> is a shorthand version of :LogiPatFlags.
+
+
+	<A HREF="eval.html#:let">:let</A> pat=LogiPat({boolean-logic pattern})	*<A NAME="LogiPat()"></A><B>LogiPat()</B>*
+		If one calls <A HREF="#LogiPat()">LogiPat()</A> directly, no search
+		is done, but the transformation from the <A HREF="options.html#boolean">boolean</A>
+		logic <A HREF="pattern.html#pattern">pattern</A> into a regular <A HREF="eval.html#expression">expression</A> <A HREF="pattern.html#pattern">pattern</A>
+		is performed and returned.
+
+	To get a &quot; inside a <A HREF="pattern.html#pattern">pattern</A>, <A HREF="motion.html#as">as</A> opposed to having <A HREF="motion.html#it">it</A> delimit
+	the <A HREF="pattern.html#pattern">pattern</A>, double <A HREF="motion.html#it">it</A>.
+
+
+==============================================================================
+
+3. LogiPat Examples					*<A NAME="logiPat-examples"></A><B>logiPat-examples</B>*
+
+	LogiPat takes <A HREF="eval.html#Boolean">Boolean</A> logic arguments and produces a regular
+	<A HREF="eval.html#expression">expression</A> which implements the choices.  A series of examples
+	follows:
+
+<B>	:LogiPat "abc"</B>
+ 		will search for lines containing the <A HREF="eval.html#string">string</A>  <A HREF="map.html#:abc">:abc</A>:
+
+<B>	:LogiPat "ab""cd"</B>
+ 		will search for lines containing the <A HREF="eval.html#string">string</A>  :ab&quot;cd:
+
+<B>	:LogiPat !"abc"</B>
+ 		will search for lines which don't contain the <A HREF="eval.html#string">string</A>  <A HREF="map.html#:abc">:abc</A>:
+
+<B>	:LogiPat "abc"|"def"</B>
+ 		will search for lines which contain either the <A HREF="eval.html#string">string</A>
+		<A HREF="map.html#:abc">:abc</A>:  or the <A HREF="eval.html#string">string</A>  <A HREF="vim9.html#:def">:def</A>:
+
+<B>	:LogiPat !("abc"|"def")</B>
+ 		will search for lines which don't contain either
+		of the strings  <A HREF="map.html#:abc">:abc</A>:  or  <A HREF="vim9.html#:def">:def</A>:
+
+<B>	:LogiPat "abc"&amp;"def"</B>
+ 		will search for lines which contain both of the strings
+		<A HREF="map.html#:abc">:abc</A>:  and  <A HREF="vim9.html#:def">:def</A>:
+
+<B>	:let pat= LogiPat('!"abc"')</B>
+ 		will return the regular <A HREF="eval.html#expression">expression</A> which will match
+		all lines not containing  <A HREF="map.html#:abc">:abc</A>: .  The double <A HREF="quotes.html#quotes">quotes</A>
+		are needed to pass normal patterns to LogiPat, and
+		differentiate such patterns from <A HREF="options.html#boolean">boolean</A> logic
+		operators.
+
+
+==============================================================================
+
+4. Caveat						*<A NAME="logiPat-caveat"></A><B>logiPat-caveat</B>*
+
+	The &quot;not&quot; <A HREF="motion.html#operator">operator</A> may be fragile; ie. <A HREF="motion.html#it">it</A> may not always play well
+	with the <A HREF="change.html#&amp;">&amp;</A> (logical-and) and &#124; (logical-or) operators.  Please try out
+	your patterns, possibly with <A HREF="options.html#:set">:set</A> hls, to insure that what is matching
+	is what you want.
+
+
+==============================================================================
+
+5. LogiPat History					*<A NAME="logiPat-history"></A><B>logiPat-history</B>*
+
+	v4 Jun 22, 2015 &#42; LogiPat has been picked up by <A HREF="intro.html#Bram">Bram</A> <A HREF="motion.html#M">M</A> for standard
+			  <A HREF="usr_05.html#plugin">plugin</A> <A HREF="intro.html#distribution">distribution</A>; hence the name change
+	v3 Sep 25, 2006 &#42; LP_Or() fixed; <A HREF="motion.html#it">it</A> now encapsulates its output
+	                  in \&#37;(...\) parentheses
+	   Dec 12, 2011 &#42; |<A HREF="#:LPE">:LPE</A>| added
+			&#42; &quot;&quot; is mapped to a single &quot; and left inside patterns
+	v2 May 31, 2005	&#42; LPF and LogiPatFlags commands weren't working
+	v1 May 23, 2005	&#42; initial release
+
+
+==============================================================================
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

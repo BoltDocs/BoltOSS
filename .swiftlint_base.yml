@@ -1,0 +1,143 @@
+# configuration reference: https://github.com/airbnb/swift
+
+disabled_rules:
+  - comment_spacing
+  - cyclomatic_complexity
+  - file_length
+  - force_cast
+  - function_body_length
+  - identifier_name
+  - inclusive_language
+  - large_tuple
+  - line_length
+  - nesting
+  - opening_brace
+  - orphaned_doc_comment
+  - redundant_discardable_let
+  - todo
+  - type_name
+
+opt_in_rules:
+  - anyobject_protocol
+  - array_init
+  - attributes
+  - balanced_xctest_lifecycle
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - comma_inheritance
+  - conditional_returns_on_newline
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - contains_over_range_nil_comparison
+  - discarded_notification_center_observer
+  - discouraged_assert
+  - discouraged_none_name
+  - discouraged_object_literal
+  - discouraged_optional_boolean
+  - discouraged_optional_collection
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - empty_xctest_method
+  - enum_case_associated_values_count
+  - expiring_todo
+  - explicit_init
+  - extension_access_modifier
+  - fallthrough
+  - fatal_error_message
+  - file_name_no_space
+  - first_where
+  - flatmap_over_map_reduce
+  - ibinspectable_in_extension
+  - identical_operands
+  - indentation_width
+  - joined_default_parameter
+  - last_where
+  - legacy_multiple
+  - let_var_whitespace
+  - literal_expression_end_indentation
+  - lower_acl_than_parent
+  - modifier_order
+  - multiline_arguments
+  - multiline_arguments_brackets
+  - multiline_function_chains
+  - multiline_literal_brackets
+  - multiline_parameters
+  - multiline_parameters_brackets
+  - nimble_operator
+  - operator_usage_whitespace
+  - optional_enum_case_matching
+  - overridden_super_call
+  - override_in_extension
+  - pattern_matching_keywords
+  - prefer_self_in_static_references
+  - prefer_self_type_over_type_of_self
+  - prefer_zero_over_explicit_init
+  - prefixed_toplevel_constant
+  - private_action
+  - private_outlet
+  - private_subject
+  - prohibited_super_call
+  - quick_discouraged_call
+  - quick_discouraged_focused_test
+  - quick_discouraged_pending_test
+  - raw_value_for_camel_cased_codable_enum
+  - reduce_into
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - required_enum_case
+  - return_value_from_void_function
+  - self_binding
+  - single_test_class
+  - sorted_first_last
+  - sorted_imports
+  - static_operator
+  - switch_case_on_newline
+  - test_case_accessibility
+  - toggle_bool
+  - trailing_closure
+  - unavailable_function
+  - unneeded_parentheses_in_closure_argument
+  - unowned_variable_capture
+  - untyped_error_in_catch
+  - vertical_parameter_alignment_on_call
+  - weak_delegate
+  - xct_specific_matcher
+  - yoda_condition
+
+analyzer_rules:
+  - capture_variable
+  - explicit_self
+  - typesafe_array_init
+  - unused_declaration
+  - unused_import
+
+excluded:
+  - "**/legacy/*.swift"
+  - "**/.build/**"
+
+indentation: 2
+
+attributes:
+  always_on_same_line:
+    - "@IBAction"
+    - "@objc"
+
+colon:
+  apply_to_dictionaries: true
+
+indentation_width:
+  indentation_width: 2
+  include_comments: false
+
+trailing_comma:
+  mandatory_comma: true
+
+custom_rules:
+  no_objcMembers:
+    name: "@objcMembers"
+    regex: "@objcMembers"
+    message: "Explicitly use @objc on each member you want to expose to Objective-C"
+    severity: error

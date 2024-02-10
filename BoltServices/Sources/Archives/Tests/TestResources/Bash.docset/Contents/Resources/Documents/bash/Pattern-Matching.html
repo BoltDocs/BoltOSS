@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Pattern Matching</title>
+
+<meta name="description" content="Pattern Matching (Bash Reference Manual)">
+<meta name="keywords" content="Pattern Matching (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Filename-Expansion.html" rel="up" title="Filename Expansion">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<div class="subsubsection" id="Pattern-Matching">
+<div class="header">
+<p>
+Up: <a href="Filename-Expansion.html" accesskey="u" rel="up">Filename Expansion</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Pattern-Matching-1"></span><h4 class="subsubsection">3.5.8.1 Pattern Matching</h4>
+<span id="index-pattern-matching"></span>
+<span id="index-matching_002c-pattern"></span>
+
+<p>Any character that appears in a pattern, other than the special pattern
+characters described below, matches itself.
+The <small>NUL</small> character may not occur in a pattern.
+A backslash escapes the following character; the
+escaping backslash is discarded when matching.
+The special pattern characters must be quoted if they are to be matched
+literally.
+</p>
+<p>The special pattern characters have the following meanings:
+</p><dl compact="compact">
+<dt><span><code>*</code></span></dt>
+<dd><p>Matches any string, including the null string.
+When the <code>globstar</code> shell option is enabled, and &lsquo;<samp>*</samp>&rsquo; is used in
+a filename expansion context, two adjacent &lsquo;<samp>*</samp>&rsquo;s used as a single
+pattern will match all files and zero or more directories and
+subdirectories.
+If followed by a &lsquo;<samp>/</samp>&rsquo;, two adjacent &lsquo;<samp>*</samp>&rsquo;s will match only
+directories and subdirectories.
+</p></dd>
+<dt><span><code>?</code></span></dt>
+<dd><p>Matches any single character.
+</p></dd>
+<dt><span><code>[&hellip;]</code></span></dt>
+<dd><p>Matches any one of the enclosed characters.  A pair of characters
+separated by a hyphen denotes a <var>range expression</var>;
+any character that falls between those two characters, inclusive,
+using the current locale&rsquo;s collating sequence and character set,
+is matched.  If the first character following the
+&lsquo;<samp>[</samp>&rsquo; is a &lsquo;<samp>!</samp>&rsquo;  or a &lsquo;<samp>^</samp>&rsquo;
+then any character not enclosed is matched.  A &lsquo;<samp>-</samp>&rsquo;
+may be matched by including it as the first or last character
+in the set.  A &lsquo;<samp>]</samp>&rsquo; may be matched by including it as the first
+character in the set.
+The sorting order of characters in range expressions,
+and the characters included in the range,
+are determined by
+the current locale and the values of the
+<code>LC_COLLATE</code> and <code>LC_ALL</code> shell variables, if set.
+</p>
+<p>For example, in the default C locale, &lsquo;<samp>[a-dx-z]</samp>&rsquo; is equivalent to
+&lsquo;<samp>[abcdxyz]</samp>&rsquo;.  Many locales sort characters in dictionary order, and in
+these locales &lsquo;<samp>[a-dx-z]</samp>&rsquo; is typically not equivalent to &lsquo;<samp>[abcdxyz]</samp>&rsquo;;
+it might be equivalent to &lsquo;<samp>[aBbCcDdxYyZz]</samp>&rsquo;, for example.  To obtain
+the traditional interpretation of ranges in bracket expressions, you can
+force the use of the C locale by setting the <code>LC_COLLATE</code> or
+<code>LC_ALL</code> environment variable to the value &lsquo;<samp>C</samp>&rsquo;, or enable the
+<code>globasciiranges</code> shell option.
+</p>
+<p>Within &lsquo;<samp>[</samp>&rsquo; and &lsquo;<samp>]</samp>&rsquo;, <em>character classes</em> can be specified
+using the syntax
+<code>[:</code><var>class</var><code>:]</code>, where <var>class</var> is one of the
+following classes defined in the <small>POSIX</small> standard:
+</p><div class="example">
+<pre class="example">alnum   alpha   ascii   blank   cntrl   digit   graph   lower
+print   punct   space   upper   word    xdigit
+</pre></div>
+<p>A character class matches any character belonging to that class.
+The <code>word</code> character class matches letters, digits, and the character
+&lsquo;<samp>_</samp>&rsquo;.
+</p>
+<p>Within &lsquo;<samp>[</samp>&rsquo; and &lsquo;<samp>]</samp>&rsquo;, an <em>equivalence class</em> can be
+specified using the syntax <code>[=</code><var>c</var><code>=]</code>, which
+matches all characters with the same collation weight (as defined
+by the current locale) as the character <var>c</var>.
+</p>
+<p>Within &lsquo;<samp>[</samp>&rsquo; and &lsquo;<samp>]</samp>&rsquo;, the syntax <code>[.</code><var>symbol</var><code>.]</code>
+matches the collating symbol <var>symbol</var>.
+</p></dd>
+</dl>
+
+<p>If the <code>extglob</code> shell option is enabled using the <code>shopt</code>
+builtin, the shell recognizes several extended pattern matching operators.
+In the following description, a <var>pattern-list</var> is a list of one
+or more patterns separated by a &lsquo;<samp>|</samp>&rsquo;.
+When matching filenames, the <code>dotglob</code> shell option determines
+the set of filenames that are tested, as described above.
+Composite patterns may be formed using one or more of the following
+sub-patterns:
+</p>
+<dl compact="compact">
+<dt><span><code>?(<var>pattern-list</var>)</code></span></dt>
+<dd><p>Matches zero or one occurrence of the given patterns.
+</p>
+</dd>
+<dt><span><code>*(<var>pattern-list</var>)</code></span></dt>
+<dd><p>Matches zero or more occurrences of the given patterns.
+</p>
+</dd>
+<dt><span><code>+(<var>pattern-list</var>)</code></span></dt>
+<dd><p>Matches one or more occurrences of the given patterns.
+</p>
+</dd>
+<dt><span><code>@(<var>pattern-list</var>)</code></span></dt>
+<dd><p>Matches one of the given patterns.
+</p>
+</dd>
+<dt><span><code>!(<var>pattern-list</var>)</code></span></dt>
+<dd><p>Matches anything except one of the given patterns.
+</p></dd>
+</dl>
+
+<p>The <code>extglob</code> option changes the behavior of the parser, since the
+parentheses are normally treated as operators with syntactic meaning.
+To ensure that extended matching patterns are parsed correctly, make sure
+that <code>extglob</code> is enabled before parsing constructs containing the
+patterns, including shell functions and command substitutions.
+</p>
+<p>When matching filenames, the <code>dotglob</code> shell option determines
+the set of filenames that are tested:
+when <code>dotglob</code> is enabled, the set of filenames includes all files
+beginning with &lsquo;<samp>.</samp>&rsquo;, but the filenames
+&lsquo;<samp>.</samp>&rsquo; and &lsquo;<samp>..</samp>&rsquo; must be matched by a
+pattern or sub-pattern that begins with a dot;
+when it is disabled, the set does not
+include any filenames beginning with &ldquo;.&rdquo; unless the pattern
+or sub-pattern begins with a &lsquo;<samp>.</samp>&rsquo;.
+As above, &lsquo;<samp>.</samp>&rsquo; only has a special meaning when matching filenames. 
+</p>
+<p>Complicated extended pattern matching against long strings is slow,
+especially when the patterns contain alternations and the strings
+contain multiple matches.
+Using separate matches against shorter strings, or using arrays of
+strings instead of a single long string, may be faster.
+</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Up: <a href="Filename-Expansion.html">Filename Expansion</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

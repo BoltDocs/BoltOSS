@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120px" height="120px" viewBox="0 0 120 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>cheatsheet</title>
+    <g id="cheatsheet" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M60,0 C93.137085,0 120,26.862915 120,60 C120,93.137085 93.137085,120 60,120 C26.862915,120 0,93.137085 0,60 C0,26.862915 26.862915,0 60,0 Z M60,19 C37.3563253,19 19,37.3563253 19,60 C19,82.6436747 37.3563253,101 60,101 C82.6436747,101 101,82.6436747 101,60 C101,37.3563253 82.6436747,19 60,19 Z" id="形状结合" fill="#000000"></path>
+        <circle id="椭圆形" fill-opacity="0.6" fill="#000000" cx="60" cy="60" r="25"></circle>
+    </g>
+</svg>

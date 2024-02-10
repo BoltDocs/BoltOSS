@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This text is a brief description of the features that are present in
+the Bash shell (version 5.2, 19 September 2022).
+
+This is Edition 5.2, last updated 19 September 2022,
+of The GNU Bash Reference Manual,
+for Bash, Version 5.2.
+
+Copyright (C) 1988-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled
+"GNU Free Documentation License". -->
+<title>Job Control Basics</title>
+
+<meta name="description" content="Job Control Basics (Bash Reference Manual)">
+<meta name="keywords" content="Job Control Basics (Bash Reference Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Job-Control.html" rel="up" title="Job Control">
+<link href="Job-Control-Builtins.html" rel="next" title="Job Control Builtins">
+<style type="text/css">
+<!--
+a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+span:hover a.copiable-anchor {visibility: visible}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="">
+
+
+</head>
+
+<body lang="en">
+<div class="section" id="Job-Control-Basics">
+<div class="header">
+<p>
+Next: <a href="Job-Control-Builtins.html" accesskey="n" rel="next">Job Control Builtins</a>, Up: <a href="Job-Control.html" accesskey="u" rel="up">Job Control</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Job-Control-Basics-1"></span><h3 class="section">7.1 Job Control Basics</h3>
+<span id="index-job-control-1"></span>
+<span id="index-foreground"></span>
+<span id="index-background"></span>
+<span id="index-suspending-jobs"></span>
+
+<p>Job control
+refers to the ability to selectively stop (suspend)
+the execution of processes and continue (resume)
+their execution at a later point.  A user typically employs
+this facility via an interactive interface supplied jointly
+by the operating system kernel&rsquo;s terminal driver and Bash.
+</p>
+<p>The shell associates a <var>job</var> with each pipeline.  It keeps a
+table of currently executing jobs, which may be listed with the
+<code>jobs</code> command.  When Bash starts a job
+asynchronously, it prints a line that looks
+like:
+</p><div class="example">
+<pre class="example">[1] 25647
+</pre></div>
+<p>indicating that this job is job number 1 and that the process <small>ID</small>
+of the last process in the pipeline associated with this job is
+25647.  All of the processes in a single pipeline are members of
+the same job.  Bash uses the <var>job</var> abstraction as the
+basis for job control. 
+</p>
+<p>To facilitate the implementation of the user interface to job
+control, the operating system maintains the notion of a current terminal
+process group <small>ID</small>.  Members of this process group (processes whose
+process group <small>ID</small> is equal to the current terminal process group
+<small>ID</small>) receive keyboard-generated signals such as <code>SIGINT</code>. 
+These processes are said to be in the foreground.  Background
+processes are those whose process group <small>ID</small> differs from the
+terminal&rsquo;s; such processes are immune to keyboard-generated
+signals.  Only foreground processes are allowed to read from or, if
+the user so specifies with <code>stty tostop</code>, write to the terminal.
+Background processes which attempt to
+read from (write to when <code>stty tostop</code> is in effect) the
+terminal are sent a <code>SIGTTIN</code> (<code>SIGTTOU</code>)
+signal by the kernel&rsquo;s terminal driver,
+which, unless caught, suspends the process. 
+</p>
+<p>If the operating system on which Bash is running supports
+job control, Bash contains facilities to use it.  Typing the
+<em>suspend</em> character (typically &lsquo;<samp>^Z</samp>&rsquo;, Control-Z) while a
+process is running causes that process to be stopped and returns
+control to Bash.  Typing the <em>delayed suspend</em> character
+(typically &lsquo;<samp>^Y</samp>&rsquo;, Control-Y) causes the process to be stopped
+when it attempts to read input from the terminal, and control to
+be returned to Bash.  The user then manipulates the state of
+this job, using the <code>bg</code> command to continue it in the
+background, the <code>fg</code> command to continue it in the
+foreground, or the <code>kill</code> command to kill it.  A &lsquo;<samp>^Z</samp>&rsquo;
+takes effect immediately, and has the additional side effect of
+causing pending output and typeahead to be discarded. 
+</p>
+<p>There are a number of ways to refer to a job in the shell.  The
+character &lsquo;<samp>%</samp>&rsquo; introduces a job specification (<em>jobspec</em>).
+</p>
+<p>Job number <code>n</code> may be referred to as &lsquo;<samp>%n</samp>&rsquo;.
+The symbols &lsquo;<samp>%%</samp>&rsquo; and  &lsquo;<samp>%+</samp>&rsquo; refer to the shell&rsquo;s notion of the
+current job, which is the last job stopped while it was in the foreground
+or started in the background.
+A single &lsquo;<samp>%</samp>&rsquo; (with no accompanying job specification) also refers
+to the current job.
+The previous job may be referenced using &lsquo;<samp>%-</samp>&rsquo;.
+If there is only a single job, &lsquo;<samp>%+</samp>&rsquo; and &lsquo;<samp>%-</samp>&rsquo; can both be used
+to refer to that job.
+In output pertaining to jobs (e.g., the output of the <code>jobs</code>
+command), the current job is always flagged with a &lsquo;<samp>+</samp>&rsquo;, and the
+previous job with a &lsquo;<samp>-</samp>&rsquo;. 
+</p>
+<p>A job may also be referred to
+using a prefix of the name used to start it, or using a substring
+that appears in its command line.  For example, &lsquo;<samp>%ce</samp>&rsquo; refers
+to a stopped job whose command name begins with &lsquo;<samp>ce</samp>&rsquo;.
+Using &lsquo;<samp>%?ce</samp>&rsquo;, on the
+other hand, refers to any job containing the string &lsquo;<samp>ce</samp>&rsquo; in
+its command line.  If the prefix or substring matches more than one job,
+Bash reports an error.
+</p>
+<p>Simply naming a job can be used to bring it into the foreground:
+&lsquo;<samp>%1</samp>&rsquo; is a synonym for &lsquo;<samp>fg %1</samp>&rsquo;, bringing job 1 from the
+background into the foreground.  Similarly, &lsquo;<samp>%1 &amp;</samp>&rsquo; resumes
+job 1 in the background, equivalent to &lsquo;<samp>bg %1</samp>&rsquo;
+</p>
+<p>The shell learns immediately whenever a job changes state. 
+Normally, Bash waits until it is about to print a prompt
+before reporting changes in a job&rsquo;s status so as to not interrupt
+any other output.
+If the <samp>-b</samp> option to the <code>set</code> builtin is enabled,
+Bash reports such changes immediately (see <a href="The-Set-Builtin.html">The Set Builtin</a>).
+Any trap on <code>SIGCHLD</code> is executed for each child process
+that exits.
+</p>
+<p>If an attempt to exit Bash is made while jobs are stopped, (or running, if
+the <code>checkjobs</code> option is enabled &ndash; see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>), the
+shell prints a warning message, and if the <code>checkjobs</code> option is
+enabled, lists the jobs and their statuses.
+The <code>jobs</code> command may then be used to inspect their status.
+If a second attempt to exit is made without an intervening command,
+Bash does not print another warning, and any stopped jobs are terminated.
+</p>
+<p>When the shell is waiting for a job or process using the <code>wait</code>
+builtin, and job control is enabled, <code>wait</code> will return when the
+job changes state. The <samp>-f</samp> option causes <code>wait</code> to wait
+until the job or process terminates before returning.
+</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Job-Control-Builtins.html">Job Control Builtins</a>, Up: <a href="Job-Control.html">Job Control</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

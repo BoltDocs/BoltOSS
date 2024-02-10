@@ -1,0 +1,153 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: usr_50</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: usr_50</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="usr_50.txt"></A><B>usr_50.txt</B>*	For Vim version 9.0.  Last change: 2022 Jun 20
+
+		     VIM USER MANUAL - by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+			 Advanced Vim <A HREF="usr_41.html#script">script</A> <A HREF="editing.html#writing">writing</A>
+
+
+|<A HREF="#50.1">50.1</A>|	Exceptions
+|<A HREF="#50.2">50.2</A>|	Function with variable number of arguments
+|<A HREF="#50.3">50.3</A>|	Restoring the <A HREF="starting.html#view">view</A>
+
+     Next chapter: |<A HREF="usr_51.html">usr_51.txt</A>|  Create a <A HREF="usr_05.html#plugin">plugin</A>
+ Previous chapter: |<A HREF="usr_45.html">usr_45.txt</A>|  <A HREF="visual.html#Select">Select</A> your language (local)
+Table of contents: |<A HREF="usr_toc.html">usr_toc.txt</A>|
+
+==============================================================================
+
+*<A NAME="50.1"></A><B>50.1</B>*	Exceptions
+
+Let's start with an example:
+
+<B>	try</B>
+<B>	   read ~/templates/pascal.tmpl</B>
+<B>	catch /E484:/</B>
+<B>	   echo "Sorry, the Pascal template file cannot be found."</B>
+<B>	endtry</B>
+
+The `read` command will fail if the file does not exist.  Instead of
+generating an error message, this code catches the error and gives the user a
+message with more information.
+
+For the commands in between `try` and `endtry` <A HREF="message.html#errors">errors</A> are turned into
+exceptions.  An exception is a <A HREF="eval.html#string">string</A>.  In the <A HREF="change.html#case">case</A> of an error the <A HREF="eval.html#string">string</A>
+contains the error message.  And every error message has a number.  In this
+<A HREF="change.html#case">case</A>, the error we catch contains &quot;E484:&quot;.  This number is guaranteed to stay
+the same (the text may change, e.g., <A HREF="motion.html#it">it</A> may be translated).
+
+Besides being able to give a nice error message, Vim will also continue
+executing commands after the `:endtry`.  Otherwise, once an uncaught error is
+encountered, execution of the script/function/mapping will be aborted.
+
+When the `read` command causes another error, the <A HREF="pattern.html#pattern">pattern</A> &quot;E484:&quot; will not
+match in <A HREF="motion.html#it">it</A>.  Thus this exception will not be caught and result in the usual
+error message and execution is aborted.
+
+You might be tempted to <A HREF="diff.html#do">do</A> this:
+
+<B>	try</B>
+<B>	   read ~/templates/pascal.tmpl</B>
+<B>	catch</B>
+<B>	   echo "Sorry, the Pascal template file cannot be found."</B>
+<B>	endtry</B>
+
+This means all <A HREF="message.html#errors">errors</A> are caught.  But then you will not see an error that
+would indicate a completely different problem, such <A HREF="motion.html#as">as</A> &quot;E21: Cannot make
+changes, <A HREF="options.html#'modifiable'">'modifiable'</A> is off&quot;.  Think <A HREF="if_cscop.html#twice">twice</A> before you catch any error!
+
+Another useful mechanism is the `finally` command:
+
+<B>	var tmp = tempname()</B>
+<B>	try</B>
+<B>	   exe ":.,$write " .. tmp</B>
+<B>	   exe "!filter " .. tmp</B>
+<B>	   :.,$delete</B>
+<B>	   exe ":$read " .. tmp</B>
+<B>	finally</B>
+<B>	   delete(tmp)</B>
+<B>	endtry</B>
+
+This filters the lines from the cursor until the end of the file through the
+&quot;<A HREF="change.html#filter">filter</A>&quot; command, which takes a file name argument.  No matter if the
+filtering works, if something goes wrong in between `try` and `finally` or the
+user cancels the filtering by pressing <A HREF="pattern.html#CTRL-C">CTRL-C</A>, the `delete(tmp)` call is
+always executed.  This makes sure you don't leave the temporary file behind.
+
+The `finally` does not catch the exception, the error will still abort
+further execution.
+
+More information about exception handling can be found in the reference
+manual: |<A HREF="eval.html#exception-handling">exception-handling</A>|.
+
+==============================================================================
+
+*<A NAME="50.2"></A><B>50.2</B>*	Function with variable number of arguments
+
+Vim enables you to define <A HREF="eval.html#functions">functions</A> that have a variable number of arguments.
+The following command, for instance, defines a function that must have 1
+argument (start) and can have up to 20 additional arguments:
+
+<B>	def Show(start: string, ...items: list&lt;string&gt;)</B>
+
+The variable &quot;items&quot; will be a <A HREF="eval.html#list">list</A> in the function containing the extra
+arguments.  You can use <A HREF="motion.html#it">it</A> like any <A HREF="eval.html#list">list</A>, for example:
+
+<B>	def Show(start: string, ...items: list&lt;string&gt;)</B>
+<B>	  echohl Title</B>
+<B>	  echo "start is " .. start</B>
+<B>	  echohl None</B>
+<B>	  for index in range(len(items))</B>
+<B>	    echon $"  Arg {index} is {items[index]}"</B>
+<B>	  endfor</B>
+<B>	  echo</B>
+<B>	enddef</B>
+
+You can call <A HREF="motion.html#it">it</A> like this:
+
+<B>	Show('Title', 'one', 'two', 'three')</B>
+<B><FONT COLOR="PURPLE"> 	start is Title  Arg 0 is one  Arg 1 is two  Arg 2 is three </FONT></B>
+
+This uses the `echohl` command to specify the highlighting used for the
+following `echo` command.  `echohl None` stops <A HREF="motion.html#it">it</A> again.  The `echon` command
+works like `echo`, but doesn't output a line break.
+
+If you call <A HREF="motion.html#it">it</A> with one argument the &quot;items&quot; <A HREF="eval.html#list">list</A> will be empty.
+`range(len(items))` returns a <A HREF="eval.html#list">list</A> with the indexes, what `for` loops over,
+we'll explain that further down.
+
+==============================================================================
+
+*<A NAME="50.3"></A><B>50.3</B>*	Restoring the <A HREF="starting.html#view">view</A>
+
+Sometimes you want to jump around, make a change and then go back to the same
+position and <A HREF="starting.html#view">view</A>.  For example to change something in the file header.  This
+can be done with two <A HREF="eval.html#functions">functions</A>:
+
+<B>	var view = winsaveview()</B>
+<B>	# Move around, make changes</B>
+<B>	winrestview(view)</B>
+
+==============================================================================
+
+Next chapter: |<A HREF="usr_51.html">usr_51.txt</A>|  Create a <A HREF="usr_05.html#plugin">plugin</A>
+
+Copyright: see |<A HREF="usr_01.html#manual-copyright">manual-copyright</A>|  vim:tw=78:ts=8:noet:ft=help:norl:
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

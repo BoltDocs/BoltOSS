@@ -1,0 +1,603 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Vim documentation: testing</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Vim documentation: testing</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="testing.txt"></A><B>testing.txt</B>*	For Vim version 9.0.  Last change: 2022 May 16
+
+
+		  VIM REFERENCE MANUAL	  by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+
+
+Testing Vim and Vim <A HREF="usr_41.html#script">script</A>			*<A NAME="testing-support"></A><B>testing-support</B>*
+
+Expression evaluation is explained in |<A HREF="eval.html">eval.txt</A>|.  This file goes into details
+about <A HREF="editing.html#writing">writing</A> tests in Vim <A HREF="usr_41.html#script">script</A>.  This can be used for <A HREF="#testing">testing</A> Vim itself
+and for <A HREF="#testing">testing</A> plugins.
+
+1. Testing Vim				|<A HREF="#testing">testing</A>|
+2. Test functions			|<A HREF="#test-functions-details">test-functions-details</A>|
+3. Assert functions			|<A HREF="#assert-functions-details">assert-functions-details</A>|
+
+==============================================================================
+
+1. Testing Vim						*<A NAME="testing"></A><B>testing</B>*
+
+Vim can be tested after building <A HREF="motion.html#it">it</A>, usually with &quot;make test&quot;.
+The tests are located in the directory &quot;src/testdir&quot;.
+
+There are two types of tests added over time:
+	test20.in		oldest, only for tiny and small builds
+	test_something.vim	new style tests
+
+
+						*<A NAME="new-style-testing"></A><B>new-style-testing</B>*
+New tests should be added <A HREF="motion.html#as">as</A> new style tests.  The test scripts are named
+test_&lt;feature&gt;.vim (replace &lt;feature&gt; with the feature under test). These use
+<A HREF="eval.html#functions">functions</A> such as |<A HREF="#assert_equal()">assert_equal()</A>| to keep the test commands and the expected
+result in one place.
+
+						*<A NAME="old-style-testing"></A><B>old-style-testing</B>*
+These tests are used only for <A HREF="#testing">testing</A> Vim without the |<A HREF="various.html#+eval">+eval</A>| feature.
+
+Find more information in the file src/testdir/README.txt.
+
+==============================================================================
+
+2. Test <A HREF="eval.html#functions">functions</A>				*<A NAME="test-functions-details"></A><B>test-functions-details</B>*
+
+
+test_alloc_fail({id}, {countdown}, {repeat})		*<A NAME="test_alloc_fail()"></A><B>test_alloc_fail()</B>*
+		This is for <A HREF="#testing">testing</A>: If the memory allocation with {id} is
+		called, then decrement {countdown}, and when <A HREF="motion.html#it">it</A> reaches zero
+		let memory allocation fail {repeat} times.  When {repeat} is
+		smaller than one <A HREF="motion.html#it">it</A> fails one time.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetAllocId()-&gt;test_alloc_fail()</B>
+
+
+
+<A HREF="#test_autochdir()">test_autochdir()</A>					*<A NAME="test_autochdir()"></A><B>test_autochdir()</B>*
+		Set a flag to enable the effect of <A HREF="options.html#'autochdir'">'autochdir'</A> before Vim
+		<A HREF="starting.html#startup">startup</A> has finished.
+
+
+
+test_feedinput({string})				*<A NAME="test_feedinput()"></A><B>test_feedinput()</B>*
+		Characters in {string} are queued for processing <A HREF="motion.html#as">as</A> if they
+		were typed by the user. This uses a low level input buffer.
+		This function works only when with |<A HREF="builtin.html#+unix">+unix</A>| or <A HREF="gui.html#GUI">GUI</A> is running.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetText()-&gt;test_feedinput()</B>
+
+
+
+<A HREF="#test_garbagecollect_now()">test_garbagecollect_now()</A>			 *<A NAME="test_garbagecollect_now()"></A><B>test_garbagecollect_now()</B>*
+		Like <A HREF="builtin.html#garbagecollect()">garbagecollect()</A>, but executed right away.  This must
+		only be called directly to avoid any structure to exist
+		internally, and |<A HREF="eval.html#v:testing">v:testing</A>| must have been set before calling
+
+		any function.   *<A NAME="E1142"></A><B>E1142</B>*
+		This will not work when called from a <A HREF="vim9.html#:def">:def</A> function, because
+		<A HREF="eval.html#variables">variables</A> on the stack will be freed.
+
+
+
+<A HREF="#test_garbagecollect_soon()">test_garbagecollect_soon()</A>			 *<A NAME="test_garbagecollect_soon()"></A><B>test_garbagecollect_soon()</B>*
+		Set the flag to call the garbagecollector <A HREF="motion.html#as">as</A> if in the main
+		loop.  Only to be used in tests.
+
+
+
+test_getvalue({name})					*<A NAME="test_getvalue()"></A><B>test_getvalue()</B>*
+		Get the value of an internal variable.  These values for
+		{name} are supported:
+			need_fileinfo
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetName()-&gt;test_getvalue()</B>
+ 
+
+						*<A NAME="test_gui_event()"></A><B>test_gui_event()</B>*
+test_gui_event({event}, {args})
+		Generate a <A HREF="gui.html#GUI">GUI</A> <A HREF="autocmd.html#{event}">{event}</A> with arguments {args} for <A HREF="#testing">testing</A> Vim
+		functionality. This function works only when the <A HREF="gui.html#GUI">GUI</A> is
+		running.
+
+		<A HREF="autocmd.html#{event}">{event}</A> is a <A HREF="eval.html#String">String</A> and the supported values are:
+		    &quot;dropfiles&quot;	drop one or more files in a <A HREF="windows.html#window">window</A>.
+		    &quot;findrepl&quot;  search and replace text.
+		    &quot;mouse&quot;	mouse button click event.
+		    &quot;scrollbar&quot; move or drag the scrollbar.
+		    &quot;tabline&quot;	select a <A HREF="intro.html#tab">tab</A> page by mouse click.
+		    &quot;tabmenu&quot;	select a tabline menu entry.
+
+		{args} is a <A HREF="eval.html#Dict">Dict</A> and contains the arguments for the event.
+
+		&quot;dropfiles&quot;:
+		  Drop one or more files in a specified <A HREF="windows.html#window">window</A>.  The supported
+		  items in {args} are:
+		    files:	<A HREF="eval.html#List">List</A> of file names
+		    row:	<A HREF="windows.html#window">window</A> row number
+		    col:	<A HREF="windows.html#window">window</A> column number
+		    modifiers:	key modifiers. The supported values are:
+				    0x4	Shift
+				    0x8	Alt
+				   0x10	Ctrl
+		  The files are added to the |<A HREF="editing.html#argument-list">argument-list</A>| and the first
+		  file in {files} is edited in the <A HREF="windows.html#window">window</A>.  See |<A HREF="gui.html#drag-n-drop">drag-n-drop</A>|
+		  for more information.  This event works only when the
+		  |<A HREF="gui.html#drop_file">drop_file</A>| feature is present.
+
+		&quot;findrepl&quot;:
+		  {only available when the <A HREF="gui.html#GUI">GUI</A> has a find/replace dialog}
+		  Perform a search and replace of text.  The supported items
+		  in {args} are:
+		    find_text:	<A HREF="eval.html#string">string</A> to find.
+		    repl_text:	replacement <A HREF="eval.html#string">string</A>.
+		    flags:	flags controlling the find/replace. Supported
+				values are:
+				    1	search next <A HREF="eval.html#string">string</A> (find <A HREF="gui_w32.html#dialog">dialog</A>)
+				    2	search next <A HREF="eval.html#string">string</A> (replace <A HREF="gui_w32.html#dialog">dialog</A>)
+				    3	replace <A HREF="eval.html#string">string</A> once
+				    4	replace all matches
+				    8	match whole words only
+				   16	match <A HREF="change.html#case">case</A>
+		    forward:	set to 1 for forward search.
+
+		&quot;mouse&quot;:
+		  Inject either a mouse button click, or a mouse move, event.
+		  The supported items in {args} are:
+		    button:	mouse button.  The supported values are:
+				    0	right mouse button
+				    1	middle mouse button
+				    2	left mouse button
+				    3	mouse button release
+				    4	scroll wheel down
+				    5	scroll wheel up
+				    6	scroll wheel left
+				    7	scroll wheel right
+		    row:	mouse click row number.  The first row of the
+				Vim <A HREF="windows.html#window">window</A> is 1 and the last row is <A HREF="options.html#'lines'">'lines'</A>.
+		    col:	mouse click column number.  The maximum value
+				of {col} is <A HREF="options.html#'columns'">'columns'</A>.
+		    multiclick:	set to 1 to inject a multiclick mouse event.
+		    modifiers:	key modifiers.  The supported values are:
+				    4	<A HREF="intro.html#shift">shift</A> is pressed
+				    8	<A HREF="intro.html#alt">alt</A> is pressed
+				   16	<A HREF="intro.html#ctrl">ctrl</A> is pressed
+		    move:	Optional; if used and <A HREF="eval.html#TRUE">TRUE</A> then a mouse move
+			        event can be generated.
+				Only {args} row: and col: are used and
+				required; they are interpreted <A HREF="motion.html#as">as</A> pixels or
+				screen cells, depending on &quot;cell&quot;.
+				Only results in an event when <A HREF="options.html#'mousemoveevent'">'mousemoveevent'</A>
+				is set or a <A HREF="popup.html#popup">popup</A> uses mouse move events.
+		    cell:	Optional: when present and <A HREF="eval.html#TRUE">TRUE</A> then &quot;move&quot;
+				uses screen cells instead of pixel positions
+
+		&quot;scrollbar&quot;:
+		  Set or drag the left, right or horizontal scrollbar.  Only
+		  works when the scrollbar actually exists.  The supported
+		  items in {args} are:
+		    which:	scrollbar. The supported values are:
+				    left  Left scrollbar of the current <A HREF="windows.html#window">window</A>
+				    right Right scrollbar of the current <A HREF="windows.html#window">window</A>
+				    hor   Horizontal scrollbar
+		    value:	amount to scroll.  For the vertical scrollbars
+				the value can be 1 to the line-count of the
+				buffer.  For the horizontal scrollbar the
+				value can be between 1 and the maximum line
+				length, assuming <A HREF="options.html#'wrap'">'wrap'</A> is not set.
+		    dragging:	1 to drag the scrollbar and 0 to click in the
+				scrollbar.
+
+		&quot;tabline&quot;:
+		  Inject a mouse click event on the tabline to select a
+		  <A HREF="tabpage.html#tabpage">tabpage</A>. The supported items in {args} are:
+		    tabnr:	<A HREF="intro.html#tab">tab</A> page number
+
+		&quot;tabmenu&quot;:
+		  Inject an event to select a tabline menu entry. The
+		  supported items in {args} are:
+		    tabnr:	<A HREF="intro.html#tab">tab</A> page number
+		    item: 	<A HREF="intro.html#tab">tab</A> page menu item number. 1 for the first
+				menu item, 2 for the second item and so on.
+
+		After injecting the <A HREF="gui.html#GUI">GUI</A> events you probably should call
+		|<A HREF="builtin.html#feedkeys()">feedkeys()</A>| to have them processed, e.g.:
+<B>			call feedkeys("y", 'Lx!')</B>
+ 
+		Returns <A HREF="eval.html#TRUE">TRUE</A> if the event is successfully added, <A HREF="eval.html#FALSE">FALSE</A> if
+		there is a failure.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetEvent()-&gt;test_gui_event({args})</B>
+ 
+
+test_ignore_error({expr})			 *<A NAME="test_ignore_error()"></A><B>test_ignore_error()</B>*
+		Ignore any error containing {expr}.  A normal message is given
+		instead.
+		This is only meant to be used in tests, where catching the
+		error with try/catch cannot be used (because <A HREF="motion.html#it">it</A> skips over
+		following code).
+		{expr} is used literally, not <A HREF="motion.html#as">as</A> a <A HREF="pattern.html#pattern">pattern</A>.
+		When the {expr} is the <A HREF="eval.html#string">string</A> &quot;RESET&quot; then the <A HREF="eval.html#list">list</A> of ignored
+		<A HREF="message.html#errors">errors</A> is made empty.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetErrorText()-&gt;test_ignore_error()</B>
+
+
+
+<A HREF="#test_null_blob()">test_null_blob()</A>					*<A NAME="test_null_blob()"></A><B>test_null_blob()</B>*
+		Return a |<A HREF="eval.html#Blob">Blob</A>| that is <A HREF="vim9.html#null">null</A>. Only useful for <A HREF="#testing">testing</A>.
+
+
+
+<A HREF="#test_null_channel()">test_null_channel()</A>					*<A NAME="test_null_channel()"></A><B>test_null_channel()</B>*
+		Return a |<A HREF="eval.html#Channel">Channel</A>| that is <A HREF="vim9.html#null">null</A>. Only useful for <A HREF="#testing">testing</A>.
+		{only available when compiled with the <A HREF="various.html#+channel">+channel</A> feature}
+
+
+
+<A HREF="#test_null_dict()">test_null_dict()</A>					*<A NAME="test_null_dict()"></A><B>test_null_dict()</B>*
+		Return a |<A HREF="eval.html#Dict">Dict</A>| that is <A HREF="vim9.html#null">null</A>. Only useful for <A HREF="#testing">testing</A>.
+
+
+
+<A HREF="#test_null_function()">test_null_function()</A>					*<A NAME="test_null_function()"></A><B>test_null_function()</B>*
+		Return a |<A HREF="eval.html#Funcref">Funcref</A>| that is <A HREF="vim9.html#null">null</A>. Only useful for <A HREF="#testing">testing</A>.
+
+
+
+<A HREF="#test_null_job()">test_null_job()</A>						*<A NAME="test_null_job()"></A><B>test_null_job()</B>*
+		Return a |<A HREF="eval.html#Job">Job</A>| that is <A HREF="vim9.html#null">null</A>. Only useful for <A HREF="#testing">testing</A>.
+		{only available when compiled with the <A HREF="various.html#+job">+job</A> feature}
+
+
+
+<A HREF="#test_null_list()">test_null_list()</A>					*<A NAME="test_null_list()"></A><B>test_null_list()</B>*
+		Return a |<A HREF="eval.html#List">List</A>| that is <A HREF="vim9.html#null">null</A>. Only useful for <A HREF="#testing">testing</A>.
+
+
+
+<A HREF="#test_null_partial()">test_null_partial()</A>					*<A NAME="test_null_partial()"></A><B>test_null_partial()</B>*
+		Return a |<A HREF="eval.html#Partial">Partial</A>| that is <A HREF="vim9.html#null">null</A>. Only useful for <A HREF="#testing">testing</A>.
+
+
+
+<A HREF="#test_null_string()">test_null_string()</A>					*<A NAME="test_null_string()"></A><B>test_null_string()</B>*
+		Return a |<A HREF="eval.html#String">String</A>| that is <A HREF="vim9.html#null">null</A>. Only useful for <A HREF="#testing">testing</A>.
+
+
+
+test_option_not_set({name})				*<A NAME="test_option_not_set()"></A><B>test_option_not_set()</B>*
+		Reset the flag that indicates option {name} was set.  Thus <A HREF="motion.html#it">it</A>
+		looks like <A HREF="motion.html#it">it</A> still has the default value. Use like this:
+<B>			set ambiwidth=double</B>
+<B>			call test_option_not_set('ambiwidth')</B>
+ 		Now the <A HREF="options.html#'ambiwidth'">'ambiwidth'</A> option behaves like <A HREF="motion.html#it">it</A> was never changed,
+		even though the value is &quot;double&quot;.
+		Only to be used for <A HREF="#testing">testing</A>!
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetOptionName()-&gt;test_option_not_set()</B>
+
+
+
+test_override({name}, {val})				*<A NAME="test_override()"></A><B>test_override()</B>*
+		Overrides certain parts of Vim's internal processing to be able
+		to run tests. Only to be used for <A HREF="#testing">testing</A> Vim!
+		The override is enabled when {val} is non-zero and removed
+		when {val} is zero.
+		Current supported values for {name} are:
+
+<B><FONT COLOR="PURPLE">		{name}	     effect when {val} is non-zero </FONT></B>
+		<A HREF="eval.html#autoload">autoload</A>     `import autoload` will load the <A HREF="usr_41.html#script">script</A> right
+			     away, not postponed until an item is used
+		char_avail   disable the char_avail() function
+		nfa_fail     makes the <A HREF="pattern.html#NFA">NFA</A> <A HREF="pattern.html#regexp">regexp</A> engine fail to force a
+			     fallback to the old engine
+		no_query_mouse  <A HREF="diff.html#do">do</A> not query the mouse position for &quot;dec&quot;
+				terminals
+		no_wait_return	set the &quot;no_wait_return&quot; flag.  Not restored
+				with &quot;ALL&quot;.
+		redraw       disable the redrawing() function
+		redraw_flag  ignore the RedrawingDisabled flag
+		starting     reset the &quot;starting&quot; variable, see below
+		term_props   reset all <A HREF="terminal.html#terminal">terminal</A> properties when the version
+			     <A HREF="eval.html#string">string</A> is detected
+		ui_delay     time in msec to use in ui_delay(); overrules a
+			     wait time of up to 3 seconds for <A HREF="message.html#messages">messages</A>
+		uptime 	     overrules sysinfo.uptime
+		vterm_title  setting the <A HREF="windows.html#window">window</A> title by a <A HREF="channel.html#job">job</A> running in a
+			     <A HREF="terminal.html#terminal">terminal</A> <A HREF="windows.html#window">window</A>
+		ALL	     clear all overrides ({val} is not used)
+
+		&quot;starting&quot; is to be used when a test should behave like
+		<A HREF="starting.html#startup">startup</A> was done.  Since the tests are run by sourcing a
+		<A HREF="usr_41.html#script">script</A> the &quot;starting&quot; variable is non-zero. This is usually a
+		good thing (tests run faster), but sometimes changes behavior
+		in a way that the test doesn't work properly.
+		When using:
+<B>			call test_override('starting', 1)</B>
+ 		The value of &quot;starting&quot; is saved.  It is restored by:
+<B>			call test_override('starting', 0)</B>
+
+ 		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetOverrideVal()-&gt; test_override('starting')</B>
+
+
+
+test_refcount({expr})					*<A NAME="test_refcount()"></A><B>test_refcount()</B>*
+		Return the reference <A HREF="intro.html#count">count</A> of {expr}.  When {expr} is of a
+		type that does not have a reference <A HREF="intro.html#count">count</A>, returns -1.  Only
+		to be used for <A HREF="#testing">testing</A>.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetVarname()-&gt;test_refcount()</B>
+
+
+
+test_setmouse({row}, {col})				*<A NAME="test_setmouse()"></A><B>test_setmouse()</B>*
+		Set the mouse position to be used for the next mouse action.
+		{row} and {col} are one based.
+		For example:
+<B>			call test_setmouse(4, 20)</B>
+<B>			call feedkeys("\&lt;LeftMouse&gt;", "xt")</B>
+
+
+
+test_settime({expr})					*<A NAME="test_settime()"></A><B>test_settime()</B>*
+		Set the time Vim uses internally.  Currently only used for
+		<A HREF="editing.html#timestamps">timestamps</A> in the <A HREF="cmdline.html#history">history</A>, <A HREF="motion.html#as">as</A> they are used in <A HREF="starting.html#viminfo">viminfo</A>, and
+		for <A HREF="undo.html#undo">undo</A>.
+		Using a value of 1 makes Vim not sleep after a warning or
+		error message.
+		{expr} must evaluate to a number.  When the value is zero the
+		normal behavior is restored.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetTime()-&gt;test_settime()</B>
+
+
+
+test_srand_seed([seed])					*<A NAME="test_srand_seed()"></A><B>test_srand_seed()</B>*
+		When [seed] is given this sets the seed value used by
+		`srand()`.  When omitted the test seed is removed.
+
+
+
+<A HREF="#test_unknown()">test_unknown()</A>						*<A NAME="test_unknown()"></A><B>test_unknown()</B>*
+		Return a value with unknown type. Only useful for <A HREF="#testing">testing</A>.
+
+
+
+<A HREF="#test_void()">test_void()</A>						*<A NAME="test_void()"></A><B>test_void()</B>*
+		Return a value with void type. Only useful for <A HREF="#testing">testing</A>.
+
+==============================================================================
+
+3. Assert <A HREF="eval.html#functions">functions</A>				*<A NAME="assert-functions-details"></A><B>assert-functions-details</B>*
+
+
+
+assert_beeps({cmd})					*<A NAME="assert_beeps()"></A><B>assert_beeps()</B>*
+		Run {cmd} and add an error message to |<A HREF="eval.html#v:errors">v:errors</A>| if <A HREF="motion.html#it">it</A> does
+		NOT produce a beep or visual bell.
+		Also see |<A HREF="#assert_fails()">assert_fails()</A>|, |<A HREF="#assert_nobeep()">assert_nobeep()</A>| and
+		|<A HREF="eval.html#assert-return">assert-return</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetCmd()-&gt;assert_beeps()</B>
+ 
+
+							*<A NAME="assert_equal()"></A><B>assert_equal()</B>*
+assert_equal({expected}, {actual} [, {msg}])
+		When {expected} and {actual} are not equal an error message is
+		added to |<A HREF="eval.html#v:errors">v:errors</A>| and 1 is returned.  Otherwise zero is
+		returned |<A HREF="eval.html#assert-return">assert-return</A>|.
+		There is no automatic conversion, the <A HREF="eval.html#String">String</A> &quot;4&quot; is different
+		from the <A HREF="eval.html#Number">Number</A> 4.  And the number 4 is different from the
+		<A HREF="eval.html#Float">Float</A> 4.0.  The value of <A HREF="options.html#'ignorecase'">'ignorecase'</A> is not used here, <A HREF="change.html#case">case</A>
+		always matters.
+		When {msg} is omitted an error in the form &quot;Expected
+		{expected} but got {actual}&quot; is produced.
+		Example:
+<B>	assert_equal('foo', 'bar')</B>
+ 		Will result in a <A HREF="eval.html#string">string</A> to be added to YXXYv:errors|:
+<B><FONT COLOR="PURPLE">	test.vim line 12: Expected 'foo' but got 'bar' </FONT></B>
+
+		Can also be used <A HREF="motion.html#as">as</A> a |<A HREF="eval.html#method">method</A>|, the base is passed <A HREF="motion.html#as">as</A> the
+		second argument:
+<B>			mylist-&gt;assert_equal([1, 2, 3])</B>
+
+
+ 							*<A NAME="assert_equalfile()"></A><B>assert_equalfile()</B>*
+assert_equalfile({fname-one}, {fname-two} [, {msg}])
+		When the files {fname-one} and {fname-two} <A HREF="diff.html#do">do</A> not contain
+		exactly the same text an error message is added to |<A HREF="eval.html#v:errors">v:errors</A>|.
+		Also see |<A HREF="eval.html#assert-return">assert-return</A>|.
+		When {fname-one} or {fname-two} does not exist the error will
+		mention that.
+		Mainly useful with |<A HREF="terminal.html#terminal-diff">terminal-diff</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetLog()-&gt;assert_equalfile('expected.log')</B>
+
+
+assert_exception({error} [, {msg}])			*<A NAME="assert_exception()"></A><B>assert_exception()</B>*
+		When <A HREF="eval.html#v:exception">v:exception</A> does not contain the <A HREF="eval.html#string">string</A> {error} an error
+		message is added to |<A HREF="eval.html#v:errors">v:errors</A>|.  Also see |<A HREF="eval.html#assert-return">assert-return</A>|.
+		This can be used to assert that a command throws an exception.
+		Using the error number, followed by a colon, avoids problems
+		with translations:
+<B>			try</B>
+<B>			  commandthatfails</B>
+<B>			  call assert_false(1, 'command should have failed')</B>
+<B>			catch</B>
+<B>			  call assert_exception('E492:')</B>
+<B>			endtry</B>
+ 
+
+							*<A NAME="assert_fails()"></A><B>assert_fails()</B>*
+assert_fails({cmd} [, {error} [, {msg} [, {lnum} [, {context}]]]])
+		Run {cmd} and add an error message to |<A HREF="eval.html#v:errors">v:errors</A>| if <A HREF="motion.html#it">it</A> does
+		NOT produce an error or when {error} is not found in the
+		error message.  Also see |<A HREF="eval.html#assert-return">assert-return</A>|.
+
+							*<A NAME="E856"></A><B>E856</B>*
+		When {error} is a <A HREF="eval.html#string">string</A> <A HREF="motion.html#it">it</A> must be found literally in the
+		first reported error. Most often this will be the error code,
+		including the colon, e.g. &quot;E123:&quot;.
+<B>			assert_fails('bad cmd', 'E987:')</B>
+ 
+		When {error} is a |<A HREF="eval.html#List">List</A>| with one or two strings, these are
+		used <A HREF="motion.html#as">as</A> patterns.  The first <A HREF="pattern.html#pattern">pattern</A> is matched against the
+		first reported error:
+<B>			assert_fails('cmd', ['E987:.*expected bool'])</B>
+ 		The second <A HREF="pattern.html#pattern">pattern</A>, if present, is matched against the last
+		reported error.
+		If there is only one error then both patterns must match. This
+		can be used to check that there is only one error.
+		To only match the last error use an empty <A HREF="eval.html#string">string</A> for the first
+		error:
+<B>			assert_fails('cmd', ['', 'E987:'])</B>
+ 
+		If {msg} is empty then <A HREF="motion.html#it">it</A> is not used.  Do this to get the
+		default message when passing the {lnum} argument.
+
+							*<A NAME="E1115"></A><B>E1115</B>*
+		When {lnum} is present and not negative, and the {error}
+		argument is present and matches, then this is compared with
+		the line number at which the error was reported. That can be
+		the line number in a function or in a <A HREF="usr_41.html#script">script</A>.
+
+							*<A NAME="E1116"></A><B>E1116</B>*
+		When {context} is present <A HREF="motion.html#it">it</A> is used <A HREF="motion.html#as">as</A> a <A HREF="pattern.html#pattern">pattern</A> and matched
+		against the context (script name or function name) where
+		{lnum} is located in.
+
+		Note that beeping is not considered an error, and some failing
+		commands only beep.  Use |<A HREF="#assert_beeps()">assert_beeps()</A>| for those.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetCmd()-&gt;assert_fails('E99:')</B>
+
+
+assert_false({actual} [, {msg}])			*<A NAME="assert_false()"></A><B>assert_false()</B>*
+		When {actual} is not <A HREF="vim9.html#false">false</A> an error message is added to
+		|<A HREF="eval.html#v:errors">v:errors</A>|, like with |<A HREF="#assert_equal()">assert_equal()</A>|.
+		Also see |<A HREF="eval.html#assert-return">assert-return</A>|.
+		A value is <A HREF="vim9.html#false">false</A> when <A HREF="motion.html#it">it</A> is zero. When {actual} is not a
+		number the assert fails.
+		When {msg} is omitted an error in the form
+		&quot;Expected False but got {actual}&quot; is produced.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetResult()-&gt;assert_false()</B>
+
+
+assert_inrange({lower}, {upper}, {actual} [, {msg}])	 *<A NAME="assert_inrange()"></A><B>assert_inrange()</B>*
+		This asserts number and |<A HREF="eval.html#Float">Float</A>| values.  When {actual}  is lower
+		than {lower} or higher than {upper} an error message is added
+		to |<A HREF="eval.html#v:errors">v:errors</A>|.  Also see |<A HREF="eval.html#assert-return">assert-return</A>|.
+		When {msg} is omitted an error in the form
+		&quot;Expected range {lower} - {upper}, but got {actual}&quot; is
+		produced.
+
+
+								*<A NAME="assert_match()"></A><B>assert_match()</B>*
+assert_match({pattern}, {actual} [, {msg}])
+		When {pattern} does not match {actual} an error message is
+		added to |<A HREF="eval.html#v:errors">v:errors</A>|.  Also see |<A HREF="eval.html#assert-return">assert-return</A>|.
+
+		{pattern} is used <A HREF="motion.html#as">as</A> with |=~|: The matching is always done
+		like <A HREF="options.html#'magic'">'magic'</A> was set and <A HREF="options.html#'cpoptions'">'cpoptions'</A> is empty, no matter what
+		the actual value of <A HREF="options.html#'magic'">'magic'</A> or <A HREF="options.html#'cpoptions'">'cpoptions'</A> is.
+
+		{actual} is used <A HREF="motion.html#as">as</A> a <A HREF="eval.html#string">string</A>, automatic conversion applies.
+		Use &quot;<A HREF="motion.html#^">^</A>&quot; and &quot;<A HREF="motion.html#$">$</A>&quot; to match with the start and end of the text.
+		Use both to match the whole text.
+
+		When {msg} is omitted an error in the form
+		&quot;<A HREF="pattern.html#Pattern">Pattern</A> {pattern} does not match {actual}&quot; is produced.
+		Example:
+<B>	assert_match('^f.*o$', 'foobar')</B>
+ 		Will result in a <A HREF="eval.html#string">string</A> to be added to YXXYv:errors|:
+<B><FONT COLOR="PURPLE">	test.vim line 12: Pattern '^f.*o$' does not match 'foobar' </FONT></B>
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			getFile()-&gt;assert_match('foo.*')</B>
+ 
+
+assert_nobeep({cmd})					*<A NAME="assert_nobeep()"></A><B>assert_nobeep()</B>*
+		Run {cmd} and add an error message to |<A HREF="eval.html#v:errors">v:errors</A>| if <A HREF="motion.html#it">it</A>
+		produces a beep or visual bell.
+		Also see |<A HREF="#assert_beeps()">assert_beeps()</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetCmd()-&gt;assert_nobeep()</B>
+ 
+
+							*<A NAME="assert_notequal()"></A><B>assert_notequal()</B>*
+assert_notequal({expected}, {actual} [, {msg}])
+		The opposite of `assert_equal()`: add an error message to
+		|<A HREF="eval.html#v:errors">v:errors</A>| when {expected} and {actual} are equal.
+		Also see |<A HREF="eval.html#assert-return">assert-return</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			mylist-&gt;assert_notequal([1, 2, 3])</B>
+
+
+ 							*<A NAME="assert_notmatch()"></A><B>assert_notmatch()</B>*
+assert_notmatch({pattern}, {actual} [, {msg}])
+		The opposite of `assert_match()`: add an error message to
+		|<A HREF="eval.html#v:errors">v:errors</A>| when {pattern} matches {actual}.
+		Also see |<A HREF="eval.html#assert-return">assert-return</A>|.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			getFile()-&gt;assert_notmatch('bar.*')</B>
+
+
+
+assert_report({msg})					*<A NAME="assert_report()"></A><B>assert_report()</B>*
+		Report a test failure directly, using <A HREF="eval.html#String">String</A> {msg}.
+		Always returns one.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetMessage()-&gt;assert_report()</B>
+
+
+
+assert_true({actual} [, {msg}])				*<A NAME="assert_true()"></A><B>assert_true()</B>*
+		When {actual} is not <A HREF="vim9.html#true">true</A> an error message is added to
+		|<A HREF="eval.html#v:errors">v:errors</A>|, like with |<A HREF="#assert_equal()">assert_equal()</A>|.
+		Also see |<A HREF="eval.html#assert-return">assert-return</A>|.
+		A value is <A HREF="eval.html#TRUE">TRUE</A> when <A HREF="motion.html#it">it</A> is a non-zero number.  When {actual}
+		is not a number the assert fails.
+		When {msg} is omitted an error in the form &quot;Expected True but
+		got {actual}&quot; is produced.
+
+		Can also be used <A HREF="motion.html#as">as</A> a YXXYmethod|:
+<B>			GetResult()-&gt;assert_true()</B>
+ 
+
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>
