@@ -129,9 +129,9 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(url: "https://github.com/SnapKit/SnapKit.git", exact: "5.6.0"),
-    .package(url: "https://github.com/yhirano/LicensePlistViewController.git", exact: "2.2.0"),
-    .package(url: "https://github.com/stleamist/BetterSafariView.git", exact: "2.4.1"),
+    .package(url: "https://github.com/SnapKit/SnapKit.git", exact: "5.7.0"),
+    .package(url: "https://github.com/yhirano/LicensePlistViewController.git", exact: "2.3.0"),
+    .package(url: "https://github.com/stleamist/BetterSafariView.git", exact: "2.4.2"),
     .package(url: "https://github.com/wxxsw/GSMessages.git", revision: "88d895a"),
     .package(url: "https://github.com/pointfreeco/swift-overture.git", revision: "0.5.0"),
     .package(url: "https://github.com/BoltDocs/RoutableNavigation.git", revision: "5fa1eb3"),

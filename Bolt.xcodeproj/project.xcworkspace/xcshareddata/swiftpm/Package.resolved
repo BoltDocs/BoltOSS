@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire.git",
       "state" : {
-        "branch" : "5.7.1",
-        "revision" : "bc268c28fb170f494de9e9927c371b8342979ece"
+        "branch" : "5.8.1",
+        "revision" : "3dc6a42c7727c49bf26508e29b0a0b35f9c7e1ad"
       }
     },
     {
@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stleamist/BetterSafariView.git",
       "state" : {
-        "revision" : "dffd42bc70287e761979bc81dd278db5c80f0deb",
-        "version" : "2.4.1"
+        "revision" : "884533749e55949b2566030948c6fdbe2873ed0c",
+        "version" : "2.4.2"
       }
     },
     {
@@ -39,10 +39,10 @@
     {
       "identity" : "factory",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:hmlongco/Factory.git",
+      "location" : "https://github.com/hmlongco/Factory.git",
       "state" : {
-        "branch" : "2.2.0",
-        "revision" : "061b3afe0358a0da7ce568f8272c847910be3dd7"
+        "branch" : "2.3.1",
+        "revision" : "8ca11a7bd1ede031e8e6d7a912bb116e2e43961b"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/groue/GRDB.swift.git",
       "state" : {
-        "branch" : "v6.16.0",
-        "revision" : "e83f3eb25ef4d5a36a13dbee98f8ac67e24e5c8f"
+        "branch" : "v6.24.2",
+        "revision" : "e069e2732e3ee2b67bf89c1bda1937da0eaee7ef"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/yhirano/LicensePlistViewController.git",
       "state" : {
-        "revision" : "1fb4a71c2e37a4ea1a9a135c6d2aff65130c8a55",
-        "version" : "2.2.0"
+        "revision" : "1230d57b6a2272d9de51464834d546f72dc09ab3",
+        "version" : "2.3.0"
       }
     },
     {
@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SnapKit/SnapKit.git",
       "state" : {
-        "revision" : "f222cbdf325885926566172f6f5f06af95473158",
-        "version" : "5.6.0"
+        "revision" : "e74fe2a978d1216c3602b129447c7301573cc2d8",
+        "version" : "5.7.0"
       }
     },
     {
