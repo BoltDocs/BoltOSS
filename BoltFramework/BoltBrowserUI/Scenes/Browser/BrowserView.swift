@@ -121,8 +121,12 @@ final class BrowserView: UIView, HasDisposeBag {
   }
 
   private func updatePageZoom(_ scaleFactor: CGFloat) {
+    #if targetEnvironment(macCatalyst)
+    webView.pageZoom = scaleFactor
+    #else
     let zoomScript = "document.body.style.webkitTextSizeAdjust='\(scaleFactor * 100)%';"
     webView.evaluateJavaScript(zoomScript, completionHandler: nil)
+    #endif
   }
 
 }
