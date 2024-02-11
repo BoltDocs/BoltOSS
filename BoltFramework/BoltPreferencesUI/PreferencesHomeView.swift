@@ -35,8 +35,10 @@ private class PreferencesHomeViewModel: ObservableObject {
       .assign(to: &$disablesPrivateBrowsing)
     UserDefaults.standard.publisher(for: \.enablesDesktopMode)
       .assign(to: &$enablesDesktopMode)
-    UserDefaults.standard.publisher(for: \.webViewInspectable)
-      .assign(to: &$webViewInspectable)
+    if #available(iOS 16.4, *) {
+      UserDefaults.standard.publisher(for: \.webViewInspectable)
+        .assign(to: &$webViewInspectable)
+    }
   }
 
 }
@@ -136,13 +138,15 @@ public struct PreferencesHomeView: View {
             .sheet(isPresented: $isTypeBrowserPresented) {
               PreferencesTypeBrowserView()
             }
-            Toggle(
-              isOn: Binding(
-                get: { viewModel.webViewInspectable },
-                set: { UserDefaults.standard.webViewInspectable = $0 }
-              )
-            ) {
-              Text("Preferences-Home-InternalDiagnostics-webViewInspector".boltLocalized)
+            if #available(iOS 16.4, *) {
+              Toggle(
+                isOn: Binding(
+                  get: { viewModel.webViewInspectable },
+                  set: { UserDefaults.standard.webViewInspectable = $0 }
+                )
+              ) {
+                Text("Preferences-Home-InternalDiagnostics-webViewInspector".boltLocalized)
+              }
             }
             Button("Preferences-Home-InternalDiagnostics-resetData".boltLocalized) {
               if isCacheClearing {

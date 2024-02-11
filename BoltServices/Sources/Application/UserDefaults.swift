@@ -51,6 +51,7 @@ public extension UserDefaults {
     }
   }
 
+  @available(iOS 16.4, *)
   @objc dynamic var webViewInspectable: Bool {
     get {
       return bool(forKey: "webViewInspectable")
