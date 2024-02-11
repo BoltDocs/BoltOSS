@@ -81,6 +81,10 @@ final class BrowserView: UIView, HasDisposeBag {
     }
     webView = WKWebView(frame: .zero, configuration: configuration)
 
+    if UserDefaults.standard.webViewInspectable {
+      webView.isInspectable = true
+    }
+
     webView.allowsBackForwardNavigationGestures = false
 
     addSubview(webView)
