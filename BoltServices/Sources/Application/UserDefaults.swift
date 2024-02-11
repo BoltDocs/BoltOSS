@@ -51,4 +51,13 @@ public extension UserDefaults {
     }
   }
 
+  @objc dynamic var webViewInspectable: Bool {
+    get {
+      return bool(forKey: "webViewInspectable")
+    }
+    set {
+      setValue(newValue, forKey: "webViewInspectable")
+    }
+  }
+
 }
