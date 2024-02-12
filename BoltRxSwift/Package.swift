@@ -22,9 +22,9 @@ import PackageDescription
 let package = Package(
   name: "BoltRxSwift",
   platforms: [
-    .iOS(.v15),
-    .macCatalyst(.v16),
-    .macOS(.v13),
+    .iOS(.v16),
+    .macCatalyst(.v17),
+    .macOS(.v14),
   ],
   products: [
     .library(
