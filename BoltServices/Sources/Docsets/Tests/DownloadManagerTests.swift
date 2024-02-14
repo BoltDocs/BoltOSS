@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -151,7 +151,11 @@ final class DocsetManagerTests: XCTestCase {
 
   private func progress(forIdentifier identifier: String, timeout: TimeInterval? = nil) async throws -> DownloadProgress? {
     return try await awaitPublisher(
+      // swiftlint:disable:next trailing_closure
       downloadManager.progress(forIdentifier: identifier)
+        .handleEvents(receiveOutput: { _ in
+          XCTAssert(Thread.isMainThread)
+        })
         .prefix(1)
       , timeout: timeout ?? 10
     )
