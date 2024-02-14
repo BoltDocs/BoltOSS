@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ struct PreferencesContributionView: View {
 
   struct ContributionListItem: View {
     var title: String
-    var version: String
+    var version: String?
     var buttonAction: () -> Void
 
     var body: some View {
@@ -36,7 +36,9 @@ struct PreferencesContributionView: View {
           Text(title)
             .lineLimit(1)
           Spacer()
-          Text(version)
+          if let version = version, !version.isEmpty {
+            Text(version)
+          }
         }
       })
     }
@@ -67,18 +69,31 @@ struct PreferencesContributionView: View {
         }
       }
       Section(
-        header: Text("Preferences-About-Contribute-openSourceTitle".boltLocalized),
-        footer: Text("Preferences-About-Contribute-openSourceFooter".boltLocalized)
-          .textCase(.none)
+        header: Text("Preferences-About-Contribute-openSourceRepositoryTitle".boltLocalized)
       ) {
-        ContributionListItem(
-          title: "ObjectAssociationHelper",
-          version: "1.0.0"
-        ) {
+        ContributionListItem(title: "BoltOSS") {
           presentingSafariView = true
         }
         .safariView(isPresented: $presentingSafariView) {
-          defaultSafariView(withURL: URL(string: "https://github.com/BoltDocs/ObjectAssociationHelper/")!)
+          defaultSafariView(withURL: URL(string: "https://github.com/BoltDocs/BoltOSS")!)
+        }
+      }
+      Section(
+        header: Text("Preferences-About-Contribute-openSourceLibrariesTitle".boltLocalized),
+        footer: Text("Preferences-About-Contribute-openSourceFooter".boltLocalized)
+          .textCase(.none)
+      ) {
+        ContributionListItem(title: "RoutableNavigation") {
+          presentingSafariView = true
+        }
+        .safariView(isPresented: $presentingSafariView) {
+          defaultSafariView(withURL: URL(string: "https://github.com/BoltDocs/RoutableNavigation")!)
+        }
+        ContributionListItem(title: "ObjectAssociationHelper") {
+          presentingSafariView = true
+        }
+        .safariView(isPresented: $presentingSafariView) {
+          defaultSafariView(withURL: URL(string: "https://github.com/BoltDocs/ObjectAssociationHelper")!)
         }
       }
     }
