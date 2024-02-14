@@ -49,12 +49,16 @@ struct DocsetIndexer: LoggerProvider {
       guard
         let name = name,
         let type = type,
-        let path = path,
-        let anchor = anchor
+        let path = path
       else {
         return nil
       }
-      let newPath = "\(path)#\(anchor)"
+      let newPath: String
+      if let anchor = anchor {
+        newPath = "\(path)#\(anchor)"
+      } else {
+        newPath = path
+      }
       return SearchIndex(id: nil, name: name, type: type, path: newPath)
     }
 
