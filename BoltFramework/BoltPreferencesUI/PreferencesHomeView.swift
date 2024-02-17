@@ -45,8 +45,8 @@ private class PreferencesHomeViewModel: ObservableObject {
 
 public struct PreferencesHomeView: View {
 
-  @Environment(\.presentationMode)
-  private var presentationMode: Binding<PresentationMode>
+  @Environment(\.dismiss)
+  private var dismiss: DismissAction
 
   @StateObject private var viewModel = PreferencesHomeViewModel()
 
@@ -176,7 +176,7 @@ public struct PreferencesHomeView: View {
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
           Button(UIKitLocalization.done) {
-            presentationMode.wrappedValue.dismiss()
+            dismiss()
           }
         }
       }

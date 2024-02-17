@@ -84,8 +84,8 @@ private class PreferencesTintColorViewModel: ObservableObject {
 
 struct PreferencesTintColorView: View {
 
-  @Environment(\.presentationMode)
-  private var presentationMode: Binding<PresentationMode>
+  @Environment(\.dismiss)
+  private var dismiss: DismissAction
 
   @StateObject private var viewModel = PreferencesTintColorViewModel()
 
@@ -100,7 +100,7 @@ struct PreferencesTintColorView: View {
                 .foregroundColor(Color(uiColor: item.color))
                 .onTapGesture {
                   viewModel.onTapItem(item.key)
-                  presentationMode.wrappedValue.dismiss()
+                  dismiss()
                 }
               if item.key == viewModel.selectedKey {
                 Image(systemName: "checkmark")

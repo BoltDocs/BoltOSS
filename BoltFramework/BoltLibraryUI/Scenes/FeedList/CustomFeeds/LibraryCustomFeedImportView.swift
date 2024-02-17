@@ -28,8 +28,8 @@ struct LibraryCustomFeedImportView: View {
   @Injected(\.feedsService)
   private var feedsService: FeedsService
 
-  @Environment(\.presentationMode)
-  private var presentationMode: Binding<PresentationMode>
+  @Environment(\.dismiss)
+  private var dismiss: DismissAction
 
   init(feedURL: URL? = nil) {
     _urlInput = .init(initialValue: feedURL?.absoluteString ?? "")
@@ -62,7 +62,7 @@ struct LibraryCustomFeedImportView: View {
     .toolbar {
       ToolbarItem(placement: .cancellationAction) {
         Button(UIKitLocalization.cancel) {
-          presentationMode.wrappedValue.dismiss()
+          dismiss()
         }
       }
       ToolbarItem(placement: .confirmationAction) {
@@ -84,7 +84,7 @@ struct LibraryCustomFeedImportView: View {
                   // pre-check the feed is valid
                   let _ = try await feed.fetchEntries()
                   try feedsService.insertCustomFeed(feed)
-                  presentationMode.wrappedValue.dismiss()
+                  dismiss()
                 } catch {
                   GlobalUI.showMessageToast(withErrorMessage: ErrorMessage(entity: .failedToImportCustomFeed, nestedError: error))
                 }
