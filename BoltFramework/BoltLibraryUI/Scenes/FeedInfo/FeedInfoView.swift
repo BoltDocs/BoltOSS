@@ -157,6 +157,9 @@ private struct FeedInfoStaticListItem: View {
 
 struct FeedInfoView: View {
 
+  @Environment(\.dismissLibraryHome)
+  private var dismissLibraryHome: DismissAction?
+
   @Injected(\.repositoryRegistry)
   private var repositoryRegistry: RepositoryRegistry
 
@@ -304,7 +307,13 @@ struct FeedInfoView: View {
     .navigationTitle(dataSource.feed.displayName)
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
-      ToolbarItem(placement: .primaryAction) {
+      ToolbarItem(placement: .confirmationAction) {
+        Button(UIKitLocalization.done) {
+          dismissLibraryHome?()
+        }
+      }
+      ToolbarItemGroup(placement: .bottomBar) {
+        Spacer()
         Button(isEditing ? UIKitLocalization.done : UIKitLocalization.edit) {
           withAnimation(.default) {
             isEditing.toggle()

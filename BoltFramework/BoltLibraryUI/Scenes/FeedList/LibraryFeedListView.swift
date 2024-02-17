@@ -55,6 +55,9 @@ class RefreshActionPerformer: ObservableObject {
 
 struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFeedListViewModel {
 
+  @Environment(\.dismissLibraryHome)
+  private var dismissLibraryHome: DismissAction?
+
   @StateObject private var model = Model()
   @StateObject private var actionPerformer = RefreshActionPerformer()
 
@@ -73,6 +76,13 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
     LibraryFeedListView(model: model, actionPerformer: actionPerformer)
       .navigationTitle(Model.title)
       .navigationBarTitleDisplayMode(.large)
+      .toolbar {
+        ToolbarItem(placement: .confirmationAction) {
+          Button(UIKitLocalization.done) {
+            dismissLibraryHome?()
+          }
+        }
+      }
       .if(Model.allowsRefresh) {
         $0.refreshable {
           await actionPerformer.perform()
@@ -121,8 +131,8 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
 
   var body: some View {
     Group {
-      if actionPerformer.status == .success {
-        List {
+      List {
+        if actionPerformer.status == .success {
           ForEach(filteredFeeds, id: \.id) { feed in
             NavigationLink {
               DeferredView { FeedInfoView(feed: feed) }
@@ -131,25 +141,28 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
             } // NavigationLink
             .tint(Color.primary)
           } // ForEach
-        } // List
-        .searchable(text: $searchText, prompt: UIKitLocalization.search)
-        .textInputAutocapitalization(.never)
-        .disableAutocorrection(true)
-      } else {
-        EmptyFeedsView(
-          image: Model.emptyStateImage,
-          message: "Loading Feeds",
-          shouldDisplayIndicator: true,
-          showsMessage: actionPerformer.status == .loading,
-          showsRetry: actionPerformer.status == .error
-        ) {
-          if let action = refreshAction {
-            Task { await action() }
-          } else {
-            Task { await actionPerformer.perform() }
-          } // if
-        } // EmptyFeedsView
-      } // if
+        } // if
+      } // List
+      .searchable(text: $searchText, prompt: UIKitLocalization.search)
+      .textInputAutocapitalization(.never)
+      .disableAutocorrection(true)
+      .overlay {
+        if actionPerformer.status != .success {
+          EmptyFeedsView(
+            image: Model.emptyStateImage,
+            message: "Loading Feeds",
+            shouldDisplayIndicator: true,
+            showsMessage: actionPerformer.status == .loading,
+            showsRetry: actionPerformer.status == .error
+          ) {
+            if let action = refreshAction {
+              Task { await action() }
+            } else {
+              Task { await actionPerformer.perform() }
+            } // if
+          } // EmptyFeedsView
+        } // if
+      } // List
     } //Group
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.systemGroupedBackground)

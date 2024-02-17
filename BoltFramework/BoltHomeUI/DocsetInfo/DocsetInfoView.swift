@@ -22,8 +22,8 @@ import BoltUIFoundation
 
 struct DocsetInfoView: View {
 
-  @Environment(\.presentationMode)
-  private var presentationMode: Binding<PresentationMode>
+  @Environment(\.dismiss)
+  private var dismiss: DismissAction
 
   var docset: Docset
 
@@ -84,9 +84,9 @@ struct DocsetInfoView: View {
       .navigationTitle(docset.displayName)
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .primaryAction) {
+        ToolbarItem(placement: .confirmationAction) {
           Button(UIKitLocalization.done) {
-            presentationMode.wrappedValue.dismiss()
+            dismiss()
           }
         }
       }

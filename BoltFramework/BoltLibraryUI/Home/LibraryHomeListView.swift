@@ -20,10 +20,21 @@ import BoltLocalizations
 import BoltUIFoundation
 import BoltUtils
 
+private struct DismissLibraryHomeEnvironmentKey: EnvironmentKey {
+  static let defaultValue: DismissAction? = nil
+}
+
+extension EnvironmentValues {
+  var dismissLibraryHome: DismissAction? {
+    get { self[DismissLibraryHomeEnvironmentKey.self] }
+    set { self[DismissLibraryHomeEnvironmentKey.self] = newValue }
+  }
+}
+
 public struct LibraryHomeListView: View {
 
-  @Environment(\.presentationMode)
-  private var presentationMode: Binding<PresentationMode>
+  @Environment(\.dismiss)
+  private var dismiss: DismissAction
 
   typealias Item = LibraryHomeListViewModel.Section.Item
 
@@ -62,7 +73,7 @@ public struct LibraryHomeListView: View {
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
           Button(UIKitLocalization.done) {
-            presentationMode.wrappedValue.dismiss()
+            dismiss()
           }
         }
         ToolbarItem(placement: .navigationBarLeading) {
@@ -73,6 +84,7 @@ public struct LibraryHomeListView: View {
       }
     }
     .navigationViewStyle(.stack)
+    .environment(\.dismissLibraryHome, dismiss)
   }
 
 }

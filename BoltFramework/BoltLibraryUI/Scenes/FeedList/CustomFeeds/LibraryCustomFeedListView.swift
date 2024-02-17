@@ -47,6 +47,9 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
 
 struct LibraryCustomFeedListView: View {
 
+  @Environment(\.dismissLibraryHome)
+  private var dismissLibraryHome: DismissAction?
+
   @ObservedObject private var model = LibraryCustomFeedListViewModel()
 
   @State private var showsImportFeedSheet = false
@@ -90,6 +93,12 @@ struct LibraryCustomFeedListView: View {
     .navigationBarTitleDisplayMode(.large)
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
+        Button(UIKitLocalization.done) {
+          dismissLibraryHome?()
+        } // Button
+      } // ToolbarItem
+      ToolbarItemGroup(placement: .bottomBar) {
+        Spacer()
         Button {
           showsImportFeedSheet.toggle()
         } label: {
@@ -100,7 +109,7 @@ struct LibraryCustomFeedListView: View {
             LibraryCustomFeedImportView()
           } // NavigationView
         } // sheet
-      } // ToolbarItem
+      } // ToolbarItemGroup
     } // toolbar
   }
 

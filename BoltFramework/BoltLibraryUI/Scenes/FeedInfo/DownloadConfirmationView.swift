@@ -20,6 +20,7 @@ import SwiftUI
 import Factory
 import RxCombine
 
+import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
 import BoltUtils
@@ -158,8 +159,8 @@ struct DownloadConfirmationView: View {
   @Injected(\.downloadManager)
   private var downloadManager: DownloadManager
 
-  @Environment(\.presentationMode)
-  @MainActor private var presentationMode: Binding<PresentationMode>
+  @Environment(\.dismissLibraryHome)
+  private var dismissLibraryHome: DismissAction?
 
   init(feedEntry entry: FeedEntry) {
     self.dataSource = DataSource(entry: entry)
@@ -304,6 +305,13 @@ struct DownloadConfirmationView: View {
     .listStyle(.insetGrouped)
     .navigationTitle(dataSource.entry.feed.displayName)
     .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .confirmationAction) {
+        Button(UIKitLocalization.done) {
+          dismissLibraryHome?()
+        }
+      }
+    }
   }
 
   // MARK: - Actions
@@ -333,7 +341,7 @@ struct DownloadConfirmationView: View {
       if case .finished = completion {
         Task {
           await downloadManager.cancelDownload(forIdentifier: dataSource.entry.id)
-          presentationMode.wrappedValue.dismiss()
+          dismissLibraryHome?()
         }
       }
     })
