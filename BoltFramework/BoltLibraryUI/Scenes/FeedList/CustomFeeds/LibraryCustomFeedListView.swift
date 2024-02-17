@@ -81,7 +81,7 @@ struct LibraryCustomFeedListView: View {
           shouldDisplayIndicator: false,
           showsMessage: true,
           showsRetry: false
-        )
+        ) // EmptyFeedsView
       } // if
     } // Group
     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -94,12 +94,12 @@ struct LibraryCustomFeedListView: View {
           showsImportFeedSheet.toggle()
         } label: {
           Image(systemName: "plus")
-        }
+        } // Button
         .sheet(isPresented: $showsImportFeedSheet) {
           NavigationView {
             LibraryCustomFeedImportView()
-          }
-        }
+          } // NavigationView
+        } // sheet
       } // ToolbarItem
     } // toolbar
   }
