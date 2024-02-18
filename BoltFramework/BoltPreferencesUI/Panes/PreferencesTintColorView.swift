@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ private class PreferencesTintColorViewModel: ObservableObject {
     }
   }
 
-  var items: [ItemViewModel] = []
-  var selectedKey: ItemViewModel.TintColorKey = .auto
+  private (set) var items: [ItemViewModel] = []
+  private (set) var selectedKey: ItemViewModel.TintColorKey = .auto
 
   init() {
     let tintColors = appearanceService.availableTintColors
