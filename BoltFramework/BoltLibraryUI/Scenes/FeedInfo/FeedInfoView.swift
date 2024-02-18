@@ -274,8 +274,7 @@ struct FeedInfoView: View {
       if case .result(let result) = dataSource.statusResult {
         if case .success(let allVersions) = result {
           if !dataSource.feed.shouldHideVersions {
-            Toggle("Show All Versions", isOn: $showsAllVersions)
-              .tint(.accentColor)
+            BoltToggle("Show All Versions", isOn: $showsAllVersions)
           }
           ForEach(allVersions) { entry in
             buildVersionsListItem(entryListModel: entry)

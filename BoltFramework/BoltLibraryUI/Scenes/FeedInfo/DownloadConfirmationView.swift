@@ -179,8 +179,7 @@ struct DownloadConfirmationView: View {
         Text(dataSource.versionText)
       }
       if dataSource.supportsTarix {
-        Toggle("Install with Archive Index", isOn: $installsWithTarix.animation(.default))
-          .tint(.accentColor)
+        BoltToggle("Install with Archive Index", isOn: $installsWithTarix.animation(.default))
       }
     }
   }

@@ -52,11 +52,10 @@ struct DocsetInfoView: View {
             Text(docset.version)
           }
           HStack {
-            Toggle(
+            BoltToggle(
               "Auto Updates",
               isOn: .constant(docset.installedAsLatestVersion)
             )
-            .tint(.accentColor)
             .disabled(true)
           }
         }

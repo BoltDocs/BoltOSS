@@ -90,7 +90,7 @@ public struct PreferencesHomeView: View {
           }
         }
         Section("Preferences-Home-General-sectionTitle".boltLocalized) {
-          Toggle(
+          BoltToggle(
             isOn: Binding(
               get: { !viewModel.disablesPrivateBrowsing },
               set: { UserDefaults.standard.disablesPrivateBrowsing = !$0 }
@@ -98,8 +98,7 @@ public struct PreferencesHomeView: View {
           ) {
             Text("Preferences-Home-General-privateBrowsingToggleTitle".boltLocalized)
           }
-          .tint(.accentColor)
-          Toggle(
+          BoltToggle(
             isOn: Binding(
               get: { viewModel.enablesDesktopMode },
               set: { UserDefaults.standard.enablesDesktopMode = $0 }
@@ -107,7 +106,6 @@ public struct PreferencesHomeView: View {
           ) {
             Text("Preferences-Home-General-desktopModeToggleTitle".boltLocalized)
           }
-          .tint(.accentColor)
           Button("Preferences-Home-General-clearCacheButtonTitle".boltLocalized) {
             Task {
               if isCacheClearing {
@@ -139,7 +137,7 @@ public struct PreferencesHomeView: View {
               PreferencesTypeBrowserView()
             }
             if #available(iOS 16.4, *) {
-              Toggle(
+              BoltToggle(
                 isOn: Binding(
                   get: { viewModel.webViewInspectable },
                   set: { UserDefaults.standard.webViewInspectable = $0 }
