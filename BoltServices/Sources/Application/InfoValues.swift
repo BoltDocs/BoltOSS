@@ -27,7 +27,7 @@ public struct InfoValues {
 
   public static let bundleIdentifier = stringValue(forKey: "CFBundleIdentifier")
 
-  public static var icon: PlatformImage? {
+  public static var iconImage: PlatformImage? {
     #if !targetEnvironment(macCatalyst)
     if
       let icons = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any],

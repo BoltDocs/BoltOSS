@@ -27,11 +27,17 @@ struct PreferencesAboutView: View {
     List {
       Section(
         header:
-          VStack(alignment: .center, spacing: 8) {
-            Image(uiImage: InfoValues.icon ?? UIImage())
+          VStack(alignment: .center, spacing: 12) {
+            let iconImage = Image(uiImage: InfoValues.iconImage ?? UIImage())
               .resizable()
+            #if targetEnvironment(macCatalyst)
+            iconImage
               .frame(width: 96, height: 96)
-              .cornerRadius(16)
+            #else
+            iconImage
+              .frame(width: 60, height: 60)
+              .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+            #endif
             VStack(spacing: 4) {
               Text("\(InfoValues.appDisplayName) - \(InfoValues.appVersion) (\(InfoValues.appBuildNumber))")
               #if !DEBUG
@@ -42,7 +48,7 @@ struct PreferencesAboutView: View {
             }
           }
           .frame(maxWidth: .infinity)
-          .padding(.bottom, 32)
+          .padding(.bottom, 12)
           .textCase(.none)
       ) {
         NavigationLink("Preferences-About-acknowledgementsTitle".boltLocalized) {
