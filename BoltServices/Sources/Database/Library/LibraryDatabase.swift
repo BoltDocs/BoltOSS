@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public final class LibraryDatabase: LoggerProvider {
       var configuration = Configuration()
       #if DEBUG
       configuration.prepareDatabase { db in
-        db.trace { print($0) }
+        db.trace { Self.logger.trace("\($0)") }
       }
       #endif
       let path: String
