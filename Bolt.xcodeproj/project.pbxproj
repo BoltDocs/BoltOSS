@@ -197,7 +197,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1200;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1520;
 				ORGANIZATIONNAME = "Bolt Project";
 				TargetAttributes = {
 					715F6A25247B65F700AB1300 = {
