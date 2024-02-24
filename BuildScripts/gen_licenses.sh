@@ -2,7 +2,7 @@
 
 BASEDIR=$(dirname $0)
 
-LICENSE_PLIST_PATH="$BASEDIR/../Thirdparty/licenseplist"
+LICENSE_PLIST_PATH="$BASEDIR/../Thirdparty/LicensePlist"
 LICENSE_PLIST_VERSION="3_24_10"
 
 RESOURCES_PATH="$BASEDIR/../$PRODUCT_NAME/Resources/LicensePlist"

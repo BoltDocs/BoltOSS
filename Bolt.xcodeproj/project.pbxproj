@@ -35,7 +35,7 @@
 		6B0DC7312AEE77F4004280C7 /* Project-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Release.xcconfig"; sourceTree = "<group>"; };
 		6B0DC7322AEE77F4004280C7 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		6B0DC7332AEE77F4004280C7 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
-		6B11970E28C5107300E5F710 /* Manual */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Manual; path = Thirdparty/licenseplist/Manual; sourceTree = "<group>"; };
+		6B11970E28C5107300E5F710 /* Manual */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Manual; path = Thirdparty/LicensePlist/Manual; sourceTree = "<group>"; };
 		6B593CBB2B6DEED20042E688 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		6B73D7942AEE7D1300CC98AB /* BuildScripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BuildScripts; sourceTree = "<group>"; };
 		6B73D7952AEE7D5A00CC98AB /* Bolt.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Bolt.xcconfig; sourceTree = "<group>"; };
@@ -55,7 +55,7 @@
 		718B0148252978BA0060ACBC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		71C540CA25B9ADC100BAB830 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
 		71CA68B024B8B04300EA9E0A /* BoltRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BoltRelease.entitlements; sourceTree = "<group>"; };
-		71EB39A227415E7200286761 /* license_plist.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = license_plist.yml; path = Thirdparty/licenseplist/license_plist.yml; sourceTree = "<group>"; };
+		71EB39A227415E7200286761 /* license_plist.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = license_plist.yml; path = Thirdparty/LicensePlist/license_plist.yml; sourceTree = "<group>"; };
 		B99F69794F42F3CD90B542D4 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B99F6F62EA199149DBDDAE5B /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
