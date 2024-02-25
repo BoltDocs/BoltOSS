@@ -84,10 +84,10 @@
     {
       "identity" : "objectassociationhelper",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:BoltDocs/ObjectAssociationHelper.git",
+      "location" : "https://github.com/BoltDocs/ObjectAssociationHelper.git",
       "state" : {
-        "revision" : "b3e1960c4fb36bad80841f76c32e1d2b67f42349",
-        "version" : "1.0.0"
+        "branch" : "1.0.0",
+        "revision" : "b3e1960c4fb36bad80841f76c32e1d2b67f42349"
       }
     },
     {
