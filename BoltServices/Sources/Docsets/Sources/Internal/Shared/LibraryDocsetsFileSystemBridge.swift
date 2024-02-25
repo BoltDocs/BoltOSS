@@ -32,7 +32,7 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
   package static func setupDocsetsDirectory() {
     let fileManager = FileManager.default
     let path = LocalFileSystem.docsetsAbsolutePath
-    let url = LocalFileSystem.docsetsAbsolutePathURL
+    let url = LocalFileSystem.docsetsURL
     var requireSetup = false
 
     let (exists, isDirectory) = fileManager.fileExistsAndIsDirectory(atPath: path)

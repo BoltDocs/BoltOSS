@@ -41,7 +41,7 @@ public final class LibraryDatabase: LoggerProvider {
       if RuntimeEnvironment.isRunningTests {
         path = NSTemporaryDirectory().appendingPathComponent("bolt-library-\(UUID().uuidString).db")
       } else {
-        path = LocalFileSystem.libraryDatabaseAbsolutePathURL.absoluteString
+        path = LocalFileSystem.libraryDatabaseURL.absoluteString
       }
       dbPool = try DatabasePool(
         path: path,

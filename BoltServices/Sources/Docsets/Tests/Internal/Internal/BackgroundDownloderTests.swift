@@ -42,7 +42,7 @@ final class StubDelegate: BackgroundDownloaderDelegate {
   }
 
   func downloaderGetDestinationPath(forSessionID sessionID: BoltDocsets.BackgroundDownloader.SessionTaskIdentifier) -> String? {
-    return LocalFileSystem.downloadAbsolutePath.appendingPathComponent(UUID().uuidString)
+    return LocalFileSystem.downloadsAbsolutePath.appendingPathComponent(UUID().uuidString)
   }
 
 }

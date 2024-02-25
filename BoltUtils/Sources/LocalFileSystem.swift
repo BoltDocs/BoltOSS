@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public struct LocalFileSystem {
     return NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first
   }()
 
-  private static let _tmpAbsolutePath: String! = {
+  private static let _tempAbsolutePath: String! = {
     return FileManager.default.temporaryDirectory.path
   }()
 
@@ -50,8 +50,8 @@ public struct LocalFileSystem {
     return _cachesAbsolutePath!
   }()
 
-  public static let tmpAbsolutePath: String = {
-    return _tmpAbsolutePath!
+  public static let tempAbsolutePath: String = {
+    return _tempAbsolutePath!
   }()
 
 }
