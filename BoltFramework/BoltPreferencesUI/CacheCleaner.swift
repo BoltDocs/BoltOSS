@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import BoltUtils
 struct CacheCleaner: LoggerProvider {
 
   static func clearCache() async {
-    try? FileManager.default.removeItem(atPath: LocalFileSystem.downloadAbsolutePath)
+    try? FileManager.default.removeItem(atPath: LocalFileSystem.downloadsAbsolutePath)
     await Container.shared.downloadManager().clearCache()
     await AF.session.stopAllTasks()
     await AF.session.reset()
@@ -35,7 +35,7 @@ struct CacheCleaner: LoggerProvider {
     let directoriesToClear = [
       LocalFileSystem.documentsAbsolutePath,
       LocalFileSystem.libraryAbsolutePath,
-      LocalFileSystem.tmpAbsolutePath,
+      LocalFileSystem.tempAbsolutePath,
     ]
     directoriesToClear.forEach { directory in
       if let files = try? FileManager.default.contentsOfDirectory(atPath: directory) {

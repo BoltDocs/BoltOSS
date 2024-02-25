@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,14 +28,14 @@ final class LibraryDocsetsManagerTests: XCTestCase {
 
   override func setUpWithError() throws {
     try super.setUpWithError()
-    try FileManager.default.createDirectory(atPath: LocalFileSystem.downloadAbsolutePath, withIntermediateDirectories: true)
-    try FileManager.default.copyItem(atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!, toPath: LocalFileSystem.downloadAbsolutePath.appendingPathComponent("Vim-9.0-main.tgz"))
-    try FileManager.default.copyItem(atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz.tarix")!, toPath: LocalFileSystem.downloadAbsolutePath.appendingPathComponent("Vim-9.0-main.tgz.tarix"))
+    try FileManager.default.createDirectory(atPath: LocalFileSystem.downloadsAbsolutePath, withIntermediateDirectories: true)
+    try FileManager.default.copyItem(atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!, toPath: LocalFileSystem.downloadsAbsolutePath.appendingPathComponent("Vim-9.0-main.tgz"))
+    try FileManager.default.copyItem(atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz.tarix")!, toPath: LocalFileSystem.downloadsAbsolutePath.appendingPathComponent("Vim-9.0-main.tgz.tarix"))
   }
 
   override func tearDownWithError() throws {
     try super.tearDownWithError()
-    try FileManager.default.removeItem(atPath: LocalFileSystem.downloadAbsolutePath)
+    try FileManager.default.removeItem(atPath: LocalFileSystem.downloadsAbsolutePath)
   }
 
   func testInstallDocsetWithoutTarix() async throws {

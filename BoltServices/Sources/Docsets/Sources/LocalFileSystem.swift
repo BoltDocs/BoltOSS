@@ -21,15 +21,19 @@ import BoltUtils
 
 public extension LocalFileSystem {
 
-  static var docsetsAbsolutePathURL: URL {
-    return URL(fileURLWithPath: libraryAbsolutePath).appendingPathComponent("Docsets")
+  static var docsetsURL: URL {
+    return URL(fileURLWithPath: docsetsAbsolutePath)
   }
 
   static var docsetsAbsolutePath: String {
     return libraryAbsolutePath.appendingPathComponent("Docsets")
   }
 
-  static var downloadAbsolutePath: String {
+  static var downloadsURL: URL {
+    return URL(fileURLWithPath: downloadsAbsolutePath)
+  }
+
+  static var downloadsAbsolutePath: String {
     return cachesAbsolutePath.appendingPathComponent("Docsets").appendingPathComponent("Temp")
   }
 
@@ -42,7 +46,7 @@ public extension FeedEntry {
   }
 
   static func downloadAbsolutePath(forId id: String, withExtension pathExtension: String) -> String {
-    return LocalFileSystem.downloadAbsolutePath
+    return LocalFileSystem.downloadsAbsolutePath
       .appendingPathComponent("\(id).\(pathExtension)")
   }
 
