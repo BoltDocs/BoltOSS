@@ -26,7 +26,7 @@ public extension LocalFileSystem {
   }
 
   static var docsetsAbsolutePath: String {
-    return libraryAbsolutePath.appendingPathComponent("Docsets")
+    return applicationLibraryAbsolutePath.appendingPathComponent("Docsets")
   }
 
   static var downloadsURL: URL {
@@ -34,7 +34,7 @@ public extension LocalFileSystem {
   }
 
   static var downloadsAbsolutePath: String {
-    return cachesAbsolutePath.appendingPathComponent("Docsets").appendingPathComponent("Temp")
+    return applicationCachesAbsolutePath.appendingPathComponent("Docsets").appendingPathComponent("Temp")
   }
 
 }
