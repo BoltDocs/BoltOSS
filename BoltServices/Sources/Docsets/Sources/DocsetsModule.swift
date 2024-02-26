@@ -18,6 +18,7 @@ import Foundation
 
 import Factory
 
+import BoltTypes
 import BoltUtils
 
 package struct DocsetsModule {
@@ -31,7 +32,7 @@ package struct DocsetsModule {
   }()
 
   private static func setupLocalStorage() {
-    logger.info("Library path: \(LocalFileSystem.libraryAbsolutePath)")
+    logger.info("Library path: \(LocalFileSystem.applicationLibraryAbsolutePath)")
     LibraryDocsetsFileSystemBridge.setupDocsetsDirectory()
   }
 

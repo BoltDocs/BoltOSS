@@ -16,12 +16,13 @@
 
 import Foundation
 
+import BoltTypes
 import BoltUtils
 
 extension LocalFileSystem {
 
   static var libraryDatabaseURL: URL {
-    return URL(fileURLWithPath: libraryAbsolutePath).appendingPathComponent("bolt-library.db")
+    return URL(fileURLWithPath: applicationLibraryAbsolutePath).appendingPathComponent("bolt-library.db")
   }
 
 }

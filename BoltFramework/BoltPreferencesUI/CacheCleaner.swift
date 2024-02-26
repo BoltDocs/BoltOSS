@@ -33,9 +33,9 @@ struct CacheCleaner: LoggerProvider {
 
   static func removeAllFiles(completionHandler: (() -> Void)?) {
     let directoriesToClear = [
-      LocalFileSystem.documentsAbsolutePath,
-      LocalFileSystem.libraryAbsolutePath,
-      LocalFileSystem.tempAbsolutePath,
+      LocalFileSystem.applicationDocumentsAbsolutePath,
+      LocalFileSystem.applicationLibraryAbsolutePath,
+      LocalFileSystem.applicationTempAbsolutePath,
     ]
     directoriesToClear.forEach { directory in
       if let files = try? FileManager.default.contentsOfDirectory(atPath: directory) {

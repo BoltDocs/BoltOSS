@@ -19,7 +19,7 @@ import Foundation
 public struct LocalFileSystem {
 
   private static let _libraryAbsolutePath: String! = {
-    #if targetEnvironment(macCatalyst)
+    #if os(macOS) || targetEnvironment(macCatalyst)
     return NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first
     #else
     return NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first
