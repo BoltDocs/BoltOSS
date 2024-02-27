@@ -21,10 +21,10 @@
     {
       "identity" : "bitbytedata",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/tsolomko/BitByteData",
+      "location" : "https://github.com/tsolomko/BitByteData.git",
       "state" : {
-        "revision" : "b4b41619522aacd7aae7b02fa8360833e796a03d",
-        "version" : "2.0.2"
+        "revision" : "36df26fe4586b4f23d76cfd8b47076998343a2b2",
+        "version" : "2.0.3"
       }
     },
     {
@@ -66,7 +66,7 @@
     {
       "identity" : "gzipswift",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:BoltDocs/GzipSwift.git",
+      "location" : "https://github.com/BoltDocs/GzipSwift.git",
       "state" : {
         "branch" : "6.0.1",
         "revision" : "1e880448010e6aef68ca6a23e7c61a984c9f00cf"
@@ -93,7 +93,7 @@
     {
       "identity" : "routablenavigation",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:BoltDocs/RoutableNavigation.git",
+      "location" : "https://github.com/BoltDocs/RoutableNavigation.git",
       "state" : {
         "branch" : "5fa1eb3",
         "revision" : "5fa1eb3374ac2625c131242ea75871ac980abb40"
@@ -102,7 +102,7 @@
     {
       "identity" : "rxcombine",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:CombineCommunity/RxCombine.git",
+      "location" : "https://github.com/CombineCommunity/RxCombine.git",
       "state" : {
         "branch" : "2.0.1",
         "revision" : "19474c2ac9fde613bba8513bf98990e1aa9831cd"
@@ -129,10 +129,10 @@
     {
       "identity" : "swcompressiontar",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:BoltDocs/SWCompressionTAR.git",
+      "location" : "https://github.com/BoltDocs/SWCompressionTAR.git",
       "state" : {
         "branch" : "4.8.5",
-        "revision" : "1884c84b7784e26b64de993c95ee73e3db4bf2dc"
+        "revision" : "756d5fcc4d81d4fffb7a503f37b4e481f3ee104e"
       }
     },
     {
