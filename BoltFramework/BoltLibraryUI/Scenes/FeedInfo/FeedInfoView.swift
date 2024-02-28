@@ -33,8 +33,8 @@ private final class DataSource: ObservableObject {
     enum InstallableStatus {
       case latest
       case installed
-      case updateAvailable(currentVersion: String) // 显示下载状态
-      case installable  // 显示下载状态
+      case updateAvailable(currentVersion: String)
+      case installable
     }
 
     let feedEntry: FeedEntry
@@ -188,7 +188,7 @@ struct FeedInfoView: View {
           if editable == false {
             Text("Preinstalled docset feeds cannot be edited.")
           } else {
-            Text("Edit feed name here")
+            Text("Edit feed name here.")
           }
         }
       }
@@ -274,7 +274,7 @@ struct FeedInfoView: View {
       if case .result(let result) = dataSource.statusResult {
         if case .success(let allVersions) = result {
           if !dataSource.feed.shouldHideVersions {
-            BoltToggle("Show All Versions", isOn: $showsAllVersions)
+            BoltToggle("Show All Available Versions", isOn: $showsAllVersions)
           }
           ForEach(allVersions) { entry in
             buildVersionsListItem(entryListModel: entry)
@@ -287,7 +287,7 @@ struct FeedInfoView: View {
       } else {
         HStack(spacing: 8) {
           ProgressView()
-          Text("Loading Versions...")
+          Text("Loading Versions…")
         }
       }
     }
