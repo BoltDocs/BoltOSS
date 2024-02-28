@@ -184,10 +184,8 @@ struct FeedInfoView: View {
     Section(
       header: Text("Feed"),
       footer: Group {
-        if isEditing == true {
-          if editable == false {
-            Text("Preinstalled docset feeds cannot be edited.")
-          } else {
+        if editable == true {
+          if isEditing == true {
             Text("Edit feed name here.")
           }
         }
@@ -311,12 +309,19 @@ struct FeedInfoView: View {
           dismissLibraryHome?()
         }
       }
-      ToolbarItemGroup(placement: .bottomBar) {
-        Spacer()
-        Button(isEditing ? UIKitLocalization.done : UIKitLocalization.edit) {
-          withAnimation(.default) {
-            isEditing.toggle()
-          }
+      if editable {
+        ToolbarItemGroup(placement: .bottomBar) {
+          Spacer()
+          Button(action: {
+            withAnimation(.default) {
+              isEditing.toggle()
+            }
+          }, label: {
+            Text(isEditing ? UIKitLocalization.done : UIKitLocalization.edit)
+              .if(isEditing) {
+                $0.bold()
+              }
+          })
         }
       }
     }
