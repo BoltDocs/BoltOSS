@@ -22,7 +22,7 @@ import BoltTypes
 
 @testable import BoltRepository
 
-final class FeedsTestsNetworking: NetworkingStubbedTestCase {
+final class CustomFeedTests: NetworkingStubbedTestCase {
 
   override var fetchEntriesStubs: [String: String] {
     return [

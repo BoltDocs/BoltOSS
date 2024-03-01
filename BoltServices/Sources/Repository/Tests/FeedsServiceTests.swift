@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import BoltUtils
 
 @testable import BoltRepository
 
-final class FeedsServiceTestsNetworking: NetworkingStubbedTestCase {
+final class FeedsServiceTests: NetworkingStubbedTestCase {
 
   @LazyInjected(\.feedsService)
   private var feedsService: FeedsService
