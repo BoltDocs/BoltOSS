@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,12 +22,15 @@ import Factory
 import BoltNetworkingTestStubs
 import BoltUtils
 
-class NetworkingStubbedTestCase: XCTestCase {
+class NetworkingStubbedTestCase: XCTestCase, StubbedNetworkingDelegate {
+
+  // swiftlint:disable:next test_case_accessibility
+  var fetchEntriesStubs: [String: String] { [:] }
 
   override func setUp() {
     super.setUp()
     Container.shared.manager.push()
-    Container.shared.networking.register { StubbedNetworking() }
+    Container.shared.networking.register { StubbedNetworking(delegate: self) }
   }
 
   override class func tearDown() {

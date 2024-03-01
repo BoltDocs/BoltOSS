@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,11 +24,22 @@ import BoltTypes
 
 final class FeedsTestsNetworking: NetworkingStubbedTestCase {
 
+  override var fetchEntriesStubs: [String: String] {
+    return [
+      "https://test.internal/Alamofire.xml": """
+      <entry>
+        <version>5.6.4</version>
+        <url>https://alamofire.github.io/Alamofire/docsets/Alamofire.tgz</url>
+      </entry>
+      """,
+    ]
+  }
+
   func testFetchEntriesForCustomFeed() async throws {
     let feed = CustomFeed(
       entity: CustomFeedEntity(
         name: "Alamofire",
-        urlString: "https://alamofire.github.io/Alamofire/docsets/Alamofire.xml"
+        urlString: "https://test.internal/Alamofire.xml"
       )
     )
     let feedEntries = try await feed.fetchEntries()

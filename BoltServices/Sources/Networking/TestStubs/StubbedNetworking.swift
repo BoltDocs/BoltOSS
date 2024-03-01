@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,13 +23,28 @@ import Alamofire
 import SwiftyJSON
 import SwiftyXMLParser
 
+public protocol StubbedNetworkingDelegate: AnyObject {
+
+  var fetchEntriesStubs: [String: String] { get }
+
+}
+
 public class StubbedNetworking: Networking {
 
-  public init() { }
+  private weak var delegate: StubbedNetworkingDelegate?
+
+  public init(delegate: StubbedNetworkingDelegate) {
+    self.delegate = delegate
+  }
 
   public func fetchEntries(atURL url: URLConvertible) async throws -> XML.Accessor {
-    assert((try? url.asURL().absoluteString) == "https://alamofire.github.io/Alamofire/docsets/Alamofire.xml")
-    return XML.parse(try Data(contentsOf: Bundle.module.url(forResource: "Alamofire", withExtension: "xml", subdirectory: "TestResources")!))
+    guard let urlString = try? url.asURL().absoluteString else {
+      fatalError("\(#function): unrecognized url.")
+    }
+    guard let stubbedXML = delegate?.fetchEntriesStubs[urlString] else {
+      fatalError("\(#function): no stubbed xml found for url: \(urlString).")
+    }
+    return XML.parse(stubbedXML.data(using: .utf8)!)
   }
 
   // swiftlint:disable:next unavailable_function

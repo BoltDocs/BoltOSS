@@ -111,10 +111,7 @@ let testingUtils: [Target] = [
   .target(
     name: "BoltNetworkingTestStubs",
     dependencies: ["BoltUtils", "BoltNetworking"],
-    path: "./Sources/Networking/TestStubs",
-    resources: [
-      .copy("./TestResources"),
-    ]
+    path: "./Sources/Networking/TestStubs"
   ),
 ]
 
