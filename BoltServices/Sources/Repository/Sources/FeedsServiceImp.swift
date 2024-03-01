@@ -87,11 +87,32 @@ final class FeedsServiceImp: FeedsServiceInternal {
     let xml = try await networking.fetchEntries(atURL: feed.urlString)
     let entryElement = xml["entry"]
 
-    guard
-      let version = entryElement["version"].text,
-      let urlString = entryElement["url"].text,
-      let url = URL(string: urlString)
-    else {
+    guard let version = entryElement["version"].text else {
+      return []
+    }
+
+    let accessor = entryElement["url"]
+
+    let resolveURL = { () -> URL? in
+      switch accessor {
+      case let .singleElement(element):
+        if let urlString = element.text, let url = URL(string: urlString) {
+          return url
+        }
+      case let .sequence(elements):
+        return elements.firstMap {
+          if let urlString = $0.text, let url = URL(string: urlString) {
+            return url
+          }
+          return nil
+        }
+      case .failure(_):
+        return nil
+      }
+      return nil
+    }
+
+    guard let url = resolveURL() else {
       return []
     }
 

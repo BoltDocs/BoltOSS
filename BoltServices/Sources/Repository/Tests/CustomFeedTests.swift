@@ -32,6 +32,14 @@ final class CustomFeedTests: NetworkingStubbedTestCase {
         <url>https://alamofire.github.io/Alamofire/docsets/Alamofire.tgz</url>
       </entry>
       """,
+      "https://test.internal/multiple-urls.xml": """
+      <entry>
+        <version>1.0.0</version>
+        <url>https://test.internal/1.tgz</url>
+        <url>https://test.internal/2.tgz</url>
+        <url>https://test.internal/3.tgz</url>
+      </entry>
+      """,
     ]
   }
 
@@ -50,6 +58,24 @@ final class CustomFeedTests: NetworkingStubbedTestCase {
     XCTAssertEqual(
       feedEntries[0].docsetLocation as! URLResourceLocation,
       ResourceLocations.URL(URL(string: "https://alamofire.github.io/Alamofire/docsets/Alamofire.tgz")!) as! URLResourceLocation
+    )
+  }
+
+  func testFetchEntriesForCustomFeedWithMultipleURL() async throws {
+    let feed = CustomFeed(
+      entity: CustomFeedEntity(
+        name: "TestFeed",
+        urlString: "https://test.internal/multiple-urls.xml"
+      )
+    )
+    let feedEntries = try await feed.fetchEntries()
+    XCTAssertEqual(feedEntries.count, 1)
+    XCTAssertEqual(feedEntries[0].feed.id, feed.id)
+    XCTAssertEqual(feedEntries[0].version, "1.0.0")
+    XCTAssertFalse(feedEntries[0].isTrackedAsLatest)
+    XCTAssertEqual(
+      feedEntries[0].docsetLocation as! URLResourceLocation,
+      ResourceLocations.URL(URL(string: "https://test.internal/1.tgz")!) as! URLResourceLocation
     )
   }
 
