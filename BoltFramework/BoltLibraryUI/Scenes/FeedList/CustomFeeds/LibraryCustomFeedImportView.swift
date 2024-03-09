@@ -45,7 +45,7 @@ struct LibraryCustomFeedImportView: View {
   }
 
   private var feedURLScheme: DashFeedURLScheme? {
-    return DashFeedURLScheme(feedURLString: urlInput) ?? DashFeedURLScheme(urlString: urlInput)
+    return DashFeedURLScheme(urlString: urlInput)
   }
 
   var body: some View {

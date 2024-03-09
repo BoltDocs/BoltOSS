@@ -32,15 +32,22 @@ public struct DashFeedURLScheme: URLScheme {
     return URL(string: "\(Self.scheme)://\(escapedFeedURL)")
   }
 
-  public init?(feedURLString: String) {
-    if let feedURL = URL(string: feedURLString) {
-      self.init(feedURL: feedURL)
-    } else {
+  public init?(urlString: String) {
+    guard let url = URL(string: urlString) else {
       return nil
     }
+    self.init(url: url)
   }
 
-  public init?(feedURL: URL) {
+  public init?(url: URL) {
+    var feedURL = url
+    if let _feedURL = Self.feedURL(fromDashFeedURL: url) {
+      feedURL = _feedURL
+    }
+    self.init(feedURL: feedURL)
+  }
+
+  private init?(feedURL: URL) {
     guard
       var feedURLComponents = URLComponents(url: feedURL, resolvingAgainstBaseURL: true),
       feedURLComponents.scheme == "http" || feedURLComponents.scheme == "https"
@@ -58,24 +65,17 @@ public struct DashFeedURLScheme: URLScheme {
     }
   }
 
-  public init?(url: URL) {
+  private static func feedURL(fromDashFeedURL dashFeedURL: URL) -> URL? {
     // dash-feed://xxxxxxx
     guard
-      let scheme = url.scheme,
+      let scheme = dashFeedURL.scheme,
       scheme == Self.scheme,
-      let host = url.host,
+      let host = dashFeedURL.host,
       let feedURL = URL(string: host)
     else {
       return nil
     }
-    self.init(feedURL: feedURL)
-  }
-
-  public init?(urlString: String) {
-    guard let url = URL(string: urlString) else {
-      return nil
-    }
-    self.init(url: url)
+    return feedURL
   }
 
 }

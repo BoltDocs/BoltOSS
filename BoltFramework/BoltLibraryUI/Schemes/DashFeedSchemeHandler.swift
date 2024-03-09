@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,10 @@ public struct DashFeedSchemeHandler: SchemeHandler {
   public init() { }
 
   public func matchToHandle(withURL url: URL) -> Bool {
-    guard let scheme = DashFeedURLScheme(url: url) else {
+    guard
+      url.scheme == DashFeedURLScheme.scheme,
+      let scheme = DashFeedURLScheme(url: url)
+    else {
       return false
     }
     GlobalUI.dismissAllModals {
