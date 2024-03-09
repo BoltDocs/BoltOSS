@@ -115,7 +115,7 @@ struct LibraryCustomFeedListView: View {
 
   private func promptRemoveFeed(_ feed: CustomFeed) {
     GlobalUI.presentAlertController(
-      UIAlertController.controllerInAlertStyle(
+      UIAlertController.alert(
         withTitle: "Uninstall",
         message: "Do you really want to remove feed \(feed.displayName)?",
         confirmAction: ("Confirm", UIAlertAction.Style.destructive, {

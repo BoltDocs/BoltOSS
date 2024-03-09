@@ -224,7 +224,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
             owner.sceneState.dispatch(action: .updateCurrentScope(.docset(docset)))
           case let .broken(installation):
             GlobalUI.presentAlertController(
-              UIAlertController.controllerInAlertStyle(
+              UIAlertController.alert(
                 withTitle: "Uninstall",
                 message: "Do you really want to uninstall \(installation.name)",
                 confirmAction: ("Confirm", UIAlertAction.Style.destructive, {

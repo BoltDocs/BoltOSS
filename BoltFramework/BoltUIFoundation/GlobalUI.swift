@@ -134,7 +134,7 @@ public struct GlobalUI {
     #if DEBUG
       if let error = errorMessage.nestedError {
         presentAlertController(
-          UIAlertController.controllerInAlertStyle(
+          UIAlertController.alert(
             withTitle: errorMessage.entity.description,
             message: error.localizedDescription,
             confirmAction: ("OK", .default, nil)

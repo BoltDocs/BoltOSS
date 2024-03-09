@@ -20,7 +20,7 @@ import Overture
 
 public extension UIAlertController {
 
-  static func controllerInAlertStyle(
+  static func alert(
     withTitle title: String?,
     message: String?,
     confirmAction: (String?, UIAlertAction.Style, (() -> Void)?)? = nil,

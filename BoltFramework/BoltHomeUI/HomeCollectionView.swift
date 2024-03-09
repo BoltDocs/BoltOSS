@@ -154,7 +154,7 @@ final class HomeCollectionView: UICollectionView {
           let uninstallName = queryResult.displayName
 
           GlobalUI.presentAlertController(
-            UIAlertController.controllerInAlertStyle(
+            UIAlertController.alert(
               withTitle: "Uninstall",
               message: "Do you really want to uninstall \(uninstallName)",
               confirmAction: ("Confirm", UIAlertAction.Style.destructive, {

@@ -62,7 +62,7 @@ public struct PreferencesHomeView: View {
     didSet {
       if isCacheClearing {
         GlobalUI.presentAlertController(
-          UIAlertController.controllerInAlertStyle(
+          UIAlertController.alert(
             withTitle: "Preferences-Home-CacheClear-alertTitle".boltLocalized,
             message: "Preferences-Home-CacheClear-alertMessage".boltLocalized
           )
