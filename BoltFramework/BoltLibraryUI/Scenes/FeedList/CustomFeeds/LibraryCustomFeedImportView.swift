@@ -68,26 +68,27 @@ struct LibraryCustomFeedImportView: View {
       ToolbarItem(placement: .confirmationAction) {
         if !isLoading {
           Button(UIKitLocalization.done) {
-            if let scheme = feedURLScheme {
-              Task {
-                isLoading = true
-                defer {
-                  isLoading = false
-                }
-                do {
-                  let feed = CustomFeed(
-                    entity: CustomFeedEntity(
-                      name: name,
-                      urlString: scheme.feedURL.absoluteString
-                    )
+            guard let scheme = feedURLScheme else {
+              return
+            }
+            Task {
+              isLoading = true
+              defer {
+                isLoading = false
+              }
+              do {
+                let feed = CustomFeed(
+                  entity: CustomFeedEntity(
+                    name: name,
+                    urlString: scheme.feedURL.absoluteString
                   )
-                  // pre-check the feed is valid
-                  let _ = try await feed.fetchEntries()
-                  try feedsService.insertCustomFeed(feed)
-                  dismiss()
-                } catch {
-                  GlobalUI.showMessageToast(withErrorMessage: ErrorMessage(entity: .failedToImportCustomFeed, nestedError: error))
-                }
+                )
+                // pre-check the feed is valid
+                let _ = try await feed.fetchEntries()
+                try feedsService.insertCustomFeed(feed)
+                dismiss()
+              } catch {
+                GlobalUI.showMessageToast(withErrorMessage: ErrorMessage(entity: .failedToImportCustomFeed, nestedError: error))
               }
             }
           }

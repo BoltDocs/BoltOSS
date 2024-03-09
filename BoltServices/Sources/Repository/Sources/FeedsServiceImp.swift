@@ -106,7 +106,7 @@ final class FeedsServiceImp: FeedsServiceInternal {
           }
           return nil
         }
-      case .failure(_):
+      case .failure:
         return nil
       }
       return nil
