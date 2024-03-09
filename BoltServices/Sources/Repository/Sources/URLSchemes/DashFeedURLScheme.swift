@@ -22,7 +22,12 @@ public struct DashFeedURLScheme: URLScheme {
 
   public var feedURL: URL
   public var feedFileName: String {
-    return feedURL.pathComponents.last ?? ""
+    guard let lastURLComponents = feedURL.deletingPathExtension().pathComponents.last else {
+      return ""
+    }
+    return lastURLComponents
+      .trimmingCharacters(in: ["/"])
+      .replacingOccurrences(of: "_", with: " ")
   }
 
   public static var scheme = "dash-feed"
