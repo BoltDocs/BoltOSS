@@ -77,6 +77,18 @@ struct LibraryCustomFeedListView: View {
             } label: {
               LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
             } // NavigationLink
+            .contextMenu {
+              Button {
+                promptRenameFeed(feed)
+              } label: {
+                Label(UIKitLocalization.rename, systemImage: "square.and.pencil")
+              } // Button
+              Button(role: .destructive) {
+                promptRemoveFeed(feed)
+              } label: {
+                Label(UIKitLocalization.delete, systemImage: "trash")
+              } // Button
+            } // contextMenu
             .swipeActions {
               Button(UIKitLocalization.delete) {
                 promptRemoveFeed(feed)
