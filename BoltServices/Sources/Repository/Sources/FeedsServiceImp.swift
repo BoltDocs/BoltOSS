@@ -79,6 +79,10 @@ final class FeedsServiceImp: FeedsServiceInternal {
     try LibraryDatabase.shared.insertCustomFeed(feed.customFeedEntity)
   }
 
+  func updateCustomFeed(_ feed: CustomFeed) throws {
+    try LibraryDatabase.shared.updateCustomFeed(feed.customFeedEntity)
+  }
+
   func deleteCustomFeeds(_ feed: CustomFeed) throws {
     try LibraryDatabase.shared.deleteCustomFeed(feed.customFeedEntity)
   }

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,11 @@ public struct CustomFeed: Feed {
   }
 
   public var displayName: String {
-    return customFeedEntity.displayName
+    get {
+      return customFeedEntity.displayName
+    } set {
+      customFeedEntity.displayName = newValue
+    }
   }
 
   public var aliases = [String]()

@@ -18,6 +18,7 @@ import Combine
 import SwiftUI
 
 import Factory
+import Overture
 
 import BoltLocalizations
 import BoltServices
@@ -37,6 +38,16 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
     feedsService.customFeedsObservable()
       .assertNoFailure()
       .assign(to: &$feeds)
+  }
+
+  func onConfirmRenameFeed(_ feed: CustomFeed, newName: String) throws {
+    guard !newName.isEmpty else {
+      return
+    }
+    let newFeed = update(feed) {
+      $0.displayName = newName
+    }
+    try? feedsService.updateCustomFeed(newFeed)
   }
 
   func onConfirmRemoveFeed(_ feed: CustomFeed) throws {
@@ -67,14 +78,15 @@ struct LibraryCustomFeedListView: View {
               LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
             } // NavigationLink
             .swipeActions {
-              Button(action: {
+              Button(UIKitLocalization.delete) {
                 promptRemoveFeed(feed)
-              }, label: {
-                Label("Delete", systemImage: "trash")
-              }) // Button
+              } // Button
               .tint(.red)
+              Button(UIKitLocalization.rename) {
+                promptRenameFeed(feed)
+              } // Button
+              .tint(.orange)
             } // swipeActions
-            .tint(Color.primary)
           } // ForEach
         } // List
       } else {
@@ -111,6 +123,21 @@ struct LibraryCustomFeedListView: View {
         } // sheet
       } // ToolbarItemGroup
     } // toolbar
+  }
+
+  private func promptRenameFeed(_ feed: CustomFeed) {
+    GlobalUI.presentAlertController(
+      UIAlertController.inputAlert(
+        withTitle: !feed.displayName.isEmpty ? "Rename “\(feed.displayName)”" : "Rename Feed",
+        message: nil,
+        initialText: feed.displayName,
+        placeHolder: "Name",
+        confirmAction: (UIKitLocalization.rename, .default, { newName in
+          try? model.onConfirmRenameFeed(feed, newName: newName)
+        }),
+        cancelAction: (UIKitLocalization.cancel, { })
+      )
+    )
   }
 
   private func promptRemoveFeed(_ feed: CustomFeed) {

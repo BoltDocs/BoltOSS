@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ public protocol FeedsService {
   func customFeedsObservable() -> AnyPublisher<[CustomFeed], Never>
 
   func insertCustomFeed(_ feed: CustomFeed) throws
+
+  func updateCustomFeed(_ feed: CustomFeed) throws
 
   func deleteCustomFeeds(_ feed: CustomFeed) throws
 
