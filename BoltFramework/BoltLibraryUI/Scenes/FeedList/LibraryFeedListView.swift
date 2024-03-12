@@ -130,40 +130,38 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
   }
 
   var body: some View {
-    Group {
-      List {
-        if actionPerformer.status == .success {
-          ForEach(filteredFeeds, id: \.id) { feed in
-            NavigationLink {
-              DeferredView { FeedInfoView(feed: feed) }
-            } label: {
-              LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
-            } // NavigationLink
-            .tint(Color.primary)
-          } // ForEach
-        } // if
-      } // List
-      .searchable(text: $searchText, prompt: UIKitLocalization.search)
-      .textInputAutocapitalization(.never)
-      .disableAutocorrection(true)
-      .overlay {
-        if actionPerformer.status != .success {
-          EmptyFeedsView(
-            image: Model.emptyStateImage,
-            message: "Loading Feeds",
-            shouldDisplayIndicator: true,
-            showsMessage: actionPerformer.status == .loading,
-            showsRetry: actionPerformer.status == .error
-          ) {
-            if let action = refreshAction {
-              Task { await action() }
-            } else {
-              Task { await actionPerformer.perform() }
-            } // if
-          } // EmptyFeedsView
-        } // if
-      } // List
-    } //Group
+    List {
+      if actionPerformer.status == .success {
+        ForEach(filteredFeeds, id: \.id) { feed in
+          NavigationLink {
+            DeferredView { FeedInfoView(feed: feed) }
+          } label: {
+            LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
+          } // NavigationLink
+          .tint(Color.primary)
+        } // ForEach
+      } // if
+    } // List
+    .searchable(text: $searchText, prompt: UIKitLocalization.search)
+    .textInputAutocapitalization(.never)
+    .disableAutocorrection(true)
+    .overlay {
+      if actionPerformer.status != .success {
+        EmptyFeedsView(
+          image: Model.emptyStateImage,
+          message: "Loading Feeds",
+          shouldDisplayIndicator: true,
+          showsMessage: actionPerformer.status == .loading,
+          showsRetry: actionPerformer.status == .error
+        ) {
+          if let action = refreshAction {
+            Task { await action() }
+          } else {
+            Task { await actionPerformer.perform() }
+          } // if
+        } // EmptyFeedsView
+      } // if
+    } // List
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.systemGroupedBackground)
   }
