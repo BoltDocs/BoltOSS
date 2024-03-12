@@ -68,40 +68,39 @@ struct LibraryCustomFeedListView: View {
   static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/custom-feed", in: .module).platformImage!
 
   var body: some View {
-    Group {
-      if !model.feeds.isEmpty {
-        List {
-          ForEach(model.feeds, id: \.id) { feed in
-            NavigationLink {
-              DeferredView { FeedInfoView(feed: feed) }
-            } label: {
-              LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
-            } // NavigationLink
-            .contextMenu {
-              Button {
-                promptRenameFeed(feed)
-              } label: {
-                Label(UIKitLocalization.rename, systemImage: "square.and.pencil")
-              } // Button
-              Button(role: .destructive) {
-                promptRemoveFeed(feed)
-              } label: {
-                Label(UIKitLocalization.delete, systemImage: "trash")
-              } // Button
-            } // contextMenu
-            .swipeActions {
-              Button(UIKitLocalization.delete) {
-                promptRemoveFeed(feed)
-              } // Button
-              .tint(.red)
-              Button(UIKitLocalization.rename) {
-                promptRenameFeed(feed)
-              } // Button
-              .tint(.orange)
-            } // swipeActions
-          } // ForEach
-        } // List
-      } else {
+    List {
+      ForEach(model.feeds, id: \.id) { feed in
+        NavigationLink {
+          DeferredView { FeedInfoView(feed: feed) }
+        } label: {
+          LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
+        } // NavigationLink
+        .contextMenu {
+          Button {
+            promptRenameFeed(feed)
+          } label: {
+            Label(UIKitLocalization.rename, systemImage: "square.and.pencil")
+          } // Button
+          Button(role: .destructive) {
+            promptRemoveFeed(feed)
+          } label: {
+            Label(UIKitLocalization.delete, systemImage: "trash")
+          } // Button
+        } // contextMenu
+        .swipeActions {
+          Button(UIKitLocalization.delete) {
+            promptRemoveFeed(feed)
+          } // Button
+          .tint(.red)
+          Button(UIKitLocalization.rename) {
+            promptRenameFeed(feed)
+          } // Button
+          .tint(.orange)
+        } // swipeActions
+      } // ForEach
+    } // List
+    .overlay {
+      if model.feeds.isEmpty {
         EmptyFeedsView(
           image: Self.emptyStateImage,
           message: "No Feeds",
@@ -110,7 +109,7 @@ struct LibraryCustomFeedListView: View {
           showsRetry: false
         ) // EmptyFeedsView
       } // if
-    } // Group
+    } // overlay
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.systemGroupedBackground)
     .navigationTitle("Custom Feeds")
@@ -135,6 +134,7 @@ struct LibraryCustomFeedListView: View {
         } // sheet
       } // ToolbarItemGroup
     } // toolbar
+    .animation(.default, value: model.feeds.map { $0.id })
   }
 
   private func promptRenameFeed(_ feed: CustomFeed) {
