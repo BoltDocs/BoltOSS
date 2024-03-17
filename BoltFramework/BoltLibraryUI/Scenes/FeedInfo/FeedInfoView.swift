@@ -169,28 +169,10 @@ struct FeedInfoView: View {
     self.dataSource = DataSource(feed: feed)
   }
 
-  private var editable: Bool {
-    guard let repository = repositoryRegistry.repository(forIdentifier: dataSource.feed.repository) else {
-      assertionFailure("Unrecognized feed repository")
-      return false
-    }
-    return !repository.isPreset
-  }
-
   @State private var showsAllVersions = false
-  @State private var isEditing = false
 
   private func infoSection() -> some View {
-    Section(
-      header: Text("Feed"),
-      footer: Group {
-        if editable == true {
-          if isEditing == true {
-            Text("Edit feed name here.")
-          }
-        }
-      }
-    ) {
+    Section("Feed") {
       HStack {
         let image = dataSource.feed.iconImageForList
         Image(uiImage: image ?? UIImage())
@@ -199,11 +181,7 @@ struct FeedInfoView: View {
           }
           .foregroundColor(Color.primary)
           .frame(width: 30, height: 30)
-        TextField("", text: .constant(dataSource.feed.displayName))
-          .disabled(!(isEditing == true && editable == true))
-          .if(isEditing == true && editable == false) {
-            $0.foregroundColor(Color.gray)
-          }
+        Text(dataSource.feed.displayName)
       }
     }
   }
@@ -307,21 +285,6 @@ struct FeedInfoView: View {
       ToolbarItem(placement: .confirmationAction) {
         Button(UIKitLocalization.done) {
           dismissLibraryHome?()
-        }
-      }
-      if editable {
-        ToolbarItemGroup(placement: .bottomBar) {
-          Spacer()
-          Button(action: {
-            withAnimation(.default) {
-              isEditing.toggle()
-            }
-          }, label: {
-            Text(isEditing ? UIKitLocalization.done : UIKitLocalization.edit)
-              .if(isEditing) {
-                $0.bold()
-              }
-          })
         }
       }
     }
