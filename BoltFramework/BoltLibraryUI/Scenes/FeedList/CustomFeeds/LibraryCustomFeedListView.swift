@@ -103,7 +103,7 @@ struct LibraryCustomFeedListView: View {
       if model.feeds.isEmpty {
         EmptyFeedsView(
           image: Self.emptyStateImage,
-          message: "No Feeds",
+          message: "Library-ImportedFeed-List-noFeed".boltLocalized,
           shouldDisplayIndicator: false,
           showsMessage: true,
           showsRetry: false
@@ -112,7 +112,7 @@ struct LibraryCustomFeedListView: View {
     } // overlay
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.systemGroupedBackground)
-    .navigationTitle("Custom Feeds")
+    .navigationTitle("Library-ImportedFeeds-List-title".boltLocalized)
     .navigationBarTitleDisplayMode(.large)
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
@@ -138,12 +138,15 @@ struct LibraryCustomFeedListView: View {
   }
 
   private func promptRenameFeed(_ feed: CustomFeed) {
+    let alertTitle = !feed.displayName.isEmpty ?
+      "Library-ImportedFeeds-List-RenameAlert-renameTitleFormat".boltLocalized(feed.displayName) :
+      "Library-ImportedFeeds-List-RenameAlert-renameFeedTitle".boltLocalized
     GlobalUI.presentAlertController(
       UIAlertController.inputAlert(
-        withTitle: !feed.displayName.isEmpty ? "Rename “\(feed.displayName)”" : "Rename Feed",
+        withTitle: alertTitle,
         message: nil,
         initialText: feed.displayName,
-        placeHolder: "Name",
+        placeHolder: "Library-ImportedFeeds-List-RenameAlert-namePlaceHolder".boltLocalized,
         confirmAction: (UIKitLocalization.rename, .default, { newName in
           try? model.onConfirmRenameFeed(feed, newName: newName)
         }),
@@ -153,13 +156,19 @@ struct LibraryCustomFeedListView: View {
   }
 
   private func promptRemoveFeed(_ feed: CustomFeed) {
+    let alertMessage = !feed.displayName.isEmpty ?
+      "Library-ImportedFeeds-List-RenameAlert-removeMessageFormat".boltLocalized(feed.displayName) :
+      "Library-ImportedFeeds-List-RenameAlert-removeFeedMessage".boltLocalized
     GlobalUI.presentAlertController(
       UIAlertController.alert(
-        withTitle: "Uninstall",
-        message: "Do you really want to remove feed \(feed.displayName)?",
-        confirmAction: ("Confirm", UIAlertAction.Style.destructive, {
-          try? model.onConfirmRemoveFeed(feed)
-        }),
+        withTitle: "Library-ImportedFeeds-List-RenameAlert-removeFeedTitle".boltLocalized,
+        message: alertMessage,
+        confirmAction: (
+          "Localizations-General-confirm".boltLocalized,
+          UIAlertAction.Style.destructive, {
+            try? model.onConfirmRemoveFeed(feed)
+          }
+        ),
         cancelAction: (UIKitLocalization.cancel, { })
       )
     )
