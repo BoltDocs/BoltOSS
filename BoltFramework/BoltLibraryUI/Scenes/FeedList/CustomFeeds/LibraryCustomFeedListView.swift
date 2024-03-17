@@ -37,6 +37,11 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
   init() {
     feedsService.customFeedsObservable()
       .assertNoFailure()
+      .map { feeds in
+        return feeds.sorted {
+          $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
+        }
+      }
       .assign(to: &$feeds)
   }
 
