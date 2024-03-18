@@ -51,13 +51,21 @@ struct LibraryCustomFeedImportView: View {
   var body: some View {
     Form {
       Section {
-        TextField("Feed URL", text: $urlInput)
-          .autocapitalization(.none)
-          .disableAutocorrection(true)
-        TextField("Feed Name", text: $name)
+        TextField(
+          "Library-ImportedFeeds-Import-urlPlaceHolder".boltLocalized,
+          text: $urlInput
+        )
+        .autocapitalization(.none)
+        .disableAutocorrection(true)
+        .textContentType(.URL)
+        .keyboardType(.URL)
+        TextField(
+          "Library-ImportedFeeds-Import-nameFeedName".boltLocalized,
+          text: $name
+        )
       }
     }
-    .navigationTitle("Import Feed")
+    .navigationTitle("Library-ImportedFeeds-Import-title".boltLocalized)
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .cancellationAction) {

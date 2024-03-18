@@ -108,7 +108,7 @@ struct LibraryCustomFeedListView: View {
       if model.feeds.isEmpty {
         EmptyFeedsView(
           image: Self.emptyStateImage,
-          message: "Library-ImportedFeed-List-noFeed".boltLocalized,
+          message: "Library-ImportedFeeds-List-noFeed".boltLocalized,
           shouldDisplayIndicator: false,
           showsMessage: true,
           showsRetry: false
@@ -132,14 +132,14 @@ struct LibraryCustomFeedListView: View {
         } label: {
           Image(systemName: "plus")
         } // Button
-        .sheet(isPresented: $showsImportFeedSheet) {
-          NavigationView {
-            LibraryCustomFeedImportView()
-          } // NavigationView
-        } // sheet
       } // ToolbarItemGroup
     } // toolbar
     .animation(.default, value: model.feeds.map { $0.id })
+    .sheet(isPresented: $showsImportFeedSheet) {
+      NavigationView {
+        LibraryCustomFeedImportView()
+      } // NavigationView
+    } // sheet
   }
 
   private func promptRenameFeed(_ feed: CustomFeed) {
