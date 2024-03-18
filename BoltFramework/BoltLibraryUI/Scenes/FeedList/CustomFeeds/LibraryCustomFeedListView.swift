@@ -69,6 +69,7 @@ struct LibraryCustomFeedListView: View {
   @ObservedObject private var model = LibraryCustomFeedListViewModel()
 
   @State private var showsImportFeedSheet = false
+  @State private var feedForFeedInfoSheet: CustomFeed?
 
   static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/custom-feed", in: .module).platformImage!
 
@@ -81,6 +82,16 @@ struct LibraryCustomFeedListView: View {
           LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
         } // NavigationLink
         .contextMenu {
+          Button {
+            feedForFeedInfoSheet = feed
+          } label: {
+            Label("Localizations-General-getInfo".boltLocalized, systemImage: "info.circle")
+          } // Button
+          Button {
+            copyURL(forFeed: feed)
+          } label: {
+            Label("Library-ImportedFeeds-List-copyFeedURL".boltLocalized, systemImage: "doc.on.doc")
+          } // Button
           Button {
             promptRenameFeed(feed)
           } label: {
@@ -101,6 +112,9 @@ struct LibraryCustomFeedListView: View {
             promptRenameFeed(feed)
           } // Button
           .tint(.orange)
+          Button("Localizations-General-getInfo".boltLocalized) {
+            feedForFeedInfoSheet = feed
+          } // Button
         } // swipeActions
       } // ForEach
     } // List
@@ -140,6 +154,11 @@ struct LibraryCustomFeedListView: View {
         LibraryCustomFeedImportView()
       } // NavigationView
     } // sheet
+    .sheet(item: $feedForFeedInfoSheet) { feed in
+      NavigationView {
+        LibraryCustomFeedInfoView(feed: feed)
+      } // NavigationView
+    }
   }
 
   private func promptRenameFeed(_ feed: CustomFeed) {
@@ -177,6 +196,12 @@ struct LibraryCustomFeedListView: View {
         cancelAction: (UIKitLocalization.cancel, { })
       )
     )
+  }
+
+  private func copyURL(forFeed feed: CustomFeed) {
+    if !feed.urlString.isEmpty {
+      UIPasteboard.general.string = feed.urlString
+    }
   }
 
 }

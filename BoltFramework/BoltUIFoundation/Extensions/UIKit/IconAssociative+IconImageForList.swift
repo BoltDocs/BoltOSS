@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,16 @@ public extension EntryIconProvider {
         cornerRadius: 6,
         borderWidth: 0.25,
         borderColor: .gray
+      )
+  }
+
+  var iconImageForInfo: UIImage? {
+    return iconImage
+      .roundedCorner(
+        withSize: CGSize(width: 56, height: 56),
+        contentSize: CGSize(width: 32, height: 32),
+        backgroundColor: .white,
+        cornerRadius: 8
       )
   }
 

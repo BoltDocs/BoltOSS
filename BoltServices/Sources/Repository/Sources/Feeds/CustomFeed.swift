@@ -39,7 +39,7 @@ struct CustomFeedRepository: FeedRepository {
 
 }
 
-public struct CustomFeed: Feed {
+public struct CustomFeed: Feed, Identifiable {
 
   private(set) var customFeedEntity: CustomFeedEntity
 
