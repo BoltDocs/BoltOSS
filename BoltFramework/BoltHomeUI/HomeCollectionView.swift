@@ -104,75 +104,124 @@ final class HomeCollectionView: UICollectionView {
     }
   }
 
+  func itemContextMenuConfiguration(
+    forIndexPath indexPath: IndexPath
+  ) -> UIContextMenuConfiguration? {
+    // swiftlint:disable:next trailing_closure
+    return UIContextMenuConfiguration(
+      actionProvider: { [weak self] _ in
+        let getInfoButton = UIAction(
+          title: BoltLocalizations.getInfo,
+          image: UIImage(systemName: "info.circle")
+        ) { _ in
+          guard let self = self else {
+            return
+          }
+          self.onGetInfo(queryResult: self.docset(forIndexPath: indexPath))
+        }
+        let deleteButton = UIAction(
+          title: UIKitLocalizations.delete,
+          image: UIImage(systemName: "trash"),
+          attributes: .destructive
+        ) { [weak self] _ in
+          guard let self = self else {
+            return
+          }
+          onDeleteItem(queryResult: self.docset(forIndexPath: indexPath))
+        }
+        return UIMenu(children: [getInfoButton, deleteButton])
+      }
+    )
+  }
+
+  private func docset(forIndexPath indexPath: IndexPath) -> LibraryInstallationQueryResult? {
+    if
+      let item = (self.dataSource as? UICollectionViewDiffableDataSource<String, DocsetsListModel>)?.itemIdentifier(for: indexPath),
+      case let .docset(queryResult) = item
+    {
+      return queryResult
+    }
+    return nil
+  }
+
   private func createTrailingSwipeActionsConfigurationProvider()
     -> UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider?
   {
     return { [weak self] indexPath in
-      let itemAccessor = { () -> LibraryInstallationQueryResult? in
-        if
-          let self = self,
-          let item = (self.dataSource as? UICollectionViewDiffableDataSource<String, DocsetsListModel>)?
-            .itemIdentifier(for: indexPath),
-          case let .docset(queryResult) = item
-        {
-          return queryResult
-        }
-        return nil
-      }
-
-      let info = update(
+      let getInfoAction =
         UIContextualAction(
           style: .normal,
-          title: "Info"
-        ) { _, _, completion in
-          guard let queryResult = itemAccessor() else {
-            completion(false)
+          title: BoltLocalizations.getInfo
+        ) { [weak self] _, _, completion in
+          guard let self = self else {
             return
           }
-          if case let .docset(docset) = queryResult {
-            BoltHomeNavigator.presentDocsetInfo(docset)
-            completion(true)
-          } else {
-            completion(false)
-          }
+          let handled = self.onGetInfo(queryResult: self.docset(forIndexPath: indexPath))
+          completion(handled)
         }
-      ) {
-        $0.image = UIImage(systemName: "info.circle")
-      }
-
-      let delete = update(
+      let deleteAction =
         UIContextualAction(
           style: .destructive,
-          title: "Delete"
+          title: UIKitLocalizations.delete
         ) { _, _, completion in
-          guard let queryResult = itemAccessor() else {
-            completion(false)
+          guard let self = self else {
             return
           }
-
-          let installationToUninstall = queryResult.installation
-          let uninstallName = queryResult.displayName
-
-          GlobalUI.presentAlertController(
-            UIAlertController.alert(
-              withTitle: "Uninstall",
-              message: "Do you really want to uninstall \(uninstallName)",
-              confirmAction: ("Confirm", UIAlertAction.Style.destructive, {
-                try? LibraryDocsetsManager.shared.uninstallDocset(forInstallation: installationToUninstall)
-                completion(true)
-              }),
-              cancelAction: (UIKitLocalizations.cancel, {
-                completion(false)
-              })
-            )
-          )
+          self.onDeleteItem(queryResult: self.docset(forIndexPath: indexPath), completion)
         }
-      ) {
-        $0.image = UIImage(systemName: "trash")
-      }
 
-      return UISwipeActionsConfiguration(actions: [delete, info])
+      return UISwipeActionsConfiguration(actions: [deleteAction, getInfoAction])
     }
+  }
+
+  // MARK: Actions
+
+  @discardableResult
+  private func onGetInfo(queryResult: LibraryInstallationQueryResult?) -> Bool {
+    guard let queryResult = queryResult else {
+      return false
+    }
+    if case let .docset(docset) = queryResult {
+      BoltHomeNavigator.presentDocsetInfo(docset)
+      return true
+    } else {
+      return false
+    }
+  }
+
+  private func onDeleteItem(
+    queryResult: LibraryInstallationQueryResult?,
+    _ completion: ((Bool) -> Void)? = nil
+  ) {
+    guard let queryResult = queryResult else {
+      completion?(false)
+      return
+    }
+
+    let installationToUninstall = queryResult.installation
+    let uninstallName = queryResult.displayName
+
+    let alertMessage = !uninstallName.isEmpty ?
+      "Home-List-DeleteAlert-deleteDocsetMessageFormat".boltLocalized(uninstallName) :
+      "Home-List-DeleteAlert-deleteDocsetMessage".boltLocalized
+
+    GlobalUI.presentAlertController(
+      UIAlertController.alert(
+        withTitle: "Home-List-DeleteAlert-deleteDocsetTitle".boltLocalized,
+        message: alertMessage,
+        confirmAction: (
+          BoltLocalizations.confirm,
+          UIAlertAction.Style.destructive,
+          {
+            try? LibraryDocsetsManager.shared.uninstallDocset(forInstallation: installationToUninstall)
+            completion?(true)
+          }
+        ),
+        cancelAction: (UIKitLocalizations.cancel, {
+          completion?(false)
+        })
+      )
+    )
   }
 
 }

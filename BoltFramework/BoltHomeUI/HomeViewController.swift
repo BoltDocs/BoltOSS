@@ -58,7 +58,11 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     fatalError("\(#function) has not been implemented")
   }
 
-  private lazy var collectionView = HomeCollectionView(isCompact: isCompact)
+  private lazy var collectionView: HomeCollectionView = {
+    return update(HomeCollectionView(isCompact: isCompact)) {
+      $0.delegate = self
+    }
+  }()
 
   private func setupNavigationBar() {
     updateNavBarAppearance()
@@ -246,6 +250,22 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
   private func updateNavBarAppearance() {
     configureNavigationBarAppearance(enforceLargeTitle: true)
+  }
+
+}
+
+extension HomeViewController: UICollectionViewDelegate {
+
+  public func collectionView(
+    _ collectionView: UICollectionView,
+    contextMenuConfigurationForItemAt indexPath: IndexPath,
+    point: CGPoint
+  ) -> UIContextMenuConfiguration? {
+    guard let collectionView = collectionView as? HomeCollectionView else {
+      assertionFailure("Unexpected collectionView type")
+      return nil
+    }
+    return collectionView.itemContextMenuConfiguration(forIndexPath: indexPath)
   }
 
 }
