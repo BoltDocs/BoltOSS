@@ -69,13 +69,13 @@ struct LibraryCustomFeedImportView: View {
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .cancellationAction) {
-        Button(UIKitLocalization.cancel) {
+        Button(UIKitLocalizations.cancel) {
           dismiss()
         }
       }
       ToolbarItem(placement: .confirmationAction) {
         if !isLoading {
-          Button(UIKitLocalization.done) {
+          Button(UIKitLocalizations.done) {
             guard let scheme = feedURLScheme else {
               return
             }

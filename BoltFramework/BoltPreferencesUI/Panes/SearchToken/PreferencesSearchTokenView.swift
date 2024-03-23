@@ -56,7 +56,7 @@ final class PreferencesTypeBrowserViewController: UITableViewController, UISearc
     title = "Search Tokens"
 
     let rightButton = UIBarButtonItem(
-      title: UIKitLocalization.done,
+      title: UIKitLocalizations.done,
       style: UIBarButtonItem.Style.done,
       target: self,
       action: #selector(doneButtonTap(_:))

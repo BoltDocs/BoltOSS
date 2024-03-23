@@ -68,7 +68,7 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
 
     with(searchBar) {
       $0.delegate = self
-      $0.placeholder = UIKitLocalization.search
+      $0.placeholder = UIKitLocalizations.search
       with($0.searchTextField) {
         $0.delegate = self
         $0.autocorrectionType = .no

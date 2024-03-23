@@ -173,7 +173,7 @@ public struct PreferencesHomeView: View {
       .listStyle(.insetGrouped)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalization.done) {
+          Button(UIKitLocalizations.done) {
             dismiss()
           }
         }

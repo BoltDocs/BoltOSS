@@ -306,7 +306,7 @@ struct DownloadConfirmationView: View {
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
-        Button(UIKitLocalization.done) {
+        Button(UIKitLocalizations.done) {
           dismissLibraryHome?()
         }
       }

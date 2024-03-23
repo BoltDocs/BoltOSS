@@ -85,7 +85,7 @@ struct LibraryCustomFeedListView: View {
           Button {
             feedForFeedInfoSheet = feed
           } label: {
-            Label("Localizations-General-getInfo".boltLocalized, systemImage: "info.circle")
+            Label(BoltLocalizations.getInfo, systemImage: "info.circle")
           } // Button
           Button {
             copyURL(forFeed: feed)
@@ -95,24 +95,24 @@ struct LibraryCustomFeedListView: View {
           Button {
             promptRenameFeed(feed)
           } label: {
-            Label(UIKitLocalization.rename, systemImage: "square.and.pencil")
+            Label(UIKitLocalizations.rename, systemImage: "square.and.pencil")
           } // Button
           Button(role: .destructive) {
             promptRemoveFeed(feed)
           } label: {
-            Label(UIKitLocalization.delete, systemImage: "trash")
+            Label(UIKitLocalizations.delete, systemImage: "trash")
           } // Button
         } // contextMenu
         .swipeActions {
-          Button(UIKitLocalization.delete) {
+          Button(UIKitLocalizations.delete) {
             promptRemoveFeed(feed)
           } // Button
           .tint(.red)
-          Button(UIKitLocalization.rename) {
+          Button(UIKitLocalizations.rename) {
             promptRenameFeed(feed)
           } // Button
           .tint(.orange)
-          Button("Localizations-General-getInfo".boltLocalized) {
+          Button(BoltLocalizations.getInfo) {
             feedForFeedInfoSheet = feed
           } // Button
         } // swipeActions
@@ -135,7 +135,7 @@ struct LibraryCustomFeedListView: View {
     .navigationBarTitleDisplayMode(.large)
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
-        Button(UIKitLocalization.done) {
+        Button(UIKitLocalizations.done) {
           dismissLibraryHome?()
         } // Button
       } // ToolbarItem
@@ -171,29 +171,29 @@ struct LibraryCustomFeedListView: View {
         message: nil,
         initialText: feed.displayName,
         placeHolder: "Library-ImportedFeeds-List-RenameAlert-namePlaceHolder".boltLocalized,
-        confirmAction: (UIKitLocalization.rename, .default, { newName in
+        confirmAction: (UIKitLocalizations.rename, .default, { newName in
           try? model.onConfirmRenameFeed(feed, newName: newName)
         }),
-        cancelAction: (UIKitLocalization.cancel, { })
+        cancelAction: (UIKitLocalizations.cancel, { })
       )
     )
   }
 
   private func promptRemoveFeed(_ feed: CustomFeed) {
     let alertMessage = !feed.displayName.isEmpty ?
-      "Library-ImportedFeeds-List-RenameAlert-removeMessageFormat".boltLocalized(feed.displayName) :
-      "Library-ImportedFeeds-List-RenameAlert-removeFeedMessage".boltLocalized
+      "Library-ImportedFeeds-List-RemoveAlert-removeMessageFormat".boltLocalized(feed.displayName) :
+      "Library-ImportedFeeds-List-RemoveAlert-removeFeedMessage".boltLocalized
     GlobalUI.presentAlertController(
       UIAlertController.alert(
-        withTitle: "Library-ImportedFeeds-List-RenameAlert-removeFeedTitle".boltLocalized,
+        withTitle: "Library-ImportedFeeds-List-RemoveAlert-removeFeedTitle".boltLocalized,
         message: alertMessage,
         confirmAction: (
-          "Localizations-General-confirm".boltLocalized,
+          BoltLocalizations.confirm,
           UIAlertAction.Style.destructive, {
             try? model.onConfirmRemoveFeed(feed)
           }
         ),
-        cancelAction: (UIKitLocalization.cancel, { })
+        cancelAction: (UIKitLocalizations.cancel, { })
       )
     )
   }

@@ -78,7 +78,7 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalization.done) {
+          Button(UIKitLocalizations.done) {
             dismissLibraryHome?()
           }
         }
@@ -142,7 +142,7 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
         } // ForEach
       } // if
     } // List
-    .searchable(text: $searchText, prompt: UIKitLocalization.search)
+    .searchable(text: $searchText, prompt: UIKitLocalizations.search)
     .textInputAutocapitalization(.never)
     .disableAutocorrection(true)
     .overlay {

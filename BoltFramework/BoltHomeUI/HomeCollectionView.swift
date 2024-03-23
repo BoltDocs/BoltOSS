@@ -161,7 +161,7 @@ final class HomeCollectionView: UICollectionView {
                 try? LibraryDocsetsManager.shared.uninstallDocset(forInstallation: installationToUninstall)
                 completion(true)
               }),
-              cancelAction: (UIKitLocalization.cancel, {
+              cancelAction: (UIKitLocalizations.cancel, {
                 completion(false)
               })
             )

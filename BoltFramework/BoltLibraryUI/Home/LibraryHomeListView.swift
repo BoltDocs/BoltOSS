@@ -72,7 +72,7 @@ public struct LibraryHomeListView: View {
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalization.done) {
+          Button(UIKitLocalizations.done) {
             dismiss()
           }
         }

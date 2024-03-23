@@ -230,7 +230,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
                 confirmAction: ("Confirm", UIAlertAction.Style.destructive, {
                   try? LibraryDocsetsManager.shared.uninstallDocset(forInstallation: installation)
                 }),
-                cancelAction: (UIKitLocalization.cancel, nil)
+                cancelAction: (UIKitLocalizations.cancel, nil)
               )
             )
           }
