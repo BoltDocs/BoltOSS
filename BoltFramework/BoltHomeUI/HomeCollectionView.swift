@@ -24,10 +24,10 @@ import BoltUIFoundation
 
 final class HomeCollectionView: UICollectionView {
 
-  private let isCompact: Bool
+  private let isForCollapsedSidebar: Bool
 
-  init(isCompact: Bool) {
-    self.isCompact = isCompact
+  init(isForCollapsedSidebar: Bool) {
+    self.isForCollapsedSidebar = isForCollapsedSidebar
 
     self.headerRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, _, title in
       cell.contentConfiguration = update(cell.defaultContentConfiguration()) {
@@ -62,7 +62,7 @@ final class HomeCollectionView: UICollectionView {
         $0.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
         #endif
       }
-      if isCompact {
+      if isForCollapsedSidebar {
         cell.accessories = [.disclosureIndicator()]
       }
     }
@@ -79,8 +79,8 @@ final class HomeCollectionView: UICollectionView {
   let headerRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, String>
   let cellRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, LibraryInstallationQueryResult>
 
-  static func listAppearance(isCompact: Bool) -> UICollectionLayoutListConfiguration.Appearance {
-    if UIDevice.isiPad || !isCompact {
+  static func listAppearance(isForCollapsedSidebar: Bool) -> UICollectionLayoutListConfiguration.Appearance {
+    if UIDevice.isiPad || !isForCollapsedSidebar {
       return .sidebar
     } else {
       return .insetGrouped
@@ -91,7 +91,7 @@ final class HomeCollectionView: UICollectionView {
     return UICollectionViewCompositionalLayout { [weak self] _, layoutEnvironment in
       return update(
         NSCollectionLayoutSection.list(
-          using: update(UICollectionLayoutListConfiguration(appearance: Self.listAppearance(isCompact: self?.isCompact ?? false))) {
+          using: update(UICollectionLayoutListConfiguration(appearance: Self.listAppearance(isForCollapsedSidebar: self?.isForCollapsedSidebar ?? false))) {
             $0.headerMode = .firstItemInSection
             $0.showsSeparators = false
             $0.trailingSwipeActionsConfigurationProvider = self?.createTrailingSwipeActionsConfigurationProvider()

@@ -45,11 +45,11 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
   }
 
   private let sceneState: SceneState
-  private let isCompact: Bool
+  private let isForCollapsedSidebar: Bool
 
-  public init(sceneState: SceneState, isCompact: Bool) {
+  public init(sceneState: SceneState, isForCollapsedSidebar: Bool) {
     self.sceneState = sceneState
-    self.isCompact = isCompact
+    self.isForCollapsedSidebar = isForCollapsedSidebar
     super.init(nibName: nil, bundle: nil)
   }
 
@@ -59,7 +59,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
   }
 
   private lazy var collectionView: HomeCollectionView = {
-    return update(HomeCollectionView(isCompact: isCompact)) {
+    return update(HomeCollectionView(isForCollapsedSidebar: isForCollapsedSidebar)) {
       $0.delegate = self
     }
   }()
@@ -197,7 +197,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     }
     .disposed(by: disposeBag)
 
-    if !isCompact {
+    if !isForCollapsedSidebar {
       sceneState.currentScope
         .drive(with: self) { owner, scope in
           let indexPath: IndexPath? = { scope in

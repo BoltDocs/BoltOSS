@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ public final class SceneManager {
   }()
   private lazy var homeCompactNavigationController = UINavigationController(rootViewController: homeViewControllerCompact)
   private lazy var homePrimaryNavigationController = UINavigationController(rootViewController: homeViewControllerRegular)
-  private lazy var homeViewControllerCompact = HomeViewController(sceneState: state, isCompact: true)
-  private lazy var homeViewControllerRegular = HomeViewController(sceneState: state, isCompact: false)
+  private lazy var homeViewControllerCompact = HomeViewController(sceneState: state, isForCollapsedSidebar: true)
+  private lazy var homeViewControllerRegular = HomeViewController(sceneState: state, isForCollapsedSidebar: false)
 
   private lazy var lookupSearchController = LookupSearchController(sceneState: state)
 
