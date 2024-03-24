@@ -154,7 +154,7 @@ extension SceneManager: UISplitViewControllerDelegate {
       homeCompactNavigationController.setViewControllers([], animated: true)
       secondaryNavigationController.setViewControllers(viewControllers, animated: true)
     }
-    return proposedDisplayMode
+    return .automatic
   }
 
 }

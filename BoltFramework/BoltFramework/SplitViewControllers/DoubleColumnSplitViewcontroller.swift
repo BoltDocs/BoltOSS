@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,21 +23,12 @@ final class DoubleColumnSplitViewController: UISplitViewController, UISplitViewC
 
     showsSecondaryOnlyButton = true
     displayModeButtonVisibility = .always
+    preferredSplitBehavior = .automatic
   }
 
   @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("\(#function) has not been implemented")
-  }
-
-  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-    if UIDevice.isiPhone || isIniPadSplitOrOverlay {
-      preferredSplitBehavior = .overlay
-      preferredDisplayMode = .oneOverSecondary
-    } else {
-      preferredSplitBehavior = .tile
-      preferredDisplayMode = .oneBesideSecondary
-    }
   }
 
 }
