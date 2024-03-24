@@ -22,12 +22,37 @@ import Overture
 import RxCocoa
 import RxRelay
 import RxSwift
+import SnapKit
 
 import BoltBrowserUI
 import BoltHomeUI
 import BoltLookupUI
 import BoltModuleExports
 import BoltUIFoundation
+
+private class SecondaryNavigationController: UIViewController {
+
+  private var managedNavigationController = UINavigationController()
+
+  var viewControllers: [UIViewController] = [] {
+    didSet {
+      managedNavigationController.viewControllers = viewControllers
+      if !viewControllers.isEmpty {
+        addChild(managedNavigationController) { childView in
+          view.addSubview(childView)
+          childView.snp.makeConstraints {
+            $0.edges.equalTo(view)
+          }
+        }
+      } else {
+        removeChild(managedNavigationController) { childView in
+          childView.removeFromSuperview()
+        }
+      }
+    }
+  }
+
+}
 
 public final class SceneManager {
 
@@ -45,7 +70,7 @@ public final class SceneManager {
 
   private lazy var lookupSearchController = LookupSearchController(sceneState: state)
 
-  private lazy var secondaryNavigationController = UINavigationController()
+  private lazy var secondaryNavigationController = SecondaryNavigationController()
 
   private lazy var welcomeViewController = WelcomeViewController()
   private lazy var browserViewController = BrowserViewController(sceneState: state)
@@ -87,6 +112,8 @@ public final class SceneManager {
     state.currentScope
       .drive(with: self) { owner, scope in
         if owner.doubleColumnSplitViewController.isCollapsed {
+          owner.secondaryNavigationController.viewControllers = []
+          // pushing new viewController, this requires animation.
           if scope != nil {
             owner.homeCompactNavigationController.setViewControllers(
               [
@@ -105,6 +132,7 @@ public final class SceneManager {
             )
           }
         } else {
+          owner.homeCompactNavigationController.viewControllers = [owner.homeViewControllerCompact]
           if scope != nil {
             owner.secondaryNavigationController.viewControllers = [owner.browserViewController]
           } else {
@@ -132,7 +160,7 @@ extension SceneManager: UISplitViewControllerDelegate {
           $0 != welcomeViewController
         }
       // move viewControllers
-      secondaryNavigationController.setViewControllers([], animated: true)
+      secondaryNavigationController.viewControllers = []
       homeCompactNavigationController.setViewControllers(viewControllers, animated: true)
     }
     return .compact
@@ -151,8 +179,8 @@ extension SceneManager: UISplitViewControllerDelegate {
         viewControllers = [welcomeViewController]
       }
       // move viewControllers
-      homeCompactNavigationController.setViewControllers([], animated: true)
-      secondaryNavigationController.setViewControllers(viewControllers, animated: true)
+      homeCompactNavigationController.viewControllers = [homeViewControllerCompact]
+      secondaryNavigationController.viewControllers = viewControllers
     }
     return .automatic
   }
