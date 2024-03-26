@@ -30,7 +30,7 @@ final class HomeCollectionView: UICollectionView {
     self.isForCollapsedSidebar = isForCollapsedSidebar
 
     self.headerRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, _, title in
-      cell.contentConfiguration = update(cell.defaultContentConfiguration()) {
+      cell.contentConfiguration = update(UIListContentConfiguration.sidebarHeader()) {
         $0.text = title
       }
       cell.accessories = [
@@ -43,11 +43,15 @@ final class HomeCollectionView: UICollectionView {
     self.cellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, LibraryInstallationQueryResult> { cell, _, queryResult in
       #if targetEnvironment(macCatalyst)
       cell.backgroundConfiguration = update(cell.defaultBackgroundConfiguration()) {
-        $0.cornerRadius = 6.0
-        $0.backgroundInsets = NSDirectionalEdgeInsets(top: 6, leading: 0, bottom: 6, trailing: 0)
+        $0.cornerRadius = 8.0
       }
       #endif
       cell.contentConfiguration = update(cell.defaultContentConfiguration()) {
+        let standardDimension = UIListContentConfiguration.ImageProperties.standardDimension
+        $0.imageProperties.reservedLayoutSize = CGSize(
+          width: standardDimension,
+          height: standardDimension
+        )
         switch queryResult {
         case let .docset(docset):
           $0.text = docset.displayName
@@ -56,11 +60,6 @@ final class HomeCollectionView: UICollectionView {
           $0.text = installation.name
           $0.image = UIImage(systemName: "text.book.closed")
         }
-        #if targetEnvironment(macCatalyst)
-        $0.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 14, leading: 12, bottom: 14, trailing: 12)
-        #else
-        $0.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
-        #endif
       }
       if isForCollapsedSidebar {
         cell.accessories = [.disclosureIndicator()]
@@ -79,29 +78,27 @@ final class HomeCollectionView: UICollectionView {
   let headerRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, String>
   let cellRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, LibraryInstallationQueryResult>
 
-  static func listAppearance(isForCollapsedSidebar: Bool) -> UICollectionLayoutListConfiguration.Appearance {
-    if UIDevice.isiPad || !isForCollapsedSidebar {
-      return .sidebar
-    } else {
-      return .insetGrouped
-    }
-  }
-
   private func createLayout() -> UICollectionViewLayout {
-    return UICollectionViewCompositionalLayout { [weak self] _, layoutEnvironment in
-      return update(
-        NSCollectionLayoutSection.list(
-          using: update(UICollectionLayoutListConfiguration(appearance: Self.listAppearance(isForCollapsedSidebar: self?.isForCollapsedSidebar ?? false))) {
-            $0.headerMode = .firstItemInSection
-            $0.showsSeparators = false
-            $0.trailingSwipeActionsConfigurationProvider = self?.createTrailingSwipeActionsConfigurationProvider()
-          },
-          layoutEnvironment: layoutEnvironment
-        )
-      ) {
-        $0.contentInsets = .init(top: 0, leading: 24, bottom: 0, trailing: 24)
-      }
-    }
+    let _isForCollapsedSidebar = isForCollapsedSidebar
+    // swiftlint:disable:next trailing_closure
+    return UICollectionViewCompositionalLayout(sectionProvider: { [weak self] _, layoutEnvironment in
+      let section = NSCollectionLayoutSection.list(
+        using: update(
+          UICollectionLayoutListConfiguration(
+            appearance: _isForCollapsedSidebar ? .insetGrouped : .sidebar
+          )
+        ) {
+          $0.headerMode = .firstItemInSection
+          $0.showsSeparators = false
+          $0.trailingSwipeActionsConfigurationProvider = self?.createTrailingSwipeActionsConfigurationProvider()
+        },
+        layoutEnvironment: layoutEnvironment
+      )
+      #if targetEnvironment(macCatalyst)
+      section.interGroupSpacing = 8
+      #endif
+      return section
+    })
   }
 
   func itemContextMenuConfiguration(
