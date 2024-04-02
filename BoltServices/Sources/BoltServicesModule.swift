@@ -21,12 +21,14 @@ import Factory
 import BoltDocsets
 import BoltRepository
 import BoltRxSwift
+import BoltTypes
 import BoltUtils
 
 public struct ServicesModule {
 
   public static var initialize: PerformOnce = {
     setupRxSwiftResourceTracing()
+    LocalFileSystem.setupApplicationDirectories()
     Container.shared.repositoryModuleInitializer()()
     DocsetsModule.initialize()
     return {}
@@ -37,6 +39,22 @@ public struct ServicesModule {
       RxSwiftResourceTracing.setupRxSwiftResourceTracing(
         withInterval: Configurations.Debugging.rxSwiftResourceTracingInterval
       )
+    }
+  }
+
+}
+
+private extension LocalFileSystem {
+
+  static func setupApplicationDirectories() {
+    [
+      applicationDocumentsAbsolutePath,
+      applicationLibraryAbsolutePath,
+      applicationCachesAbsolutePath,
+      applicationTempAbsolutePath,
+    ]
+    .forEach { path in
+      try? FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true)
     }
   }
 
