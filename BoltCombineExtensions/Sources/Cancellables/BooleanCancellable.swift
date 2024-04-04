@@ -33,4 +33,10 @@ public final class BooleanCancellable: CheckableCancellable {
     return _isCancelled.value
   }
 
+  public func checkCancellation() throws {
+    if isCancelled {
+      throw CombineExtensions.CancellationError()
+    }
+  }
+
 }

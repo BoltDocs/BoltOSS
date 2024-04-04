@@ -70,37 +70,38 @@ public struct TarixUnarchiver: LoggerProvider {
       return Publishers.Create<PercentageProgress<String>, Error> { subscriber in
         let cancellable = BooleanCancellable()
         queue.asyncSafe {
-          var counter = 0
-          for index in indices {
-            if cancellable.isCancelled {
-              break
-            }
-            guard let blockLength = index.blockLength, let offset = index.offset else {
-              continue
-            }
-            do {
-              if
-                let (filename, data) = try TarUnarchiver.rawDataFromTarFile(
-                  tarAbsoluteURL: URL(fileURLWithPath: tarPath),
-                  blockLength: blockLength,
-                  offset: offset
-                ),
-                let data = data
-              {
-                let destURL = URL(fileURLWithPath: destPath).appendingPathComponent(filename)
-                let directoryURL = destURL.deletingLastPathComponent()
-
-                try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
-                try data.write(to: destURL, options: .atomic)
-                Self.logger.info("Extracted file at: \(destURL)")
+          do {
+            var counter = 0
+            for index in indices {
+              try cancellable.checkCancellation()
+              guard let blockLength = index.blockLength, let offset = index.offset else {
+                continue
               }
-            } catch {
-              Self.logger.error("Failed to extract file for path: \(index.path)")
+              do {
+                if
+                  let (filename, data) = try TarUnarchiver.rawDataFromTarFile(
+                    tarAbsoluteURL: URL(fileURLWithPath: tarPath),
+                    blockLength: blockLength,
+                    offset: offset
+                  ),
+                  let data = data
+                {
+                  let destURL = URL(fileURLWithPath: destPath).appendingPathComponent(filename)
+                  let directoryURL = destURL.deletingLastPathComponent()
+                  try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+                  try data.write(to: destURL, options: .atomic)
+                  Self.logger.info("Extracted file at: \(destURL)")
+                }
+              } catch {
+                Self.logger.error("Failed to extract file for path: \(index.path)")
+              }
+              counter += 1
+              subscriber.send(PercentageProgress.progress(Double(counter) / Double(indices.count)))
             }
-            counter += 1
-            subscriber.send(PercentageProgress.progress(Double(counter) / Double(indices.count)))
+            subscriber.send(completion: .finished)
+          } catch {
+            assert(error is CombineExtensions.CancellationError)
           }
-          subscriber.send(completion: .finished)
         }
         return cancellable
       }

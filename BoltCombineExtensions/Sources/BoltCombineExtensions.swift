@@ -15,3 +15,7 @@
 //
 
 @_exported import CombineExt
+
+import Combine
+
+public struct CombineExtensions { }

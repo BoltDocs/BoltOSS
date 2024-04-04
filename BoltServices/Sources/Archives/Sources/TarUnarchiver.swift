@@ -36,40 +36,40 @@ public struct TarUnarchiver: LoggerProvider {
     Publishers.Create { subscriber in
       let cancellable = BooleanCancellable()
       queue.asyncSafe {
-        if cancellable.isCancelled {
-          return
-        }
-        autoreleasepool {
-          let entries: [TarEntry]
-          do {
-            let gzippedTarData = try Data(contentsOf: URL(fileURLWithPath: sourcePath))
-            let tarData = try gzippedTarData.gunzipped()
-            entries = try TarContainer.open(container: tarData)
-          } catch {
-            subscriber.send(completion: .failure(error))
-            return
-          }
-          for (idx, entry) in entries.enumerated() {
-            if cancellable.isCancelled {
+        do {
+          try cancellable.checkCancellation()
+          try autoreleasepool {
+            let entries: [TarEntry]
+            do {
+              let gzippedTarData = try Data(contentsOf: URL(fileURLWithPath: sourcePath))
+              let tarData = try gzippedTarData.gunzipped()
+              entries = try TarContainer.open(container: tarData)
+            } catch {
+              subscriber.send(completion: .failure(error))
               return
             }
-            guard let data = entry.data else {
-              continue
+            for (idx, entry) in entries.enumerated() {
+              try cancellable.checkCancellation()
+              guard let data = entry.data else {
+                continue
+              }
+              let info = entry.info
+              let targetURL = URL(fileURLWithPath: destPath.appendingPathComponent(info.name))
+              let directoryURL = targetURL.deletingLastPathComponent()
+              do {
+                try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+                try data.write(to: targetURL, options: .atomic)
+                Self.logger.info("Extracted file at: \(targetURL)")
+                subscriber.send(.progress((Double(idx + 1) / Double(entries.count))))
+              } catch {
+                Self.logger.error("Failed to extract file to URL: \(targetURL), error: \(error.localizedDescription)")
+              }
             }
-            let info = entry.info
-            let targetURL = URL(fileURLWithPath: destPath.appendingPathComponent(info.name))
-            let directoryURL = targetURL.deletingLastPathComponent()
-            do {
-              try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
-              try data.write(to: targetURL, options: .atomic)
-              Self.logger.info("Extracted file at: \(targetURL)")
-              subscriber.send(.progress((Double(idx + 1) / Double(entries.count))))
-            } catch {
-              Self.logger.error("Failed to extract file to URL: \(targetURL), error: \(error.localizedDescription)")
-            }
+            subscriber.send(.completed(path: destPath))
+            subscriber.send(completion: .finished)
           }
-          subscriber.send(.completed(path: destPath))
-          subscriber.send(completion: .finished)
+        } catch {
+          assert(error is CombineExtensions.CancellationError)
         }
       }
       return cancellable

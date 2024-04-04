@@ -121,9 +121,7 @@ struct DocsetIndexer: LoggerProvider {
 
             var currentCount = 0
             while let zIndex = try zIndices.next() {
-              if cancellable.isCancelled {
-                break
-              }
+              try cancellable.checkCancellation()
               if let searchIndex = zIndex.searchIndex {
                 do {
                   try searchIndex.insert(db)
@@ -136,6 +134,9 @@ struct DocsetIndexer: LoggerProvider {
             }
           }
         } catch {
+          if error is CombineExtensions.CancellationError {
+            return
+          }
           subscriber.send(completion: .failure(error))
         }
         subscriber.send(Progress(progress: 1.0, completed: true))
@@ -173,9 +174,7 @@ struct DocsetIndexer: LoggerProvider {
 
             var currentCount = 0
             while let searchIndex = try searchIndices.next() {
-              if cancellable.isCancelled {
-                break
-              }
+              try cancellable.checkCancellation()
               if let queryIndex = searchIndex.generatedQueryIndex {
                 do {
                   try queryIndex.insert(db)
@@ -192,6 +191,9 @@ struct DocsetIndexer: LoggerProvider {
             }
           }
         } catch {
+          if error is CombineExtensions.CancellationError {
+            return
+          }
           subscriber.send(completion: .failure(error))
         }
         subscriber.send(Progress(progress: 1.0, completed: true))

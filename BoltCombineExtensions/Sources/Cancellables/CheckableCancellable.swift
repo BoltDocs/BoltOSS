@@ -15,9 +15,20 @@
 //
 
 import Combine
+import Foundation
 
 public protocol CheckableCancellable: Cancellable {
 
   var isCancelled: Bool { get }
+
+  func checkCancellation() throws
+
+}
+
+public extension CombineExtensions {
+
+  struct CancellationError: Error {
+    public init() { }
+  }
 
 }
