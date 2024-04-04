@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import ObjectiveC
 import struct os.Logger
 import zlib
 
-import CombineExt
 import Gzip
 import SWCompressionTAR
 
+import BoltCombineExtensions
 import BoltUtils
 
 public struct TarUnarchiver: LoggerProvider {

@@ -17,9 +17,9 @@
 import Combine
 import Foundation
 
-import CombineExt
 import GRDB
 
+import BoltCombineExtensions
 import BoltUtils
 
 public enum DocsetUnarchiverError: Error {

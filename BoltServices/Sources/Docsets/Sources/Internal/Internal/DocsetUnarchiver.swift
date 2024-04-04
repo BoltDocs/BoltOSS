@@ -18,10 +18,10 @@ import Combine
 import Foundation
 import struct os.Logger
 
-import CombineExt
 import GRDB
 
 import BoltArchives
+import BoltCombineExtensions
 import BoltTypes
 import BoltUtils
 

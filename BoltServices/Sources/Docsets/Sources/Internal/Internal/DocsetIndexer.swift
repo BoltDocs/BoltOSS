@@ -18,9 +18,9 @@ import Combine
 import Dispatch
 import ObjectiveC
 
-import CombineExt
 import GRDB
 
+import BoltCombineExtensions
 import BoltTypes
 import BoltUtils
 

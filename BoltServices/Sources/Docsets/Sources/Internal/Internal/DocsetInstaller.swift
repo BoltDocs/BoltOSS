@@ -17,8 +17,7 @@
 import Combine
 import Foundation
 
-import CombineExt
-
+import BoltCombineExtensions
 import BoltDatabase
 import BoltTypes
 import BoltUtils

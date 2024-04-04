@@ -17,9 +17,9 @@
 import Combine
 import Foundation
 
-import CombineExt
 import GRDB
 
+import BoltCombineExtensions
 import BoltTypes
 import BoltUtils
 

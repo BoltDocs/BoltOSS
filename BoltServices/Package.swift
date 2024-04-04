@@ -45,7 +45,7 @@ struct Dependencies {
 let moduleTargets: [Target] = [
   .target(
     name: "BoltArchives",
-    dependencies: [Dependencies.GRDB, Dependencies.GzipSwift, "CombineExt", "SWCompressionTAR", "BoltUtils"],
+    dependencies: [Dependencies.GRDB, Dependencies.GzipSwift, "BoltCombineExtensions", "SWCompressionTAR", "BoltUtils"],
     path: "./Sources/Archives/Sources"
   ),
   .target(
@@ -55,7 +55,7 @@ let moduleTargets: [Target] = [
   ),
   .target(
     name: "BoltDatabase",
-    dependencies: [Dependencies.GRDB, "CombineExt", "BoltTypes"],
+    dependencies: [Dependencies.GRDB, "BoltCombineExtensions", "BoltTypes"],
     path: "./Sources/Database"
   ),
   .target(
@@ -138,10 +138,10 @@ let testTargets: [Target] = [
 
 let dependencies: [Package.Dependency] = [
   .package(name: "BoltUtils", path: "../BoltUtils"),
+  .package(name: "BoltCombineExtensions", path: "../BoltCombineExtensions"),
   .package(name: "BoltRxSwift", path: "../BoltRxSwift"),
   .package(url: "https://github.com/hmlongco/Factory.git", revision: "2.3.1"),
   .package(url: "https://github.com/BoltDocs/SWCompressionTAR.git", revision: "4.8.5"),
-  .package(url: "https://github.com/CombineCommunity/CombineExt.git", revision: "1.8.1"),
   .package(url: "https://github.com/BoltDocs/GzipSwift.git", revision: "6.0.1"),
   .package(url: "https://github.com/groue/GRDB.swift.git", revision: "v6.24.2"),
   .package(url: "https://github.com/Alamofire/Alamofire.git", revision: "5.8.1"),
