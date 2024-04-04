@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public struct TarixUnarchiver: LoggerProvider {
         queue.asyncSafe {
           var counter = 0
           for index in indices {
-            if cancellable.isDisposed {
+            if cancellable.isCancelled {
               break
             }
             guard let blockLength = index.blockLength, let offset = index.offset else {

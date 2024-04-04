@@ -121,7 +121,7 @@ struct DocsetIndexer: LoggerProvider {
 
             var currentCount = 0
             while let zIndex = try zIndices.next() {
-              if cancellable.isDisposed {
+              if cancellable.isCancelled {
                 break
               }
               if let searchIndex = zIndex.searchIndex {
@@ -173,7 +173,7 @@ struct DocsetIndexer: LoggerProvider {
 
             var currentCount = 0
             while let searchIndex = try searchIndices.next() {
-              if cancellable.isDisposed {
+              if cancellable.isCancelled {
                 break
               }
               if let queryIndex = searchIndex.generatedQueryIndex {

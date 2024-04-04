@@ -19,18 +19,18 @@ import Foundation
 
 import BoltUtils
 
-public final class BooleanCancellable: Cancellable {
+public final class BooleanCancellable: CheckableCancellable {
 
-  private var _isComposed = Atomic<Bool>(false)
+  private var _isCancelled = Atomic<Bool>(false)
 
   public init() { }
 
   public func cancel() {
-    _isComposed.value = true
+    _isCancelled.value = true
   }
 
-  public var isDisposed: Bool {
-    return _isComposed.value
+  public var isCancelled: Bool {
+    return _isCancelled.value
   }
 
 }

@@ -34,9 +34,9 @@ public struct TarUnarchiver: LoggerProvider {
     usingQueue queue: DispatchQueue = DispatchQueue.main
   ) -> AnyPublisher<PercentageProgress<String>, Error> {
     Publishers.Create { subscriber in
-      let disposable = BooleanCancellable()
+      let cancellable = BooleanCancellable()
       queue.asyncSafe {
-        if disposable.isDisposed {
+        if cancellable.isCancelled {
           return
         }
         autoreleasepool {
@@ -50,7 +50,7 @@ public struct TarUnarchiver: LoggerProvider {
             return
           }
           for (idx, entry) in entries.enumerated() {
-            if disposable.isDisposed {
+            if cancellable.isCancelled {
               return
             }
             guard let data = entry.data else {
@@ -72,7 +72,7 @@ public struct TarUnarchiver: LoggerProvider {
           subscriber.send(completion: .finished)
         }
       }
-      return disposable
+      return cancellable
     }
     .eraseToAnyPublisher()
   }
