@@ -38,6 +38,10 @@ struct Dependencies {
     .product(name: "GRDB", package: "GRDB.swift")
   }
 
+  static var UUIDShortener: PackageDescription.Target.Dependency {
+    .product(name: "UUIDShortener", package: "uuid-shortener")
+  }
+
 }
 
 // all modules imported explicitly should be contained in `dependencies`
@@ -45,7 +49,7 @@ struct Dependencies {
 let moduleTargets: [Target] = [
   .target(
     name: "BoltArchives",
-    dependencies: [Dependencies.GRDB, Dependencies.GzipSwift, "BoltCombineExtensions", "SWCompressionTAR", "BoltUtils"],
+    dependencies: [Dependencies.GRDB, Dependencies.GzipSwift, Dependencies.UUIDShortener, "BoltCombineExtensions", "SWCompressionTAR", "BoltUtils"],
     path: "./Sources/Archives/Sources"
   ),
   .target(
@@ -147,6 +151,7 @@ let dependencies: [Package.Dependency] = [
   .package(url: "https://github.com/Alamofire/Alamofire.git", revision: "5.8.1"),
   .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", revision: "5.0.1"),
   .package(url: "https://github.com/yahoojapan/SwiftyXMLParser.git", revision: "5.6.0"),
+  .package(url: "https://github.com/Dean151/uuid-shortener", revision: "v1.0.0"),
 ]
 
 let package = Package(

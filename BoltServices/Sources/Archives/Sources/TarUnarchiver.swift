@@ -17,13 +17,13 @@
 import Combine
 import Foundation
 import ObjectiveC
-import struct os.Logger
-import zlib
 
 import Gzip
 import SWCompressionTAR
+import UUIDShortener
 
 import BoltCombineExtensions
+import BoltTypes
 import BoltUtils
 
 public struct TarUnarchiver: LoggerProvider {
@@ -37,39 +37,43 @@ public struct TarUnarchiver: LoggerProvider {
       let cancellable = BooleanCancellable()
       queue.asyncSafe {
         do {
-          try cancellable.checkCancellation()
-          try autoreleasepool {
-            let entries: [TarEntry]
-            do {
-              let gzippedTarData = try Data(contentsOf: URL(fileURLWithPath: sourcePath))
-              let tarData = try gzippedTarData.gunzipped()
-              entries = try TarContainer.open(container: tarData)
-            } catch {
-              subscriber.send(completion: .failure(error))
-              return
+          try performWithGunzippedFile(forSourceURL: URL(fileURLWithPath: sourcePath)) { tarURL in
+            let fileHandle = try FileHandle(forReadingFrom: tarURL)
+            defer {
+              fileHandle.closeFile()
             }
-            for (idx, entry) in entries.enumerated() {
-              try cancellable.checkCancellation()
-              guard let data = entry.data else {
-                continue
-              }
-              let info = entry.info
-              let targetURL = URL(fileURLWithPath: destPath.appendingPathComponent(info.name))
-              let directoryURL = targetURL.deletingLastPathComponent()
-              do {
-                try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
-                try data.write(to: targetURL, options: .atomic)
-                Self.logger.info("Extracted file at: \(targetURL)")
-                subscriber.send(.progress((Double(idx + 1) / Double(entries.count))))
-              } catch {
-                Self.logger.error("Failed to extract file to URL: \(targetURL), error: \(error.localizedDescription)")
+            let fileSize = try fileHandle.seekToEnd()
+            try fileHandle.seek(toOffset: 0)
+
+            try autoreleasepool {
+              var tarReader = TarReader(fileHandle: fileHandle)
+              while let entry = try tarReader.read() {
+                try cancellable.checkCancellation()
+                guard let data = entry.data else {
+                  continue
+                }
+                let info = entry.info
+                let targetURL = URL(fileURLWithPath: destPath.appendingPathComponent(info.name))
+                let directoryURL = targetURL.deletingLastPathComponent()
+                do {
+                  try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+                  try data.write(to: targetURL, options: .atomic)
+                  if let offset = try? fileHandle.offset() {
+                    subscriber.send(.progress(Double(offset) / Double(fileSize)))
+                  }
+                } catch {
+                  Self.logger.error("Failed to extract file to URL: \(targetURL), error: \(error.localizedDescription)")
+                }
               }
             }
             subscriber.send(.completed(path: destPath))
             subscriber.send(completion: .finished)
           }
         } catch {
-          assert(error is CombineExtensions.CancellationError)
+          if error is CombineExtensions.CancellationError {
+            return
+          }
+          subscriber.send(completion: .failure(error))
         }
       }
       return cancellable
@@ -117,6 +121,32 @@ public struct TarUnarchiver: LoggerProvider {
         }
       }
     }
+  }
+
+  private static func performWithGunzippedFile(forSourceURL sourceURL: URL, perform: ((URL) throws -> Void)) throws {
+    let tarURL = try autoreleasepool {
+      let gzippedTarData = try Data(contentsOf: sourceURL)
+      let tarData = try gzippedTarData.gunzipped()
+
+      let tmpPath: String
+      if RuntimeEnvironment.isRunningTests {
+        tmpPath = NSTemporaryDirectory()
+      } else {
+        tmpPath = LocalFileSystem.applicationTempAbsolutePath
+      }
+
+      let tarURL = URL(fileURLWithPath: tmpPath)
+        .appendingPathComponent(
+          "\(sourceURL.deletingPathExtension().lastPathComponent)_\(try UUID().shortened(using: .base62))"
+        )
+        .appendingPathExtension("tar")
+      try tarData.write(to: tarURL)
+      return tarURL
+    }
+    defer {
+      try? FileManager.default.removeItem(at: tarURL)
+    }
+    try perform(tarURL)
   }
 
 }
