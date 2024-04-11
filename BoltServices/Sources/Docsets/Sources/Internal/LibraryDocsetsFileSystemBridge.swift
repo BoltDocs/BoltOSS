@@ -15,7 +15,9 @@
 //
 
 import Foundation
+import struct os.Logger
 
+import BoltRepository
 import BoltTypes
 import BoltUtils
 
@@ -26,7 +28,44 @@ enum LibraryDocsetsManagerError: Error {
 
 }
 
-extension LibraryDocsetsFileSystemBridge {
+package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
+
+  static let docsetFileNameCache: NSCache<NSString, NSString> = {
+    let cache = NSCache<NSString, NSString>()
+    cache.countLimit = 20
+    return cache
+  }()
+
+  package static func setupDocsetsDirectory() {
+    let fileManager = FileManager.default
+    let path = LocalFileSystem.docsetsAbsolutePath
+    let url = LocalFileSystem.docsetsURL
+    var requireSetup = false
+
+    let (exists, isDirectory) = fileManager.fileExistsAndIsDirectory(atPath: path)
+    if !exists {
+      requireSetup = true
+    } else if !isDirectory {
+      try? fileManager.removeItem(atPath: path)
+      requireSetup = true
+    }
+
+    if requireSetup {
+      try? fileManager.createDirectory(atPath: path, withIntermediateDirectories: true)
+    }
+    try? (url as NSURL).setResourceValue(true, forKey: .isExcludedFromBackupKey)
+  }
+
+  package static func docsetFileName(forInstallationId id: String) -> String? {
+    let installationPath = LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(id)
+    if let path = docsetFileNameCache.object(forKey: id as NSString) {
+      return path as String
+    } else if let path = FileManager.default.contentsOfDirectory(atPath: installationPath, ofExtension: "docset").first {
+      docsetFileNameCache.setObject(path as NSString, forKey: id as NSString)
+      return path
+    }
+    return nil
+  }
 
   static func docset(withLibraryIndex index: DocsetInstallation) -> Docset? {
     guard let docsetFileName = docsetFileName(forInstallationId: index.id) else {
