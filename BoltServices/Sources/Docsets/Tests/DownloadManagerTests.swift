@@ -28,7 +28,7 @@ import BoltTestingUtils
 import BoltTypes
 import BoltUtils
 
-final class DocsetManagerTests: XCTestCase {
+final class DownloadManagerTests: XCTestCase {
 
   @LazyInjected(\.downloadManager)
   private var downloadManager: DownloadManager
