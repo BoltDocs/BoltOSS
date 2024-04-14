@@ -162,7 +162,7 @@ package struct DocsetIndexPageResolver: LoggerProvider {
     )
   }
 
-  static func _resolveIndexPagePath(
+  private static func resolveIndexPagePath(
     forPurposedIndexPagePath indexPagePath: String?,
     platformFamily: DocsetInfo.PlatformFamily,
     generatorFamily: String?,
@@ -189,3 +189,25 @@ package struct DocsetIndexPageResolver: LoggerProvider {
   }
 
 }
+
+#if DEBUG
+
+extension DocsetIndexPageResolver {
+
+  static func _resolveIndexPagePath(
+    forPurposedIndexPagePath indexPagePath: String?,
+    platformFamily: DocsetInfo.PlatformFamily,
+    generatorFamily: String?,
+    matcher: DocsetIndexPageResolverPathMatcher
+  ) -> String? {
+    return resolveIndexPagePath(
+      forPurposedIndexPagePath: indexPagePath,
+      platformFamily: platformFamily,
+      generatorFamily: generatorFamily,
+      matcher: matcher
+    )
+  }
+
+}
+
+#endif
