@@ -18,7 +18,7 @@ import Foundation
 
 import BoltUtils
 
-public enum EntryIcon {
+public enum EntryIcon: Hashable {
 
   case bundled(name: String)
   case data(_: Data)

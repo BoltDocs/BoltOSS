@@ -111,9 +111,25 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
 
     let docsetInfo = DocsetInfoProcessor.docsetInfo(forInfoDictionary: infoDict)
 
-    // try resolving icon from file
-    let icon: EntryIcon
+    let docsetIcon = docsetIcon(
+      fromDocsetPath: docsetPath,
+      index: index,
+      docsetInfo: docsetInfo
+    )
 
+    return Docset(
+      index: index,
+      path: docsetPath,
+      docsetInfo: docsetInfo,
+      icon: docsetIcon
+    )
+  }
+
+  private static func docsetIcon(
+    fromDocsetPath docsetPath: String,
+    index: DocsetInstallation,
+    docsetInfo: DocsetInfo
+  ) -> EntryIcon {
     let localIconFies = ["icon@2x.png", "icon.png", "icon.tiff"]
     let imageData = localIconFies.firstMap { file in
       let url = URL(fileURLWithPath: docsetPath).appendingPathComponent(file)
@@ -121,26 +137,39 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
     }
 
     if let imageData = imageData {
-      icon = .data(imageData)
+      return .data(imageData)
     } else {
       // if no icon found locally, dealing with it separately
       switch docsetInfo.platformFamily {
       case .cheatsheet:
-        icon = .bundled(name: "docset-icons/cheatsheet")
+        return .bundled(name: "docset-icons/cheatsheet")
       case .userContributed:
         // we assume that all user-contributed docset always has a proper icon
-        icon = .providerDefault
+        return .providerDefault
       case .mainOrOther:
-        icon = !index.name.isEmpty ? .bundled(name: "docset-icons/\(docsetInfo.identifier)") : .providerDefault
+        return !index.name.isEmpty ? .bundled(name: "docset-icons/\(docsetInfo.identifier)") : .providerDefault
       }
     }
+  }
 
-    return Docset(
+}
+
+#if DEBUG
+
+extension LibraryDocsetsFileSystemBridge {
+
+  static func _docsetIcon(
+    fromDocsetPath docsetPath: String,
+    index: DocsetInstallation,
+    docsetInfo: DocsetInfo
+  ) -> EntryIcon {
+    return docsetIcon(
+      fromDocsetPath: docsetPath,
       index: index,
-      path: docsetPath,
-      docsetInfo: docsetInfo,
-      icon: icon
+      docsetInfo: docsetInfo
     )
   }
 
 }
+
+#endif
