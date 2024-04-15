@@ -68,7 +68,7 @@ struct DocsetInfoProcessor: LoggerProvider {
   }
 
   // FIXME: This migration logic should be removed
-  static func _migrateInfoDictionary(_ infoDictionary: InfoDictionary) -> InfoDictionary {
+  private static func migrateInfoDictionary(_ infoDictionary: InfoDictionary) -> InfoDictionary {
     var dictionary = InfoDictionary(minimumCapacity: infoDictionary.count)
 
     for (key, value) in infoDictionary {
@@ -83,7 +83,7 @@ struct DocsetInfoProcessor: LoggerProvider {
     var dictionary = dictionary
 
     // stage 1: migrate misspelled keys
-    dictionary = Self._migrateInfoDictionary(dictionary)
+    dictionary = Self.migrateInfoDictionary(dictionary)
 
     // stage 2
     // bundleIdentifier and version should be overridden only when not exist
@@ -139,7 +139,7 @@ struct DocsetInfoProcessor: LoggerProvider {
   }
 
   static func docsetInfo(forInfoDictionary infoDict: InfoDictionary) -> DocsetInfo {
-    let infoDict = _migrateInfoDictionary(infoDict)
+    let infoDict = migrateInfoDictionary(infoDict)
 
     let name = infoDict.getInfoValue(key: .bundleIdentifier, type: String.self) ?? ""
 
@@ -208,6 +208,18 @@ struct DocsetInfoProcessor: LoggerProvider {
   }
 
 }
+
+#if DEBUG
+
+extension DocsetInfoProcessor {
+
+  static func _migrateInfoDictionary(_ infoDictionary: InfoDictionary) -> InfoDictionary {
+    return migrateInfoDictionary(infoDictionary)
+  }
+
+}
+
+#endif
 
 private extension Dictionary where Key == String {
 
