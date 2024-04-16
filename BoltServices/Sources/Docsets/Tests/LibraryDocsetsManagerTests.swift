@@ -49,7 +49,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
             aliases: [],
             shouldHideVersions: false,
             supportsArchiveIndex: false,
-            icon: EntryIcon.bundled(name: "vim")
+            icon: EntryIcon.bundled(.docsetIcon(.vim))
           ),
           version: "9.0",
           isTrackedAsLatest: false,
@@ -73,7 +73,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
             aliases: [],
             shouldHideVersions: false,
             supportsArchiveIndex: false,
-            icon: EntryIcon.bundled(name: "vim")
+            icon: EntryIcon.bundled(.docsetIcon(.vim))
           ),
           version: "9.0",
           isTrackedAsLatest: false,

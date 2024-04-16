@@ -77,10 +77,10 @@ public extension EntryType {
 extension EntryType: EntryIconProvider {
 
   public var icon: EntryIcon {
-    return .bundled(name: "type-icons/\(imageName)")
+    return .bundled(.name("type-icons/\(imageName)"))
   }
 
-  public static var defaultIconImage = EntryIcon.bundled(name: "type-icons/Unknown").platformImage!
+  public static var defaultIconImage = EntryIcon.bundled(.name("type-icons/Unknown")).platformImage!
 
 }
 

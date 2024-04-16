@@ -142,12 +142,18 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
       // if no icon found locally, dealing with it separately
       switch docsetInfo.platformFamily {
       case .cheatsheet:
-        return .bundled(name: "docset-icons/cheatsheet")
+        return .bundled(.docsetIcon(.cheatsheet))
       case .userContributed:
         // we assume that all user-contributed docset always has a proper icon
         return .providerDefault
       case .mainOrOther:
-        return !index.name.isEmpty ? .bundled(name: "docset-icons/\(docsetInfo.identifier)") : .providerDefault
+        if let docsetIcon = DocsetIcons(rawValue: index.name) {
+          return .bundled(.docsetIcon(docsetIcon))
+        } else if let docsetIcon = DocsetIcons(rawValue: docsetInfo.identifier) {
+          return .bundled(.docsetIcon(docsetIcon))
+        } else {
+          return .providerDefault
+        }
       }
     }
   }

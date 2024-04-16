@@ -140,7 +140,7 @@ final class DownloadManagerTests: XCTestCase {
         aliases: ["bash shell", "terminal"],
         shouldHideVersions: true,
         supportsArchiveIndex: false,
-        icon: EntryIcon.bundled(name: "bash")
+        icon: EntryIcon.bundled(.docsetIcon(.vim))
       ),
       version: "/8",
       isTrackedAsLatest: true,

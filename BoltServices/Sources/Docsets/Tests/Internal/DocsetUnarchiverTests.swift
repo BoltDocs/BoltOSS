@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ final class TarUnarchiverTests: XCTestCase {
             aliases: [],
             shouldHideVersions: false,
             supportsArchiveIndex: false,
-            icon: EntryIcon.bundled(name: "vim")
+            icon: EntryIcon.bundled(.docsetIcon(.vim))
           ),
           version: "9.0",
           isTrackedAsLatest: false,
@@ -107,7 +107,7 @@ final class TarUnarchiverTests: XCTestCase {
             aliases: [],
             shouldHideVersions: false,
             supportsArchiveIndex: true,
-            icon: EntryIcon.bundled(name: "vim")
+            icon: EntryIcon.bundled(.docsetIcon(.vim))
           ),
           version: "9.0",
           isTrackedAsLatest: false,

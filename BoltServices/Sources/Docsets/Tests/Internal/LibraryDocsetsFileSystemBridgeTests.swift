@@ -42,7 +42,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
         index: installation,
         docsetInfo: info
       ),
-      EntryIcon.bundled(name: "docset-icons/cpp")
+      EntryIcon.bundled(.docsetIcon(.cpp))
     )
   }
 

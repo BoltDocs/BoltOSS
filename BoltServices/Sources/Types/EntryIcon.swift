@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,26 @@ import BoltUtils
 
 public enum EntryIcon: Hashable {
 
-  case bundled(name: String)
+  public enum Bundled: Hashable {
+    case name(_: String)
+    case docsetIcon(_: DocsetIcons)
+  }
+
+  case bundled(_: Bundled)
   case data(_: Data)
   case providerDefault
 
   public var platformImage: PlatformImage? {
     switch self {
-    case .bundled(let name):
-      return BoltImageResource(named: name, in: .module).platformImage
+    case .bundled(let icon):
+      let iconName: String
+      switch icon {
+      case let .name(name):
+        iconName = name
+      case let .docsetIcon(docsetIcon):
+        iconName = "docset-icons/\(docsetIcon.rawValue)"
+      }
+      return BoltImageResource(named: iconName, in: .module).platformImage
     case .data(let imageData):
       return PlatformImage(data: imageData)
     case .providerDefault:
