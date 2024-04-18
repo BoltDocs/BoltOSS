@@ -191,9 +191,9 @@ struct DocsetInfoProcessor: LoggerProvider {
     let keyword = DocsetInfo.Keyword(inAppSearch: docsetKeyword, pluginScheme: pluginSchemeKeyword, webSearch: webSearchKeyword)
 
     return DocsetInfo(
-      identifier: name,
-      version: infoVersion,
-      displayName: displayName,
+      bundleIdentifier: name,
+      bundleVersion: infoVersion,
+      bundleDisplayName: displayName,
       format: format,
       platformFamily: platformFamily,
       generatorFamily: generatorFamily,

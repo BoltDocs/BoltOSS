@@ -88,9 +88,9 @@ public struct DocsetInfo {
     }
   }
 
-  public let identifier: String
-  public let version: String
-  public let displayName: String
+  public let bundleIdentifier: String
+  public let bundleVersion: String
+  public let bundleDisplayName: String
 
   public let format: Self.Format
   public let generatorFamily: String?
@@ -108,9 +108,9 @@ public struct DocsetInfo {
   public let keyword: Self.Keyword
 
   public init(
-    identifier: String,
-    version: String,
-    displayName: String,
+    bundleIdentifier: String,
+    bundleVersion: String,
+    bundleDisplayName: String,
     format: Format,
     platformFamily: PlatformFamily,
     generatorFamily: String?,
@@ -122,9 +122,9 @@ public struct DocsetInfo {
     indexPagePath: String?,
     keyword: Keyword
   ) {
-    self.identifier = identifier
-    self.version = version
-    self.displayName = displayName
+    self.bundleIdentifier = bundleIdentifier
+    self.bundleVersion = bundleVersion
+    self.bundleDisplayName = bundleDisplayName
     self.format = format
     self.platformFamily = platformFamily
     self.generatorFamily = generatorFamily
@@ -149,7 +149,7 @@ public struct Docset {
 
   // MARK: Docset Info Properties
 
-  public var displayName: String { docsetInfo.displayName }
+  public var displayName: String { docsetInfo.bundleDisplayName }
 
   public var generatorFamily: String? { docsetInfo.generatorFamily }
   public var platformFamily: DocsetInfo.PlatformFamily { docsetInfo.platformFamily }
