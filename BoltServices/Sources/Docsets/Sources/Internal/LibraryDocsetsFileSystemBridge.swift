@@ -132,29 +132,19 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
   ) -> EntryIcon {
     let localIconFies = ["icon@2x.png", "icon.png", "icon.tiff"]
     let imageData = localIconFies.firstMap { file in
-      let url = URL(fileURLWithPath: docsetPath).appendingPathComponent(file)
+      let url = URL(fileURLWithPath: docsetPath)
+        .appendingPathComponent("Contents")
+        .appendingPathComponent(file)
       return try? Data(contentsOf: url)
     }
-
     if let imageData = imageData {
       return .data(imageData)
+    } else if let docsetIcon = DocsetIcons(rawValue: docsetInfo.platformFamily.name) {
+      return .bundled(.docsetIcon(docsetIcon))
+    } else if let docsetIcon = DocsetIcons(rawValue: index.name) {
+      return .bundled(.docsetIcon(docsetIcon))
     } else {
-      // if no icon found locally, dealing with it separately
-      switch docsetInfo.platformFamily {
-      case .cheatsheet:
-        return .bundled(.docsetIcon(.cheatsheet))
-      case .userContributed:
-        // we assume that all user-contributed docset always has a proper icon
-        return .providerDefault
-      case .mainOrOther:
-        if let docsetIcon = DocsetIcons(rawValue: index.name) {
-          return .bundled(.docsetIcon(docsetIcon))
-        } else if let docsetIcon = DocsetIcons(rawValue: docsetInfo.identifier) {
-          return .bundled(.docsetIcon(docsetIcon))
-        } else {
-          return .providerDefault
-        }
-      }
+      return .providerDefault
     }
   }
 

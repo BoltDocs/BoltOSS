@@ -53,6 +53,17 @@ public struct DocsetInfo {
         return name
       }
     }
+
+    public var name: String {
+      switch self {
+      case .cheatsheet:
+        return "cheatsheet"
+      case let .userContributed(name: name):
+        return name
+      case let .mainOrOther(name):
+        return name
+      }
+    }
   }
 
   // - SeeAlso: dash-ios/DHUserRepo.mL308

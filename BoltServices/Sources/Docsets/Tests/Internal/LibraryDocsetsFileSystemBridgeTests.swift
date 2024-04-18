@@ -24,25 +24,59 @@ import BoltTypes
 final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
 
   func testResolveDocsetIcon() throws {
-    let installation = DocsetInstallation(
-      name: "cpp",
-      version: "1.0",
-      installedAsLatestVersion: false,
-      repository: .main
-    )
-    let info = DocsetInfoProcessor.docsetInfo(
-      forInfoDictionary: [
-        DocsetInfoKey.bundleIdentifier.rawValue: "cpp",
-        DocsetInfoKey.platformFamily.rawValue: "cpp",
-      ]
-    )
     XCTAssertEqual(
       LibraryDocsetsFileSystemBridge._docsetIcon(
         fromDocsetPath: "",
-        index: installation,
-        docsetInfo: info
+        index: DocsetInstallation(
+          name: "foobar",
+          version: "1.0",
+          installedAsLatestVersion: false,
+          repository: .main
+        ),
+        docsetInfo: DocsetInfoProcessor.docsetInfo(
+          forInfoDictionary: [
+            DocsetInfoKey.platformFamily.rawValue: "cpp",
+          ]
+        )
       ),
       EntryIcon.bundled(.docsetIcon(.cpp))
+    )
+
+    XCTAssertEqual(
+      LibraryDocsetsFileSystemBridge._docsetIcon(
+        fromDocsetPath: "",
+        index: DocsetInstallation(
+          name: "cpp",
+          version: "1.0",
+          installedAsLatestVersion: false,
+          repository: .main
+        ),
+        docsetInfo: DocsetInfoProcessor.docsetInfo(
+          forInfoDictionary: [
+            DocsetInfoKey.platformFamily.rawValue: "foobar",
+          ]
+        )
+      ),
+      EntryIcon.bundled(.docsetIcon(.cpp))
+    )
+
+    let iconData = try Data(contentsOf: Bundle.module.url(forResource: "TestResources/CustomIcon.docset/Contents/icon@2x.png")!)
+    XCTAssertEqual(
+      LibraryDocsetsFileSystemBridge._docsetIcon(
+        fromDocsetPath: Bundle.module.path(forResource: "TestResources/CustomIcon.docset")!,
+        index: DocsetInstallation(
+          name: "cpp",
+          version: "1.0",
+          installedAsLatestVersion: false,
+          repository: .main
+        ),
+        docsetInfo: DocsetInfoProcessor.docsetInfo(
+          forInfoDictionary: [
+            DocsetInfoKey.platformFamily.rawValue: "cpp",
+          ]
+        )
+      ),
+      EntryIcon.data(iconData)
     )
   }
 
