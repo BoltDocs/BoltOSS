@@ -78,6 +78,24 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
       ),
       EntryIcon.data(iconData)
     )
+
+    XCTAssertEqual(
+      LibraryDocsetsFileSystemBridge._docsetIcon(
+        fromDocsetPath: "",
+        index: DocsetInstallation(
+          name: "foobar",
+          version: "1.0",
+          installedAsLatestVersion: false,
+          repository: .main
+        ),
+        docsetInfo: DocsetInfoProcessor.docsetInfo(
+          forInfoDictionary: [
+            DocsetInfoKey.platformFamily.rawValue: "Other",
+          ]
+        )
+      ),
+      EntryIcon.providerDefault
+    )
   }
 
 }

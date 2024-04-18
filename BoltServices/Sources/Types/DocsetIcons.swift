@@ -20,7 +20,6 @@ public enum DocsetIcons: String, CaseIterable {
   case dash = "Dash"
   case google = "Google"
   case mac = "Mac"
-  case other = "Other"
   case sproutCore = "SproutCore"
   case stackOverflow = "Stack Overflow"
   case actionscript = "actionscript"
