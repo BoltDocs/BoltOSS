@@ -154,7 +154,7 @@ package struct DocsetIndexPageResolver: LoggerProvider {
     docsetPath: String
   ) -> String? {
     let matcher = PathMatcher(docsetPath: docsetPath)
-    return _resolveIndexPagePath(
+    return resolveIndexPagePath(
       forPurposedIndexPagePath: indexPagePath,
       platformFamily: platformFamily,
       generatorFamily: generatorFamily,
