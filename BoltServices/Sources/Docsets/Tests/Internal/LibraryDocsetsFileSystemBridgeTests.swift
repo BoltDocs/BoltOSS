@@ -60,7 +60,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
       EntryIcon.bundled(.docsetIcon(.cpp))
     )
 
-    let iconData = try Data(contentsOf: Bundle.module.url(forResource: "TestResources/CustomIcon.docset/Contents/icon@2x.png")!)
+    let iconData = try Data(contentsOf: Bundle.module.url(forResource: "TestResources/CustomIcon.docset/icon@2x.png")!)
     XCTAssertEqual(
       LibraryDocsetsFileSystemBridge._docsetIcon(
         fromDocsetPath: Bundle.module.path(forResource: "TestResources/CustomIcon.docset")!,

@@ -133,7 +133,6 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
     let localIconFies = ["icon@2x.png", "icon.png", "icon.tiff"]
     let imageData = localIconFies.firstMap { file in
       let url = URL(fileURLWithPath: docsetPath)
-        .appendingPathComponent("Contents")
         .appendingPathComponent(file)
       return try? Data(contentsOf: url)
     }
