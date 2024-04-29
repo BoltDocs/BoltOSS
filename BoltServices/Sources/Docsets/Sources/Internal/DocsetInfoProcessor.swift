@@ -67,52 +67,12 @@ struct DocsetInfoProcessor: LoggerProvider {
       doxygenFamily.contains { $0 == generatorFamily }
   }
 
-  // FIXME: This migration logic should be removed
-  private static func migrateInfoDictionary(_ infoDictionary: InfoDictionary) -> InfoDictionary {
-    var dictionary = InfoDictionary(minimumCapacity: infoDictionary.count)
-
-    for (key, value) in infoDictionary {
-      let trimmedKey = key.trimmingWhitespacesAndNewLines()
-      dictionary[trimmedKey] = value
-    }
-
-    return dictionary
-  }
-
   static func migrateInfoDictionaryForWritten(_ dictionary: InfoDictionary, forFeedEntry entry: FeedEntry) -> InfoDictionary {
     var dictionary = dictionary
 
-    // stage 1: migrate misspelled keys
-    dictionary = Self.migrateInfoDictionary(dictionary)
-
-    // stage 2
-    // bundleIdentifier and version should be overridden only when not exist
-    if dictionary.getInfoValue(key: .bundleIdentifier, type: String.self) == nil {
-      // logger.warning("Missing `CFBundleIdentifier`, overriding from feed metadata, id: \(entry.id).")
-      dictionary[DocsetInfoKey.bundleIdentifier.rawValue] = entry.feed.id
-    }
-
-    if dictionary.getInfoValue(key: .bundleVersion, type: String.self) == nil {
-      // logger.warning("Missing `CFBundleVersion`, overriding from feed metadata, id: \(entry.id).")
-      dictionary[DocsetInfoKey.bundleVersion.rawValue] = entry.version
-    }
-
-    // displayName should always be overridden
-    let displayName = dictionary.getInfoValue(key: .bundleName, type: String.self) ?? "Unknown"
-    if displayName != entry.feed.displayName {
-      Self.logger.warning("Inconsistent key `CFBundleName`, overriding from feed metadata, id: \(entry.id).")
-      dictionary[DocsetInfoKey.bundleName.rawValue] = entry.feed.displayName
-    }
-
     // special care be taken special for platformFamily
     let platformFamilyStr = dictionary.getInfoValue(key: .platformFamily, type: String.self)
-    switch entry.feed.repository {
-    case .cheatsheet:
-      if platformFamilyStr != "cheatsheet" {
-        Self.logger.warning("Inconsistent key `DocSetPlatformFamily`, should have `cheatsheet`, overriding from feed metadata, id: \(entry.id).")
-        dictionary[DocsetInfoKey.platformFamily.rawValue] = "cheatsheet"
-      }
-    case .userContributed:
+    if case .userContributed = entry.feed.repository {
       if !(platformFamilyStr ?? "").starts(with: "usercontrib") {
         // logger.warning("Missing or malformed `DocSetPlatformFamily`, overriding from feed metadata, id: \(entry.id).")
         dictionary[DocsetInfoKey.platformFamily.rawValue] = "usercontrib\(entry.feed.id)"
@@ -128,19 +88,11 @@ struct DocsetInfoProcessor: LoggerProvider {
       if dictionary.getInfoValue(key: .webSearchKeyword, type: String.self) == nil {
         dictionary[DocsetInfoKey.webSearchKeyword.rawValue] = entry.feed.id
       }
-    case .main:
-      break
-    case .custom:
-      break
-    case let repository:
-      assertionFailure("Unacceptable feed type: \(repository) for feed: \(entry.id)")
     }
     return dictionary
   }
 
   static func docsetInfo(forInfoDictionary infoDict: InfoDictionary) -> DocsetInfo {
-    let infoDict = migrateInfoDictionary(infoDict)
-
     let name = infoDict.getInfoValue(key: .bundleIdentifier, type: String.self) ?? ""
 
     let displayName = infoDict.getInfoValue(key: .bundleName, type: String.self) ?? "Unknown"
@@ -208,18 +160,6 @@ struct DocsetInfoProcessor: LoggerProvider {
   }
 
 }
-
-#if DEBUG
-
-extension DocsetInfoProcessor {
-
-  static func _migrateInfoDictionary(_ infoDictionary: InfoDictionary) -> InfoDictionary {
-    return migrateInfoDictionary(infoDictionary)
-  }
-
-}
-
-#endif
 
 private extension Dictionary where Key == String {
 
