@@ -30,7 +30,7 @@ public struct ServicesModule {
     setupRxSwiftResourceTracing()
     LocalFileSystem.setupApplicationDirectories()
     Container.shared.repositoryModuleInitializer()()
-    DocsetsModule.initialize()
+    Container.shared.docsetsModuleInitializer()()
     return {}
   }()
 

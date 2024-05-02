@@ -21,19 +21,33 @@ import Factory
 import BoltTypes
 import BoltUtils
 
-package struct DocsetsModule {
+private struct DocsetsModule {
 
   private static let logger = Loggers.forCategory("BoltServices")
 
-  package static var initialize: PerformOnce = {
-    setupLocalStorage()
-    let _ = Container.shared.downloadManager()
-    return {}
-  }()
-
-  private static func setupLocalStorage() {
+  fileprivate static func setupLocalStorage() {
     logger.info("Library path: \(LocalFileSystem.applicationLibraryAbsolutePath)")
     LibraryDocsetsFileSystemBridge.setupDocsetsDirectory()
+  }
+
+}
+
+public extension Container {
+
+  var docsetsModuleInitializer: Factory<() -> Void> {
+    var initialized = Atomic<Bool>(false)
+    return self { {
+      guard !initialized.value else {
+        return
+      }
+
+      initialized.value = true
+
+      DocsetsModule.setupLocalStorage()
+      let _ = Container.shared.downloadManager()
+
+      // swiftlint:disable:next closure_end_indentation
+    } }
   }
 
 }
