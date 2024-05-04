@@ -67,7 +67,7 @@ struct DocsetInfoProcessor: LoggerProvider {
       doxygenFamily.contains { $0 == generatorFamily }
   }
 
-  static func migrateInfoDictionaryForWritten(_ dictionary: InfoDictionary, forFeedEntry entry: FeedEntry) -> InfoDictionary {
+  static func processForInstallation(withInfoDictionary dictionary: InfoDictionary, forFeedEntry entry: FeedEntry) -> InfoDictionary {
     var dictionary = dictionary
 
     // special care be taken special for platformFamily

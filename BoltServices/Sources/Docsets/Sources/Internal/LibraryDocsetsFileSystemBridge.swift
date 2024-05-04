@@ -94,9 +94,9 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
       throw LibraryDocsetsManagerError.noInfoPlistFound
     }
 
-    let migratedInfoDict = DocsetInfoProcessor.migrateInfoDictionaryForWritten(infoPlistDict, forFeedEntry: entry)
+    let newInfoDict = DocsetInfoProcessor.processForInstallation(withInfoDictionary: infoPlistDict, forFeedEntry: entry)
 
-    try (migratedInfoDict as NSDictionary).write(to: URL(fileURLWithPath: infoPlistPath))
+    try (newInfoDict as NSDictionary).write(to: URL(fileURLWithPath: infoPlistPath))
   }
 
   private static func docset(
