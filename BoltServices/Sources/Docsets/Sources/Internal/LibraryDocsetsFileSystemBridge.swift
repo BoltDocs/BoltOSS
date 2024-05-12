@@ -21,6 +21,8 @@ import BoltRepository
 import BoltTypes
 import BoltUtils
 
+import Factory
+
 enum LibraryDocsetsManagerError: Error {
 
   case noInfoPlistFound
@@ -94,7 +96,7 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
       throw LibraryDocsetsManagerError.noInfoPlistFound
     }
 
-    let newInfoDict = DocsetInfoProcessor.processForInstallation(withInfoDictionary: infoPlistDict, forFeedEntry: entry)
+    let newInfoDict = Container.shared.docsetInfoProcessor().processForInstallation(withInfoDictionary: infoPlistDict, forFeedEntry: entry)
 
     try (newInfoDict as NSDictionary).write(to: URL(fileURLWithPath: infoPlistPath))
   }
@@ -109,7 +111,7 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
       return nil
     }
 
-    let docsetInfo = DocsetInfoProcessor.docsetInfo(forInfoDictionary: infoDict)
+    let docsetInfo = Container.shared.docsetInfoProcessor().docsetInfo(forInfoDictionary: infoDict)
 
     let docsetIcon = docsetIcon(
       fromDocsetPath: docsetPath,

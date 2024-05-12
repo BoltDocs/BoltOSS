@@ -20,6 +20,8 @@ import BoltRepository
 import BoltTypes
 import BoltUtils
 
+import Factory
+
 typealias InfoDictionary = [String: Any]
 
 enum DocsetInfoKey: String, CaseIterable {
@@ -58,8 +60,26 @@ enum DocsetInfoKey: String, CaseIterable {
 
 }
 
-struct DocsetInfoProcessor: LoggerProvider {
+protocol DocsetInfoProcessor {
 
+  func processForInstallation(withInfoDictionary dictionary: InfoDictionary, forFeedEntry entry: FeedEntry) -> InfoDictionary
+
+  func docsetInfo(forInfoDictionary infoDict: InfoDictionary) -> DocsetInfo
+
+}
+
+extension Container {
+
+  var docsetInfoProcessor: Factory<DocsetInfoProcessor> {
+    self {
+      return DocsetInfoProcessorImp()
+    }
+    .cached
+  }
+
+}
+
+final class DocsetInfoProcessorImp: DocsetInfoProcessor, LoggerProvider {
   private static func isPlatformJavaScriptEnabled(forPlatformFamily platformFamily: DocsetInfo.PlatformFamily, generatorFamily: String?) -> Bool {
     let doxygenFamily = ["doxy", "doxygen"]
     return
@@ -67,7 +87,7 @@ struct DocsetInfoProcessor: LoggerProvider {
       doxygenFamily.contains { $0 == generatorFamily }
   }
 
-  static func processForInstallation(withInfoDictionary dictionary: InfoDictionary, forFeedEntry entry: FeedEntry) -> InfoDictionary {
+  func processForInstallation(withInfoDictionary dictionary: InfoDictionary, forFeedEntry entry: FeedEntry) -> InfoDictionary {
     var dictionary = dictionary
 
     // special care be taken special for platformFamily
@@ -92,7 +112,7 @@ struct DocsetInfoProcessor: LoggerProvider {
     return dictionary
   }
 
-  static func docsetInfo(forInfoDictionary infoDict: InfoDictionary) -> DocsetInfo {
+  func docsetInfo(forInfoDictionary infoDict: InfoDictionary) -> DocsetInfo {
     let name = infoDict.getInfoValue(key: .bundleIdentifier, type: String.self) ?? ""
 
     let displayName = infoDict.getInfoValue(key: .bundleName, type: String.self) ?? "Unknown"
@@ -118,7 +138,7 @@ struct DocsetInfoProcessor: LoggerProvider {
 
     var isJavaScriptEnabled = infoDict.getInfoValue(key: .isJavaScriptEnabled, type: Bool.self) ?? false
 
-    isJavaScriptEnabled = isJavaScriptEnabled || isPlatformJavaScriptEnabled(forPlatformFamily: platformFamily, generatorFamily: generatorFamily)
+    isJavaScriptEnabled = isJavaScriptEnabled || Self.isPlatformJavaScriptEnabled(forPlatformFamily: platformFamily, generatorFamily: generatorFamily)
 
     let fallbackURL: URL?
     if let fallbackURLString = infoDict.getInfoValue(key: .fallbackURL, type: String.self) {

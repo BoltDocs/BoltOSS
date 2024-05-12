@@ -21,7 +21,12 @@ import XCTest
 
 import BoltTypes
 
+import Factory
+
 final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
+
+  @Injected(\.docsetInfoProcessor)
+  private var docsetInfoProcessor: DocsetInfoProcessor
 
   func testResolveDocsetIcon() throws {
     XCTAssertEqual(
@@ -33,7 +38,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
           installedAsLatestVersion: false,
           repository: .main
         ),
-        docsetInfo: DocsetInfoProcessor.docsetInfo(
+        docsetInfo: docsetInfoProcessor.docsetInfo(
           forInfoDictionary: [
             DocsetInfoKey.platformFamily.rawValue: "cpp",
           ]
@@ -51,7 +56,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
           installedAsLatestVersion: false,
           repository: .main
         ),
-        docsetInfo: DocsetInfoProcessor.docsetInfo(
+        docsetInfo: docsetInfoProcessor.docsetInfo(
           forInfoDictionary: [
             DocsetInfoKey.platformFamily.rawValue: "foobar",
           ]
@@ -70,7 +75,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
           installedAsLatestVersion: false,
           repository: .main
         ),
-        docsetInfo: DocsetInfoProcessor.docsetInfo(
+        docsetInfo: docsetInfoProcessor.docsetInfo(
           forInfoDictionary: [
             DocsetInfoKey.platformFamily.rawValue: "cpp",
           ]
@@ -88,7 +93,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
           installedAsLatestVersion: false,
           repository: .main
         ),
-        docsetInfo: DocsetInfoProcessor.docsetInfo(
+        docsetInfo: docsetInfoProcessor.docsetInfo(
           forInfoDictionary: [
             DocsetInfoKey.platformFamily.rawValue: "Other",
           ]
