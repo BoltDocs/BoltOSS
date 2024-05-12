@@ -76,11 +76,6 @@ public struct LibraryHomeListView: View {
             dismiss()
           }
         }
-        ToolbarItem(placement: .navigationBarLeading) {
-          NavigationLink(destination: DeferredView { LibraryDownloadsListView() }) {
-            Image(systemName: "arrow.down.circle")
-          }
-        }
       }
     }
     .navigationViewStyle(.stack)

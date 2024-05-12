@@ -37,4 +37,12 @@ struct BoltAppNavigator {
     }
   }
 
+  static func presentDownloads() {
+    let downloadsViewController = UIHostingController(rootView: LibraryDownloadsListView())
+    downloadsViewController.modalPresentationStyle = .formSheet
+    if let root = UIApplication.shared.keyWindowOfActiveScene?.topViewController {
+      root.present(downloadsViewController, animated: true)
+    }
+  }
+
 }

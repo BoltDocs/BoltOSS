@@ -49,8 +49,10 @@ public enum SceneAction {
   case lookupListVisibilityChange(_: Bool)
   case updateCurrentScope(_: LookupScope)
   case updateCurrentURL(_: URL)
+
   case onHomeViewTapMenuItemLibrary
   case onHomeViewTapMenuItemPreferences
+  case onHomeViewTapMenuItemDownloads
 
 }
 
@@ -64,6 +66,11 @@ public class SceneState: HasDisposeBag {
   private let _onPresentPreferences = PublishRelay<Void>()
   public lazy var onPresentPreferences: Signal<Void> = {
     return _onPresentPreferences.asSignal()
+  }()
+
+  private let _onPresentDownloads = PublishRelay<Void>()
+  public lazy var onPresentDownloads: Signal<Void> = {
+    return _onPresentDownloads.asSignal()
   }()
 
   private let _lookupListVisible = BehaviorRelay<Bool>(value: false)
@@ -100,6 +107,8 @@ public class SceneState: HasDisposeBag {
       _onPresentLibrary.accept(())
     case .onHomeViewTapMenuItemPreferences:
       _onPresentPreferences.accept(())
+    case .onHomeViewTapMenuItemDownloads:
+      _onPresentDownloads.accept(())
     }
   }
 

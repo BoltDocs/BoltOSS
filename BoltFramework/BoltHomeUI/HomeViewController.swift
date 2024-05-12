@@ -77,6 +77,14 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       .flexibleSpace(),
       update(UIBarButtonItem()) {
         $0.primaryAction = UIAction(
+          title: "Downloads"
+        ) { [weak self] _ in
+          self?.sceneState.dispatch(action: .onHomeViewTapMenuItemDownloads)
+        }
+      },
+      .flexibleSpace(),
+      update(UIBarButtonItem()) {
+        $0.primaryAction = UIAction(
           image: UIImage(systemName: "plus")
         ) { [weak self] _ in
           self?.sceneState.dispatch(action: .onHomeViewTapMenuItemLibrary)

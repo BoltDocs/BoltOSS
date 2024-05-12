@@ -19,6 +19,7 @@ import SwiftUI
 import Factory
 
 import BoltDatabase
+import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
 import BoltUtils
@@ -64,12 +65,15 @@ private class LibraryDownloadsListViewModel: ObservableObject {
 
 }
 
-struct LibraryDownloadsListView: View {
+public struct LibraryDownloadsListView: View {
 
   enum Scope: Int {
     case all
     case completed
   }
+
+  @Environment(\.dismiss)
+  private var dismiss: DismissAction
 
   @State var currentScope: Scope = .all
 
@@ -77,54 +81,66 @@ struct LibraryDownloadsListView: View {
 
   static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/downloads", in: .module).platformImage!
 
-  var body: some View {
-    VStack {
-      Picker("", selection: $currentScope) {
-        Text("All").tag(Scope.all)
-        Text("Completed").tag(Scope.completed)
-      }
-      .padding([.leading, .trailing], 8)
-      .pickerStyle(.segmented)
+  public init() { }
 
-      Group {
-        if !model.items.isEmpty {
-          List {
-            ForEach(model.items, id: \.id) { item in
-              if currentScope == .all || (currentScope == .completed && item.isCompleted) {
-                if item.isCompleted {
-                  CompletedDownloadListItemView(
-                    taskEntity: item.taskEntity,
-                    title: item.title,
-                    preventsHighlight: true
-                  )
-                  .listRowBackground(Color.clear)
-                } else {
-                  DownloadProgressListItemView(
-                    identifier: item.taskEntity.identifier,
-                    title: item.title,
-                    preventsHighlight: true
-                  )
-                  .listRowBackground(Color.clear)
+  public var body: some View {
+    NavigationView {
+      VStack {
+        Picker("", selection: $currentScope) {
+          Text("All").tag(Scope.all)
+          Text("Completed").tag(Scope.completed)
+        }
+        .padding([.leading, .trailing], 8)
+        .pickerStyle(.segmented)
+
+        Group {
+          if !model.items.isEmpty {
+            List {
+              ForEach(model.items, id: \.id) { item in
+                if currentScope == .all || (currentScope == .completed && item.isCompleted) {
+                  if item.isCompleted {
+                    CompletedDownloadListItemView(
+                      taskEntity: item.taskEntity,
+                      title: item.title,
+                      preventsHighlight: true
+                    )
+                    .listRowBackground(Color.clear)
+                  } else {
+                    DownloadProgressListItemView(
+                      identifier: item.taskEntity.identifier,
+                      title: item.title,
+                      preventsHighlight: true
+                    )
+                    .listRowBackground(Color.clear)
+                  } // if
                 } // if
-              } // if
-            } // ForEach
-          } // List
-          .listStyle(.plain)
-        } else {
-          EmptyFeedsView(
-            image: Self.emptyStateImage,
-            message: "No Downloads",
-            shouldDisplayIndicator: false,
-            showsMessage: true,
-            showsRetry: false
-          )
-        } // if
-      } // Group
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
+              } // ForEach
+            } // List
+            .listStyle(.plain)
+          } else {
+            EmptyFeedsView(
+              image: Self.emptyStateImage,
+              message: "No Downloads",
+              shouldDisplayIndicator: false,
+              showsMessage: true,
+              showsRetry: false
+            )
+          } // if
+        } // Group
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+      }
+      .background(Color.systemGroupedBackground)
+      .navigationTitle("Downloads")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .confirmationAction) {
+          Button(UIKitLocalizations.done) {
+            dismiss()
+          }
+        }
+      }
     }
-    .background(Color.systemGroupedBackground)
-    .navigationTitle("Downloads")
-    .navigationBarTitleDisplayMode(.inline)
+    .navigationViewStyle(.stack)
   }
 
 }

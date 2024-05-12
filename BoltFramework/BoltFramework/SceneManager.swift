@@ -95,6 +95,13 @@ public final class SceneManager {
       })
       .disposed(by: disposeBag)
 
+    // swiftlint:disable:next trailing_closure
+    state.onPresentDownloads
+      .emit(onNext: {
+        BoltAppNavigator.presentDownloads()
+      })
+      .disposed(by: disposeBag)
+
     with(browserViewController) {
       $0.navigationItem.searchController = lookupSearchController
       $0.navigationItem.hidesSearchBarWhenScrolling = false
