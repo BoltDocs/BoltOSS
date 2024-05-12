@@ -64,37 +64,23 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     }
   }()
 
-  private func setupNavigationBar() {
-    updateNavBarAppearance()
-
-    navigationItem.rightBarButtonItems = [
-      update(
-        UIBarButtonItem(
-          title: nil,
-          image: UIImage(systemName: "ellipsis.circle"),
-          primaryAction: nil,
-          menu: UIMenu(
-            title: "",
-            children: [
-              UIAction(
-                title: "Install Docsets",
-                image: UIImage(systemName: "tray.and.arrow.down")
-              ) { [weak self] _ in
-                self?.sceneState.dispatch(action: .onHomeViewTapMenuItemLibrary)
-                self?.analyticsService?.trackEvent("home-nemu-tap", withProperties: ["key": "library"])
-              },
-              UIAction(
-                title: "Preferences",
-                image: UIImage(systemName: "gear")
-              ) { [weak self] _ in
-                self?.sceneState.dispatch(action: .onHomeViewTapMenuItemPreferences)
-                self?.analyticsService?.trackEvent("home-nemu-tap", withProperties: ["key": "prefs"])
-              },
-            ]
-          )
-        )
-      ) {
-        $0.tintColor = UIColor.tintColor
+  private func setupToolbar() {
+    navigationController?.setToolbarHidden(false, animated: true)
+    toolbarItems = [
+      update(UIBarButtonItem()) {
+        $0.primaryAction = UIAction(
+          image: UIImage(systemName: "gear")
+        ) { [weak self] _ in
+          self?.sceneState.dispatch(action: .onHomeViewTapMenuItemPreferences)
+        }
+      },
+      .flexibleSpace(),
+      update(UIBarButtonItem()) {
+        $0.primaryAction = UIAction(
+          image: UIImage(systemName: "plus")
+        ) { [weak self] _ in
+          self?.sceneState.dispatch(action: .onHomeViewTapMenuItemLibrary)
+        }
       },
     ]
   }
@@ -136,7 +122,9 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
     view.backgroundColor = .secondarySystemBackground
 
-    setupNavigationBar()
+    updateNavBarAppearance()
+
+    setupToolbar()
     setupSearchController()
     setupCollectionView()
 
