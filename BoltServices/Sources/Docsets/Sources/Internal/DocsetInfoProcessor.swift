@@ -62,6 +62,8 @@ enum DocsetInfoKey: String, CaseIterable {
 
 protocol DocsetInfoProcessor {
 
+  func registerDocsetInfoProcessor(_ docsetInfoProcessor: RepoDocsetInfoProcessor, forIdentifier identifier: RepositoryIdentifier)
+
   func processForInstallation(withInfoDictionary dictionary: InfoDictionary, forFeedEntry entry: FeedEntry) -> InfoDictionary
 
   func docsetInfo(forInfoDictionary infoDict: InfoDictionary) -> DocsetInfo
@@ -80,6 +82,16 @@ extension Container {
 }
 
 final class DocsetInfoProcessorImp: DocsetInfoProcessor, LoggerProvider {
+
+  private var repoProcessors = [RepositoryIdentifier: RepoDocsetInfoProcessor]()
+
+  func registerDocsetInfoProcessor(
+    _ docsetInfoProcessor: RepoDocsetInfoProcessor,
+    forIdentifier identifier: RepositoryIdentifier
+  ) {
+    repoProcessors[identifier] = docsetInfoProcessor
+  }
+
   private static func isPlatformJavaScriptEnabled(forPlatformFamily platformFamily: DocsetInfo.PlatformFamily, generatorFamily: String?) -> Bool {
     let doxygenFamily = ["doxy", "doxygen"]
     return
@@ -90,24 +102,8 @@ final class DocsetInfoProcessorImp: DocsetInfoProcessor, LoggerProvider {
   func processForInstallation(withInfoDictionary dictionary: InfoDictionary, forFeedEntry entry: FeedEntry) -> InfoDictionary {
     var dictionary = dictionary
 
-    // special care be taken special for platformFamily
-    let platformFamilyStr = dictionary.getInfoValue(key: .platformFamily, type: String.self)
-    if case .userContributed = entry.feed.repository {
-      if !(platformFamilyStr ?? "").starts(with: "usercontrib") {
-        // logger.warning("Missing or malformed `DocSetPlatformFamily`, overriding from feed metadata, id: \(entry.id).")
-        dictionary[DocsetInfoKey.platformFamily.rawValue] = "usercontrib\(entry.feed.id)"
-      }
-
-      // keywords
-      if dictionary.getInfoValue(key: .docsetKeyword, type: String.self) == nil {
-        dictionary[DocsetInfoKey.docsetKeyword.rawValue] = entry.feed.id
-      }
-      if dictionary.getInfoValue(key: .pluginSchemeKeyword, type: String.self) == nil {
-        dictionary[DocsetInfoKey.pluginSchemeKeyword.rawValue] = entry.feed.id
-      }
-      if dictionary.getInfoValue(key: .webSearchKeyword, type: String.self) == nil {
-        dictionary[DocsetInfoKey.webSearchKeyword.rawValue] = entry.feed.id
-      }
+    if let repoProcessor = repoProcessors[entry.feed.repository] {
+      dictionary = repoProcessor.processInfoDictionaryBeforeInstallation(forFeedEntry: entry, dictionary)
     }
     return dictionary
   }
@@ -181,7 +177,7 @@ final class DocsetInfoProcessorImp: DocsetInfoProcessor, LoggerProvider {
 
 }
 
-private extension Dictionary where Key == String {
+extension Dictionary where Key == String {
 
   func getInfoValue<T>(key: DocsetInfoKey, type: T.Type) -> T? {
     guard let value = self[key.rawValue] as? T else {
