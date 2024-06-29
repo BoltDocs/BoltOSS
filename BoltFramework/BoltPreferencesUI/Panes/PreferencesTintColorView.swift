@@ -47,8 +47,8 @@ private class PreferencesTintColorViewModel: ObservableObject {
     }
   }
 
-  private (set) var items: [ItemViewModel] = []
-  private (set) var selectedKey: ItemViewModel.TintColorKey = .auto
+  private(set) var items: [ItemViewModel] = []
+  private(set) var selectedKey: ItemViewModel.TintColorKey = .auto
 
   init() {
     let tintColors = appearanceService.availableTintColors

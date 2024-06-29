@@ -46,7 +46,7 @@ public struct RepositoryIdentifier: Codable, RawRepresentable, Hashable {
     self.rawValue = rawValue
   }
 
-  public private (set) var rawValue: String
+  public private(set) var rawValue: String
 
   public static var main: Self { return Self(rawValue: Repository.main.rawValue)! }
   public static var cheatsheet: Self { return Self(rawValue: Repository.cheatsheet.rawValue)! }

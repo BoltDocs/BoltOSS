@@ -25,7 +25,7 @@ import Overture
 
 struct LibraryCustomFeedInfoView: View {
 
-  private (set) var feed: CustomFeed
+  private(set) var feed: CustomFeed
 
   @Environment(\.dismiss)
   private var dismiss: DismissAction

@@ -18,9 +18,9 @@ import SwiftUI
 
 public struct BoltToggle<Label>: View where Label: View {
 
-  public private (set) var isOn: Binding<Bool>
+  public private(set) var isOn: Binding<Bool>
 
-  public private (set) var label: Label
+  public private(set) var label: Label
 
   public init(isOn: Binding<Bool>, @ViewBuilder label: () -> Label) {
     self.isOn = isOn

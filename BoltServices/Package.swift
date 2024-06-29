@@ -49,7 +49,7 @@ struct Dependencies {
 let moduleTargets: [Target] = [
   .target(
     name: "BoltArchives",
-    dependencies: [Dependencies.GRDB, Dependencies.GzipSwift, Dependencies.UUIDShortener, "BoltCombineExtensions", "SWCompressionTAR", "BoltUtils"],
+    dependencies: [Dependencies.GRDB, Dependencies.GzipSwift, Dependencies.UUIDShortener, "BoltCombineExtensions", "SWCompressionTAR", "BoltTypes", "BoltUtils"],
     path: "./Sources/Archives/Sources"
   ),
   .target(
