@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire.git",
       "state" : {
-        "branch" : "5.8.1",
-        "revision" : "3dc6a42c7727c49bf26508e29b0a0b35f9c7e1ad"
+        "branch" : "5.9.1",
+        "revision" : "f455c2975872ccd2d9c81594c658af65716e9b9a"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory.git",
       "state" : {
-        "branch" : "2.3.1",
-        "revision" : "8ca11a7bd1ede031e8e6d7a912bb116e2e43961b"
+        "branch" : "2.3.2",
+        "revision" : "587995f7d5cc667951d635fbf6b4252324ba0439"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/groue/GRDB.swift.git",
       "state" : {
-        "branch" : "v6.24.2",
-        "revision" : "e069e2732e3ee2b67bf89c1bda1937da0eaee7ef"
+        "branch" : "v6.29.2",
+        "revision" : "57a4587b5b09ac706bc985288a62432ddbf20b09"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/BoltDocs/GzipSwift.git",
       "state" : {
-        "branch" : "6.0.1",
-        "revision" : "1e880448010e6aef68ca6a23e7c61a984c9f00cf"
+        "branch" : "6.1.0",
+        "revision" : "38e50cc8c18dd189d5e5e6505450c4fdcdd950ed"
       }
     },
     {
@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ReactiveX/RxSwift.git",
       "state" : {
-        "branch" : "6.6.0",
-        "revision" : "9dcaa4b333db437b0fbfaf453fad29069044a8b4"
+        "branch" : "6.7.1",
+        "revision" : "b06a8c8596e4c3e8e7788e08e720e3248563ce6a"
       }
     },
     {
@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SnapKit/SnapKit.git",
       "state" : {
-        "revision" : "e74fe2a978d1216c3602b129447c7301573cc2d8",
-        "version" : "5.7.0"
+        "revision" : "2842e6e84e82eb9a8dac0100ca90d9444b0307f4",
+        "version" : "5.7.1"
       }
     },
     {
@@ -149,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SwiftyJSON/SwiftyJSON.git",
       "state" : {
-        "branch" : "5.0.1",
-        "revision" : "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07"
+        "branch" : "5.0.2",
+        "revision" : "af76cf3ef710b6ca5f8c05f3a31307d44a3c5828"
       }
     },
     {

@@ -33,7 +33,7 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(url: "https://github.com/ReactiveX/RxSwift.git", revision: "6.6.0"),
+    .package(url: "https://github.com/ReactiveX/RxSwift.git", revision: "6.7.1"),
     .package(url: "https://github.com/CombineCommunity/RxCombine.git", revision: "2.0.1"),
     .package(url: "https://github.com/BoltDocs/ObjectAssociationHelper.git", revision: "1.0.0"),
     .package(name: "BoltUtils", path: "../BoltUtils"),
