@@ -147,7 +147,7 @@ let dependencies: [Package.Dependency] = [
   .package(url: "https://github.com/hmlongco/Factory.git", revision: "2.3.1"),
   .package(url: "https://github.com/BoltDocs/SWCompressionTAR.git", revision: "4.8.5"),
   .package(url: "https://github.com/BoltDocs/GzipSwift.git", revision: "6.0.1"),
-  .package(url: "https://github.com/groue/GRDB.swift.git", revision: "v6.24.2"),
+  .package(url: "https://github.com/groue/GRDB.swift.git", revision: "v6.29.2"),
   .package(url: "https://github.com/Alamofire/Alamofire.git", revision: "5.8.1"),
   .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", revision: "5.0.1"),
   .package(url: "https://github.com/yahoojapan/SwiftyXMLParser.git", revision: "5.6.0"),
