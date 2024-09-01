@@ -129,7 +129,7 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(url: "https://github.com/SnapKit/SnapKit.git", exact: "5.7.0"),
+    .package(url: "https://github.com/SnapKit/SnapKit.git", exact: "5.7.1"),
     .package(url: "https://github.com/yhirano/LicensePlistViewController.git", exact: "2.3.0"),
     .package(url: "https://github.com/stleamist/BetterSafariView.git", exact: "2.4.2"),
     .package(url: "https://github.com/wxxsw/GSMessages.git", revision: "88d895a"),
