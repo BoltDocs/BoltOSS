@@ -18,7 +18,7 @@ import Foundation
 
 public final class UncheckedSendableContainer<T: Sendable>: @unchecked Sendable {
 
-  public private (set) var value: T?
+  public private(set) var value: T?
 
   public init(value: T? = nil) {
     self.value = value

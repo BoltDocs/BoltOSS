@@ -83,4 +83,4 @@ final class InstallationAlert: HasDisposeBag {
 
 }
 
-extension UIAlertController: HasDisposeBag { }
+extension UIAlertController: @retroactive HasDisposeBag { }
