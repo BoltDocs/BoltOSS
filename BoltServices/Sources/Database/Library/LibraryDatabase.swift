@@ -63,10 +63,10 @@ public final class LibraryDatabase: LoggerProvider {
 
   // TODO: Check if we really need `.immediate` here
 
-  // swiftlint:disable:next trailing_closure
   public lazy var allDocsetInstallations: AnyPublisher<[DocsetInstallation], Never> = ValueObservation
     .trackingConstantRegion(DocsetInstallation.fetchAll)
     .publisher(in: dbPool)
+    // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
       if case let .failure(error) = completion {
         Self.logger.error("allDocsetInstallations: receiveError: \(error.localizedDescription)")
@@ -75,10 +75,10 @@ public final class LibraryDatabase: LoggerProvider {
     .share(replay: 1)
     .ignoreFailure()
 
-  // swiftlint:disable:next trailing_closure
   public lazy var allCustomFeeds: AnyPublisher<[CustomFeedEntity], Never> = ValueObservation
     .trackingConstantRegion(CustomFeedEntity.fetchAll)
     .publisher(in: dbPool)
+    // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
       if case let .failure(error) = completion {
         Self.logger.error("allCustomFeeds: receiveError: \(error.localizedDescription)")
@@ -87,10 +87,10 @@ public final class LibraryDatabase: LoggerProvider {
     .share(replay: 1)
     .ignoreFailure()
 
-  // swiftlint:disable:next trailing_closure
   public lazy var allDownloadTasks: AnyPublisher<[DownloadTaskEntity], Never> = ValueObservation
     .trackingConstantRegion(DownloadTaskEntity.fetchAll)
     .publisher(in: dbPool)
+    // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
       if case let .failure(error) = completion {
       Self.logger.error("allDownloadTasks: receiveError: \(error.localizedDescription)")

@@ -330,12 +330,12 @@ struct DownloadConfirmationView: View {
   }
 
   private func startInstall() {
-    // swiftlint:disable:next trailing_closure
     let observable = LibraryDocsetsManager.shared.installDocset(
       forEntry: dataSource.entry,
       isInstalledAsLatest: false,
       usingTarix: dataSource.supportsTarix && installsWithTarix
     )
+    // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
       if case .finished = completion {
         Task {

@@ -82,8 +82,8 @@ struct DocsetUnarchiver: LoggerProvider {
     }
 
     return Publishers.Create<PercentageProgress<String>, Error> { subscriber -> Cancellable in
-      // swiftlint:disable:next trailing_closure
       return TarUnarchiver.extractGzippedTarFile(fromSourcePath: downloadedTarPath, toDestPath: destPath, usingQueue: unarchiverQueue)
+        // swiftlint:disable:next trailing_closure
         .handleEvents(receiveOutput: { progress in
           if case let .progress(progress) = progress {
             subscriber.send(.progress(progress))
@@ -152,12 +152,12 @@ struct DocsetUnarchiver: LoggerProvider {
     }
 
     return Publishers.Create<PercentageProgress<String>, Error> { subscriber -> Cancellable in
-      // swiftlint:disable:next trailing_closure
       TarUnarchiver.extractGzippedTarFile(
         fromSourcePath: downloadedTarixPath,
         toDestPath: destPath,
         usingQueue: unarchiverQueue
       )
+      // swiftlint:disable:next trailing_closure
       .handleEvents(receiveOutput: { progress in
         if case let .progress(progress) = progress {
           subscriber.send(.progress(0.2 * progress))
@@ -183,6 +183,7 @@ struct DocsetUnarchiver: LoggerProvider {
           usingQueue: unarchiverQueue
         )
       }
+      // swiftlint:disable:next trailing_closure
       .handleEvents(receiveOutput: { progress in
         if case let .progress(progress) = progress {
           subscriber.send(.progress(0.2 + 0.8 * progress))

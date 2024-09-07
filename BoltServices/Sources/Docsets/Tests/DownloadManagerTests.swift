@@ -151,8 +151,8 @@ final class DownloadManagerTests: XCTestCase {
 
   private func progress(forIdentifier identifier: String, timeout: TimeInterval? = nil) async throws -> DownloadProgress? {
     return try await awaitPublisher(
-      // swiftlint:disable:next trailing_closure
       downloadManager.progress(forIdentifier: identifier)
+        // swiftlint:disable:next trailing_closure
         .handleEvents(receiveOutput: { _ in
           XCTAssert(Thread.isMainThread)
         })

@@ -104,8 +104,8 @@ final class HomeCollectionView: UICollectionView {
   func itemContextMenuConfiguration(
     forIndexPath indexPath: IndexPath
   ) -> UIContextMenuConfiguration? {
-    // swiftlint:disable:next trailing_closure
     return UIContextMenuConfiguration(
+      // swiftlint:disable:next trailing_closure
       actionProvider: { [weak self] _ in
         let getInfoButton = UIAction(
           title: BoltLocalizations.getInfo,

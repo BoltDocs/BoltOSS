@@ -34,7 +34,7 @@ final class DocsetInfoProcessorTests: XCTestCase {
     )
   }
 
-  override class func tearDown() {
+  override static func tearDown() {
     super.tearDown()
     Container.shared.manager.pop()
   }

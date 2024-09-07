@@ -1,4 +1,5 @@
-# configuration reference: https://github.com/airbnb/swift
+# configuration reference: https://github.com/realm/SwiftLint
+# custom rules reference: https://github.com/airbnb/swift
 
 disabled_rules:
   - comment_spacing
@@ -48,6 +49,7 @@ opt_in_rules:
   - fatal_error_message
   - file_name_no_space
   - first_where
+  - final_test_case
   - flatmap_over_map_reduce
   - ibinspectable_in_extension
   - identical_operands
@@ -71,6 +73,7 @@ opt_in_rules:
   - overridden_super_call
   - override_in_extension
   - pattern_matching_keywords
+  # - prefer_key_path
   - prefer_self_in_static_references
   - prefer_self_type_over_type_of_self
   - prefer_zero_over_explicit_init

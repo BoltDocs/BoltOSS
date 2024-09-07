@@ -33,8 +33,8 @@ struct DocsetInstaller {
     let uuid = UUID()
     let path = LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(uuid.uuidString)
     return Publishers.Create<InstallationProgress, Error> { subscriber -> Cancellable in
-      // swiftlint:disable:next trailing_closure
       DocsetUnarchiver.unarchiveDownloadedDocset(toPath: path, forFeedEntry: entry, usingTarix: usingTarix)
+        // swiftlint:disable:next trailing_closure
         .handleEvents(receiveOutput: { progress in
           if case let .progress(progress) = progress {
             subscriber.send(.extracting(progress: progress))
@@ -51,8 +51,8 @@ struct DocsetInstaller {
         }
         .flatMap { docsetPath in
           // create search index
-          // swiftlint:disable:next trailing_closure
           return DocsetIndexer.createSearchIndex(forAbsoluteDocsetPath: docsetPath)
+            // swiftlint:disable:next trailing_closure
             .handleEvents(receiveOutput: { progress in
               subscriber.send(.indexing(progress: 0.2 * progress.progress))
             })
@@ -61,6 +61,7 @@ struct DocsetInstaller {
             .flatMap { _ in
               return DocsetIndexer.createQueryIndex(forAbsoluteDocsetPath: docsetPath)
             }
+            // swiftlint:disable:next trailing_closure
             .handleEvents(receiveOutput: { progress in
               subscriber.send(.indexing(progress: 0.2 + 0.8 * progress.progress))
             })

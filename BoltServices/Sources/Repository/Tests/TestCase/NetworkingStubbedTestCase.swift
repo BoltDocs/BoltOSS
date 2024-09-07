@@ -22,6 +22,7 @@ import Factory
 import BoltNetworkingTestStubs
 import BoltUtils
 
+// swiftlint:disable:next final_test_case
 class NetworkingStubbedTestCase: XCTestCase, StubbedNetworkingDelegate {
 
   // swiftlint:disable:next test_case_accessibility
@@ -33,7 +34,7 @@ class NetworkingStubbedTestCase: XCTestCase, StubbedNetworkingDelegate {
     Container.shared.networking.register { StubbedNetworking(delegate: self) }
   }
 
-  override class func tearDown() {
+  override static func tearDown() {
     super.tearDown()
     Container.shared.manager.pop()
   }

@@ -81,15 +81,15 @@ public final class SceneManager {
   public init(_ window: UIWindow) {
     self.window = window
 
-    // swiftlint:disable:next trailing_closure
     state.onPresentLibrary
+      // swiftlint:disable:next trailing_closure
       .emit(onNext: {
         BoltAppNavigator.presentLibrary()
       })
       .disposed(by: disposeBag)
 
-    // swiftlint:disable:next trailing_closure
     state.onPresentPreferences
+      // swiftlint:disable:next trailing_closure
       .emit(onNext: {
         BoltAppNavigator.presentPreferences()
       })
