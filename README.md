@@ -18,7 +18,7 @@ We support building for up to 2 recent major versions of iOS and iPadOS and the 
 
 Mac Catalyst builds are only for easier development and testing, so only major issues would be solved.
 
-Only the latest non-beta release of Xcode would be supported. Build with Xcode 15.4 if you encounter any issues.
+Only the latest non-beta release of Xcode would be supported. Build with the latest Xcode 16 if you encounter any issues.
 
 To checkout and build, use the following commands:
 
