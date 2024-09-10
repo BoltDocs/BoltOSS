@@ -35,6 +35,7 @@ private extension ErrorMessageEntity {
 
 }
 
+@MainActor
 final class InstallationAlert: HasDisposeBag {
 
   private let installationObservable: Observable<InstallationProgress>

@@ -24,7 +24,7 @@ public extension XCTestCase {
   func awaitPublisher<T: Publisher>(
     _ publisher: T,
     timeout: TimeInterval = 10,
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
   ) async throws -> T.Output {
     // This time, we use Swift's Result type to keep track

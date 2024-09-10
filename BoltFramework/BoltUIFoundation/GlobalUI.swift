@@ -54,6 +54,7 @@ public struct ErrorMessage {
 
 }
 
+@MainActor
 public struct GlobalUI {
 
   public static func configureNavigationBarAppearance(tintColor: UIColor) {
@@ -150,49 +151,47 @@ public struct GlobalUI {
     type: GSMessageType = .warning,
     tapAction: (() -> Void)? = nil
   ) {
-    DispatchQueue.main.asyncSafe {
-      guard
-        let keyWindow = UIApplication.shared.keyWindowOfActiveScene,
-        let topViewController = keyWindow.topViewController,
-        let targetView = topViewController.view
-      else {
-        return
-      }
-
-      let attributedText = NSAttributedString(
-        string: text,
-        attributes: [
-          .font: GSMessage.font,
-        ]
-      )
-
-      let paddingX: CGFloat = 14
-      let maxWidth = targetView.bounds.width - 20 - paddingX * 2
-      let size = attributedText.boundingRect(
-        with: CGSize(width: maxWidth, height: 20),
-        options: .usesLineFragmentOrigin,
-        context: nil
-      ).size
-      let marginX = (targetView.bounds.width - size.width - paddingX * 2) / 2
-      let bottomMargin: CGFloat = targetView.safeAreaInsets.bottom == 0 ? 12 : 0
-
-      GSMessage.showMessageAddedTo(
-        attributedText: attributedText,
-        type: type,
-        options: [
-          .cornerRadius(16),
-          .height(32),
-          .position(.bottom),
-          .margin(UIEdgeInsets(top: 0, left: marginX, bottom: bottomMargin, right: marginX)),
-          .padding(UIEdgeInsets(top: 6, left: paddingX, bottom: 6, right: paddingX)),
-          .handleTap {
-            tapAction?()
-          },
-        ],
-        inView: targetView,
-        inViewController: nil
-      )
+    guard
+      let keyWindow = UIApplication.shared.keyWindowOfActiveScene,
+      let topViewController = keyWindow.topViewController,
+      let targetView = topViewController.view
+    else {
+      return
     }
+
+    let attributedText = NSAttributedString(
+      string: text,
+      attributes: [
+        .font: GSMessage.font,
+      ]
+    )
+
+    let paddingX: CGFloat = 14
+    let maxWidth = targetView.bounds.width - 20 - paddingX * 2
+    let size = attributedText.boundingRect(
+      with: CGSize(width: maxWidth, height: 20),
+      options: .usesLineFragmentOrigin,
+      context: nil
+    ).size
+    let marginX = (targetView.bounds.width - size.width - paddingX * 2) / 2
+    let bottomMargin: CGFloat = targetView.safeAreaInsets.bottom == 0 ? 12 : 0
+
+    GSMessage.showMessageAddedTo(
+      attributedText: attributedText,
+      type: type,
+      options: [
+        .cornerRadius(16),
+        .height(32),
+        .position(.bottom),
+        .margin(UIEdgeInsets(top: 0, left: marginX, bottom: bottomMargin, right: marginX)),
+        .padding(UIEdgeInsets(top: 6, left: paddingX, bottom: 6, right: paddingX)),
+        .handleTap {
+          tapAction?()
+        },
+      ],
+      inView: targetView,
+      inViewController: nil
+    )
   }
 
 }

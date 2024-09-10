@@ -47,30 +47,32 @@ public class TarixURLSchemeHandler: NSObject, WKURLSchemeHandler {
     let response = URLResponse(url: url, mimeType: url.mimeType(), expectedContentLength: -1, textEncodingName: nil)
 
     if let data = Self.loadTarix(fromScheme: scheme) {
-      self.postResponse(to: urlSchemeTask, response: response)
-      self.postResponse(to: urlSchemeTask, data: data)
-      self.postFinished(to: urlSchemeTask)
+      postResponse(to: urlSchemeTask, response: response)
+      postResponse(to: urlSchemeTask, data: data)
+      postFinished(to: urlSchemeTask)
     } else if let data = Self.loadFile(fromScheme: scheme) {
-      self.postResponse(to: urlSchemeTask, response: response)
-      self.postResponse(to: urlSchemeTask, data: data)
-      self.postFinished(to: urlSchemeTask)
+      postResponse(to: urlSchemeTask, response: response)
+      postResponse(to: urlSchemeTask, data: data)
+      postFinished(to: urlSchemeTask)
     } else {
-      self.postFailed(to: urlSchemeTask, error: WebErrors.RequestFailedError)
+      postFailed(to: urlSchemeTask, error: WebErrors.RequestFailedError)
     }
 
     // remove the task from the list of stopped tasks (if it is there)
     // since we're done with it anyway
-    self.stoppedTaskURLs = self.stoppedTaskURLs.filter { $0 != request }
+    stoppedTaskURLs = stoppedTaskURLs.filter { $0 != request }
   }
 
   public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-    if !self.hasTaskStopped(urlSchemeTask) {
-      self.stoppedTaskURLs.append(urlSchemeTask.request)
+    if !hasTaskStopped(urlSchemeTask) {
+      stoppedTaskURLs.append(urlSchemeTask.request)
     }
   }
 
+  // MARK: - Private
+
   private func hasTaskStopped(_ urlSchemeTask: WKURLSchemeTask) -> Bool {
-    return self.stoppedTaskURLs.contains { $0 == urlSchemeTask.request }
+    return stoppedTaskURLs.contains { $0 == urlSchemeTask.request }
   }
 
   private func postResponse(to urlSchemeTask: WKURLSchemeTask, response: URLResponse) {
@@ -90,20 +92,14 @@ public class TarixURLSchemeHandler: NSObject, WKURLSchemeHandler {
   }
 
   private func post(to urlSchemeTask: WKURLSchemeTask, action: @escaping () -> Void) {
-    let group = DispatchGroup()
-    group.enter()
-    DispatchQueue.main.asyncSafe { [weak self] in
-      if self?.hasTaskStopped(urlSchemeTask) == false {
-        action()
-      }
-      group.leave()
+    if hasTaskStopped(urlSchemeTask) == false {
+      action()
     }
-    group.wait()
   }
 
 }
 
-extension TarixURLSchemeHandler {
+private extension TarixURLSchemeHandler {
 
   static func loadTarix(fromScheme scheme: DocsetFileURLScheme) -> Data? {
     let docsetPath = LocalFileSystem.docsetsAbsolutePath

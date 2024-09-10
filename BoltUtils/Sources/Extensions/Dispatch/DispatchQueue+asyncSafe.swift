@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ public extension DispatchQueue {
     group: DispatchGroup? = nil,
     qos: DispatchQoS = .unspecified,
     flags: DispatchWorkItemFlags = [],
-    execute work: @escaping () -> Void
+    execute work: @escaping @Sendable  () -> Void
   ) {
     if Self.currentLabel == label {
       work()
@@ -47,7 +47,7 @@ public extension DispatchQueue {
 extension DispatchQueue {
 
   class var currentLabel: String? {
-    return String(validatingUTF8: __dispatch_queue_get_label(nil))
+    return String(validatingCString: __dispatch_queue_get_label(nil))
   }
 
 }

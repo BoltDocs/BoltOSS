@@ -18,6 +18,7 @@ import Foundation
 
 public protocol SchemeHandler {
 
+  @MainActor
   func matchToHandle(withURL url: URL) -> Bool
 
 }

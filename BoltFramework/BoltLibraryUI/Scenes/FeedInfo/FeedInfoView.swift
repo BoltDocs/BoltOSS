@@ -108,9 +108,11 @@ private final class DataSource: ObservableObject {
       .trackActivityStatus(activityStatusTracker)
       .sink { result in
         if case let .failure(error) = result {
-          GlobalUI.showMessageToast(
-            withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.fetchEntriesFailed, nestedError: error)
-          )
+          Task { @MainActor in
+            GlobalUI.showMessageToast(
+              withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.fetchEntriesFailed, nestedError: error)
+            )
+          }
         }
       }
       .store(in: &cancellables)

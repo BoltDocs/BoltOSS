@@ -20,9 +20,11 @@ public protocol SchemeService {
 
   func registerSchemeHandler(_ schemeHandler: SchemeHandler)
 
+  @MainActor
   @discardableResult
   func matchToHandle(withURL url: URL) -> Bool
 
+  @MainActor
   @discardableResult
   func matchToHandle(withURLs urls: [URL]) -> Bool
 
