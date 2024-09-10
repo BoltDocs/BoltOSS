@@ -93,18 +93,16 @@ private final class DataSource: ObservableObject {
     $downloadTarixTrigger
       .filter { return self.supportsTarix }
       .flatMap { _ in
-        return downloadTarixFuture
-          .map { _ in Result.success(()) }
-          .catch { error -> AnyPublisher<Result<Void, Error>, Never> in
-            GlobalUI.showMessageToast(
-              withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.fetchEntriesFailed, nestedError: error)
-            )
-            return Just(Result.failure(error))
-              .eraseToAnyPublisher()
-          }
+        return downloadTarixFuture.mapToResult()
       }
       .trackActivityStatus(activityStatusTracker)
-      .sink { _ in }
+      .sink { result in
+        if case let .failure(error) = result {
+          GlobalUI.showMessageToast(
+            withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.fetchEntriesFailed, nestedError: error)
+          )
+        }
+      }
       .store(in: &cancellables)
 
     activityStatusTracker

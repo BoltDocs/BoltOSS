@@ -79,9 +79,8 @@ private final class DataSource: ObservableObject {
         LibraryDocsetsManager.shared.installedRecords()
           .setFailureType(to: Error.self)
       )
-      .map { entries -> Result<[FeedEntryListModel], Error> in
-        let records = entries.1
-        let res = entries.0.map { entry -> FeedEntryListModel in
+      .map { feedEntries, records -> [DataSource.FeedEntryListModel] in
+        return feedEntries.map { entry -> FeedEntryListModel in
           var installableStatus: FeedEntryListModel.InstallableStatus = .installable
           for record in records {
             guard record.name == entry.feed.id else {
@@ -99,22 +98,21 @@ private final class DataSource: ObservableObject {
           }
           return FeedEntryListModel(feedEntry: entry, installableStatus: installableStatus)
         }
-        return Result.success(res)
-      }
-      .catch { error -> AnyPublisher<Result<[FeedEntryListModel], Error>, Never> in
-        GlobalUI.showMessageToast(
-          withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.fetchEntriesFailed, nestedError: error)
-        )
-        return Just(Result.failure(error))
-          .eraseToAnyPublisher()
       }
       .eraseToAnyPublisher()
+      .mapToResult()
     }
 
     $refreshTrigger
       .flatMap { _ in handleRefreshing() }
       .trackActivityStatus(activityStatusTracker)
-      .sink { _ in }
+      .sink { result in
+        if case let .failure(error) = result {
+          GlobalUI.showMessageToast(
+            withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.fetchEntriesFailed, nestedError: error)
+          )
+        }
+      }
       .store(in: &cancellables)
 
     activityStatusTracker
