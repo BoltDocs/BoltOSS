@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 
 //
 // Copyright (C) 2024 Bolt Contributors
@@ -50,43 +50,67 @@ let moduleTargets: [Target] = [
   .target(
     name: "BoltArchives",
     dependencies: [Dependencies.GRDB, Dependencies.GzipSwift, Dependencies.UUIDShortener, "BoltCombineExtensions", "SWCompressionTAR", "BoltTypes", "BoltUtils"],
-    path: "./Sources/Archives/Sources"
+    path: "./Sources/Archives/Sources",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltNetworking",
     dependencies: ["Alamofire", "SwiftyJSON", "SwiftyXMLParser", "BoltTypes"],
-    path: "./Sources/Networking/Sources"
+    path: "./Sources/Networking/Sources",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltDatabase",
     dependencies: [Dependencies.GRDB, "BoltCombineExtensions", "BoltTypes"],
-    path: "./Sources/Database"
+    path: "./Sources/Database",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltDocsets",
     dependencies: [Dependencies.GRDB, "BoltArchives", "BoltDatabase", "BoltRepository", "BoltURLSchemes", "BoltUtils"],
-    path: "./Sources/Docsets/Sources"
+    path: "./Sources/Docsets/Sources",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltRepository",
     dependencies: ["SwiftyJSON", "BoltDatabase", "BoltNetworking", "BoltTypes", "BoltURLSchemes", "BoltUtils"],
-    path: "./Sources/Repository/Sources"
+    path: "./Sources/Repository/Sources",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltTypes",
     dependencies: ["BoltUtils", "Factory"],
     path: "./Sources/Types",
-    resources: [.process("Resources")]
+    resources: [.process("Resources")],
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltSearch",
     dependencies: [Dependencies.GRDB, "BoltDocsets", "BoltTypes"],
-    path: "./Sources/Search"
+    path: "./Sources/Search",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltURLSchemes",
     dependencies: ["BoltTypes"],
-    path: "./Sources/URLSchemes"
+    path: "./Sources/URLSchemes",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltServices",
@@ -102,7 +126,10 @@ let moduleTargets: [Target] = [
       "BoltURLSchemes",
     ],
     path: "./Sources",
-    sources: ["Application", "BoltServicesModule.swift", "BoltServicesExports.swift"]
+    sources: ["Application", "BoltServicesModule.swift", "BoltServicesExports.swift"],
+    swiftSettings: [
+      .swiftLanguageMode(.v5),
+    ]
   ),
 ]
 
@@ -110,12 +137,18 @@ let testingUtils: [Target] = [
   .target(
     name: "BoltTestingUtils",
     dependencies: [Dependencies.BoltUtilsTesting, "BoltTypes"],
-    path: "./Sources/Testing"
+    path: "./Sources/Testing",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltNetworkingTestStubs",
     dependencies: ["BoltUtils", "BoltNetworking"],
-    path: "./Sources/Networking/TestStubs"
+    path: "./Sources/Networking/TestStubs",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
 ]
 
@@ -125,7 +158,10 @@ let testTargets: [Target] = [
   .testTarget(
     name: "BoltRepositoryTests",
     dependencies: ["BoltRepository", "BoltTestingUtils", "BoltNetworkingTestStubs"],
-    path: "./Sources/Repository/Tests"
+    path: "./Sources/Repository/Tests",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .testTarget(
     name: "BoltDocsetsTests",
@@ -136,6 +172,9 @@ let testTargets: [Target] = [
     ],
     resources: [
       .copy("./TestResources"),
+    ],
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
     ]
   ),
 ]

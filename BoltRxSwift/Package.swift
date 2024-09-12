@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 //
 // Copyright (C) 2024 Bolt Contributors
 //
@@ -48,7 +48,10 @@ let package = Package(
         .product(name: "RxCombine", package: "RxCombine"),
         .product(name: "BoltUtils", package: "BoltUtils"),
       ],
-      path: "./Sources"
+      path: "./Sources",
+      swiftSettings: [
+        .swiftLanguageMode(.v5)
+      ]
     ),
   ]
 )

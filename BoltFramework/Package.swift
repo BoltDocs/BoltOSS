@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 
 //
 // Copyright (C) 2024 Bolt Contributors
@@ -28,7 +28,10 @@ let libraryTargets: [Target] = [
       "BoltServices",
       "BoltUIFoundation",
     ],
-    path: "./BoltBrowserUI"
+    path: "./BoltBrowserUI",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltHomeUI",
@@ -38,7 +41,10 @@ let libraryTargets: [Target] = [
       "BoltServices",
       "BoltUIFoundation",
     ],
-    path: "./BoltHomeUI"
+    path: "./BoltHomeUI",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltModuleExports",
@@ -46,7 +52,10 @@ let libraryTargets: [Target] = [
       "BoltRxSwift",
       "BoltServices",
     ],
-    path: "./BoltModuleExports"
+    path: "./BoltModuleExports",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltLibraryUI",
@@ -57,6 +66,9 @@ let libraryTargets: [Target] = [
     path: "./BoltLibraryUI",
     resources: [
       .process("./Assets"),
+    ],
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
     ]
   ),
   .target(
@@ -67,7 +79,10 @@ let libraryTargets: [Target] = [
       "BoltModuleExports",
       "RoutableNavigation",
     ],
-    path: "./BoltLookupUI"
+    path: "./BoltLookupUI",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltPreferencesUI",
@@ -77,7 +92,10 @@ let libraryTargets: [Target] = [
       "LicensePlistViewController",
       "BetterSafariView",
     ],
-    path: "./BoltPreferencesUI"
+    path: "./BoltPreferencesUI",
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
   ),
   .target(
     name: "BoltUIFoundation",
@@ -91,6 +109,9 @@ let libraryTargets: [Target] = [
     path: "./BoltUIFoundation",
     resources: [
       .process("./Assets"),
+    ],
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
     ]
   ),
 ]
@@ -111,6 +132,9 @@ let frameworkTarget: Target = {
     path: "./BoltFramework",
     resources: [
       .process("./Assets"),
+    ],
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
     ]
   )
 }()
