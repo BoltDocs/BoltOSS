@@ -52,10 +52,7 @@ let libraryTargets: [Target] = [
       "BoltRxSwift",
       "BoltServices",
     ],
-    path: "./BoltModuleExports",
-    swiftSettings: [
-      .swiftLanguageMode(.v5)
-    ]
+    path: "./BoltModuleExports"
   ),
   .target(
     name: "BoltLibraryUI",

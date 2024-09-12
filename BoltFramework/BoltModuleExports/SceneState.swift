@@ -33,6 +33,7 @@ public extension Container {
 
 public protocol DistributionService {
 
+  @MainActor
   func checkForUpdate()
 
 }
