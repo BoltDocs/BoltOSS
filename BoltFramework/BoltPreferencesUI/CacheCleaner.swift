@@ -53,3 +53,13 @@ struct CacheCleaner: LoggerProvider {
   }
 
 }
+
+private extension URLSession {
+
+  func stopAllTasks() async {
+    await allTasks
+      .filter { $0.state != .completed && $0.state != .canceling }
+      .forEach { $0.cancel() }
+  }
+
+}
