@@ -25,6 +25,7 @@ let libraryTargets: [Target] = [
     name: "BoltBrowserUI",
     dependencies: [
       "SnapKit",
+      "BoltModuleExports",
       "BoltServices",
       "BoltUIFoundation",
     ],
@@ -57,6 +58,7 @@ let libraryTargets: [Target] = [
   .target(
     name: "BoltLibraryUI",
     dependencies: [
+      "BoltModuleExports",
       "BoltServices",
       "BoltUIFoundation",
     ],
@@ -84,6 +86,7 @@ let libraryTargets: [Target] = [
   .target(
     name: "BoltPreferencesUI",
     dependencies: [
+      "BoltModuleExports",
       "BoltServices",
       "BoltUIFoundation",
       "LicensePlistViewController",
