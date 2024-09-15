@@ -135,6 +135,8 @@ public struct TarUnarchiver: LoggerProvider {
         tmpPath = LocalFileSystem.applicationTempAbsolutePath
       }
 
+      try FileManager.default.createDirectory(atPath: tmpPath, withIntermediateDirectories: true)
+
       let tarURL = URL(fileURLWithPath: tmpPath)
         .appendingPathComponent(
           "\(sourceURL.deletingPathExtension().lastPathComponent)_\(try UUID().shortened(using: .base62))"
