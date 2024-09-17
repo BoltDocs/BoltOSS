@@ -41,10 +41,7 @@ let package = Package(
       dependencies: [
         "CombineExt"
       ],
-      path: "./Sources",
-      swiftSettings: [
-        .swiftLanguageMode(.v5)
-      ]
+      path: "./Sources"
     ),
   ]
 )

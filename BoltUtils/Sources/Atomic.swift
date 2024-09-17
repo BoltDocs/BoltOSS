@@ -29,7 +29,7 @@ public protocol AtomicProtocol {
 
 }
 
-public struct Atomic<T>: AtomicProtocol {
+public final class Atomic<T>: AtomicProtocol, @unchecked Sendable {
 
   private var lock = NSLock()
   private var _value: T
@@ -53,7 +53,7 @@ public struct Atomic<T>: AtomicProtocol {
   }
 
   @discardableResult
-  public mutating func synced<U>(_ f: (inout T) throws -> U) rethrows -> U {
+  public func synced<U>(_ f: (inout T) throws -> U) rethrows -> U {
     lock.lock()
     let e = try f(&_value)
     lock.unlock()

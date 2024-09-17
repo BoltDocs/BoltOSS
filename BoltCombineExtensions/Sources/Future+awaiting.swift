@@ -17,25 +17,29 @@
 import Combine
 import Foundation
 
+import BoltUtils
+
 public extension Future {
 
-  static func awaiting<T>(_ asyncFunc: @escaping () async -> T) -> Future<T, Never> {
+  static func awaiting<T>(_ asyncFunc: @Sendable @escaping () async -> T) -> Future<T, Never> {
     return Future<T, Never> { promise in
+      let promise = UncheckedSendableContainer(promise)
       Task {
         let output = await asyncFunc()
-        promise(.success(output))
+        promise.value(.success(output))
       }
     }
   }
 
-  static func awaitingThrowing<T>(_ asyncFunc: @escaping () async throws -> T) -> Future<T, Error> {
+  static func awaitingThrowing<T>(_ asyncFunc: @Sendable @escaping () async throws -> T) -> Future<T, Error> {
     return Future<T, Error> { promise in
+      let promise = UncheckedSendableContainer(promise)
       Task {
         do {
           let output = try await asyncFunc()
-          promise(.success(output))
+          promise.value(.success(output))
         } catch {
-          promise(.failure(error))
+          promise.value(.failure(error))
         }
       }
     }

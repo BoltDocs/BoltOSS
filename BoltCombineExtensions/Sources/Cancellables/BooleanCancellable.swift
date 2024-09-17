@@ -19,9 +19,9 @@ import Foundation
 
 import BoltUtils
 
-public final class BooleanCancellable: CheckableCancellable {
+public final class BooleanCancellable: CheckableCancellable, Sendable {
 
-  private var _isCancelled = Atomic<Bool>(false)
+  private let _isCancelled = Atomic<Bool>(false)
 
   public init() { }
 

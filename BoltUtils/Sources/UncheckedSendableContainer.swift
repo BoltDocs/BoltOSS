@@ -16,15 +16,15 @@
 
 import Foundation
 
-public final class UncheckedSendableContainer<T: Sendable>: @unchecked Sendable {
+public final class UncheckedSendableContainer<T>: @unchecked Sendable {
 
-  public private(set) var value: T?
+  public private(set) var value: T
 
-  public init(value: T? = nil) {
+  public init(_ value: T) {
     self.value = value
   }
 
-  public func set(val: T?) {
+  public func set(val: T) {
     value = val
   }
 
