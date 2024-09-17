@@ -34,18 +34,15 @@ private struct DocsetsModule {
 
 public extension Container {
 
+  private static var initialize: PerformOnce = {
+    DocsetsModule.setupLocalStorage()
+    let _ = Container.shared.downloadManager()
+    return {}
+  }()
+
   var docsetsModuleInitializer: Factory<() -> Void> {
-    var initialized = Atomic<Bool>(false)
     return self { {
-      guard !initialized.value else {
-        return
-      }
-
-      initialized.value = true
-
-      DocsetsModule.setupLocalStorage()
-      let _ = Container.shared.downloadManager()
-
+      Self.initialize()
       // swiftlint:disable:next closure_end_indentation
     } }
   }

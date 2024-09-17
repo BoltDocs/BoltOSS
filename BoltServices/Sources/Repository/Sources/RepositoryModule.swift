@@ -22,18 +22,18 @@ import BoltTypes
 import BoltUtils
 
 public extension Container {
+
+  private static var initialize: PerformOnce = {
+    let repositoryRegistry = Container.shared.repositoryRegistry()
+    repositoryRegistry.registerRepository(CustomFeedRepository(), forIdentifier: .custom)
+    return {}
+  }()
+
   var repositoryModuleInitializer: Factory<() -> Void> {
-    var initialized = Atomic<Bool>(false)
     return self { {
-      guard !initialized.value else {
-        return
-      }
-
-      initialized.value = true
-
-      let repositoryRegistry = Container.shared.repositoryRegistry()
-      repositoryRegistry.registerRepository(CustomFeedRepository(), forIdentifier: .custom)
+      Self.initialize()
       // swiftlint:disable:next closure_end_indentation
     } }
   }
+
 }
