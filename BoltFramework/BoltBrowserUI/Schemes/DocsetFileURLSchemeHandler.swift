@@ -44,18 +44,24 @@ public class TarixURLSchemeHandler: NSObject, WKURLSchemeHandler {
       return
     }
 
-    let response = URLResponse(url: url, mimeType: url.mimeType(), expectedContentLength: -1, textEncodingName: nil)
+    Task.detached(priority: .userInitiated) { [weak self] in
+      guard let self else {
+        return
+      }
 
-    if let data = Self.loadTarix(fromScheme: scheme) {
-      postResponse(to: urlSchemeTask, response: response)
-      postResponse(to: urlSchemeTask, data: data)
-      postFinished(to: urlSchemeTask)
-    } else if let data = Self.loadFile(fromScheme: scheme) {
-      postResponse(to: urlSchemeTask, response: response)
-      postResponse(to: urlSchemeTask, data: data)
-      postFinished(to: urlSchemeTask)
-    } else {
-      postFailed(to: urlSchemeTask, error: WebErrors.RequestFailedError)
+      let response = URLResponse(url: url, mimeType: url.mimeType(), expectedContentLength: -1, textEncodingName: nil)
+
+      if let data = await Self.loadTarix(fromScheme: scheme) {
+        await postResponse(to: urlSchemeTask, response: response)
+        await postResponse(to: urlSchemeTask, data: data)
+        await postFinished(to: urlSchemeTask)
+      } else if let data = Self.loadFile(fromScheme: scheme) {
+        await postResponse(to: urlSchemeTask, response: response)
+        await postResponse(to: urlSchemeTask, data: data)
+        await postFinished(to: urlSchemeTask)
+      } else {
+        await postFailed(to: urlSchemeTask, error: WebErrors.RequestFailedError)
+      }
     }
 
     // remove the task from the list of stopped tasks (if it is there)
@@ -75,24 +81,24 @@ public class TarixURLSchemeHandler: NSObject, WKURLSchemeHandler {
     return stoppedTaskURLs.contains { $0 == urlSchemeTask.request }
   }
 
-  private func postResponse(to urlSchemeTask: WKURLSchemeTask, response: URLResponse) {
-    post(to: urlSchemeTask) { urlSchemeTask.didReceive(response) }
+  private nonisolated func postResponse(to urlSchemeTask: WKURLSchemeTask, response: URLResponse) async {
+    await post(to: urlSchemeTask) { urlSchemeTask.didReceive(response) }
   }
 
-  private func postResponse(to urlSchemeTask: WKURLSchemeTask, data: Data) {
-    post(to: urlSchemeTask) { urlSchemeTask.didReceive(data) }
+  private nonisolated func postResponse(to urlSchemeTask: WKURLSchemeTask, data: Data) async {
+    await post(to: urlSchemeTask) { urlSchemeTask.didReceive(data) }
   }
 
-  private func postFinished(to urlSchemeTask: WKURLSchemeTask) {
-    post(to: urlSchemeTask) { urlSchemeTask.didFinish() }
+  private nonisolated func postFinished(to urlSchemeTask: WKURLSchemeTask) async {
+    await post(to: urlSchemeTask) { urlSchemeTask.didFinish() }
   }
 
-  private func postFailed(to urlSchemeTask: WKURLSchemeTask, error: Error) {
-    post(to: urlSchemeTask) { urlSchemeTask.didFailWithError(error) }
+  private nonisolated func postFailed(to urlSchemeTask: WKURLSchemeTask, error: Error) async {
+    await post(to: urlSchemeTask) { urlSchemeTask.didFailWithError(error) }
   }
 
-  private func post(to urlSchemeTask: WKURLSchemeTask, action: @escaping () -> Void) {
-    if hasTaskStopped(urlSchemeTask) == false {
+  private nonisolated func post(to urlSchemeTask: WKURLSchemeTask, action: @escaping () -> Void) async {
+    if await hasTaskStopped(urlSchemeTask) == false {
       action()
     }
   }
@@ -101,7 +107,7 @@ public class TarixURLSchemeHandler: NSObject, WKURLSchemeHandler {
 
 private extension TarixURLSchemeHandler {
 
-  static func loadTarix(fromScheme scheme: DocsetFileURLScheme) -> Data? {
+  nonisolated static func loadTarix(fromScheme scheme: DocsetFileURLScheme) async -> Data? {
     let docsetPath = LocalFileSystem.docsetsAbsolutePath
       .appendingPathComponent(scheme.docsetUUID)
       .appendingPathComponent(scheme.docsetFileName)
@@ -113,28 +119,17 @@ private extension TarixURLSchemeHandler {
       return nil
     }
 
-    let result = UncheckedSendableContainer<Data>()
+    let result = try? await TarixUnarchiver.dataFromIndexedTar(
+      tarFilePath: tarFilePath,
+      tarixDBPath: tarixDBPath,
+      atPath: "\(scheme.docsetFileName)/Contents/Resources/Documents\(scheme.path)",
+      usingQueue: queue
+    )?.1
 
-    let group = DispatchGroup()
-    group.enter()
-
-    Task {
-      let res = try? await TarixUnarchiver.dataFromIndexedTar(
-        tarFilePath: tarFilePath,
-        tarixDBPath: tarixDBPath,
-        atPath: "\(scheme.docsetFileName)/Contents/Resources/Documents\(scheme.path)",
-        usingQueue: queue
-      )
-      result.set(val: res?.1)
-      group.leave()
-    }
-
-    group.wait()
-
-    return result.value
+    return result
   }
 
-  static func loadFile(fromScheme scheme: DocsetFileURLScheme) -> Data? {
+  nonisolated static func loadFile(fromScheme scheme: DocsetFileURLScheme) -> Data? {
     let docsetPath = LocalFileSystem.docsetsAbsolutePath
       .appendingPathComponent(scheme.docsetUUID)
       .appendingPathComponent(scheme.docsetFileName)
