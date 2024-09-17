@@ -20,6 +20,7 @@ import SwiftUI
 import Factory
 
 import BoltServices
+import BoltUIFoundation
 import BoltUtils
 
 private class DownloadProgressListItemViewModel: ObservableObject {
@@ -36,7 +37,18 @@ private class DownloadProgressListItemViewModel: ObservableObject {
     self.identifier = identifier
 
     let progressPublisher = downloadManager.progress(forIdentifier: identifier)
+    setupPublishers(progressPublisher: progressPublisher)
+  }
 
+  init(
+    identifier: String,
+    progressPublisher: AnyPublisher<DownloadProgress?, Never>
+  ) {
+    self.identifier = identifier
+    setupPublishers(progressPublisher: progressPublisher)
+  }
+
+  private func setupPublishers(progressPublisher: AnyPublisher<DownloadProgress?, Never>) {
     progressPublisher
       .map {  progress -> String? in
         switch progress {
@@ -86,7 +98,22 @@ public struct DownloadProgressListItemView: View {
   @ObservedObject private var model: DownloadProgressListItemViewModel
 
   init(identifier: String, title: String, subtitle: String? = nil, preventsHighlight: Bool = false) {
-    self.model = DownloadProgressListItemViewModel(identifier: identifier)
+    let model = DownloadProgressListItemViewModel(identifier: identifier)
+    self.init(
+      model: model,
+      title: title,
+      subtitle: subtitle,
+      preventsHighlight: preventsHighlight
+    )
+  }
+
+  fileprivate init(
+    model: DownloadProgressListItemViewModel,
+    title: String,
+    subtitle: String? = nil,
+    preventsHighlight: Bool = false
+  ) {
+    self.model = model
     self.title = title
     self.subtitle = subtitle
     self.preventsHighlight = preventsHighlight
@@ -135,3 +162,37 @@ public struct DownloadProgressListItemView: View {
   }
 
 }
+
+#if DEBUG
+struct DownloadProgressListItemView_Previews: PreviewProvider {
+
+  private struct StubbedError: Error { }
+
+  private static let progresses: [(String, DownloadProgress?)] = [
+    (".none", .none),
+    (".pending", .pending),
+    (".downloading", .downloading(receivedBytes: 1024, expectedBytes: 10240)),
+    (".completed", .completed),
+    (".failed", .failed(StubbedError())),
+  ]
+
+  static var previews: some View {
+    PreviewContainer {
+      ForEach(progresses.indices, id: \.self) { index in
+        PreviewCase(caption: progresses[index].0) {
+          DownloadProgressListItemView(
+            model: DownloadProgressListItemViewModel(
+              identifier: "",
+              progressPublisher: Just<DownloadProgress?>(progresses[index].1)
+                .eraseToAnyPublisher()
+            ),
+            title: "Download Title"
+          )
+          .frame(width: 480)
+        }
+      }
+    }
+  }
+
+}
+#endif
