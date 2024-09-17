@@ -121,8 +121,18 @@ public struct DownloadProgressListItemView: View {
 
   public var body: some View {
     HStack {
-      VStack(alignment: .leading, spacing: 2) {
+      VStack(alignment: .leading, spacing: 4) {
         Text(title)
+        switch model.progress {
+        case .pending:
+          ProgressView()
+            .progressViewStyle(.linear)
+        case let .downloading(receivedBytes, expectedBytes):
+          ProgressView(value: calculateProgress(receivedBytes: receivedBytes, expectedBytes: expectedBytes))
+            .progressViewStyle(.linear)
+        default:
+          EmptyView()
+        }
         if let subtitle = (model.progressSubtitle ?? subtitle) {
           Text(subtitle)
             .foregroundColor(.secondary)
@@ -131,21 +141,12 @@ public struct DownloadProgressListItemView: View {
       }
       Spacer()
       switch model.progress {
-      case .none:
-        EmptyView()
-      case .pending:
-        ProgressView()
-          .progressViewStyle(.circular)
-      case let .downloading(receivedBytes, expectedBytes):
-        CircleProgressIndicatorButton(
-          progress: calculateProgress(receivedBytes: receivedBytes, expectedBytes: expectedBytes)
-        ) {
-          model.cancelButtonTap()
-        }
       case .completed:
         Image(systemName: "checkmark.circle")
       case .failed:
         Image(systemName: "exclamationmark.triangle")
+      default:
+        EmptyView()
       }
     }
     .if(preventsHighlight) {
