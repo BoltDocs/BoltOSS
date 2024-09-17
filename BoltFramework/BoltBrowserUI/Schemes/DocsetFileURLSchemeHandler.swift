@@ -31,7 +31,7 @@ public class TarixURLSchemeHandler: NSObject, WKURLSchemeHandler {
 
   static let queue = DispatchQueue(label: "app.BoltDocs.Bolt.TarixURLSchemeHandler", qos: .userInitiated)
 
-  private var stoppedTaskURLs: [URLRequest] = []
+  private var stoppedRequests: [URLRequest] = []
 
   public func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
     let request = urlSchemeTask.request
@@ -66,19 +66,19 @@ public class TarixURLSchemeHandler: NSObject, WKURLSchemeHandler {
 
     // remove the task from the list of stopped tasks (if it is there)
     // since we're done with it anyway
-    stoppedTaskURLs = stoppedTaskURLs.filter { $0 != request }
+    stoppedRequests = stoppedRequests.filter { $0 != request }
   }
 
   public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-    if !hasTaskStopped(urlSchemeTask) {
-      stoppedTaskURLs.append(urlSchemeTask.request)
+    if !isTaskStopped(urlSchemeTask) {
+      stoppedRequests.append(urlSchemeTask.request)
     }
   }
 
   // MARK: - Private
 
-  private func hasTaskStopped(_ urlSchemeTask: WKURLSchemeTask) -> Bool {
-    return stoppedTaskURLs.contains { $0 == urlSchemeTask.request }
+  private func isTaskStopped(_ urlSchemeTask: WKURLSchemeTask) -> Bool {
+    return stoppedRequests.contains { $0 == urlSchemeTask.request }
   }
 
   private nonisolated func postResponse(to urlSchemeTask: WKURLSchemeTask, response: URLResponse) async {
@@ -98,7 +98,7 @@ public class TarixURLSchemeHandler: NSObject, WKURLSchemeHandler {
   }
 
   private nonisolated func post(to urlSchemeTask: WKURLSchemeTask, action: @escaping () -> Void) async {
-    if await hasTaskStopped(urlSchemeTask) == false {
+    if await isTaskStopped(urlSchemeTask) == false {
       action()
     }
   }
@@ -119,14 +119,16 @@ private extension TarixURLSchemeHandler {
       return nil
     }
 
-    let result = try? await TarixUnarchiver.dataFromIndexedTar(
+    guard let (_, data) = try? await TarixUnarchiver.dataFromIndexedTar(
       tarFilePath: tarFilePath,
       tarixDBPath: tarixDBPath,
       atPath: "\(scheme.docsetFileName)/Contents/Resources/Documents\(scheme.path)",
       usingQueue: queue
-    )?.1
+    ) else {
+      return nil
+    }
 
-    return result
+    return data
   }
 
   nonisolated static func loadFile(fromScheme scheme: DocsetFileURLScheme) -> Data? {
