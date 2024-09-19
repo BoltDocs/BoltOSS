@@ -119,7 +119,7 @@ public struct CompletedDownloadListItemView: View {
             }
             .overlay {
               NavigationLink(
-                destination: { DeferredView { LibraryDownloadDetailView(taskEntity: model.taskEntity) } },
+                destination: { DeferredView { LibraryDownloadsFeedInfoView(taskEntity: model.taskEntity) } },
                 label: { EmptyView() }
               )
               .opacity(0)

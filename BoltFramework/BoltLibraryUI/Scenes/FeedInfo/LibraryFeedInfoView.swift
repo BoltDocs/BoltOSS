@@ -155,7 +155,7 @@ private struct FeedInfoStaticListItem: View {
 
 }
 
-struct FeedInfoView: View {
+struct LibraryFeedInfoView: View {
 
   @Environment(\.dismissLibraryHome)
   private var dismissLibraryHome: DismissAction?
@@ -165,7 +165,7 @@ struct FeedInfoView: View {
 
   @ObservedObject private var dataSource: DataSource
 
-  init(feed: Feed) {
+  init(_ feed: Feed) {
     self.dataSource = DataSource(feed: feed)
   }
 
@@ -194,7 +194,7 @@ struct FeedInfoView: View {
       case .installable:
         return AnyView(
           NavigationLink(
-            destination: DeferredView { DownloadConfirmationView(feedEntry: entry) }
+            destination: DeferredView { LibraryFeedEntryView(entry) }
           ) {
             // versions for docsets marked 'latest' should be hidden to the user
             DownloadProgressListItemView(
@@ -209,7 +209,7 @@ struct FeedInfoView: View {
         assert(entry.isTrackedAsLatest)
         return AnyView(
           NavigationLink(
-            destination: DeferredView { DownloadConfirmationView(feedEntry: entry) }
+            destination: DeferredView { LibraryFeedEntryView(entry) }
           ) {
             let subtitle = dataSource.feed.shouldHideVersions
               ? "Update Available:"

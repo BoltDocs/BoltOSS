@@ -154,7 +154,7 @@ private final class DataSource: ObservableObject {
 
 }
 
-struct DownloadConfirmationView: View {
+struct LibraryFeedEntryView: View {
 
   @Injected(\.downloadManager)
   private var downloadManager: DownloadManager
@@ -162,7 +162,7 @@ struct DownloadConfirmationView: View {
   @Environment(\.dismissLibraryHome)
   private var dismissLibraryHome: DismissAction?
 
-  init(feedEntry entry: FeedEntry) {
+  init(_ entry: FeedEntry) {
     self.dataSource = DataSource(entry: entry)
   }
 

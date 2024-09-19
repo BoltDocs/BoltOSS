@@ -134,7 +134,7 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
       if actionPerformer.status == .success {
         ForEach(filteredFeeds, id: \.id) { feed in
           NavigationLink {
-            DeferredView { FeedInfoView(feed: feed) }
+            DeferredView { LibraryFeedInfoView(feed) }
           } label: {
             LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
           } // NavigationLink

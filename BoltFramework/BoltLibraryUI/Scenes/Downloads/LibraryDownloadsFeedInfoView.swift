@@ -25,7 +25,7 @@ import BoltTypes
 import BoltUtils
 
 @MainActor
-private class LibraryDownloadDetailViewModel: ObservableObject {
+private class LibraryDownloadsFeedInfoViewModel: ObservableObject {
 
   @Injected(\.downloadManager)
   private var downloadManager: DownloadManager
@@ -44,18 +44,18 @@ private class LibraryDownloadDetailViewModel: ObservableObject {
 
 }
 
-public struct LibraryDownloadDetailView: View {
+public struct LibraryDownloadsFeedInfoView: View {
 
-  @ObservedObject private var model: LibraryDownloadDetailViewModel
+  @ObservedObject private var model: LibraryDownloadsFeedInfoViewModel
 
   init(taskEntity: DownloadTaskEntity) {
-    self.model = LibraryDownloadDetailViewModel(taskEntity: taskEntity)
+    self.model = LibraryDownloadsFeedInfoViewModel(taskEntity: taskEntity)
   }
 
   public var body: some View {
     Group {
       if let feedEntry = model.feedEntry {
-        DownloadConfirmationView(feedEntry: feedEntry)
+        LibraryFeedEntryView(feedEntry)
       } else {
         Group {
           ProgressView()

@@ -77,7 +77,7 @@ struct LibraryCustomFeedListView: View {
     List {
       ForEach(model.feeds, id: \.id) { feed in
         NavigationLink {
-          DeferredView { FeedInfoView(feed: feed) }
+          DeferredView { LibraryFeedInfoView(feed) }
         } label: {
           LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
         } // NavigationLink
