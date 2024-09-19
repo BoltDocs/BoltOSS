@@ -72,6 +72,10 @@ private final class DataSource: ObservableObject {
     return name
   }
 
+  var archivePath: String {
+    FeedEntry.downloadAbsolutePath(forId: entry.id, withExtension: "tgz")
+  }
+
   init(entry: FeedEntry) {
     self.entry = entry
 
@@ -116,7 +120,7 @@ private final class DataSource: ObservableObject {
         let localFileExists = {
           return FileManager.default.fileExists(
             atPath: URL(
-              fileURLWithPath: FeedEntry.downloadAbsolutePath(forId: entry.id, withExtension: "tgz")
+              fileURLWithPath: self.archivePath
             ).path
           )
         }
@@ -150,6 +154,11 @@ private final class DataSource: ObservableObject {
     } catch {
       estimatedSizeStatusResult = .failure(error)
     }
+  }
+
+  func deleteArchive() {
+    try? FileManager.default.removeItem(atPath: archivePath)
+    downloadManager.removeTask(forIdentifier: entry.id)
   }
 
 }
@@ -241,40 +250,49 @@ struct LibraryFeedEntryView: View {
   }
 
   private func installSection() -> some View {
-    Section(footer: Group {
-      if dataSource.supportsTarix, installsWithTarix != true {
-        Text("\(Image(systemName: "exclamationmark.triangle")) Installing docsets without a archive index (tarix) can significantly increase the size of installed docset and installation time.")
-      }
-    }) {
-      if case let .downloading(progress) = dataSource.downloadStatus {
-        ProgressView(value: progress)
-          .progressViewStyle(.linear)
-      }
-      Button(action: {
-        Task {
+    Group {
+      Section(footer: Group {
+        if dataSource.supportsTarix, installsWithTarix != true {
+          Text("\(Image(systemName: "exclamationmark.triangle")) Installing docsets without a archive index (tarix) can significantly increase the size of installed docset and installation time.")
+        }
+      }) {
+        if case let .downloading(progress) = dataSource.downloadStatus {
+          ProgressView(value: progress)
+            .progressViewStyle(.linear)
+        }
+        Button(action: {
+          Task {
+            switch dataSource.downloadStatus {
+            case .notDownloaded:
+              await startDownload(force: false)
+            case .downloading:
+              await cancelDownload()
+            case .downloaded:
+              startInstall()
+            case .failed:
+              await startDownload(force: true)
+            }
+          }
+        }, label: {
           switch dataSource.downloadStatus {
           case .notDownloaded:
-            await startDownload(force: false)
+            Text("Download")
           case .downloading:
-            await cancelDownload()
+            Text("Cancel Download")
           case .downloaded:
-            startInstall()
+            Text("Install")
           case .failed:
-            await startDownload(force: true)
+            Text("Retry Download")
+          }
+        })
+      }
+      Section {
+        if case .downloaded = dataSource.downloadStatus {
+          Button("Delete", role: .destructive) {
+            dataSource.deleteArchive()
           }
         }
-      }, label: {
-        switch dataSource.downloadStatus {
-        case .notDownloaded:
-          Text("Download")
-        case .downloading:
-          Text("Cancel Download")
-        case .downloaded:
-          Text("Install")
-        case .failed:
-          Text("Retry Download")
-        }
-      })
+      }
     }
   }
 
