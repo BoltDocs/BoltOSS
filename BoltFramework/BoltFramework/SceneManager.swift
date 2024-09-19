@@ -95,8 +95,8 @@ public final class SceneManager {
       })
       .disposed(by: disposeBag)
 
-    // swiftlint:disable:next trailing_closure
     state.onPresentDownloads
+      // swiftlint:disable:next trailing_closure
       .emit(onNext: {
         BoltAppNavigator.presentDownloads()
       })
