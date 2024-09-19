@@ -21,7 +21,7 @@ import BoltDocsets
 import BoltTypes
 import BoltUIFoundation
 
-private final class DataSource: ObservableObject {
+private final class LibraryFeedInfoVersionsSectionModel: ObservableObject {
 
   struct FeedEntryListModel: Identifiable {
     enum InstallableStatus {
@@ -56,13 +56,13 @@ private final class DataSource: ObservableObject {
       }
     }
 
-    let handleRefreshing: () -> AnyPublisher<Result<[DataSource.FeedEntryListModel], Error>, Never> = {
+    let handleRefreshing: () -> AnyPublisher<Result<[FeedEntryListModel], Error>, Never> = {
       return Publishers.CombineLatest(
         fetchEntriesPublisher(),
         LibraryDocsetsManager.shared.installedRecords()
           .setFailureType(to: Error.self)
       )
-      .map { feedEntries, records -> [DataSource.FeedEntryListModel] in
+      .map { feedEntries, records -> [FeedEntryListModel] in
         return feedEntries.map { entry -> FeedEntryListModel in
           var installableStatus: FeedEntryListModel.InstallableStatus = .installable
           for record in records {
@@ -138,19 +138,21 @@ private struct FeedInfoStaticListItem: View {
 
 }
 
-struct LibraryFeedInfoViewVersionsSection: View {
+struct LibraryFeedInfoVersionsSection: View {
 
-  @StateObject private var dataSource: DataSource
+  private typealias ViewModel = LibraryFeedInfoVersionsSectionModel
 
-  @State var showsAllVersions = false
+  @StateObject private var viewModel: ViewModel
+
+  @State private var showsAllVersions = false
 
   init(feed: Feed) {
-    _dataSource = StateObject(wrappedValue: { DataSource(feed: feed) }())
+    _viewModel = StateObject(wrappedValue: { ViewModel(feed: feed) }())
   }
 
-  private func buildVersionsListItem(entryListModel: DataSource.FeedEntryListModel) -> AnyView {
+  private func buildVersionsListItem(entryListModel: ViewModel.FeedEntryListModel) -> AnyView {
     let entry = entryListModel.feedEntry
-    let shouldShowVersionedItem = !dataSource.feed.shouldHideVersions && showsAllVersions
+    let shouldShowVersionedItem = !viewModel.feed.shouldHideVersions && showsAllVersions
     if shouldShowVersionedItem || entry.isTrackedAsLatest {
       switch entryListModel.installableStatus {
       case .installable:
@@ -173,7 +175,7 @@ struct LibraryFeedInfoViewVersionsSection: View {
           NavigationLink(
             destination: DeferredView { LibraryFeedEntryView(entry) }
           ) {
-            let subtitle = dataSource.feed.shouldHideVersions
+            let subtitle = viewModel.feed.shouldHideVersions
               ? "Update Available:"
               : "Update Available: \(entry.version) / \(currentVersion)"
             DownloadProgressListItemView(
@@ -209,9 +211,9 @@ struct LibraryFeedInfoViewVersionsSection: View {
 
   var body: some View {
     Section(header: Text("Versions")) {
-      if case .result(let result) = dataSource.statusResult {
+      if case .result(let result) = viewModel.statusResult {
         if case .success(let allVersions) = result {
-          if !dataSource.feed.shouldHideVersions {
+          if !viewModel.feed.shouldHideVersions {
             BoltToggle("Show All Available Versions", isOn: $showsAllVersions)
           }
           ForEach(allVersions) { entry in
@@ -219,7 +221,7 @@ struct LibraryFeedInfoViewVersionsSection: View {
           }
         } else {
           Button("Retry") {
-            dataSource.refreshTrigger = ()
+            viewModel.refreshTrigger = ()
           }
         }
       } else {

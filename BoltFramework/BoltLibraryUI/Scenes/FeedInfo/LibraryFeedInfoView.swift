@@ -50,7 +50,7 @@ struct LibraryFeedInfoView: View {
     }
   }
 
-  typealias VersionsSection = LibraryFeedInfoViewVersionsSection
+  typealias VersionsSection = LibraryFeedInfoVersionsSection
 
   @Environment(\.dismissLibraryHome)
   private var dismissLibraryHome: DismissAction?
