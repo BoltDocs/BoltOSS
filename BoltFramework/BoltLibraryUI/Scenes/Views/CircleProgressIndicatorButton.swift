@@ -74,16 +74,15 @@ public struct CircleProgressIndicatorButton: View {
 }
 
 #if DEBUG
-struct CircleProgressIndicatorButton_Previews: PreviewProvider {
 
-  static var previews: some View {
-    Group {
-      CircleProgressIndicatorButton(progress: 0)
-        .previewLayout(.fixed(width: 200, height: 200))
-      CircleProgressIndicatorButton(progress: nil)
-        .previewLayout(.fixed(width: 200, height: 200))
-    }
-  }
-
+@available(iOS 17.0, *)
+#Preview(traits: .fixedLayout(width: 200, height: 200)) {
+  CircleProgressIndicatorButton(progress: 0)
 }
+
+@available(iOS 17.0, *)
+#Preview(traits: .fixedLayout(width: 200, height: 200)) {
+  CircleProgressIndicatorButton(progress: nil)
+}
+
 #endif

@@ -165,11 +165,13 @@ public struct DownloadProgressListItemView: View {
 }
 
 #if DEBUG
-struct DownloadProgressListItemView_Previews: PreviewProvider {
 
-  private struct StubbedError: Error { }
+@available(iOS 17.0, *)
+#Preview {
 
-  private static let progresses: [(String, DownloadProgress?)] = [
+  struct StubbedError: Error { }
+
+  let progresses: [(String, DownloadProgress?)] = [
     (".none", .none),
     (".pending", .pending),
     (".downloading", .downloading(receivedBytes: 1024, expectedBytes: 10240)),
@@ -177,23 +179,22 @@ struct DownloadProgressListItemView_Previews: PreviewProvider {
     (".failed", .failed(StubbedError())),
   ]
 
-  static var previews: some View {
-    PreviewContainer {
-      ForEach(progresses.indices, id: \.self) { index in
-        PreviewCase(caption: progresses[index].0) {
-          DownloadProgressListItemView(
-            model: DownloadProgressListItemViewModel(
-              identifier: "",
-              progressPublisher: Just<DownloadProgress?>(progresses[index].1)
-                .eraseToAnyPublisher()
-            ),
-            title: "Download Title"
-          )
-          .frame(width: 480)
-        }
+  return PreviewContainer {
+    ForEach(progresses.indices, id: \.self) { index in
+      PreviewCase(caption: progresses[index].0) {
+        DownloadProgressListItemView(
+          model: DownloadProgressListItemViewModel(
+            identifier: "",
+            progressPublisher: Just<DownloadProgress?>(progresses[index].1)
+              .eraseToAnyPublisher()
+          ),
+          title: "Download Title"
+        )
+        .frame(width: 480)
       }
     }
   }
 
 }
+
 #endif
