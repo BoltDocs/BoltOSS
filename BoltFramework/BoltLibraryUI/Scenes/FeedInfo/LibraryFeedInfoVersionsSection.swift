@@ -21,29 +21,41 @@ import BoltDocsets
 import BoltTypes
 import BoltUIFoundation
 
-private final class LibraryFeedInfoVersionsSectionModel: ObservableObject {
+struct FeedInfoVersionsSectionListItem: Identifiable {
 
-  struct FeedEntryListModel: Identifiable {
-    enum InstallableStatus {
-      case latest
-      case installed
-      case updateAvailable(currentVersion: String)
-      case installable
-    }
-
-    let feedEntry: FeedEntry
-    let installableStatus: InstallableStatus
-
-    var id: String {
-      return feedEntry.id
-    }
+  enum InstallableStatus {
+    case latest
+    case installed
+    case updateAvailable(currentVersion: String)
+    case installable
   }
 
+  let feedEntry: FeedEntry
+  let installableStatus: InstallableStatus
+
+  var id: String {
+    return feedEntry.id
+  }
+
+}
+
+protocol FeedInfoVersionsSectionModel: ObservableObject {
+
+  var statusResult: ActivityStatus<[FeedInfoVersionsSectionListItem], Error> { get }
+
+  var feed: Feed { get }
+
+  var refreshTrigger: Void { get set }
+
+}
+
+final class LibraryFeedInfoVersionsSectionModelImp: FeedInfoVersionsSectionModel {
+
   private var cancellables = Set<AnyCancellable>()
-  private let activityStatusTracker = ActivityStatusTracker<[FeedEntryListModel], Error>()
+  private let activityStatusTracker = ActivityStatusTracker<[FeedInfoVersionsSectionListItem], Error>()
 
   @Published var refreshTrigger: Void = ()
-  @Published var statusResult: ActivityStatus<[FeedEntryListModel], Error> = .idle
+  @Published var statusResult: ActivityStatus<[FeedInfoVersionsSectionListItem], Error> = .idle
 
   private(set) var feed: Feed
 
@@ -56,15 +68,15 @@ private final class LibraryFeedInfoVersionsSectionModel: ObservableObject {
       }
     }
 
-    let handleRefreshing: () -> AnyPublisher<Result<[FeedEntryListModel], Error>, Never> = {
+    let handleRefreshing: () -> AnyPublisher<Result<[FeedInfoVersionsSectionListItem], Error>, Never> = {
       return Publishers.CombineLatest(
         fetchEntriesPublisher(),
         LibraryDocsetsManager.shared.installedRecords()
           .setFailureType(to: Error.self)
       )
-      .map { feedEntries, records -> [FeedEntryListModel] in
-        return feedEntries.map { entry -> FeedEntryListModel in
-          var installableStatus: FeedEntryListModel.InstallableStatus = .installable
+      .map { feedEntries, records -> [FeedInfoVersionsSectionListItem] in
+        return feedEntries.map { entry -> FeedInfoVersionsSectionListItem in
+          var installableStatus: FeedInfoVersionsSectionListItem.InstallableStatus = .installable
           for record in records {
             guard record.name == entry.feed.id else {
               continue
@@ -79,7 +91,7 @@ private final class LibraryFeedInfoVersionsSectionModel: ObservableObject {
               installableStatus = .installed
             }
           }
-          return FeedEntryListModel(feedEntry: entry, installableStatus: installableStatus)
+          return FeedInfoVersionsSectionListItem(feedEntry: entry, installableStatus: installableStatus)
         }
       }
       .eraseToAnyPublisher()
@@ -138,19 +150,22 @@ private struct FeedInfoStaticListItem: View {
 
 }
 
-struct LibraryFeedInfoVersionsSection: View {
-
-  private typealias ViewModel = LibraryFeedInfoVersionsSectionModel
+struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: View {
 
   @StateObject private var viewModel: ViewModel
 
-  @State private var showsAllVersions = false
+  @State private var showsAllVersions: Bool
 
-  init(feed: Feed) {
-    _viewModel = StateObject(wrappedValue: { ViewModel(feed: feed) }())
+  init(feed: Feed) where ViewModel == LibraryFeedInfoVersionsSectionModelImp {
+    self.init(viewModel: LibraryFeedInfoVersionsSectionModelImp(feed: feed))
   }
 
-  private func buildVersionsListItem(entryListModel: ViewModel.FeedEntryListModel) -> AnyView {
+  fileprivate init(viewModel: ViewModel, isPreview: Bool = false) {
+    showsAllVersions = isPreview
+    _viewModel = StateObject(wrappedValue: { viewModel }())
+  }
+
+  private func buildVersionsListItem(entryListModel: FeedInfoVersionsSectionListItem) -> AnyView {
     let entry = entryListModel.feedEntry
     let shouldShowVersionedItem = !viewModel.feed.shouldHideVersions && showsAllVersions
     if shouldShowVersionedItem || entry.isTrackedAsLatest {
@@ -234,3 +249,98 @@ struct LibraryFeedInfoVersionsSection: View {
   }
 
 }
+
+#if DEBUG
+
+final class LibraryFeedInfoVersionsStubbedSectionModel: FeedInfoVersionsSectionModel {
+
+  @Published var refreshTrigger: Void = ()
+
+  @Published var statusResult: ActivityStatus<[FeedInfoVersionsSectionListItem], Error> = .idle
+
+  private(set) var feed: Feed
+
+  init(feed: Feed, listItems: [FeedInfoVersionsSectionListItem]) {
+    self.feed = feed
+    statusResult = .result(result: .success(listItems))
+  }
+
+}
+
+@available(iOS 17.0, *)
+#Preview(traits: .fixedLayout(width: 480, height: 640)) {
+
+  let feed = StubFeed(
+    repository: .userContributed,
+    id: "RxSwift",
+    displayName: "RxSwift",
+    aliases: [],
+    shouldHideVersions: false,
+    supportsArchiveIndex: false,
+    icon: EntryIcon.providerDefault
+  )
+
+  let listItems = [
+    FeedInfoVersionsSectionListItem(
+      feedEntry: FeedEntry(
+        feed: feed,
+        version: "6.7.2",
+        isTrackedAsLatest: true,
+        isDocsetBundle: false,
+        docsetLocation: ResourceLocations.stubbed
+      ),
+      installableStatus: .installable
+    ),
+    FeedInfoVersionsSectionListItem(
+      feedEntry: FeedEntry(
+        feed: feed,
+        version: "6.7.1",
+        isTrackedAsLatest: true,
+        isDocsetBundle: false,
+        docsetLocation: ResourceLocations.stubbed
+      ),
+      installableStatus: .latest
+    ),
+    FeedInfoVersionsSectionListItem(
+      feedEntry: FeedEntry(
+        feed: feed,
+        version: "6.7.0",
+        isTrackedAsLatest: true,
+        isDocsetBundle: false,
+        docsetLocation: ResourceLocations.stubbed
+      ),
+      installableStatus: .updateAvailable(currentVersion: "6.7.1")
+    ),
+    FeedInfoVersionsSectionListItem(
+      feedEntry: FeedEntry(
+        feed: feed,
+        version: "6.6.0",
+        isTrackedAsLatest: false,
+        isDocsetBundle: false,
+        docsetLocation: ResourceLocations.stubbed
+      ),
+      installableStatus: .installed
+    ),
+    FeedInfoVersionsSectionListItem(
+      feedEntry: FeedEntry(
+        feed: feed,
+        version: "6.5.0",
+        isTrackedAsLatest: false,
+        isDocsetBundle: false,
+        docsetLocation: ResourceLocations.stubbed
+      ),
+      installableStatus: .installable
+    ),
+  ]
+
+  List {
+    LibraryFeedInfoVersionsSection(
+      viewModel: LibraryFeedInfoVersionsStubbedSectionModel(
+        feed: feed, listItems: listItems
+      ),
+      isPreview: true
+    )
+  }
+}
+
+#endif
