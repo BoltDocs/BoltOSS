@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2024 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 // limitations under the License.
 //
 
+#if DEBUG
+
 import Foundation
 
-import BoltTypes
+public extension ResourceLocations {
 
-public struct ResourceLocations {
-
-  public static var stubbed: ResourceLocation {
+  static var stubbed: ResourceLocation {
     return StubbedResourceLocation()
   }
 
@@ -33,3 +33,5 @@ public struct StubbedResourceLocation: ResourceLocation {
   }
 
 }
+
+#endif

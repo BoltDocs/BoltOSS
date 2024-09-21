@@ -24,32 +24,6 @@ import BoltTestingUtils
 import BoltTypes
 import BoltUtils
 
-public struct StubFeed: Feed {
-
-  public var repository: RepositoryIdentifier
-
-  public var id: String
-  public var displayName: String
-  public var aliases: [String]
-
-  public var shouldHideVersions: Bool
-  public var supportsArchiveIndex: Bool
-
-  public var icon: EntryIcon
-
-  public var isUnavailable = false
-  public var unavailableMessage: String?
-
-  public func fetchEntries() async throws -> [BoltTypes.FeedEntry] {
-    return []
-  }
-
-  public static var defaultIconImage: PlatformImage {
-    return PlatformImage()
-  }
-
-}
-
 final class TarUnarchiverTests: XCTestCase {
 
   func testUnarchiveDownloadedDocsetWithoutTarix() async throws {
