@@ -59,13 +59,13 @@ private class CompletedDownloadListItemViewModel: ObservableObject {
     }
   }
 
-  func deleteButtonTap() {
+  func deleteButtonTap() async {
     try? FileManager.default.removeItem(atPath: localTarPath)
-    downloadManager.removeTask(forIdentifier: taskEntity.identifier)
+    await downloadManager.cancelDownload(forIdentifier: taskEntity.identifier)
   }
 
-  func removeButtonTap() {
-    downloadManager.removeTask(forIdentifier: taskEntity.identifier)
+  func removeButtonTap() async {
+    await downloadManager.cancelDownload(forIdentifier: taskEntity.identifier)
   }
 
 }
@@ -102,13 +102,17 @@ public struct CompletedDownloadListItemView: View {
           switch button {
           case .delete:
             Button {
-              model.deleteButtonTap()
+              Task {
+                await model.deleteButtonTap()
+              }
             } label: {
               Image(systemName: "trash")
             }
           case .remove:
             Button {
-              model.removeButtonTap()
+              Task {
+                await model.removeButtonTap()
+              }
             } label: {
               Image(systemName: "xmark")
             }

@@ -156,9 +156,9 @@ private final class DataSource: ObservableObject {
     }
   }
 
-  func deleteArchive() {
+  func deleteArchive() async {
     try? FileManager.default.removeItem(atPath: archivePath)
-    downloadManager.removeTask(forIdentifier: entry.id)
+    await downloadManager.cancelDownload(forIdentifier: entry.id)
   }
 
 }
@@ -289,7 +289,9 @@ struct LibraryFeedEntryView: View {
       Section {
         if case .downloaded = dataSource.downloadStatus {
           Button("Delete", role: .destructive) {
-            dataSource.deleteArchive()
+            Task {
+              await dataSource.deleteArchive()
+            }
           }
         }
       }

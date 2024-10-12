@@ -45,8 +45,6 @@ public protocol DownloadManager {
 
   func cancelDownload(forIdentifier id: String) async
 
-  func removeTask(forIdentifier id: String)
-
   func cancelAllTasks() async
 
   func clearCache() async
@@ -115,6 +113,8 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
     let _ = backgroundDownloader
   }
 
+  // MARK: - Interfaces
+
   func downloadTarix(forFeedEntry entry: FeedEntry) async throws {
     let path = entry.downloadAbsolutePath(withExtension: "tgz.tarix")
     if !FileManager.default.fileExists(atPath: path) {
@@ -174,17 +174,8 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
   func cancelDownload(forIdentifier id: String) async {
     if let sessionID = taskIdentifierMap.value[id] {
       await backgroundDownloader.cancelDownload(forSessionID: sessionID)
-    }
-  }
-
-  func removeTask(forIdentifier id: String) {
-    do {
-      try LibraryDatabase.shared.deleteDownloadTask(forIdentifier: id)
-      taskIdentifierMap.synced { identifierMap in
-        identifierMap.removeValue(forKey: id)
-      }
-    } catch {
-      Self.logger.error("Failed to delete orphan tasks, error: \(error.localizedDescription).")
+    } else {
+      removeTask(forIdentifier: id)
     }
   }
 
@@ -241,6 +232,19 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
       }
     }
     return nil
+  }
+
+  // MARK: - Private
+
+  private func removeTask(forIdentifier id: String) {
+    do {
+      try LibraryDatabase.shared.deleteDownloadTask(forIdentifier: id)
+      taskIdentifierMap.synced { identifierMap in
+        identifierMap.removeValue(forKey: id)
+      }
+    } catch {
+      Self.logger.error("Failed to delete orphan tasks, error: \(error.localizedDescription).")
+    }
   }
 
 }
