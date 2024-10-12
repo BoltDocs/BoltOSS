@@ -55,8 +55,8 @@ class RefreshActionPerformer: ObservableObject {
 
 struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFeedListViewModel {
 
-  @Environment(\.dismissLibraryHome)
-  private var dismissLibraryHome: DismissAction?
+  @Environment(\.dismissSheetModal)
+  private var dismissSheetModal: DismissAction?
 
   @StateObject private var model = Model()
   @StateObject private var actionPerformer = RefreshActionPerformer()
@@ -79,7 +79,7 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
           Button(UIKitLocalizations.done) {
-            dismissLibraryHome?()
+            dismissSheetModal?()
           }
         }
       }
