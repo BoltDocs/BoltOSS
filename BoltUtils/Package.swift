@@ -36,9 +36,15 @@ let package = Package(
       targets: ["BoltUtilsTesting"]
     ),
   ],
+  dependencies: [
+    .package(url: "https://github.com/pointfreeco/swift-issue-reporting.git", from: "1.4.0")
+  ],
   targets: [
     .target(
       name: "BoltUtils",
+      dependencies: [
+        .product(name: "IssueReporting", package: "swift-issue-reporting"),
+      ],
       path: "./Sources",
       exclude: ["Testing"]
     ),

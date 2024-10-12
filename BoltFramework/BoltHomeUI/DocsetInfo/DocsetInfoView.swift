@@ -16,6 +16,8 @@
 
 import SwiftUI
 
+import IssueReporting
+
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
@@ -74,7 +76,7 @@ struct DocsetInfoView: View {
             case .custom:
               Text("Custom")
             case let repository:
-              let _ = assertionFailure("Unhandled repository type: \(repository)")
+              let _ = reportIssue("Unhandled repository type: \(repository)")
             }
           }
         }

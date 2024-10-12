@@ -17,6 +17,7 @@
 import UIKit
 
 import Factory
+import IssueReporting
 
 import BoltFramework
 import BoltModuleExports
@@ -33,7 +34,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     options connectionOptions: UIScene.ConnectionOptions
   ) {
     guard let window = self.window else {
-      assertionFailure("SceneDelegate should always have a root window!")
+      reportIssue("SceneDelegate should always have a root window!")
       return
     }
 

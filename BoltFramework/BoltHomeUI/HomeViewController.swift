@@ -17,6 +17,7 @@
 import UIKit
 
 import Factory
+import IssueReporting
 import Overture
 import RxCocoa
 import RxCombine
@@ -140,7 +141,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       collectionView: collectionView
     ) { collectionView, indexPath, DocsetsListModel in
       guard let collectionView = collectionView as? HomeCollectionView else {
-        assertionFailure("Unexpected collectionView cell type")
+        reportIssue("Unexpected collectionView cell type")
         return nil
       }
       switch DocsetsListModel {
@@ -258,7 +259,7 @@ extension HomeViewController: UICollectionViewDelegate {
     point: CGPoint
   ) -> UIContextMenuConfiguration? {
     guard let collectionView = collectionView as? HomeCollectionView else {
-      assertionFailure("Unexpected collectionView type")
+      reportIssue("Unexpected collectionView type")
       return nil
     }
     return collectionView.itemContextMenuConfiguration(forIndexPath: indexPath)

@@ -17,6 +17,8 @@
 import Foundation
 import SwiftUI
 
+import IssueReporting
+
 public struct BoltColorResource: Equatable {
 
   public var name: String
@@ -30,13 +32,13 @@ public struct BoltColorResource: Equatable {
   public var platformColor: PlatformColor {
     #if os(iOS)
     guard let color = PlatformColor(named: name, in: bundle, compatibleWith: nil) else {
-      assertionFailure("Unable to find color resource for name: \(name) in bundle: \(bundle).")
+      reportIssue("Unable to find color resource for name: \(name) in bundle: \(bundle).")
       return PlatformColor.label
     }
     return color
     #else
     guard let color = PlatformColor(named: name, bundle: bundle) else {
-      assertionFailure("Unable to find color resource for name: \(name) in bundle: \(bundle).")
+      reportIssue("Unable to find color resource for name: \(name) in bundle: \(bundle).")
       return PlatformColor.labelColor
     }
     return color

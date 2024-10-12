@@ -18,6 +18,7 @@ import Combine
 import Foundation
 
 import Factory
+import IssueReporting
 
 import BoltCombineExtensions
 import BoltDatabase
@@ -49,7 +50,7 @@ final class FeedsServiceImp: FeedsServiceInternal {
 
   func fetchAllFeeds(forRepository repositoryIdentifier: RepositoryIdentifier, forceUpdate: Bool) async throws -> [Feed] {
     guard let repository = repositoryRegistry.repository(forIdentifier: repositoryIdentifier) else {
-      assertionFailure("Unhandled repository type: \(repositoryIdentifier)")
+      reportIssue("Unhandled repository type: \(repositoryIdentifier)")
       return []
     }
 
@@ -64,7 +65,7 @@ final class FeedsServiceImp: FeedsServiceInternal {
       return feeds
     } else {
       guard repository is CustomFeedRepository else {
-        assertionFailure("Unhandled repository: \(repository), identifier: \(repositoryIdentifier)")
+        reportIssue("Unhandled repository: \(repository), identifier: \(repositoryIdentifier)")
         return []
       }
       return customFeedsRelay.value
