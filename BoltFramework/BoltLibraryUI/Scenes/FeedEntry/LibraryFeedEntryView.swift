@@ -168,8 +168,8 @@ struct LibraryFeedEntryView: View {
   @Injected(\.downloadManager)
   private var downloadManager: DownloadManager
 
-  @Environment(\.dismissLibraryHome)
-  private var dismissLibraryHome: DismissAction?
+  @Environment(\.dismissSheetModal)
+  private var dismissSheetModal: DismissAction?
 
   init(_ entry: FeedEntry) {
     self.dataSource = DataSource(entry: entry)
@@ -327,7 +327,7 @@ struct LibraryFeedEntryView: View {
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
         Button(UIKitLocalizations.done) {
-          dismissLibraryHome?()
+          dismissSheetModal?()
         }
       }
     }
@@ -360,7 +360,7 @@ struct LibraryFeedEntryView: View {
       if case .finished = completion {
         Task {
           await downloadManager.cancelDownload(forIdentifier: dataSource.entry.id)
-          dismissLibraryHome?()
+          dismissSheetModal?()
         }
       }
     })

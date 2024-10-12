@@ -19,10 +19,14 @@ import SwiftUI
 import BoltLibraryUI
 import BoltPreferencesUI
 
+import BoltUIFoundation
+
 struct BoltAppNavigator {
 
   static func presentLibrary() {
-    let homeViewController = UIHostingController(rootView: LibraryHomeListView())
+    let homeViewController = UIHostingController(
+      rootView: SheetContainer { LibraryHomeListView() }
+    )
     homeViewController.modalPresentationStyle = .formSheet
     if let root = UIApplication.shared.keyWindowOfActiveScene?.topViewController {
       root.present(homeViewController, animated: true)
@@ -38,7 +42,9 @@ struct BoltAppNavigator {
   }
 
   static func presentDownloads() {
-    let downloadsViewController = UIHostingController(rootView: LibraryDownloadsListView())
+    let downloadsViewController = UIHostingController(
+      rootView: SheetContainer { LibraryDownloadsListView() }
+    )
     downloadsViewController.modalPresentationStyle = .formSheet
     if let root = UIApplication.shared.keyWindowOfActiveScene?.topViewController {
       root.present(downloadsViewController, animated: true)

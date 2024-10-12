@@ -52,8 +52,8 @@ struct LibraryFeedInfoView: View {
 
   typealias VersionsSection = LibraryFeedInfoVersionsSection
 
-  @Environment(\.dismissLibraryHome)
-  private var dismissLibraryHome: DismissAction?
+  @Environment(\.dismissSheetModal)
+  private var dismissSheetModal: DismissAction?
 
   @Injected(\.repositoryRegistry)
   private var repositoryRegistry: RepositoryRegistry
@@ -90,7 +90,7 @@ struct LibraryFeedInfoView: View {
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
         Button(UIKitLocalizations.done) {
-          dismissLibraryHome?()
+          dismissSheetModal?()
         }
       }
     }

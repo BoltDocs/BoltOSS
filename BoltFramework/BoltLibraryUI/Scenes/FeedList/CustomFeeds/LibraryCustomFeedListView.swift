@@ -63,8 +63,8 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
 
 struct LibraryCustomFeedListView: View {
 
-  @Environment(\.dismissLibraryHome)
-  private var dismissLibraryHome: DismissAction?
+  @Environment(\.dismissSheetModal)
+  private var dismissSheetModal: DismissAction?
 
   @ObservedObject private var model = LibraryCustomFeedListViewModel()
 
@@ -136,7 +136,7 @@ struct LibraryCustomFeedListView: View {
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
         Button(UIKitLocalizations.done) {
-          dismissLibraryHome?()
+          dismissSheetModal?()
         } // Button
       } // ToolbarItem
       ToolbarItemGroup(placement: .bottomBar) {
