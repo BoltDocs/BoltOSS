@@ -372,598 +372,605 @@ public extension EntryType {
         aliases: ["event", "Public Events", "Inherited Events", "Private Events"],
         colorResource: BoltColorResource(named: "type-colors/light-green", in: Bundle.module)
       ),
+      "Signal": EntryType(
+        singular: "Signal",
+        plural: "Signals",
+        sortingOrder: 51,
+        aliases: [],
+        colorResource: BoltColorResource(named: "type-colors/dark-dark_blue", in: Bundle.module)
+      ),
       "Binding": EntryType(
         singular: "Binding",
         plural: "Bindings",
-        sortingOrder: 51,
+        sortingOrder: 52,
         aliases: ["binding"],
         colorResource: BoltColorResource(named: "type-colors/light-green", in: Bundle.module)
       ),
       "Foreign Key": EntryType(
         singular: "Foreign Key",
         plural: "Foreign Keys",
-        sortingOrder: 52,
+        sortingOrder: 53,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-pink", in: Bundle.module)
       ),
       "View": EntryType(
         singular: "View",
         plural: "Views",
-        sortingOrder: 53,
+        sortingOrder: 54,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_blue", in: Bundle.module)
       ),
       "Special Form": EntryType(
         singular: "Special Form",
         plural: "Special Forms",
-        sortingOrder: 54,
+        sortingOrder: 55,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-pink", in: Bundle.module)
       ),
       "Record": EntryType(
         singular: "Record",
         plural: "Records",
-        sortingOrder: 55,
+        sortingOrder: 56,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "Report": EntryType(
         singular: "Report",
         plural: "Reports",
-        sortingOrder: 56,
+        sortingOrder: 57,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "Modifier": EntryType(
         singular: "Modifier",
         plural: "Modifiers",
-        sortingOrder: 57,
+        sortingOrder: 58,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-orange", in: Bundle.module)
       ),
       "Shortcut": EntryType(
         singular: "Shortcut",
         plural: "Shortcuts",
-        sortingOrder: 58,
+        sortingOrder: 59,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-dark_blue", in: Bundle.module)
       ),
       "Trigger": EntryType(
         singular: "Trigger",
         plural: "Triggers",
-        sortingOrder: 59,
+        sortingOrder: 60,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-yellow", in: Bundle.module)
       ),
       "Helper": EntryType(
         singular: "Helper",
         plural: "Helpers",
-        sortingOrder: 60,
+        sortingOrder: 61,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-dark_green", in: Bundle.module)
       ),
       "Pipe": EntryType(
         singular: "Pipe",
         plural: "Pipes",
-        sortingOrder: 61,
+        sortingOrder: 62,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Relationship": EntryType(
         singular: "Relationship",
         plural: "Relationships",
-        sortingOrder: 62,
+        sortingOrder: 63,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "Column": EntryType(
         singular: "Column",
         plural: "Columns",
-        sortingOrder: 63,
+        sortingOrder: 64,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-pink", in: Bundle.module)
       ),
       "Function": EntryType(
         singular: "Function",
         plural: "Functions",
-        sortingOrder: 64,
+        sortingOrder: 65,
         aliases: ["func", "ffunc", "signal", "slot", "dcop", "Public Member Functions", "Static Public Member Functions", "Protected Member Functions", "Static Protected Member Functions", "Private Member Functions", "Static Private Member Functions", "Package Functions", "Static Package Functions", "Function Prototypes", "Public Slots", "Signals", "Protected Slots", "Private Slots", "Members", "grammar"],
         colorResource: BoltColorResource(named: "type-colors/light-green", in: Bundle.module)
       ),
       "Expression": EntryType(
         singular: "Expression",
         plural: "Expressions",
-        sortingOrder: 65,
+        sortingOrder: 66,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-green", in: Bundle.module)
       ),
       "Hook": EntryType(
         singular: "Hook",
         plural: "Hooks",
-        sortingOrder: 66,
+        sortingOrder: 67,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "Procedure": EntryType(
         singular: "Procedure",
         plural: "Procedures",
-        sortingOrder: 67,
+        sortingOrder: 68,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_brown", in: Bundle.module)
       ),
       "Subroutine": EntryType(
         singular: "Subroutine",
         plural: "Subroutines",
-        sortingOrder: 68,
+        sortingOrder: 69,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-yellow", in: Bundle.module)
       ),
       "Builtin": EntryType(
         singular: "Builtin",
         plural: "Builtins",
-        sortingOrder: 69,
+        sortingOrder: 70,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-brown", in: Bundle.module)
       ),
       "Word": EntryType(
         singular: "Word",
         plural: "Words",
-        sortingOrder: 70,
+        sortingOrder: 71,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_blue", in: Bundle.module)
       ),
       "Callback": EntryType(
         singular: "Callback",
         plural: "Callbacks",
-        sortingOrder: 71,
+        sortingOrder: 72,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-blue", in: Bundle.module)
       ),
       "Handler": EntryType(
         singular: "Handler",
         plural: "Handlers",
-        sortingOrder: 72,
+        sortingOrder: 73,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "Control Structure": EntryType(
         singular: "Control Structure",
         plural: "Control Structures",
-        sortingOrder: 73,
+        sortingOrder: 74,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Annotation": EntryType(
         singular: "Annotation",
         plural: "Annotations",
-        sortingOrder: 74,
+        sortingOrder: 75,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-blue", in: Bundle.module)
       ),
       "File": EntryType(
         singular: "File",
         plural: "Files",
-        sortingOrder: 75,
+        sortingOrder: 76,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-brown", in: Bundle.module)
       ),
       "Error": EntryType(
         singular: "Error",
         plural: "Errors",
-        sortingOrder: 76,
+        sortingOrder: 77,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "Command": EntryType(
         singular: "Command",
         plural: "Commands",
-        sortingOrder: 77,
+        sortingOrder: 78,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-cyan", in: Bundle.module)
       ),
       "Tactic": EntryType(
         singular: "Tactic",
         plural: "Tactics",
-        sortingOrder: 78,
+        sortingOrder: 79,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-yellow", in: Bundle.module)
       ),
       "Environment": EntryType(
         singular: "Environment",
         plural: "Environments",
-        sortingOrder: 79,
+        sortingOrder: 80,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-purple", in: Bundle.module)
       ),
       "Provisioner": EntryType(
         singular: "Provisioner",
         plural: "Provisioners",
-        sortingOrder: 80,
+        sortingOrder: 81,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-brown", in: Bundle.module)
       ),
       "Axiom": EntryType(
         singular: "Axiom",
         plural: "Axioms",
-        sortingOrder: 81,
+        sortingOrder: 82,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-blue", in: Bundle.module)
       ),
       "Lemma": EntryType(
         singular: "Lemma",
         plural: "Lemmas",
-        sortingOrder: 82,
+        sortingOrder: 83,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-pink", in: Bundle.module)
       ),
       "Inductive": EntryType(
         singular: "Inductive",
         plural: "Inductives",
-        sortingOrder: 83,
+        sortingOrder: 84,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Instance": EntryType(
         singular: "Instance",
         plural: "Instances",
-        sortingOrder: 84,
+        sortingOrder: 85,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_brown", in: Bundle.module)
       ),
       "Global": EntryType(
         singular: "Global",
         plural: "Globals",
-        sortingOrder: 85,
+        sortingOrder: 86,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-orange", in: Bundle.module)
       ),
       "Union": EntryType(
         singular: "Union",
         plural: "Unions",
-        sortingOrder: 86,
+        sortingOrder: 87,
         aliases: ["union"],
         colorResource: BoltColorResource(named: "type-colors/light-orange", in: Bundle.module)
       ),
       "Variable": EntryType(
         singular: "Variable",
         plural: "Variables",
-        sortingOrder: 87,
+        sortingOrder: 88,
         aliases: ["var", "Class Variable"],
         colorResource: BoltColorResource(named: "type-colors/light-pink", in: Bundle.module)
       ),
       "Member": EntryType(
         singular: "Member",
         plural: "Members",
-        sortingOrder: 88,
+        sortingOrder: 89,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-pink", in: Bundle.module)
       ),
       "Block": EntryType(
         singular: "Block",
         plural: "Blocks",
-        sortingOrder: 89,
+        sortingOrder: 90,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-brown", in: Bundle.module)
       ),
       "Constant": EntryType(
         singular: "Constant",
         plural: "Constants",
-        sortingOrder: 90,
+        sortingOrder: 91,
         aliases: ["clconst", "econst", "data", "Notifications", "enumelt", "structdata", "enumdata", "writerid"],
         colorResource: BoltColorResource(named: "type-colors/light-green", in: Bundle.module)
       ),
       "Macro": EntryType(
         singular: "Macro",
         plural: "Macros",
-        sortingOrder: 91,
+        sortingOrder: 92,
         aliases: ["macro"],
         colorResource: BoltColorResource(named: "type-colors/light-orange", in: Bundle.module)
       ),
       "Value": EntryType(
         singular: "Value",
         plural: "Values",
-        sortingOrder: 92,
+        sortingOrder: 93,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_brown", in: Bundle.module)
       ),
       "Variant": EntryType(
         singular: "Variant",
         plural: "Variants",
-        sortingOrder: 93,
+        sortingOrder: 94,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_brown", in: Bundle.module)
       ),
       "Define": EntryType(
         singular: "Define",
         plural: "Defines",
-        sortingOrder: 94,
+        sortingOrder: 95,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-orange", in: Bundle.module)
       ),
       "Iterator": EntryType(
         singular: "Iterator",
         plural: "Iterators",
-        sortingOrder: 95,
+        sortingOrder: 96,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Literal": EntryType(
         singular: "Literal",
         plural: "Literals",
-        sortingOrder: 96,
+        sortingOrder: 97,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-green", in: Bundle.module)
       ),
       "Widget": EntryType(
         singular: "Widget",
         plural: "Widgets",
-        sortingOrder: 97,
+        sortingOrder: 98,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_blue", in: Bundle.module)
       ),
       "Keyword": EntryType(
         singular: "Keyword",
         plural: "Keywords",
-        sortingOrder: 98,
+        sortingOrder: 99,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Instruction": EntryType(
         singular: "Instruction",
         plural: "Instructions",
-        sortingOrder: 99,
+        sortingOrder: 100,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Request": EntryType(
         singular: "Request",
         plural: "Requests",
-        sortingOrder: 100,
+        sortingOrder: 101,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "Message": EntryType(
         singular: "Message",
         plural: "Messages",
-        sortingOrder: 101,
+        sortingOrder: 102,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-green", in: Bundle.module)
       ),
       "Option": EntryType(
         singular: "Option",
         plural: "Options",
-        sortingOrder: 102,
+        sortingOrder: 103,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-cyan", in: Bundle.module)
       ),
       "Setting": EntryType(
         singular: "Setting",
         plural: "Settings",
-        sortingOrder: 103,
+        sortingOrder: 104,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-yellow", in: Bundle.module)
       ),
       "Style": EntryType(
         singular: "Style",
         plural: "Styles",
-        sortingOrder: 104,
+        sortingOrder: 105,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-yellow", in: Bundle.module)
       ),
       "Script": EntryType(
         singular: "Script",
         plural: "Scripts",
-        sortingOrder: 105,
+        sortingOrder: 106,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-orange", in: Bundle.module)
       ),
       "Notation": EntryType(
         singular: "Notation",
         plural: "Notations",
-        sortingOrder: 106,
+        sortingOrder: 107,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-orange", in: Bundle.module)
       ),
       "Abbreviation": EntryType(
         singular: "Abbreviation",
         plural: "Abbreviations",
-        sortingOrder: 107,
+        sortingOrder: 108,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-purple", in: Bundle.module)
       ),
       "Projection": EntryType(
         singular: "Projection",
         plural: "Projection",
-        sortingOrder: 108,
+        sortingOrder: 109,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_brown", in: Bundle.module)
       ),
       "Parameter": EntryType(
         singular: "Parameter",
         plural: "Parameters",
-        sortingOrder: 109,
+        sortingOrder: 110,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Syntax": EntryType(
         singular: "Syntax",
         plural: "Syntaxes",
-        sortingOrder: 110,
+        sortingOrder: 111,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-orange", in: Bundle.module)
       ),
       "Signature": EntryType(
         singular: "Signature",
         plural: "Signatures",
-        sortingOrder: 111,
+        sortingOrder: 112,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-blue", in: Bundle.module)
       ),
       "Conversion": EntryType(
         singular: "Conversion",
         plural: "Conversions",
-        sortingOrder: 112,
+        sortingOrder: 113,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-green", in: Bundle.module)
       ),
       "Pattern": EntryType(
         singular: "Pattern",
         plural: "Patterns",
-        sortingOrder: 113,
+        sortingOrder: 114,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Test": EntryType(
         singular: "Test",
         plural: "Tests",
-        sortingOrder: 114,
+        sortingOrder: 115,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-yellow", in: Bundle.module)
       ),
       "Operator": EntryType(
         singular: "Operator",
         plural: "Operators",
-        sortingOrder: 115,
+        sortingOrder: 116,
         aliases: ["opfunc"],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Statement": EntryType(
         singular: "Statement",
         plural: "Statements",
-        sortingOrder: 116,
+        sortingOrder: 117,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-blue", in: Bundle.module)
       ),
       "Role": EntryType(
         singular: "Role",
         plural: "Roles",
-        sortingOrder: 117,
+        sortingOrder: 118,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "Register": EntryType(
         singular: "Register",
         plural: "Registers",
-        sortingOrder: 118,
+        sortingOrder: 119,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "State": EntryType(
         singular: "State",
         plural: "States",
-        sortingOrder: 119,
+        sortingOrder: 120,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-blue", in: Bundle.module)
       ),
       "Alias": EntryType(
         singular: "Alias",
         plural: "Aliases",
-        sortingOrder: 120,
+        sortingOrder: 121,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-blue", in: Bundle.module)
       ),
       "Device": EntryType(
         singular: "Device",
         plural: "Devices",
-        sortingOrder: 121,
+        sortingOrder: 122,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-purple", in: Bundle.module)
       ),
       "Kind": EntryType(
         singular: "Kind",
         plural: "Kinds",
-        sortingOrder: 122,
+        sortingOrder: 123,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Node": EntryType(
         singular: "Node",
         plural: "Nodes",
-        sortingOrder: 123,
+        sortingOrder: 124,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-orange", in: Bundle.module)
       ),
       "Flag": EntryType(
         singular: "Flag",
         plural: "Flags",
-        sortingOrder: 124,
+        sortingOrder: 125,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-pink", in: Bundle.module)
       ),
       "Sender": EntryType(
         singular: "Sender",
         plural: "Senders",
-        sortingOrder: 125,
+        sortingOrder: 126,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-dark_blue", in: Bundle.module)
       ),
       "Data Source": EntryType(
         singular: "Data Source",
         plural: "Data Sources",
-        sortingOrder: 126,
+        sortingOrder: 127,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-purple", in: Bundle.module)
       ),
       "Reference": EntryType(
         singular: "Reference",
         plural: "References",
-        sortingOrder: 127,
+        sortingOrder: 128,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-brown", in: Bundle.module)
       ),
       "Given": EntryType(
         singular: "Given",
         plural: "Givens",
-        sortingOrder: 128,
+        sortingOrder: 129,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-dark_green", in: Bundle.module)
       ),
       "Guide": EntryType(
         singular: "Guide",
         plural: "Guides",
-        sortingOrder: 129,
+        sortingOrder: 130,
         aliases: ["doc"],
         colorResource: BoltColorResource(named: "type-colors/light-blue", in: Bundle.module)
       ),
       "Sample": EntryType(
         singular: "Sample",
         plural: "Samples",
-        sortingOrder: 130,
+        sortingOrder: 131,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-cyan", in: Bundle.module)
       ),
       "Section": EntryType(
         singular: "Section",
         plural: "Sections",
-        sortingOrder: 131,
+        sortingOrder: 132,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-gray", in: Bundle.module)
       ),
       "Entry": EntryType(
         singular: "Entry",
         plural: "Entries",
-        sortingOrder: 132,
+        sortingOrder: 133,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-purple", in: Bundle.module)
       ),
       "Glossary": EntryType(
         singular: "Glossary",
         plural: "Glossaries",
-        sortingOrder: 133,
+        sortingOrder: 134,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/light-pink", in: Bundle.module)
       ),
       "Unknown": EntryType(
         singular: "Unknown",
         plural: "Unknown",
-        sortingOrder: 134,
+        sortingOrder: 135,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-black", in: Bundle.module)
       ),
       "Full-Text Search": EntryType(
         singular: "Full-Text Search",
         plural: "Full-Text Search",
-        sortingOrder: 135,
+        sortingOrder: 136,
         aliases: [],
         colorResource: BoltColorResource(named: "type-colors/dark-black", in: Bundle.module)
       ),
