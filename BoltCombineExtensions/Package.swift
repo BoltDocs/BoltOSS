@@ -33,13 +33,15 @@ let package = Package(
     ),
   ],
   dependencies: [
+    .package(name: "BoltUtils", path: "../BoltUtils"),
     .package(url: "https://github.com/CombineCommunity/CombineExt.git", revision: "1.8.1"),
   ],
   targets: [
     .target(
       name: "BoltCombineExtensions",
       dependencies: [
-        "CombineExt"
+        "CombineExt",
+        "BoltUtils",
       ],
       path: "./Sources"
     ),
