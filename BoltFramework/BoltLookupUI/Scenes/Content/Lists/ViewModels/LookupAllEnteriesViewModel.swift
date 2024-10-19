@@ -88,7 +88,7 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
           }
           .trackActivity(self.activityIndicator)
         } else {
-          return Single<[TypeCountPair]>.create {
+          return Single<[Entry]>.create {
             return try await DocsetSearcher.entries(forDocset: self.docset, rawQuery: queryString, type: nil)
           }
           .map { entries -> [LookupListEntryItem] in
