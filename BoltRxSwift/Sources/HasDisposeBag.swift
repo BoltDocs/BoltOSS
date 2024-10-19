@@ -20,7 +20,7 @@ import ObjectiveC
 import ObjectAssociationHelper
 import RxSwift
 
-private var disposeBagContext = "DisposeBag"
+private nonisolated(unsafe) var disposeBagContext = "DisposeBag"
 
 /// Each HasDisposeBag offers a unique RxSwift DisposeBag instance
 public protocol HasDisposeBag: AnyObject {

@@ -48,10 +48,7 @@ let package = Package(
         .product(name: "RxCombine", package: "RxCombine"),
         .product(name: "BoltUtils", package: "BoltUtils"),
       ],
-      path: "./Sources",
-      swiftSettings: [
-        .swiftLanguageMode(.v5)
-      ]
+      path: "./Sources"
     ),
   ]
 )
