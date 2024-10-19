@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ReactiveX/RxSwift.git",
       "state" : {
-        "branch" : "6.7.1",
-        "revision" : "b06a8c8596e4c3e8e7788e08e720e3248563ce6a"
+        "branch" : "6.8.0",
+        "revision" : "c7c7d2cf50a3211fe2843f76869c698e4e417930"
       }
     },
     {
@@ -140,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-issue-reporting.git",
       "state" : {
-        "revision" : "bc2a151366f2cd0e347274544933bc2acb00c9fe",
-        "version" : "1.4.0"
+        "branch" : "1.4.2",
+        "revision" : "770f990d3e4eececb57ac04a6076e22f8c97daeb"
       }
     },
     {
