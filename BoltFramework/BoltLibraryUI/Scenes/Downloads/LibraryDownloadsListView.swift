@@ -118,13 +118,16 @@ public struct LibraryDownloadsListView: View {
             } // List
             .listStyle(.plain)
           } else {
-            EmptyFeedsView(
-              image: Self.emptyStateImage,
-              message: "No Downloads",
-              shouldDisplayIndicator: false,
-              showsMessage: true,
-              showsRetry: false
-            )
+            BoltContentUnavailableView(
+              configuration: BoltContentUnavailableViewConfiguration(
+                image: Self.emptyStateImage,
+                imageSize: CGSize(width: 142, height: 142),
+                message: "No Downloads",
+                shouldDisplayIndicator: false,
+                showsMessage: true,
+                showsRetryButton: false
+              ) // BoltContentUnavailableViewConfiguration
+            ) // BoltContentUnavailableView
           } // if
         } // Group
         .frame(maxWidth: .infinity, maxHeight: .infinity)

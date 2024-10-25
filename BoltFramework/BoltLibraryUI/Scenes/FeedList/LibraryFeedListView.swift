@@ -147,19 +147,22 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
     .disableAutocorrection(true)
     .overlay {
       if actionPerformer.status != .success {
-        EmptyFeedsView(
-          image: Model.emptyStateImage,
-          message: "Loading Feeds",
-          shouldDisplayIndicator: true,
-          showsMessage: actionPerformer.status == .loading,
-          showsRetry: actionPerformer.status == .error
+        BoltContentUnavailableView(
+          configuration: BoltContentUnavailableViewConfiguration(
+            image: Model.emptyStateImage,
+            imageSize: CGSize(width: 142, height: 142),
+            message: "Loading Feeds",
+            shouldDisplayIndicator: true,
+            showsMessage: actionPerformer.status == .loading,
+            showsRetryButton: actionPerformer.status == .error
+          ) // BoltContentUnavailableViewConfiguration
         ) {
           if let action = refreshAction {
             Task { await action() }
           } else {
             Task { await actionPerformer.perform() }
           } // if
-        } // EmptyFeedsView
+        }  // BoltContentUnavailableView
       } // if
     } // List
     .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -120,13 +120,16 @@ struct LibraryCustomFeedListView: View {
     } // List
     .overlay {
       if model.feeds.isEmpty {
-        EmptyFeedsView(
-          image: Self.emptyStateImage,
-          message: "Library-ImportedFeeds-List-noFeed".boltLocalized,
-          shouldDisplayIndicator: false,
-          showsMessage: true,
-          showsRetry: false
-        ) // EmptyFeedsView
+        BoltContentUnavailableView(
+          configuration: BoltContentUnavailableViewConfiguration(
+            image: Self.emptyStateImage,
+            imageSize: CGSize(width: 142, height: 142),
+            message: "Library-ImportedFeeds-List-noFeed".boltLocalized,
+            shouldDisplayIndicator: false,
+            showsMessage: true,
+            showsRetryButton: false
+          ) // BoltContentUnavailableViewConfiguration
+        ) // BoltContentUnavailableView
       } // if
     } // overlay
     .frame(maxWidth: .infinity, maxHeight: .infinity)
