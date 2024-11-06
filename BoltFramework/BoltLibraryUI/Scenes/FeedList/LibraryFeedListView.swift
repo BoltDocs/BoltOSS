@@ -26,16 +26,23 @@ extension ErrorMessageEntity {
 
 class RefreshActionPerformer: ObservableObject {
 
-  enum Status {
+  enum Status: Equatable {
     case idle
     case loading
     case success
-    case error
+    case error(ServiceError)
   }
 
   @Published private(set) var status: Status = .idle
 
-  var action: (() async throws -> Void)?
+  var action: (() async throws(ServiceError) -> Void)?
+
+  var error: ServiceError? {
+    if case let .error(error) = status {
+      return error
+    }
+    return nil
+  }
 
   @MainActor
   func perform() async {
@@ -47,7 +54,7 @@ class RefreshActionPerformer: ObservableObject {
       try await action()
       status = .success
     } catch {
-      status = .error
+      status = .error(error)
     }
   }
 
@@ -154,7 +161,7 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
             message: "Loading Feeds",
             shouldDisplayIndicator: true,
             showsMessage: actionPerformer.status == .loading,
-            showsRetryButton: actionPerformer.status == .error
+            showsRetryButton: actionPerformer.error != nil
           ) // BoltContentUnavailableViewConfiguration
         ) {
           if let action = refreshAction {
