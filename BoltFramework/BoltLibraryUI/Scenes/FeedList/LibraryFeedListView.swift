@@ -115,9 +115,6 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
     self.actionPerformer = actionPerformer
   }
 
-  @Environment(\.refresh)
-  private var refreshAction: RefreshAction?
-
   @State private var searchText = ""
 
   private var filteredFeeds: [Feed] {
@@ -164,11 +161,7 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
             showsRetryButton: actionPerformer.error != nil
           ) // BoltContentUnavailableViewConfiguration
         ) {
-          if let action = refreshAction {
-            Task { await action() }
-          } else {
-            Task { await actionPerformer.perform() }
-          } // if
+          Task { await actionPerformer.perform() }
         }  // BoltContentUnavailableView
       } // if
     } // List
