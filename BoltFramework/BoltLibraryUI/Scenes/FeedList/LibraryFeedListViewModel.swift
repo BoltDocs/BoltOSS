@@ -33,6 +33,6 @@ protocol LibraryFeedListViewModel: ObservableObject {
   var feeds: [Feed] { get }
 
   @MainActor
-  func refreshFeeds() async throws
+  func refreshFeeds() async throws(FeedsServiceError)
 
 }

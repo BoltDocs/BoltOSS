@@ -23,9 +23,24 @@ import BoltDatabase
 import BoltTypes
 import BoltUtils
 
+public final class FeedsServiceError: ServiceError {
+
+  public let underlyingError: Error
+
+  public init(underlyingError: Error) {
+    self.underlyingError = underlyingError
+    super.init()
+  }
+
+  override public var errorDescription: String {
+    return underlyingError.localizedDescription
+  }
+
+}
+
 public protocol FeedsService {
 
-  func fetchAllFeeds(forRepository repositoryIdentifier: RepositoryIdentifier, forceUpdate: Bool) async throws -> [Feed]
+  func fetchAllFeeds(forRepository repositoryIdentifier: RepositoryIdentifier, forceUpdate: Bool) async throws(FeedsServiceError) -> [Feed]
 
   func customFeedsObservable() -> AnyPublisher<[CustomFeed], Never>
 

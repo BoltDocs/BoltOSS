@@ -69,13 +69,14 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
   @StateObject private var actionPerformer = RefreshActionPerformer()
 
   @MainActor
-  func refreshAction() async {
+  func refreshAction() async throws(ServiceError) {
     do {
       try await model.refreshFeeds()
     } catch {
       GlobalUI.showMessageToast(
         withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.fetchFeedsFailed, nestedError: error)
       )
+      throw error
     }
   }
 

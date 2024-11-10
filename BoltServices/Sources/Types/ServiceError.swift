@@ -20,6 +20,16 @@ open class ServiceError: LocalizedError, Equatable {
 
   public init() { }
 
+  // https://forums.swift.org/t/protocol-default-implementations-and-class-inheritance/11720
+
+  open var errorDescription: String? { nil }
+
+  open var failureReason: String? { nil }
+
+  open var recoverySuggestion: String? { nil }
+
+  open var helpAnchor: String? { nil }
+
   public static func == (lhs: ServiceError, rhs: ServiceError) -> Bool {
     return lhs === rhs
   }
