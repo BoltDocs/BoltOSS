@@ -127,6 +127,7 @@ struct LibraryCustomFeedListView: View {
             message: "Library-ImportedFeeds-List-noFeed".boltLocalized,
             shouldDisplayIndicator: false,
             showsMessage: true,
+            showsDetailButton: false,
             showsRetryButton: false
           ) // BoltContentUnavailableViewConfiguration
         ) // BoltContentUnavailableView

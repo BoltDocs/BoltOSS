@@ -23,6 +23,7 @@ public struct BoltContentUnavailableViewConfiguration {
   public var message: String
   public var shouldDisplayIndicator: Bool
   public var showsMessage: Bool
+  public var showsDetailButton: Bool
   public var showsRetryButton: Bool
 
   public init(
@@ -31,6 +32,7 @@ public struct BoltContentUnavailableViewConfiguration {
     message: String,
     shouldDisplayIndicator: Bool,
     showsMessage: Bool,
+    showsDetailButton: Bool,
     showsRetryButton: Bool
   ) {
     self.image = image
@@ -38,6 +40,7 @@ public struct BoltContentUnavailableViewConfiguration {
     self.message = message
     self.shouldDisplayIndicator = shouldDisplayIndicator
     self.showsMessage = showsMessage
+    self.showsDetailButton = showsDetailButton
     self.showsRetryButton = showsRetryButton
   }
 
@@ -47,13 +50,16 @@ public struct BoltContentUnavailableView: View {
 
   public var configuration: BoltContentUnavailableViewConfiguration
 
+  public private(set) var detailAction: (() -> Void)?
   public private(set) var retryAction: (() -> Void)?
 
   public init(
     configuration: BoltContentUnavailableViewConfiguration,
+    detailAction: (() -> Void)? = nil,
     retryAction: (() -> Void)? = nil
   ) {
     self.configuration = configuration
+    self.detailAction = detailAction
     self.retryAction = retryAction
   }
 
@@ -73,18 +79,26 @@ public struct BoltContentUnavailableView: View {
         HStack(spacing: 8) {
           Text(configuration.message)
             .foregroundColor(.secondary)
+          if let detailAction = detailAction, configuration.showsDetailButton {
+            Button {
+              detailAction()
+            } label: {
+              Image(systemName: "info.circle")
+                .foregroundColor(.secondary)
+            }
+          }
           if configuration.shouldDisplayIndicator {
             ProgressView()
               .progressViewStyle(.circular)
           }
         } // HStack
       }
-      if configuration.showsRetryButton {
-        Button(action: {
-          retryAction?()
-        }, label: {
+      if let retryAction = retryAction, configuration.showsRetryButton {
+        Button {
+          retryAction()
+        } label: {
           Text("Retry")
-        }) // Button
+        } // Button
       }
     } // VStack
   }
@@ -100,8 +114,11 @@ public struct BoltContentUnavailableView: View {
       message: "An error occurred",
       shouldDisplayIndicator: true,
       showsMessage: true,
+      showsDetailButton: true,
       showsRetryButton: true
-    )
+    ),
+    detailAction: { },
+    retryAction: { }
   )
 
 }

@@ -73,9 +73,8 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
     do {
       try await model.refreshFeeds()
     } catch {
-      GlobalUI.showMessageToast(
-        withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.fetchFeedsFailed, nestedError: error)
-      )
+      // use `catch` here to avoid compiler crash
+      // https://github.com/swiftlang/swift/issues/77612
       throw error
     }
   }
@@ -152,18 +151,35 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
     .disableAutocorrection(true)
     .overlay {
       if actionPerformer.status != .success {
+        let message = actionPerformer.error == nil ?
+          "Loading Feeds" :
+          "Failed to Load Feeds"
         BoltContentUnavailableView(
           configuration: BoltContentUnavailableViewConfiguration(
             image: Model.emptyStateImage,
             imageSize: CGSize(width: 142, height: 142),
-            message: "Loading Feeds",
-            shouldDisplayIndicator: true,
-            showsMessage: actionPerformer.status == .loading,
+            message: message,
+            shouldDisplayIndicator: actionPerformer.status == .loading,
+            showsMessage: true,
+            showsDetailButton: actionPerformer.error != nil,
             showsRetryButton: actionPerformer.error != nil
-          ) // BoltContentUnavailableViewConfiguration
-        ) {
-          Task { await actionPerformer.perform() }
-        }  // BoltContentUnavailableView
+          ), // BoltContentUnavailableViewConfiguration
+          detailAction: {
+            guard case let .error(error) = actionPerformer.status else {
+              return
+            }
+            GlobalUI.presentAlertController(
+              UIAlertController.alert(
+                withTitle: "Failed to Load Feeds",
+                message: error.localizedDescription,
+                confirmAction: ("OK", .default, nil)
+              )
+            )
+          },
+          retryAction: {
+            Task { await actionPerformer.perform() }
+          }
+        ) // BoltContentUnavailableView
       } // if
     } // List
     .frame(maxWidth: .infinity, maxHeight: .infinity)
