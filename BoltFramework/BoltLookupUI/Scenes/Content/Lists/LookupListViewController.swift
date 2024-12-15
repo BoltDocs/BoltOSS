@@ -106,3 +106,67 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
   }
 
 }
+
+#if DEBUG
+
+import BoltSearch
+import BoltTypes
+
+struct LookupListStubbedEntryItem: LookupListCellItem {
+
+  let viewModel: LookupListCellViewModel
+
+  init(entry: Entry) {
+    let type = entry.type ?? EntryType.unknown
+    viewModel = LookupListCellViewModel(
+      name: entry.name,
+      prompt: "",
+      shouldShowDisclosureIndicator: false,
+      docsetIcon: nil,
+      typeIcon: type.iconImage
+    )
+  }
+
+}
+
+final class StubbedLookupListViewModel: LookupListViewModel {
+
+  // MARK: - LookupListViewModel
+
+  var title = Driver.just("Title")
+
+  var showsLoadingIndicator = Driver.just(true)
+
+  lazy var results: Driver<[LookupListCellItem]> = {
+    return Driver.just(entryItems)
+  }()
+
+  var itemSelected = PublishRelay<LookupListCellItem>()
+
+  // MARK: - Properties
+
+  var entryItems: [LookupListStubbedEntryItem]
+
+  init(entryItems: [LookupListStubbedEntryItem]) {
+    self.entryItems = entryItems
+  }
+
+}
+
+@available(iOS 17.0, *)
+#Preview(traits: .fixedLayout(width: 480, height: 640)) {
+  UINavigationController(
+    rootViewController: LookupListViewController(
+      viewModel: StubbedLookupListViewModel(
+        entryItems: [LookupListStubbedEntryItem](
+          repeating: LookupListStubbedEntryItem(
+            entry: Entry(typeName: "Class", name: "MyClass", path: "")
+          ),
+          count: 10
+        )
+      )
+    )
+  )
+}
+
+#endif

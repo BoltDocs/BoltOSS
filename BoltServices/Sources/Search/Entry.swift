@@ -36,4 +36,10 @@ public struct Entry: Codable, TableRecord {
     return EntryType.type(forNameOrAlias: typeName)
   }
 
+  public init(typeName: String, name: String, path: String) {
+    self.typeName = typeName
+    self.name = name
+    self.path = path
+  }
+
 }
