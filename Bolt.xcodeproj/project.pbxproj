@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6B593CBA2B6DEED20042E688 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B593CBB2B6DEED20042E688 /* Main.storyboard */; };
+		6B81CF0E2D106E0B00908962 /* SDK-iOS.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B81CF0D2D106E0B00908962 /* SDK-iOS.xcconfig */; };
 		712D75AD25285EBF006E34C3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99F6F62EA199149DBDDAE5B /* SceneDelegate.swift */; };
 		712D75B825285EC1006E34C3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99F69794F42F3CD90B542D4 /* AppDelegate.swift */; };
 		716D6AA62498A68400EE68B2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 716D6AA52498A68400EE68B2 /* LaunchScreen.storyboard */; };
@@ -42,6 +43,7 @@
 		6B73D7952AEE7D5A00CC98AB /* Bolt.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Bolt.xcconfig; sourceTree = "<group>"; };
 		6B73D7962AEE7D5A00CC98AB /* Bolt-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Bolt-Debug.xcconfig"; sourceTree = "<group>"; };
 		6B73D7972AEE7D5A00CC98AB /* Bolt-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Bolt-Release.xcconfig"; sourceTree = "<group>"; };
+		6B81CF0D2D106E0B00908962 /* SDK-iOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SDK-iOS.xcconfig"; sourceTree = "<group>"; };
 		6B87A8112765CE35003731CD /* BoltLocalizations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BoltLocalizations; sourceTree = "<group>"; };
 		6BCE13DE2B63F20C008C5285 /* BoltUtils */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltUtils; sourceTree = "<group>"; };
 		6BD4A11927A5602A007FC756 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 				6B0DC7322AEE77F4004280C7 /* Project.xcconfig */,
 				6B0DC7332AEE77F4004280C7 /* Project-Debug.xcconfig */,
 				6B0DC7312AEE77F4004280C7 /* Project-Release.xcconfig */,
+				6B81CF0D2D106E0B00908962 /* SDK-iOS.xcconfig */,
 				6B73D7952AEE7D5A00CC98AB /* Bolt.xcconfig */,
 				6B73D7962AEE7D5A00CC98AB /* Bolt-Debug.xcconfig */,
 				6B73D7972AEE7D5A00CC98AB /* Bolt-Release.xcconfig */,
@@ -234,6 +237,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				716D6AA62498A68400EE68B2 /* LaunchScreen.storyboard in Resources */,
+				6B81CF0E2D106E0B00908962 /* SDK-iOS.xcconfig in Resources */,
 				6B593CBA2B6DEED20042E688 /* Main.storyboard in Resources */,
 				718B0149252978BA0060ACBC /* Assets.xcassets in Resources */,
 			);
