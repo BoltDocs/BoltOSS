@@ -198,8 +198,8 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastSwiftUpdateCheck = 1200;
-				LastUpgradeCheck = 1520;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
 				ORGANIZATIONNAME = "Bolt Project";
 				TargetAttributes = {
 					715F6A25247B65F700AB1300 = {
