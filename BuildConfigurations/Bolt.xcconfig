@@ -1,9 +1,6 @@
+#include "./App.xcconfig"
 
-#include "./SDK-iOS.xcconfig"
-
-ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
 ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*] = AppIcon_macOS
 CURRENT_PROJECT_VERSION = 1
 INFOPLIST_FILE = Bolt/Info.plist
-LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks
 MARKETING_VERSION = 0.1.0

@@ -43,6 +43,7 @@
 		6B73D7952AEE7D5A00CC98AB /* Bolt.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Bolt.xcconfig; sourceTree = "<group>"; };
 		6B73D7962AEE7D5A00CC98AB /* Bolt-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Bolt-Debug.xcconfig"; sourceTree = "<group>"; };
 		6B73D7972AEE7D5A00CC98AB /* Bolt-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Bolt-Release.xcconfig"; sourceTree = "<group>"; };
+		6B81CE5B2D0EA6AC00908962 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
 		6B81CF0D2D106E0B00908962 /* SDK-iOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SDK-iOS.xcconfig"; sourceTree = "<group>"; };
 		6B87A8112765CE35003731CD /* BoltLocalizations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BoltLocalizations; sourceTree = "<group>"; };
 		6BCE13DE2B63F20C008C5285 /* BoltUtils */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltUtils; sourceTree = "<group>"; };
@@ -81,6 +82,7 @@
 				6B0DC7322AEE77F4004280C7 /* Project.xcconfig */,
 				6B0DC7332AEE77F4004280C7 /* Project-Debug.xcconfig */,
 				6B0DC7312AEE77F4004280C7 /* Project-Release.xcconfig */,
+				6B81CE5B2D0EA6AC00908962 /* App.xcconfig */,
 				6B81CF0D2D106E0B00908962 /* SDK-iOS.xcconfig */,
 				6B73D7952AEE7D5A00CC98AB /* Bolt.xcconfig */,
 				6B73D7962AEE7D5A00CC98AB /* Bolt-Debug.xcconfig */,
