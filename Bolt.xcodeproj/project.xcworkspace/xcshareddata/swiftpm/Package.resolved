@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "accessibilitysnapshot",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/EmergeTools/AccessibilitySnapshot.git",
+      "state" : {
+        "revision" : "54046d8fa44b9fa9f0e2229526f6ed89cb5e0ec2",
+        "version" : "1.0.2"
+      }
+    },
+    {
       "identity" : "alamofire",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire.git",
@@ -43,6 +52,15 @@
       "state" : {
         "branch" : "2.3.2",
         "revision" : "587995f7d5cc667951d635fbf6b4252324ba0439"
+      }
+    },
+    {
+      "identity" : "flyingfox",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swhitty/FlyingFox.git",
+      "state" : {
+        "revision" : "f7829d4aca8cbfecb410a1cce872b1b045224aa1",
+        "version" : "0.16.0"
       }
     },
     {
@@ -124,6 +142,15 @@
       "state" : {
         "revision" : "2842e6e84e82eb9a8dac0100ca90d9444b0307f4",
         "version" : "5.7.1"
+      }
+    },
+    {
+      "identity" : "snapshotpreviews",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/EmergeTools/SnapshotPreviews",
+      "state" : {
+        "revision" : "e29969072e600518867af25d4d2acd0d1d2ffd5f",
+        "version" : "0.10.20"
       }
     },
     {

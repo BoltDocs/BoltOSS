@@ -14,6 +14,13 @@
   "testTargets" : [
     {
       "target" : {
+        "containerPath" : "container:Bolt.xcodeproj",
+        "identifier" : "6B81CE3F2D0EA2B000908962",
+        "name" : "BoltPreviewTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:BoltLocalizations",
         "identifier" : "BoltLocalizationsTests",
         "name" : "BoltLocalizationsTests"
@@ -46,7 +53,7 @@
         "identifier" : "BoltDocsetsTests",
         "name" : "BoltDocsetsTests"
       }
-    },
+    }
   ],
   "version" : 1
 }
