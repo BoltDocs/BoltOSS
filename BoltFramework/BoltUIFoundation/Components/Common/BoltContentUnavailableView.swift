@@ -105,6 +105,38 @@ public struct BoltContentUnavailableView: View {
 
 }
 
+public final class BoltContentUnavailableUIView: UIView {
+
+  private var hostingController: UIHostingController<BoltContentUnavailableView>
+
+  public init(
+    configuration: BoltContentUnavailableViewConfiguration,
+    detailAction: (() -> Void)? = nil,
+    retryAction: (() -> Void)? = nil
+  ) {
+    hostingController = UIHostingController(
+      rootView: BoltContentUnavailableView(
+        configuration: configuration,
+        detailAction: detailAction,
+        retryAction: retryAction
+      )
+    )
+    super.init(frame: .zero)
+
+    hostingController.view.frame = bounds
+    hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    addSubview(hostingController.view)
+  }
+
+  @available(*, unavailable)
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+}
+
+#if DEBUG
+
 @available(iOS 17.0, *)
 #Preview(traits: .fixedLayout(width: 300, height: 300)) {
 
@@ -122,3 +154,5 @@ public struct BoltContentUnavailableView: View {
   )
 
 }
+
+#endif

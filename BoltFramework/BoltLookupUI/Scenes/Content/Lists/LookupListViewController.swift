@@ -21,6 +21,7 @@ import RxSwift
 import SnapKit
 
 import BoltUIFoundation
+import BoltUtils
 
 final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseViewController, UITableViewDelegate {
 
@@ -45,12 +46,48 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     return barButtonItem
   }()
 
+  private let currentError = BehaviorRelay<Error?>(value: nil)
+
+  private lazy var contentUnavailableView = BoltContentUnavailableUIView(
+    configuration: BoltContentUnavailableViewConfiguration(
+      image: BoltImageResource(named: "warning", in: kFoundationBundle).platformImage!,
+      imageSize: CGSize(width: 132, height: 132),
+      message: "An Error Occurred",
+      shouldDisplayIndicator: false,
+      showsMessage: true,
+      showsDetailButton: true,
+      showsRetryButton: false
+    ),
+    // swiftlint:disable:next trailing_closure
+    detailAction: { [weak self] in
+      guard
+        let self = self,
+        let error = currentError.value
+      else {
+        return
+      }
+      GlobalUI.presentAlertController(
+        UIAlertController.alert(
+          withTitle: "An Error Occurred",
+          message: error.localizedDescription,
+          confirmAction: ("OK", .default, nil)
+        )
+      )
+    }
+  )
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
     view.backgroundColor = .systemBackground
 
     setupTableView()
+
+    contentUnavailableView.isHidden = true
+    view.addSubview(contentUnavailableView)
+    contentUnavailableView.snp.makeConstraints { make in
+      make.edges.equalToSuperview()
+    }
 
     // FIXME: .distinctUntilChanged() should be used
 
@@ -66,12 +103,33 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
       .disposed(by: disposeBag)
 
     viewModel.results
-      .asDriver()
-      .drive(self.tableView.rx.items(cellIdentifier: "EntryCell")) { _, reactor, cell in
+      .map { result -> [LookupListCellItem] in
+        if case let .success(items) = result {
+          return items
+        }
+        return []
+      }
+      .drive(tableView.rx.items(cellIdentifier: "EntryCell")) { _, reactor, cell in
         guard let cell = cell as? EntryCell else {
           return
         }
         cell.configure(forCellModel: reactor.viewModel)
+      }
+      .disposed(by: disposeBag)
+
+    viewModel.results
+      .map { result -> Error? in
+        if case let .failure(error) = result {
+          return error
+        }
+        return nil
+      }
+      .drive(currentError)
+      .disposed(by: disposeBag)
+
+    currentError
+      .subscribe(with: self) { owner, error  in
+        owner.contentUnavailableView.isHidden = (error == nil)
       }
       .disposed(by: disposeBag)
   }
@@ -112,7 +170,7 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
 import BoltSearch
 import BoltTypes
 
-struct LookupListStubbedEntryItem: LookupListCellItem {
+private struct LookupListStubbedEntryItem: LookupListCellItem {
 
   let viewModel: LookupListCellViewModel
 
@@ -129,7 +187,9 @@ struct LookupListStubbedEntryItem: LookupListCellItem {
 
 }
 
-final class StubbedLookupListViewModel: LookupListViewModel {
+private struct StubbedError: Error { }
+
+private final class StubbedLookupListViewModel: LookupListViewModel {
 
   // MARK: - LookupListViewModel
 
@@ -137,17 +197,22 @@ final class StubbedLookupListViewModel: LookupListViewModel {
 
   var showsLoadingIndicator = Driver.just(true)
 
-  lazy var results: Driver<[LookupListCellItem]> = {
-    return Driver.just(entryItems)
+  lazy var results: Driver<Result<[LookupListCellItem], Error>> = {
+    switch entryItems {
+    case let .success(items):
+      return Driver.just(.success(items))
+    case let .failure(error):
+      return Driver.just(.failure(error))
+    }
   }()
 
   var itemSelected = PublishRelay<LookupListCellItem>()
 
   // MARK: - Properties
 
-  var entryItems: [LookupListStubbedEntryItem]
+  var entryItems: Result<[LookupListStubbedEntryItem], Error>
 
-  init(entryItems: [LookupListStubbedEntryItem]) {
+  init(entryItems: Result<[LookupListStubbedEntryItem], Error>) {
     self.entryItems = entryItems
   }
 
@@ -158,12 +223,24 @@ final class StubbedLookupListViewModel: LookupListViewModel {
   UINavigationController(
     rootViewController: LookupListViewController(
       viewModel: StubbedLookupListViewModel(
-        entryItems: [LookupListStubbedEntryItem](
-          repeating: LookupListStubbedEntryItem(
-            entry: Entry(typeName: "Class", name: "MyClass", path: "")
-          ),
-          count: 10
+        entryItems: .success(
+          [LookupListStubbedEntryItem](
+            repeating: LookupListStubbedEntryItem(
+              entry: Entry(typeName: "Class", name: "MyClass", path: "")
+            ),
+            count: 10
+          )
         )
+      )
+    )
+  )
+}
+
+#Preview(traits: .fixedLayout(width: 480, height: 640)) {
+  UINavigationController(
+    rootViewController: LookupListViewController(
+      viewModel: StubbedLookupListViewModel(
+        entryItems: .failure(StubbedError())
       )
     )
   )

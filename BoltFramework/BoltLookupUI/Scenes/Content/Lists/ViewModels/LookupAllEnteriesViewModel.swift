@@ -25,8 +25,8 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
 
   let itemSelected = PublishRelay<LookupListCellItem>()
 
-  private let _results = BehaviorRelay<[LookupListCellItem]>(value: [])
-  var results: Driver<[LookupListCellItem]> {
+  private let _results = BehaviorRelay<Result<[LookupListCellItem], Error>>(value: .success([]))
+  var results: Driver<Result<[LookupListCellItem], Error>> {
     return _results.asDriver()
   }
 
@@ -76,7 +76,7 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
       .disposed(by: disposeBag)
 
     routingState.searchQuery
-      .flatMapLatest { queryString -> Observable<[LookupListCellItem]> in
+      .flatMapLatest { queryString -> Observable<Result<[LookupListCellItem], Error>> in
         if queryString.isEmpty {
           return Single<[TypeCountPair]>.create {
             return try await DocsetSearcher.typeList(forDocset: self.docset)
@@ -86,6 +86,8 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
               return LookupListTypeItem(typeCountPair: type, docset: self.docset)
             }
           }
+          .asObservable()
+          .mapToResult()
           .trackActivity(self.activityIndicator)
         } else {
           return Single<[Entry]>.create {
@@ -96,10 +98,12 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
               return LookupListEntryItem(docset: self.docset, entry: entry)
             }
           }
+          .asObservable()
+          .mapToResult()
           .trackActivity(self.activityIndicator)
         }
       }
-      .startWith([])
+      .startWith(.success([]))
       .bind(to: _results)
       .disposed(by: disposeBag)
   }

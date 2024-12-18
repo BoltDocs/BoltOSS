@@ -23,7 +23,7 @@ protocol LookupListViewModel {
 
   var showsLoadingIndicator: Driver<Bool> { get }
 
-  var results: Driver<[LookupListCellItem]> { get }
+  var results: Driver<Result<[LookupListCellItem], Error>> { get }
 
   var itemSelected: PublishRelay<LookupListCellItem> { get }
 

@@ -17,6 +17,7 @@
 import RxCocoa
 import RxSwift
 
+import BoltRxSwift
 import BoltServices
 import BoltUIFoundation
 import RoutableNavigation
@@ -25,8 +26,8 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
 
   let itemSelected = PublishRelay<LookupListCellItem>()
 
-  private let _results = BehaviorRelay<[LookupListCellItem]>(value: [])
-  var results: Driver<[LookupListCellItem]> {
+  private let _results = BehaviorRelay<Result<[LookupListCellItem], Error>>(value: .success([]))
+  var results: Driver<Result<[LookupListCellItem], Error>> {
     return _results.asDriver()
   }
 
@@ -72,7 +73,7 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
       .disposed(by: disposeBag)
 
     routingState.searchQuery
-      .flatMapLatest { query -> Observable<[LookupListCellItem]> in
+      .flatMapLatest { query -> Observable<Result<[LookupListCellItem], Error>> in
         if query.isEmpty {
           return Single<[Entry]>.create {
             return try await DocsetSearcher.allEntries(forDocset: self.docset, type: self.type)
@@ -82,6 +83,8 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
               return LookupListEntryItem(docset: self.docset, entry: entry)
             }
           }
+          .asObservable()
+          .mapToResult()
           .trackActivity(self.activityIndicator)
         } else {
           return Single<[Entry]>.create {
@@ -92,10 +95,12 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
               return LookupListEntryItem(docset: self.docset, entry: entry)
             }
           }
+          .asObservable()
+          .mapToResult()
           .trackActivity(self.activityIndicator)
         }
       }
-      .startWith([])
+      .startWith(.success([]))
       .bind(to: _results)
       .disposed(by: disposeBag)
   }
