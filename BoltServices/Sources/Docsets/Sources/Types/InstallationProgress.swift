@@ -19,6 +19,5 @@ import Foundation
 public enum InstallationProgress: Equatable {
 
   case extracting(progress: Double)
-  case indexing(progress: Double)
 
 }

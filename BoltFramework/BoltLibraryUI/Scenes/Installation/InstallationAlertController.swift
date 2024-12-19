@@ -56,8 +56,6 @@ final class InstallationAlert: HasDisposeBag {
           switch progress {
           case let .extracting(progress):
             owner.message = "Extracting files: \(progress)"
-          case let .indexing(progress):
-            owner.message = "Indexing docset: \(progress)"
           }
         }, onError: { _, error in
           Self.handleInstallationError(error)

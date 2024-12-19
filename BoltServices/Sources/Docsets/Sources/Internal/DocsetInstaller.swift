@@ -49,47 +49,29 @@ struct DocsetInstaller {
             fatalError("Should be completed")
           }
         }
-        .flatMap { docsetPath in
-          // create search index
-          return DocsetIndexer.createSearchIndex(forAbsoluteDocsetPath: docsetPath)
-            // swiftlint:disable:next trailing_closure
-            .handleEvents(receiveOutput: { progress in
-              subscriber.send(.indexing(progress: 0.2 * progress.progress))
-            })
-            .filter { $0.completed }
-            // create full-text query index
-            .flatMap { _ in
-              return DocsetIndexer.createQueryIndex(forAbsoluteDocsetPath: docsetPath)
+        // override metadata
+        .flatMap { docsetPath -> AnyPublisher<Void, Error> in
+          Deferred { Future<Void, Error> { promise in
+            do {
+              try LibraryDocsetsFileSystemBridge.writeMetadata(
+                ofEntry: entry,
+                toDocsetPath: docsetPath
+              )
+              let docsetInstallation = DocsetInstallation(
+                uuid: uuid,
+                name: entry.feed.id,
+                version: entry.version,
+                installedAsLatestVersion: entry.isTrackedAsLatest,
+                repository: entry.feed.repository
+              )
+              try LibraryDatabase.shared.insertDocsetInstallation(docsetInstallation)
+            } catch {
+              promise(.failure(error))
             }
-            // swiftlint:disable:next trailing_closure
-            .handleEvents(receiveOutput: { progress in
-              subscriber.send(.indexing(progress: 0.2 + 0.8 * progress.progress))
-            })
-            .filter { $0.completed }
-            // override metadata
-            .flatMap { _ -> AnyPublisher<Void, Error> in
-              Deferred { Future<Void, Error> { promise in
-                do {
-                  try LibraryDocsetsFileSystemBridge.writeMetadata(
-                    ofEntry: entry,
-                    toDocsetPath: docsetPath
-                  )
-                  let docsetInstallation = DocsetInstallation(
-                    uuid: uuid,
-                    name: entry.feed.id,
-                    version: entry.version,
-                    installedAsLatestVersion: entry.isTrackedAsLatest,
-                    repository: entry.feed.repository
-                  )
-                  try LibraryDatabase.shared.insertDocsetInstallation(docsetInstallation)
-                } catch {
-                  promise(.failure(error))
-                }
-                promise(.success(()))
-                // swiftlint:disable:next closure_end_indentation
-              } }
-              .eraseToAnyPublisher()
-            }
+            promise(.success(()))
+            // swiftlint:disable:next closure_end_indentation
+          } }
+          .eraseToAnyPublisher()
         }
         .sink(receiveCompletion: { completion in
           switch completion {
@@ -104,3 +86,20 @@ struct DocsetInstaller {
   }
 
 }
+
+// .flatMap { docsetPath in
+//   // create search index
+//   return DocsetIndexer.createSearchIndex(forAbsoluteDocsetPath: docsetPath)
+//     .handleEvents(receiveOutput: { progress in
+//       subscriber.send(.indexing(progress: 0.2 * progress.progress))
+//     })
+//     .filter { $0.completed }
+//     // create full-text query index
+//     .flatMap { _ in
+//       return DocsetIndexer.createQueryIndex(forAbsoluteDocsetPath: docsetPath)
+//     }
+//     .handleEvents(receiveOutput: { progress in
+//       subscriber.send(.indexing(progress: 0.2 + 0.8 * progress.progress))
+//     })
+//     .filter { $0.completed }
+// }
