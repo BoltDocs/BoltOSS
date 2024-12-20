@@ -16,6 +16,7 @@
 
 import UIKit
 
+import Factory
 import Overture
 
 import BoltLocalizations
@@ -23,6 +24,9 @@ import BoltServices
 import BoltUIFoundation
 
 final class HomeCollectionView: UICollectionView {
+
+  @Injected(\.libraryDocsetsManager)
+  private var libraryDocsetsManager: LibraryDocsetsManager
 
   private let isForCollapsedSidebar: Bool
 
@@ -209,8 +213,8 @@ final class HomeCollectionView: UICollectionView {
         confirmAction: (
           BoltLocalizations.confirm,
           UIAlertAction.Style.destructive,
-          {
-            try? LibraryDocsetsManager.shared.uninstallDocset(forInstallation: installationToUninstall)
+          { [libraryDocsetsManager] in
+            try? libraryDocsetsManager.uninstallDocset(forInstallation: installationToUninstall)
             completion?(true)
           }
         ),

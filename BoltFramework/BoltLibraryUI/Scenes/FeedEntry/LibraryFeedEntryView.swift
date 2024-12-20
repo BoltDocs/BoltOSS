@@ -37,6 +37,9 @@ private final class DataSource: ObservableObject {
   @Injected(\.downloadManager)
   private var downloadManager: DownloadManager
 
+  @Injected(\.libraryDocsetsManager)
+  private var libraryDocsetsManager: LibraryDocsetsManager
+
   private var cancellables = Set<AnyCancellable>()
   private let activityStatusTracker = ActivityStatusTracker<Void, Error>()
 
@@ -79,7 +82,7 @@ private final class DataSource: ObservableObject {
   init(entry: FeedEntry) {
     self.entry = entry
 
-    LibraryDocsetsManager.shared.installedRecords()
+    libraryDocsetsManager.installedRecords()
       .map { installations in
         return installations.contains { installation in
           return installation.name == entry.feed.id &&
@@ -167,6 +170,9 @@ struct LibraryFeedEntryView: View {
 
   @Injected(\.downloadManager)
   private var downloadManager: DownloadManager
+
+  @Injected(\.libraryDocsetsManager)
+  private var libraryDocsetsManager: LibraryDocsetsManager
 
   @Environment(\.dismissSheetModal)
   private var dismissSheetModal: DismissAction?
@@ -350,7 +356,7 @@ struct LibraryFeedEntryView: View {
   }
 
   private func startInstall() {
-    let observable = LibraryDocsetsManager.shared.installDocset(
+    let observable = libraryDocsetsManager.installDocset(
       forEntry: dataSource.entry,
       isInstalledAsLatest: false,
       usingTarix: dataSource.supportsTarix && installsWithTarix

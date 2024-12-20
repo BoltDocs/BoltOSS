@@ -17,6 +17,8 @@
 import Combine
 import SwiftUI
 
+import Factory
+
 import BoltDocsets
 import BoltTypes
 import BoltUIFoundation
@@ -54,6 +56,9 @@ final class LibraryFeedInfoVersionsSectionModelImp: FeedInfoVersionsSectionModel
   private var cancellables = Set<AnyCancellable>()
   private let activityStatusTracker = ActivityStatusTracker<[FeedInfoVersionsSectionListItem], Error>()
 
+  @Injected(\.libraryDocsetsManager)
+  private var libraryDocsetsManager: LibraryDocsetsManager
+
   @Published var refreshTrigger: Void = ()
   @Published var statusResult: ActivityStatus<[FeedInfoVersionsSectionListItem], Error> = .idle
 
@@ -68,10 +73,10 @@ final class LibraryFeedInfoVersionsSectionModelImp: FeedInfoVersionsSectionModel
       }
     }
 
-    let handleRefreshing: () -> AnyPublisher<Result<[FeedInfoVersionsSectionListItem], Error>, Never> = {
+    let handleRefreshing: () -> AnyPublisher<Result<[FeedInfoVersionsSectionListItem], Error>, Never> = { [libraryDocsetsManager] in
       return Publishers.CombineLatest(
         fetchEntriesPublisher(),
-        LibraryDocsetsManager.shared.installedRecords()
+        libraryDocsetsManager.installedRecords()
           .setFailureType(to: Error.self)
       )
       .map { feedEntries, records -> [FeedInfoVersionsSectionListItem] in

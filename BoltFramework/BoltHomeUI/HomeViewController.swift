@@ -39,6 +39,9 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
   @Injected(\.analyticsService)
   private var analyticsService: AnalyticsService?
 
+  @Injected(\.libraryDocsetsManager)
+  private var libraryDocsetsManager: LibraryDocsetsManager
+
   struct SectionNames {
     static let docsets = "Docsets"
     static let favorites = "Favorites"
@@ -161,7 +164,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     // TODO: build favorites and history section
     dataSource.apply(dataSourceSnapshot)
 
-    LibraryDocsetsManager.shared.installedDocsets()
+    libraryDocsetsManager.installedDocsets()
       .asInfallible()
       .bind(to: docsets)
       .disposed(by: disposeBag)
@@ -228,9 +231,13 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
               UIAlertController.alert(
                 withTitle: "Uninstall",
                 message: "Do you really want to uninstall \(installation.name)",
-                confirmAction: ("Confirm", UIAlertAction.Style.destructive, {
-                  try? LibraryDocsetsManager.shared.uninstallDocset(forInstallation: installation)
-                }),
+                confirmAction: (
+                  "Confirm",
+                  UIAlertAction.Style.destructive,
+                  { [libraryDocsetsManager = owner.libraryDocsetsManager] in
+                    try? libraryDocsetsManager.uninstallDocset(forInstallation: installation)
+                  }
+                ),
                 cancelAction: (UIKitLocalizations.cancel, nil)
               )
             )

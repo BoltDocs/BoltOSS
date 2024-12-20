@@ -21,6 +21,8 @@ import BoltDatabase
 import BoltTypes
 import BoltUtils
 
+import Factory
+
 public enum LibraryInstallationQueryResult: Hashable {
 
   case docset(_: Docset)
@@ -46,20 +48,40 @@ public enum LibraryInstallationQueryResult: Hashable {
 
 }
 
-public class LibraryDocsetsManager: LoggerProvider {
+public extension Container {
 
-  public static let shared = LibraryDocsetsManager()
+  var libraryDocsetsManager: Factory<LibraryDocsetsManager> { self { LibraryDocsetsManagerImp() }.cached }
+
+}
+
+public protocol LibraryDocsetsManager {
+
+  func installedDocsets() -> AnyPublisher<[LibraryInstallationQueryResult], Never>
+
+  func installedRecords() -> AnyPublisher<[LibraryRecord], Never>
+
+  func installDocset(
+    forEntry entry: FeedEntry,
+    isInstalledAsLatest: Bool,
+    usingTarix: Bool
+  ) -> AnyPublisher<InstallationProgress, Error>
+
+  func uninstallDocset(forInstallation installation: DocsetInstallation) throws
+
+}
+
+final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
 
   private var cancellables = Set<AnyCancellable>()
 
   private lazy var _installedDocsets = CurrentValueSubject<[LibraryInstallationQueryResult], Never>([])
 
-  public func installedDocsets() -> AnyPublisher<[LibraryInstallationQueryResult], Never> {
+  func installedDocsets() -> AnyPublisher<[LibraryInstallationQueryResult], Never> {
     return _installedDocsets
       .eraseToAnyPublisher()
   }
 
-  public func installedRecords() -> AnyPublisher<[LibraryRecord], Never> {
+  func installedRecords() -> AnyPublisher<[LibraryRecord], Never> {
     return _installedDocsets
       .map { result in
         return result.map { res in
@@ -74,7 +96,7 @@ public class LibraryDocsetsManager: LoggerProvider {
       .eraseToAnyPublisher()
   }
 
-  public init() {
+  init() {
     LibraryDatabase.shared.allDocsetInstallations
       .map { array in
         array.compactMap { installation -> LibraryInstallationQueryResult in
@@ -89,7 +111,7 @@ public class LibraryDocsetsManager: LoggerProvider {
       .store(in: &cancellables)
   }
 
-  public func installDocset(
+  func installDocset(
     forEntry entry: FeedEntry,
     isInstalledAsLatest: Bool,
     usingTarix: Bool
@@ -99,7 +121,7 @@ public class LibraryDocsetsManager: LoggerProvider {
 
   // MARK: - Uninstall
 
-  public func uninstallDocset(forInstallation installation: DocsetInstallation) throws {
+  func uninstallDocset(forInstallation installation: DocsetInstallation) throws {
     try LibraryDatabase.shared.deleteDocsetInstallation(installation)
     try FileManager.default.removeItem(
       atPath: LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(installation.id)

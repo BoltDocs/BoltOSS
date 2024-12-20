@@ -21,10 +21,15 @@ import BoltTestingUtils
 import BoltTypes
 import BoltUtils
 
+import Factory
+
 @testable import BoltDocsets
 @testable import BoltRepository
 
 final class LibraryDocsetsManagerTests: XCTestCase {
+
+  @LazyInjected(\.libraryDocsetsManager)
+  private var libraryDocsetsManager: LibraryDocsetsManager
 
   override func setUpWithError() throws {
     try super.setUpWithError()
@@ -40,7 +45,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
 
   func testInstallDocsetWithoutTarix() async throws {
     let _ = try await awaitPublisher(
-      LibraryDocsetsManager.shared.installDocset(
+      libraryDocsetsManager.installDocset(
         forEntry: FeedEntry(
           feed: StubFeed(
             repository: .main,
@@ -64,7 +69,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
 
   func testInstallDocsetWithTarix() async throws {
     let _ = try await awaitPublisher(
-      LibraryDocsetsManager.shared.installDocset(
+      libraryDocsetsManager.installDocset(
         forEntry: FeedEntry(
           feed: StubFeed(
             repository: .main,
