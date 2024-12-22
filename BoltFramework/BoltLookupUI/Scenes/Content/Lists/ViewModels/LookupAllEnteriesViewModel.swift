@@ -50,7 +50,10 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
   init(routingState: LookupRoutingState, docset: Docset) {
     self.routingState = routingState
     self.docset = docset
+    setupObservations()
+  }
 
+  private func setupObservations() {
     itemSelected
       .asSignal()
       .emit(with: routingState) { routingState, item in
@@ -76,31 +79,31 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
       .disposed(by: disposeBag)
 
     routingState.searchQuery
-      .flatMapLatest { queryString -> Observable<Result<[LookupListCellItem], Error>> in
+      .flatMapLatest { [docset, activityIndicator] queryString -> Observable<Result<[LookupListCellItem], Error>> in
         if queryString.isEmpty {
           return Single<[TypeCountPair]>.create {
-            return try await DocsetSearcher.typeList(forDocset: self.docset)
+            return try await DocsetSearcher.typeList(forDocset: docset)
           }
           .map { types -> [LookupListTypeItem] in
             return types.map { type in
-              return LookupListTypeItem(typeCountPair: type, docset: self.docset)
+              return LookupListTypeItem(typeCountPair: type, docset: docset)
             }
           }
           .asObservable()
           .mapToResult()
-          .trackActivity(self.activityIndicator)
+          .trackActivity(activityIndicator)
         } else {
           return Single<[Entry]>.create {
-            return try await DocsetSearcher.entries(forDocset: self.docset, rawQuery: queryString, type: nil)
+            return try await DocsetSearcher.entries(forDocset: docset, rawQuery: queryString, type: nil)
           }
           .map { entries -> [LookupListEntryItem] in
             return entries.map { entry in
-              return LookupListEntryItem(docset: self.docset, entry: entry)
+              return LookupListEntryItem(docset: docset, entry: entry)
             }
           }
           .asObservable()
           .mapToResult()
-          .trackActivity(self.activityIndicator)
+          .trackActivity(activityIndicator)
         }
       }
       .startWith(.success([]))

@@ -53,7 +53,10 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
     self.routingState = routingState
     self.type = type
     self.docset = docset
+    setupObservations()
+  }
 
+  private func setupObservations() {
     itemSelected
       .asSignal()
       .emit(with: routingState) { state, item in
@@ -73,31 +76,31 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
       .disposed(by: disposeBag)
 
     routingState.searchQuery
-      .flatMapLatest { query -> Observable<Result<[LookupListCellItem], Error>> in
+      .flatMapLatest { [docset, type, activityIndicator] query -> Observable<Result<[LookupListCellItem], Error>> in
         if query.isEmpty {
           return Single<[Entry]>.create {
-            return try await DocsetSearcher.allEntries(forDocset: self.docset, type: self.type)
+            return try await DocsetSearcher.allEntries(forDocset: docset, type: type)
           }
           .map { entries -> [LookupListCellItem] in
             return entries.map { entry in
-              return LookupListEntryItem(docset: self.docset, entry: entry)
+              return LookupListEntryItem(docset: docset, entry: entry)
             }
           }
           .asObservable()
           .mapToResult()
-          .trackActivity(self.activityIndicator)
+          .trackActivity(activityIndicator)
         } else {
           return Single<[Entry]>.create {
-            return try await DocsetSearcher.entries(forDocset: self.docset, rawQuery: query, type: self.type)
+            return try await DocsetSearcher.entries(forDocset: docset, rawQuery: query, type: type)
           }
           .map { entries -> [LookupListCellItem] in
             return entries.map { entry in
-              return LookupListEntryItem(docset: self.docset, entry: entry)
+              return LookupListEntryItem(docset: docset, entry: entry)
             }
           }
           .asObservable()
           .mapToResult()
-          .trackActivity(self.activityIndicator)
+          .trackActivity(activityIndicator)
         }
       }
       .startWith(.success([]))
