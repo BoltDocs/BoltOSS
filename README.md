@@ -14,7 +14,7 @@ Releases would be tagged or branched but no binary products would be uploaded.
 
 ## Build instructions
 
-We support building for up to 2 recent major versions of iOS and iPadOS and the most recent major version of Mac Catalyst, so currently it would be built with iOS 16, iPasOS 16, and Mac Catalyst 17 (macOS 14).
+We support building for up to 2 recent major versions of iOS and iPadOS and the most recent major version of Mac Catalyst, so currently it would be built with iOS 17, iPasOS 17, and Mac Catalyst 18 (macOS 15).
 
 Mac Catalyst builds are only for easier development and testing, so only major issues would be solved.
 

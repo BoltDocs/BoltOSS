@@ -142,8 +142,8 @@ let frameworkTarget: Target = {
 let package = Package(
   name: "BoltFramework",
   platforms: [
-    .iOS(.v16),
-    .macCatalyst(.v17),
+    .iOS(.v17),
+    .macCatalyst(.v18),
   ],
   products: [
     .library(

@@ -196,9 +196,9 @@ let dependencies: [Package.Dependency] = [
 let package = Package(
   name: "BoltServices",
   platforms: [
-    .iOS(.v16),
-    .macCatalyst(.v17),
-    .macOS(.v14),
+    .iOS(.v17),
+    .macCatalyst(.v18),
+    .macOS(.v15),
   ],
   products: products,
   dependencies: dependencies,

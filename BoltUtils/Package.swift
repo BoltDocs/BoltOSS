@@ -22,9 +22,9 @@ import PackageDescription
 let package = Package(
   name: "BoltUtils",
   platforms: [
-    .iOS(.v16),
-    .macCatalyst(.v17),
-    .macOS(.v14),
+    .iOS(.v17),
+    .macCatalyst(.v18),
+    .macOS(.v15),
   ],
   products: [
     .library(
