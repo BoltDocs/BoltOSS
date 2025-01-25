@@ -107,7 +107,7 @@ struct LibraryCustomFeedImportView: View {
         }
       }
     }
-    .onChange(of: urlInput) { _ in
+    .onChange(of: urlInput) {
       if let newName = feedURLScheme?.feedFileName, !newName.isEmpty {
         self.name = newName
       }
