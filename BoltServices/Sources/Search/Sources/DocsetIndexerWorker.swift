@@ -24,14 +24,14 @@ import BoltCombineExtensions
 import BoltTypes
 import BoltUtils
 
-struct DocsetIndexer: LoggerProvider {
+public struct DocsetIndexer: LoggerProvider {
 
-  struct Progress {
+  public struct Progress {
 
-    let progress: Double
-    let completed: Bool
+    public let progress: Double
+    public let completed: Bool
 
-    init(progress: Double, completed: Bool = false) {
+    public init(progress: Double, completed: Bool = false) {
       self.progress = progress
       self.completed = completed
     }
@@ -70,7 +70,7 @@ struct DocsetIndexer: LoggerProvider {
     attributes: .concurrent
   )
 
-  static func createSearchIndex(forAbsoluteDocsetPath path: String) -> AnyPublisher<Progress, Error> {
+  public static func createSearchIndex(forAbsoluteDocsetPath path: String) -> AnyPublisher<Progress, Error> {
     return Publishers.Create<Progress, Error> { subscriber in
       let cancellable = BooleanCancellable()
 
@@ -147,7 +147,7 @@ struct DocsetIndexer: LoggerProvider {
     .eraseToAnyPublisher()
   }
 
-  static func createQueryIndex(forAbsoluteDocsetPath path: String) -> AnyPublisher<Progress, Error> {
+  public static func createQueryIndex(forAbsoluteDocsetPath path: String) -> AnyPublisher<Progress, Error> {
     return Publishers.Create<Progress, Error> { subscriber in
       let cancellable = BooleanCancellable()
 

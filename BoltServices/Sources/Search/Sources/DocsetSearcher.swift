@@ -18,7 +18,6 @@ import Dispatch
 
 import GRDB
 
-import BoltDocsets
 import BoltTypes
 import BoltUtils
 

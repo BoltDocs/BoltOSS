@@ -73,7 +73,7 @@ let moduleTargets: [Target] = [
   ),
   .target(
     name: "BoltDocsets",
-    dependencies: [Dependencies.GRDB, "BoltArchives", "BoltDatabase", "BoltRepository", "BoltURLSchemes", "BoltUtils"],
+    dependencies: [Dependencies.GRDB, "BoltArchives", "BoltDatabase", "BoltRepository", "BoltSearch", "BoltURLSchemes", "BoltUtils"],
     path: "./Sources/Docsets/Sources",
     swiftSettings: [
       .swiftLanguageMode(.v5)
@@ -98,8 +98,8 @@ let moduleTargets: [Target] = [
   ),
   .target(
     name: "BoltSearch",
-    dependencies: [Dependencies.GRDB, "BoltDocsets", "BoltTypes"],
-    path: "./Sources/Search",
+    dependencies: [Dependencies.GRDB, "BoltCombineExtensions", "BoltTypes"],
+    path: "./Sources/Search/Sources",
     swiftSettings: [
       .swiftLanguageMode(.v5)
     ]
@@ -172,6 +172,17 @@ let testTargets: [Target] = [
     ],
     resources: [
       .copy("./TestResources"),
+    ],
+    swiftSettings: [
+      .swiftLanguageMode(.v5)
+    ]
+  ),
+  .testTarget(
+    name: "BoltSearchTests",
+    dependencies: ["BoltSearch", "BoltTestingUtils"],
+    path: "./Sources/Search",
+    sources: [
+      "./Tests"
     ],
     swiftSettings: [
       .swiftLanguageMode(.v5)

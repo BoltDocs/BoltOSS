@@ -19,6 +19,7 @@ import Foundation
 
 import BoltCombineExtensions
 import BoltDatabase
+import BoltSearch
 import BoltTypes
 import BoltUtils
 
