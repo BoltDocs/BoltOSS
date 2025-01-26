@@ -52,7 +52,7 @@ struct DocsetInstaller {
         }
         .flatMap { docsetPath in
           // create search index
-          return DocsetIndexer.createSearchIndex(forAbsoluteDocsetPath: docsetPath)
+          return DocsetIndexerWorker.createSearchIndex(forAbsoluteDocsetPath: docsetPath)
             // swiftlint:disable:next trailing_closure
             .handleEvents(receiveOutput: { progress in
               subscriber.send(.indexing(progress: 0.2 * progress.progress))
@@ -60,7 +60,7 @@ struct DocsetInstaller {
             .filter { $0.completed }
             // create full-text query index
             .flatMap { _ in
-              return DocsetIndexer.createQueryIndex(forAbsoluteDocsetPath: docsetPath)
+              return DocsetIndexerWorker.createQueryIndex(forAbsoluteDocsetPath: docsetPath)
             }
             // swiftlint:disable:next trailing_closure
             .handleEvents(receiveOutput: { progress in

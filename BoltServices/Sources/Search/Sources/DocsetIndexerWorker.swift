@@ -24,7 +24,7 @@ import BoltCombineExtensions
 import BoltTypes
 import BoltUtils
 
-public struct DocsetIndexer: LoggerProvider {
+public struct DocsetIndexerWorker: LoggerProvider {
 
   public struct Progress {
 
