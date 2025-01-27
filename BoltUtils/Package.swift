@@ -37,7 +37,7 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(url: "https://github.com/pointfreeco/swift-issue-reporting.git", revision: "1.4.2")
+    .package(url: "https://github.com/pointfreeco/swift-issue-reporting.git", revision: "1.4.3")
   ],
   targets: [
     .target(

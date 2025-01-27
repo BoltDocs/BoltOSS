@@ -1,4 +1,5 @@
 {
+  "originHash" : "3185d2ad865809ed3a915297d08046ea7f6a387467a1e4e5538db6ccf8dc3e58",
   "pins" : [
     {
       "identity" : "accessibilitysnapshot",
@@ -14,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire.git",
       "state" : {
-        "branch" : "5.9.1",
-        "revision" : "f455c2975872ccd2d9c81594c658af65716e9b9a"
+        "branch" : "5.10.2",
+        "revision" : "513364f870f6bfc468f9d2ff0a95caccc10044c5"
       }
     },
     {
@@ -32,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tsolomko/BitByteData.git",
       "state" : {
-        "revision" : "36df26fe4586b4f23d76cfd8b47076998343a2b2",
-        "version" : "2.0.3"
+        "revision" : "cdcdc5177ad536cfb11b95c620f926a81014b7fe",
+        "version" : "2.0.4"
       }
     },
     {
@@ -50,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory.git",
       "state" : {
-        "branch" : "2.3.2",
-        "revision" : "587995f7d5cc667951d635fbf6b4252324ba0439"
+        "branch" : "2.4.3",
+        "revision" : "fb04a8918848e413d3921d346a23bae7f81088d9"
       }
     },
     {
@@ -68,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/groue/GRDB.swift.git",
       "state" : {
-        "branch" : "v6.29.2",
-        "revision" : "57a4587b5b09ac706bc985288a62432ddbf20b09"
+        "branch" : "v6.29.3",
+        "revision" : "2cf6c756e1e5ef6901ebae16576a7e4e4b834622"
       }
     },
     {
@@ -158,8 +159,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/BoltDocs/SWCompressionTAR.git",
       "state" : {
-        "branch" : "4.8.5",
-        "revision" : "756d5fcc4d81d4fffb7a503f37b4e481f3ee104e"
+        "branch" : "4.8.6",
+        "revision" : "2299ba03cbc01b552a4d3a833b0ad812c16dd277"
       }
     },
     {
@@ -167,8 +168,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-issue-reporting.git",
       "state" : {
-        "branch" : "1.4.2",
-        "revision" : "770f990d3e4eececb57ac04a6076e22f8c97daeb"
+        "branch" : "1.4.3",
+        "revision" : "a3f634d1a409c7979cabc0a71b3f26ffa9fc8af1"
       }
     },
     {
@@ -208,5 +209,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
