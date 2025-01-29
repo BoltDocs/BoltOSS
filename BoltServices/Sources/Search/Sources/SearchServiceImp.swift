@@ -14,6 +14,34 @@
 // limitations under the License.
 //
 
+import BoltTypes
+
 final class SearchServiceImp: SearchService {
+
+  private let docsetIndexer = DocsetIndexer(maxConcurrentTasks: 1)
+
+  private var searchIndices = [String: DocsetSearchIndex]()
+
+  func searchIndex(forDocsetPath docsetPath: String, identifier: String) -> DocsetSearchIndex {
+    if let index = searchIndices[docsetPath] {
+      return index
+    }
+    let index = DocsetSearchIndex(docsetPath: docsetPath, identifier: identifier)
+    searchIndices[docsetPath] = index
+    return index
+  }
+
+  func searchIndex(forDocset docset: Docset) -> DocsetSearchIndex {
+    if let index = searchIndices[docset.path] {
+      return index
+    }
+    let index = DocsetSearchIndex(docset: docset)
+    searchIndices[docset.path] = index
+    return index
+  }
+
+  func queueToCreateSearchIndex(_ index: DocsetSearchIndex) async {
+    await docsetIndexer.addSearchIndexToQueue(index)
+  }
 
 }

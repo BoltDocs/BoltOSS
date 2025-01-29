@@ -33,6 +33,9 @@ final class LibraryDocsetsManagerTests: XCTestCase {
 
   override func setUpWithError() throws {
     try super.setUpWithError()
+
+    Container.shared.searchModuleInitializer()()
+
     try FileManager.default.createDirectory(atPath: LocalFileSystem.downloadsAbsolutePath, withIntermediateDirectories: true)
     try FileManager.default.copyItem(atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!, toPath: LocalFileSystem.downloadsAbsolutePath.appendingPathComponent("Vim-9.0-main.tgz"))
     try FileManager.default.copyItem(atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz.tarix")!, toPath: LocalFileSystem.downloadsAbsolutePath.appendingPathComponent("Vim-9.0-main.tgz.tarix"))

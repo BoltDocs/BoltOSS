@@ -26,18 +26,6 @@ import BoltUtils
 
 public struct DocsetIndexerWorker: LoggerProvider {
 
-  public struct Progress {
-
-    public let progress: Double
-    public let completed: Bool
-
-    public init(progress: Double, completed: Bool = false) {
-      self.progress = progress
-      self.completed = completed
-    }
-
-  }
-
   struct ZIndex: Codable, FetchableRecord {
 
     var name: String?
@@ -70,138 +58,125 @@ public struct DocsetIndexerWorker: LoggerProvider {
     attributes: .concurrent
   )
 
-  public static func createSearchIndex(forAbsoluteDocsetPath path: String) -> AnyPublisher<Progress, Error> {
-    return Publishers.Create<Progress, Error> { subscriber in
-      let cancellable = BooleanCancellable()
-
+  public static func createSearchIndex(forAbsoluteDocsetPath path: String) -> AsyncThrowingStream<Double, Error> {
+    return AsyncThrowingStream { continuation in
       let dbPath = path.appendingPathComponent("Contents/Resources/docSet.dsidx")
-      indexerQueue.asyncSafe {
-        do {
-          let dbQueue = try DatabaseQueue(path: dbPath)
-          try dbQueue.write { db in
-            guard !(try db.tableExists("searchindex")) else {
-              return
-            }
+      do {
+        let dbQueue = try DatabaseQueue(path: dbPath)
 
-            Self.logger.info("No searchindex table found, treating as zDash format.")
+        try dbQueue.write { db in
+          guard !(try db.tableExists("searchindex")) else {
+            return
+          }
 
-            try db.create(table: "searchindex", ifNotExists: true) { table in
-              table.autoIncrementedPrimaryKey("id")
-              table.column("name", .integer)
-              table.column("type", .text)
-              table.column("path", .text)
-            }
+          Self.logger.info("No searchindex table found, treating as zDash format.")
 
-            let zCount = try Int.fetchOne(
-              db,
-              sql:
-                """
-                SELECT COUNT(*)
-                FROM ztoken
-                """
-            )!
+          try db.create(table: "searchindex", ifNotExists: true) { table in
+            table.autoIncrementedPrimaryKey("id")
+            table.column("name", .integer)
+            table.column("type", .text)
+            table.column("path", .text)
+          }
 
-            let zIndices = try ZIndex.fetchCursor(
-              db,
-              sql:
-                """
-                SELECT ztokenname AS name,
-                  ztypename AS type,
-                  zpath AS path,
-                  zanchor AS anchor
-                FROM ztoken
-                INNER JOIN ztokenmetainformation
-                  ON ztoken.zmetainformation = ztokenmetainformation.z_pk
-                INNER JOIN zfilepath
-                  ON ztokenmetainformation.zfile = zfilepath.z_pk
-                INNER JOIN ztokentype
-                  ON ztoken.ztokentype = ztokentype.z_pk
-                """
-            )
+          let zCount = try Int.fetchOne(
+            db,
+            sql:
+              """
+              SELECT COUNT(*)
+              FROM ztoken
+              """
+          )!
 
-            var currentCount = 0
-            while let zIndex = try zIndices.next() {
-              try cancellable.checkCancellation()
-              if let searchIndex = zIndex.searchIndex {
-                do {
-                  try searchIndex.insert(db)
-                  currentCount += 1
-                  subscriber.send(Progress(progress: Double(currentCount) / Double(zCount)))
-                } catch {
-                  Self.logger.warning("Unable to insert index: \(String(describing: searchIndex))")
-                }
+          let zIndices = try ZIndex.fetchCursor(
+            db,
+            sql:
+              """
+              SELECT ztokenname AS name,
+                ztypename AS type,
+                zpath AS path,
+                zanchor AS anchor
+              FROM ztoken
+              INNER JOIN ztokenmetainformation
+                ON ztoken.zmetainformation = ztokenmetainformation.z_pk
+              INNER JOIN zfilepath
+                ON ztokenmetainformation.zfile = zfilepath.z_pk
+              INNER JOIN ztokentype
+                ON ztoken.ztokentype = ztokentype.z_pk
+              """
+          )
+
+          var currentCount = 0
+          while let zIndex = try zIndices.next() {
+            try Task.checkCancellation()
+            if let searchIndex = zIndex.searchIndex {
+              do {
+                try searchIndex.insert(db)
+                currentCount += 1
+                continuation.yield(Double(currentCount) / Double(zCount))
+              } catch {
+                Self.logger.warning("Unable to insert index: \(String(describing: searchIndex))")
               }
             }
           }
-        } catch {
-          if error is CombineExtensions.CancellationError {
-            return
-          }
-          subscriber.send(completion: .failure(error))
         }
-        subscriber.send(Progress(progress: 1.0, completed: true))
-        subscriber.send(completion: .finished)
+      } catch {
+        if error is CancellationError {
+          return
+        }
+        continuation.finish(throwing: error)
       }
-      return cancellable
+      continuation.finish()
     }
-    .eraseToAnyPublisher()
   }
 
-  public static func createQueryIndex(forAbsoluteDocsetPath path: String) -> AnyPublisher<Progress, Error> {
-    return Publishers.Create<Progress, Error> { subscriber in
-      let cancellable = BooleanCancellable()
-
+  public static func createQueryIndex(forAbsoluteDocsetPath path: String) -> AsyncThrowingStream<Double, Error> {
+    return AsyncThrowingStream { continuation in
       let dbPath = path.appendingPathComponent("Contents/Resources/docSet.dsidx")
-      indexerQueue.asyncSafe {
-        do {
-          let dbQueue = try DatabaseQueue(path: dbPath)
-          try dbQueue.write { db in
-            if try db.tableExists("queryindex") {
-              try db.drop(table: "queryindex")
-            }
+      do {
+        let dbQueue = try DatabaseQueue(path: dbPath)
+        try dbQueue.write { db in
+          if try db.tableExists("queryindex") {
+            try db.drop(table: "queryindex")
+          }
 
-            try db.create(virtualTable: "queryindex", using: FTS4()) { table in
-              table.column("search_id")
-              table.column("perfect")
-              table.column("prefix")
-              table.column("suffixes")
-              table.tokenizer = FTS3TokenizerDescriptor.unicode61(diacritics: .remove, tokenCharacters: ["`"])
-            }
+          try db.create(virtualTable: "queryindex", using: FTS4()) { table in
+            table.column("search_id")
+            table.column("perfect")
+            table.column("prefix")
+            table.column("suffixes")
+            table.tokenizer = FTS3TokenizerDescriptor.unicode61(diacritics: .remove, tokenCharacters: ["`"])
+          }
 
-            let searchCount = try SearchIndex.fetchCount(db)
+          let searchCount = try SearchIndex.fetchCount(db)
 
-            let searchIndices = try SearchIndex.fetchCursor(db)
+          let searchIndices = try SearchIndex.fetchCursor(db)
 
-            var currentCount = 0
-            while let searchIndex = try searchIndices.next() {
-              try cancellable.checkCancellation()
-              if let queryIndex = searchIndex.generatedQueryIndex {
-                do {
-                  try queryIndex.insert(db)
-                  currentCount += 1
+          var currentCount = 0
+          while let searchIndex = try searchIndices.next() {
+            try Task.checkCancellation()
+            if let queryIndex = searchIndex.generatedQueryIndex {
+              do {
+                try queryIndex.insert(db)
+                currentCount += 1
 
-                  // TODO: more granular progress reporting
-                  if currentCount.isMultiple(of: 100) {
-                    subscriber.send(Progress(progress: Double(currentCount) / Double(searchCount)))
-                  }
-                } catch {
-                  Self.logger.warning("Unable to insert query index: \(String(describing: queryIndex))")
+                // TODO: more granular progress reporting
+                if currentCount.isMultiple(of: 100) {
+                  continuation.yield(Double(currentCount) / Double(searchCount))
                 }
+              } catch {
+                Self.logger.warning("Unable to insert query index: \(String(describing: queryIndex))")
               }
             }
           }
-        } catch {
-          if error is CombineExtensions.CancellationError {
-            return
-          }
-          subscriber.send(completion: .failure(error))
         }
-        subscriber.send(Progress(progress: 1.0, completed: true))
-        subscriber.send(completion: .finished)
+      } catch {
+        if error is CombineExtensions.CancellationError {
+          return
+        }
+        continuation.finish(throwing: error)
       }
-      return cancellable
+      continuation.finish()
     }
-    .eraseToAnyPublisher()
   }
 
 }

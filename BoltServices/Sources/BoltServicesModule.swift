@@ -31,6 +31,7 @@ public struct ServicesModule {
     LocalFileSystem.setupApplicationDirectories()
     Container.shared.repositoryModuleInitializer()()
     Container.shared.docsetsModuleInitializer()()
+    Container.shared.searchModuleInitializer()()
     return {}
   }()
 

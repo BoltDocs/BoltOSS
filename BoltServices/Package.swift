@@ -98,7 +98,7 @@ let moduleTargets: [Target] = [
   ),
   .target(
     name: "BoltSearch",
-    dependencies: [Dependencies.GRDB, "BoltCombineExtensions", "BoltTypes"],
+    dependencies: [Dependencies.GRDB, "BoltCombineExtensions", "BoltRxSwift", "BoltTypes"],
     path: "./Sources/Search/Sources",
     swiftSettings: [
       .swiftLanguageMode(.v5)
@@ -183,6 +183,9 @@ let testTargets: [Target] = [
     path: "./Sources/Search",
     sources: [
       "./Tests"
+    ],
+    resources: [
+      .copy("./TestResources"),
     ],
     swiftSettings: [
       .swiftLanguageMode(.v5)

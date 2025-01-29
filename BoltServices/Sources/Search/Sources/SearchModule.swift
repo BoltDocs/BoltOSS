@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2024 Bolt Contributors
+// Copyright (C) 2025 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,24 +16,20 @@
 
 import Factory
 
-import BoltTypes
-
-@MainActor
-public protocol SearchService: AnyObject {
-
-  func searchIndex(forDocsetPath docsetPath: String, identifier: String) -> DocsetSearchIndex
-  func searchIndex(forDocset docset: Docset) -> DocsetSearchIndex
-
-  func queueToCreateSearchIndex(_: DocsetSearchIndex) async
-
-}
+import BoltUtils
 
 public extension Container {
 
-  var searchService: Factory<SearchService> { self {
-    return MainActor.assumeIsolated {
-      SearchServiceImp()
-    }
-  }.cached }
+  private static var initialize: PerformOnce = {
+    let _ = Container.shared.searchService.resolve()
+    return {}
+  }()
+
+  var searchModuleInitializer: Factory<() -> Void> {
+    return self { {
+      Self.initialize()
+      // swiftlint:disable:next closure_end_indentation
+    } }
+  }
 
 }

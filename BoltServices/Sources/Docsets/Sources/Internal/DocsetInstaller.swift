@@ -17,6 +17,8 @@
 import Combine
 import Foundation
 
+import Factory
+
 import BoltCombineExtensions
 import BoltDatabase
 import BoltSearch
@@ -51,46 +53,36 @@ struct DocsetInstaller {
           }
         }
         .flatMap { docsetPath in
-          // create search index
-          return DocsetIndexerWorker.createSearchIndex(forAbsoluteDocsetPath: docsetPath)
-            // swiftlint:disable:next trailing_closure
-            .handleEvents(receiveOutput: { progress in
-              subscriber.send(.indexing(progress: 0.2 * progress.progress))
-            })
-            .filter { $0.completed }
-            // create full-text query index
-            .flatMap { _ in
-              return DocsetIndexerWorker.createQueryIndex(forAbsoluteDocsetPath: docsetPath)
+          return Deferred { Future<Void, Error> { promise in
+            do {
+              try LibraryDocsetsFileSystemBridge.writeMetadata(
+                ofEntry: entry,
+                toDocsetPath: docsetPath
+              )
+              let docsetInstallation = DocsetInstallation(
+                uuid: uuid,
+                name: entry.feed.id,
+                version: entry.version,
+                installedAsLatestVersion: entry.isTrackedAsLatest,
+                repository: entry.feed.repository
+              )
+              try LibraryDatabase.shared.insertDocsetInstallation(docsetInstallation)
+
+              Task {
+                let searchService = Container.shared.searchService()
+                let searchIndex = await searchService.searchIndex(
+                  forDocsetPath: docsetPath,
+                  identifier: docsetInstallation.description
+                )
+                await searchService.queueToCreateSearchIndex(searchIndex)
+              }
+            } catch {
+              promise(.failure(error))
             }
-            // swiftlint:disable:next trailing_closure
-            .handleEvents(receiveOutput: { progress in
-              subscriber.send(.indexing(progress: 0.2 + 0.8 * progress.progress))
-            })
-            .filter { $0.completed }
-            // override metadata
-            .flatMap { _ -> AnyPublisher<Void, Error> in
-              Deferred { Future<Void, Error> { promise in
-                do {
-                  try LibraryDocsetsFileSystemBridge.writeMetadata(
-                    ofEntry: entry,
-                    toDocsetPath: docsetPath
-                  )
-                  let docsetInstallation = DocsetInstallation(
-                    uuid: uuid,
-                    name: entry.feed.id,
-                    version: entry.version,
-                    installedAsLatestVersion: entry.isTrackedAsLatest,
-                    repository: entry.feed.repository
-                  )
-                  try LibraryDatabase.shared.insertDocsetInstallation(docsetInstallation)
-                } catch {
-                  promise(.failure(error))
-                }
-                promise(.success(()))
-                // swiftlint:disable:next closure_end_indentation
-              } }
-              .eraseToAnyPublisher()
-            }
+            promise(.success(()))
+            // swiftlint:disable:next closure_end_indentation
+          } }
+          .eraseToAnyPublisher()
         }
         .sink(receiveCompletion: { completion in
           switch completion {
