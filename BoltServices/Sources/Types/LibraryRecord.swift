@@ -14,7 +14,13 @@
 // limitations under the License.
 //
 
+import Foundation
+
 public protocol LibraryRecord {
+
+  var uuid: UUID { get }
+
+  var uuidString: String { get }
 
   var name: String { get }
 
@@ -23,5 +29,7 @@ public protocol LibraryRecord {
   var version: String { get }
 
   var installedAsLatestVersion: Bool { get }
+
+  var identifier: String { get }
 
 }

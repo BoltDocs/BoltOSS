@@ -124,7 +124,7 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
   func uninstallDocset(forInstallation installation: DocsetInstallation) throws {
     try LibraryDatabase.shared.deleteDocsetInstallation(installation)
     try FileManager.default.removeItem(
-      atPath: LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(installation.id)
+      atPath: LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(installation.uuidString)
     )
   }
 

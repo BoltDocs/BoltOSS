@@ -44,9 +44,9 @@ public final class DocsetInstallation: LibraryRecord, Codable, Hashable, CustomS
     self.repository = repository
   }
 
-  public var id: String {
+  public lazy var uuidString: String = {
     return uuid.uuidString
-  }
+  }()
 
   public static func == (lhs: DocsetInstallation, rhs: DocsetInstallation) -> Bool {
     return lhs.uuid == rhs.uuid
@@ -56,13 +56,17 @@ public final class DocsetInstallation: LibraryRecord, Codable, Hashable, CustomS
     hasher.combine(uuid)
   }
 
-  public var description: String {
+  public lazy var identifier: String = {
     return InstallationIdentifier.fromName(
       name,
       version: version,
       installedAsLatestVersion: installedAsLatestVersion,
       repository: repository
     )
+  }()
+
+  public var description: String {
+    return "DocsetInstallation(identifier: \(identifier))"
   }
 
 }

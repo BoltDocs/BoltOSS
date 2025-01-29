@@ -22,7 +22,7 @@ import BoltURLSchemes
 public extension Docset {
 
   func url(forPagePath pagePath: String) -> URL? {
-    if let url = DocsetFileURLScheme(docsetUUID: id, path: pagePath)?.url {
+    if let url = DocsetFileURLScheme(docsetUUID: uuidString, path: pagePath)?.url {
       return url
     }
     return nil

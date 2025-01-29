@@ -70,13 +70,13 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
   }
 
   static func docset(withLibraryIndex index: DocsetInstallation) -> Docset? {
-    guard let docsetFileName = docsetFileName(forInstallationId: index.id) else {
+    guard let docsetFileName = docsetFileName(forInstallationId: index.uuidString) else {
       Self.logger.warning("No docset found under installation: \(index)")
       return nil
     }
 
     let docsetPath = LocalFileSystem.docsetsAbsolutePath
-      .appendingPathComponent(index.id)
+      .appendingPathComponent(index.uuidString)
       .appendingPathComponent(docsetFileName)
 
     let infoPlistPath = docsetPath.appendingPathComponent("Contents").appendingPathComponent("Info.plist")

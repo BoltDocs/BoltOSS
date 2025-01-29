@@ -176,6 +176,14 @@ public struct Docset {
 
 extension Docset: LibraryRecord {
 
+  public var uuid: UUID {
+    return index.uuid
+  }
+
+  public var uuidString: String {
+    return index.uuidString
+  }
+
   public var name: String {
     return index.name
   }
@@ -192,8 +200,8 @@ extension Docset: LibraryRecord {
     return index.repository
   }
 
-  public var id: String {
-    return index.id
+  public var identifier: String {
+    return index.identifier
   }
 
 }
