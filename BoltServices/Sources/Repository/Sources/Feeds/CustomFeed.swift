@@ -33,7 +33,7 @@ struct CustomFeedRepository: FeedRepository {
   var shouldCacheFeeds = false
 
   // swiftlint:disable:next unavailable_function
-  func fetchFeeds() async throws -> [Feed] {
+  func fetchFeeds() throws -> [Feed] {
     fatalError("fetchFeeds() not implemented.")
   }
 

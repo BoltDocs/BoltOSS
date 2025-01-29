@@ -37,7 +37,7 @@ public class StubbedNetworking: Networking {
     self.delegate = delegate
   }
 
-  public func fetchEntries(atURL url: URLConvertible) async throws -> XML.Accessor {
+  public func fetchEntries(atURL url: URLConvertible) throws -> XML.Accessor {
     guard let urlString = try? url.asURL().absoluteString else {
       fatalError("\(#function): unrecognized url.")
     }
@@ -48,12 +48,12 @@ public class StubbedNetworking: Networking {
   }
 
   // swiftlint:disable:next unavailable_function
-  public func downloadFile(atLocation: ResourceLocation, toPath downloadPath: String) async throws -> URL {
+  public func downloadFile(atLocation: ResourceLocation, toPath downloadPath: String) throws -> URL {
     fatalError("downloadFile(atLocation:toPath:) not implemented")
   }
 
   // swiftlint:disable:next unavailable_function
-  public func getFileSize(atLocation: ResourceLocation) async throws -> Int64? {
+  public func getFileSize(atLocation: ResourceLocation) throws -> Int64? {
     fatalError("getFileSize(atLocation:) not implemented")
   }
 

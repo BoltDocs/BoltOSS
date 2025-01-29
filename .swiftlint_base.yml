@@ -20,6 +20,7 @@ disabled_rules:
 
 opt_in_rules:
   - array_init
+  - async_without_await
   - attributes
   - balanced_xctest_lifecycle
   - closure_end_indentation

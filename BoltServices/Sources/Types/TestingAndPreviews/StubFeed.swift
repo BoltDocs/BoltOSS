@@ -34,7 +34,7 @@ public struct StubFeed: Feed {
   public var isUnavailable = false
   public var unavailableMessage: String?
 
-  public func fetchEntries() async throws -> [BoltTypes.FeedEntry] {
+  public func fetchEntries() throws -> [BoltTypes.FeedEntry] {
     return []
   }
 
