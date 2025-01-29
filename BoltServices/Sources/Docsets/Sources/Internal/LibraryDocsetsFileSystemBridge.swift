@@ -69,21 +69,21 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
     return nil
   }
 
-  static func docset(withLibraryIndex index: DocsetInstallation) -> Docset? {
-    guard let docsetFileName = docsetFileName(forInstallationId: index.uuidString) else {
-      Self.logger.warning("No docset found under installation: \(index)")
+  static func docset(withInstallation installation: DocsetInstallation) -> Docset? {
+    guard let docsetFileName = docsetFileName(forInstallationId: installation.uuidString) else {
+      Self.logger.warning("No docset found under installation: \(installation)")
       return nil
     }
 
     let docsetPath = LocalFileSystem.docsetsAbsolutePath
-      .appendingPathComponent(index.uuidString)
+      .appendingPathComponent(installation.uuidString)
       .appendingPathComponent(docsetFileName)
 
     let infoPlistPath = docsetPath.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
 
     return docset(
       fromDocsetPath: docsetPath,
-      index: index,
+      installation: installation,
       infoDictionaryPath: infoPlistPath
     )
   }
@@ -103,7 +103,7 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
 
   private static func docset(
     fromDocsetPath docsetPath: String,
-    index: DocsetInstallation,
+    installation: DocsetInstallation,
     infoDictionaryPath: String
   ) -> Docset? {
     guard let infoDict = NSDictionary(contentsOfFile: infoDictionaryPath) as? InfoDictionary else {
@@ -115,12 +115,12 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
 
     let docsetIcon = docsetIcon(
       fromDocsetPath: docsetPath,
-      index: index,
+      installation: installation,
       docsetInfo: docsetInfo
     )
 
     return Docset(
-      index: index,
+      installation: installation,
       path: docsetPath,
       docsetInfo: docsetInfo,
       icon: docsetIcon
@@ -129,7 +129,7 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
 
   private static func docsetIcon(
     fromDocsetPath docsetPath: String,
-    index: DocsetInstallation,
+    installation: DocsetInstallation,
     docsetInfo: DocsetInfo
   ) -> EntryIcon {
     let localIconFies = ["icon@2x.png", "icon.png", "icon.tiff"]
@@ -142,7 +142,7 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
       return .data(imageData)
     } else if let docsetIcon = DocsetIcons(rawValue: docsetInfo.platformFamily.name) {
       return .bundled(.docsetIcon(docsetIcon))
-    } else if let docsetIcon = DocsetIcons(rawValue: index.name) {
+    } else if let docsetIcon = DocsetIcons(rawValue: installation.name) {
       return .bundled(.docsetIcon(docsetIcon))
     } else {
       return .providerDefault
@@ -157,12 +157,12 @@ extension LibraryDocsetsFileSystemBridge {
 
   static func _docsetIcon(
     fromDocsetPath docsetPath: String,
-    index: DocsetInstallation,
+    installation: DocsetInstallation,
     docsetInfo: DocsetInfo
   ) -> EntryIcon {
     return docsetIcon(
       fromDocsetPath: docsetPath,
-      index: index,
+      installation: installation,
       docsetInfo: docsetInfo
     )
   }

@@ -31,7 +31,7 @@ public enum LibraryInstallationQueryResult: Hashable {
   public var installation: DocsetInstallation {
     switch self {
     case let .docset(docset):
-      return docset.index
+      return docset.installation
     case let .broken(installation):
       return installation
     }
@@ -100,7 +100,7 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
     LibraryDatabase.shared.allDocsetInstallations
       .map { array in
         array.compactMap { installation -> LibraryInstallationQueryResult in
-          if let docset = LibraryDocsetsFileSystemBridge.docset(withLibraryIndex: installation) {
+          if let docset = LibraryDocsetsFileSystemBridge.docset(withInstallation: installation) {
             return .docset(docset)
           } else {
             return .broken(installation)

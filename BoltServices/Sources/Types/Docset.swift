@@ -141,7 +141,7 @@ public struct DocsetInfo {
 
 public struct Docset {
 
-  public let index: DocsetInstallation
+  public let installation: DocsetInstallation
   public let path: String
   public let icon: EntryIcon
 
@@ -161,12 +161,12 @@ public struct Docset {
   public var keyword: DocsetInfo.Keyword { docsetInfo.keyword }
 
   public init(
-    index: DocsetInstallation,
+    installation: DocsetInstallation,
     path: String,
     docsetInfo: DocsetInfo,
     icon: EntryIcon
   ) {
-    self.index = index
+    self.installation = installation
     self.path = path
     self.docsetInfo = docsetInfo
     self.icon = icon
@@ -177,31 +177,31 @@ public struct Docset {
 extension Docset: LibraryRecord {
 
   public var uuid: UUID {
-    return index.uuid
+    return installation.uuid
   }
 
   public var uuidString: String {
-    return index.uuidString
+    return installation.uuidString
   }
 
   public var name: String {
-    return index.name
+    return installation.name
   }
 
   public var version: String {
-    return index.version
+    return installation.version
   }
 
   public var installedAsLatestVersion: Bool {
-    return index.installedAsLatestVersion
+    return installation.installedAsLatestVersion
   }
 
   public var repository: RepositoryIdentifier {
-    return index.repository
+    return installation.repository
   }
 
   public var identifier: String {
-    return index.identifier
+    return installation.identifier
   }
 
 }
@@ -235,11 +235,11 @@ extension Docset: EntryIconProvider {
 extension Docset: Hashable {
 
   public static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.index.uuid == rhs.index.uuid
+    return lhs.installation.uuid == rhs.installation.uuid
   }
 
   public func hash(into hasher: inout Hasher) {
-    hasher.combine(index.uuid)
+    hasher.combine(installation.uuid)
   }
 
 }

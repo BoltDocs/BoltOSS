@@ -32,7 +32,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
     XCTAssertEqual(
       LibraryDocsetsFileSystemBridge._docsetIcon(
         fromDocsetPath: "",
-        index: DocsetInstallation(
+        installation: DocsetInstallation(
           name: "foobar",
           version: "1.0",
           installedAsLatestVersion: false,
@@ -50,7 +50,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
     XCTAssertEqual(
       LibraryDocsetsFileSystemBridge._docsetIcon(
         fromDocsetPath: "",
-        index: DocsetInstallation(
+        installation: DocsetInstallation(
           name: "cpp",
           version: "1.0",
           installedAsLatestVersion: false,
@@ -69,7 +69,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
     XCTAssertEqual(
       LibraryDocsetsFileSystemBridge._docsetIcon(
         fromDocsetPath: Bundle.module.path(forResource: "TestResources/CustomIcon.docset")!,
-        index: DocsetInstallation(
+        installation: DocsetInstallation(
           name: "cpp",
           version: "1.0",
           installedAsLatestVersion: false,
@@ -87,7 +87,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
     XCTAssertEqual(
       LibraryDocsetsFileSystemBridge._docsetIcon(
         fromDocsetPath: "",
-        index: DocsetInstallation(
+        installation: DocsetInstallation(
           name: "foobar",
           version: "1.0",
           installedAsLatestVersion: false,
