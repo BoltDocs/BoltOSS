@@ -37,8 +37,6 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     Container.shared.searchModuleInitializer()()
 
     try FileManager.default.createDirectory(atPath: LocalFileSystem.downloadsAbsolutePath, withIntermediateDirectories: true)
-    try FileManager.default.copyItem(atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!, toPath: LocalFileSystem.downloadsAbsolutePath.appendingPathComponent("Vim-9.0-main.tgz"))
-    try FileManager.default.copyItem(atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz.tarix")!, toPath: LocalFileSystem.downloadsAbsolutePath.appendingPathComponent("Vim-9.0-main.tgz.tarix"))
   }
 
   override func tearDownWithError() throws {
@@ -47,6 +45,15 @@ final class LibraryDocsetsManagerTests: XCTestCase {
   }
 
   func testInstallDocsetWithoutTarix() async throws {
+    let fileManager = FileManager.default
+
+    let downloadsPath = LocalFileSystem.downloadsAbsolutePath
+
+    try fileManager.copyItem(
+      atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!,
+      toPath: downloadsPath.appendingPathComponent("Vim-9.0-main.tgz")
+    )
+
     let _ = try await awaitPublisher(
       libraryDocsetsManager.installDocset(
         forEntry: FeedEntry(
@@ -68,9 +75,26 @@ final class LibraryDocsetsManagerTests: XCTestCase {
         usingTarix: false
       )
     )
+
+    XCTAssert(fileManager.fileExists(atPath: downloadsPath))
+    XCTAssertEqual(try fileManager.contentsOfDirectory(atPath: downloadsPath), [])
   }
 
   func testInstallDocsetWithTarix() async throws {
+    let fileManager = FileManager.default
+
+    let downloadsPath = LocalFileSystem.downloadsAbsolutePath
+
+    try fileManager.copyItem(
+      atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!,
+      toPath: downloadsPath.appendingPathComponent("Vim-9.0-main.tgz")
+    )
+
+    try fileManager.copyItem(
+      atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz.tarix")!,
+      toPath: downloadsPath.appendingPathComponent("Vim-9.0-main.tgz.tarix")
+    )
+
     let _ = try await awaitPublisher(
       libraryDocsetsManager.installDocset(
         forEntry: FeedEntry(
@@ -92,6 +116,9 @@ final class LibraryDocsetsManagerTests: XCTestCase {
         usingTarix: true
       )
     )
+
+    XCTAssert(fileManager.fileExists(atPath: downloadsPath))
+    XCTAssertEqual(try fileManager.contentsOfDirectory(atPath: downloadsPath), [])
   }
 
 }

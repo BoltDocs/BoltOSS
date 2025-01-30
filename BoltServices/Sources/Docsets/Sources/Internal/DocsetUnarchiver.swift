@@ -36,7 +36,8 @@ struct DocsetUnarchiver: LoggerProvider {
   static func unarchiveDownloadedDocset(
     toPath path: String,
     forFeedEntry entry: FeedEntry,
-    usingTarix: Bool
+    usingTarix: Bool,
+    removeSourceFiles: Bool
   ) -> AnyPublisher<PercentageProgress<String>, Error> {
     if usingTarix {
       let downloadedTarPath = entry.downloadAbsolutePath(withExtension: "tgz")
@@ -45,14 +46,16 @@ struct DocsetUnarchiver: LoggerProvider {
         downloadedTarPath: downloadedTarPath,
         downloadedTarixPath: downloadedTarixPath,
         toPath: path,
-        forFeedEntry: entry
+        forFeedEntry: entry,
+        removeSourceFiles: removeSourceFiles
       )
     } else {
       let downloadedTarPath = entry.downloadAbsolutePath(withExtension: "tgz")
       return unarchiveDownloadedDocsetWithoutTarix(
         downloadedTarPath: downloadedTarPath,
         toPath: path,
-        forFeedEntry: entry
+        forFeedEntry: entry,
+        removeSourceFiles: removeSourceFiles
       )
     }
   }
@@ -60,7 +63,8 @@ struct DocsetUnarchiver: LoggerProvider {
   static func unarchiveDownloadedDocsetWithoutTarix(
     downloadedTarPath: String,
     toPath destPath: String,
-    forFeedEntry entry: FeedEntry
+    forFeedEntry entry: FeedEntry,
+    removeSourceFiles: Bool
   ) -> AnyPublisher<PercentageProgress<String>, Error> {
     // installing a docset WITHOUT tarix
     //   i. check the .tgz file exists
@@ -113,6 +117,9 @@ struct DocsetUnarchiver: LoggerProvider {
             subscriber.send(completion: .failure(error))
           }
         }, receiveValue: { docsetPath in
+          if removeSourceFiles {
+            try? fileManager.removeItem(atPath: downloadedTarPath)
+          }
           subscriber.send(PercentageProgress.completed(path: docsetPath))
           subscriber.send(completion: .finished)
         })
@@ -124,7 +131,8 @@ struct DocsetUnarchiver: LoggerProvider {
     downloadedTarPath: String,
     downloadedTarixPath: String,
     toPath destPath: String,
-    forFeedEntry entry: FeedEntry
+    forFeedEntry entry: FeedEntry,
+    removeSourceFiles: Bool
   ) -> AnyPublisher<PercentageProgress<String>, Error> {
     // installing a docset WITH tarix
     //   i. check the .tgz and .tgz.tarix file exists
@@ -216,6 +224,7 @@ struct DocsetUnarchiver: LoggerProvider {
           atPath: tarixDBPath,
           toPath: resourcesPath.appendingPathComponent("tarixIndex.db")
         )
+
         return docsetPath
       }
       .sink(receiveCompletion: { completion in
@@ -223,6 +232,10 @@ struct DocsetUnarchiver: LoggerProvider {
           subscriber.send(completion: .failure(error))
         }
       }, receiveValue: { docsetPath in
+        if removeSourceFiles {
+          try? fileManager.removeItem(atPath: downloadedTarPath)
+          try? fileManager.removeItem(atPath: downloadedTarixPath)
+        }
         subscriber.send(PercentageProgress.completed(path: docsetPath))
         subscriber.send(completion: .finished)
       })

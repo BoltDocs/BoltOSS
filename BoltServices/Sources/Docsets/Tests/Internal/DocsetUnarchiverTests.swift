@@ -47,7 +47,8 @@ final class TarUnarchiverTests: XCTestCase {
           isTrackedAsLatest: false,
           isDocsetBundle: false,
           docsetLocation: ResourceLocations.stubbed
-        )
+        ),
+        removeSourceFiles: false
       ),
       timeout: 10
     )
@@ -87,7 +88,8 @@ final class TarUnarchiverTests: XCTestCase {
           isTrackedAsLatest: false,
           isDocsetBundle: false,
           docsetLocation: ResourceLocations.stubbed
-        )
+        ),
+        removeSourceFiles: false
       ),
       timeout: 10
     )

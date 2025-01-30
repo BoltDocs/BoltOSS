@@ -36,7 +36,7 @@ struct DocsetInstaller {
     let uuid = UUID()
     let path = LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(uuid.uuidString)
     return Publishers.Create<InstallationProgress, Error> { subscriber -> Cancellable in
-      DocsetUnarchiver.unarchiveDownloadedDocset(toPath: path, forFeedEntry: entry, usingTarix: usingTarix)
+      DocsetUnarchiver.unarchiveDownloadedDocset(toPath: path, forFeedEntry: entry, usingTarix: usingTarix, removeSourceFiles: true)
         // swiftlint:disable:next trailing_closure
         .handleEvents(receiveOutput: { progress in
           if case let .progress(progress) = progress {
