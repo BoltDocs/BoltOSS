@@ -37,11 +37,17 @@ public extension LoggerProvider {
 
 }
 
-public actor Loggers {
+public struct Loggers {
 
-  private static var loggers: [String: Logger] = [:]
+  nonisolated(unsafe) private static var loggers: [String: Logger] = [:]
+
+  private static let loggerAccessLock = NSLock()
 
   public static func forCategory(_ category: String) -> Logger {
+    loggerAccessLock.lock()
+    defer {
+      loggerAccessLock.unlock()
+    }
     if let logger = loggers[category] {
       return logger
     }
