@@ -39,14 +39,17 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
 
   let state: LookupRoutingState!
 
-  private let resultsNavigationController: LookupNavigationViewController
+  private let resultsController: LookupSearchResultsController
 
   private var preservedSearchFieldText: SearchTextFieldTextPreservation?
 
   public init(sceneState: SceneState) {
     self.state = LookupRoutingState(sceneState: sceneState)
-    resultsNavigationController = LookupNavigationViewController(routingState: state)
-    super.init(searchResultsController: resultsNavigationController)
+    resultsController = LookupSearchResultsController(
+      sceneState: sceneState,
+      routingState: state
+    )
+    super.init(searchResultsController: resultsController)
   }
 
   @available(*, unavailable)
