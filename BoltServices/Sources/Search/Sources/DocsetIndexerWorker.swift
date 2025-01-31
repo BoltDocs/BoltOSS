@@ -58,12 +58,9 @@ public struct DocsetIndexerWorker: LoggerProvider {
     attributes: .concurrent
   )
 
-  public static func createSearchIndex(forAbsoluteDocsetPath path: String) -> AsyncThrowingStream<Double, Error> {
+  public static func createSearchIndex(withDatabaseQueue dbQueue: DatabaseQueue) -> AsyncThrowingStream<Double, Error> {
     return AsyncThrowingStream { continuation in
-      let dbPath = path.appendingPathComponent("Contents/Resources/docSet.dsidx")
       do {
-        let dbQueue = try DatabaseQueue(path: dbPath)
-
         try dbQueue.write { db in
           guard !(try db.tableExists("searchindex")) else {
             return
@@ -129,11 +126,9 @@ public struct DocsetIndexerWorker: LoggerProvider {
     }
   }
 
-  public static func createQueryIndex(forAbsoluteDocsetPath path: String) -> AsyncThrowingStream<Double, Error> {
+  public static func createQueryIndex(withDatabaseQueue dbQueue: DatabaseQueue) -> AsyncThrowingStream<Double, Error> {
     return AsyncThrowingStream { continuation in
-      let dbPath = path.appendingPathComponent("Contents/Resources/docSet.dsidx")
       do {
-        let dbQueue = try DatabaseQueue(path: dbPath)
         try dbQueue.write { db in
           if try db.tableExists("queryindex") {
             try db.drop(table: "queryindex")

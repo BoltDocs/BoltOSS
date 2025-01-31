@@ -79,13 +79,16 @@ final actor DocsetIndexer: LoggerProvider {
 
   private static func performIndex(forSearchIndex index: DocsetSearchIndex) async {
     Self.logger.info("start indexing for searchIndex: \(index)")
-    let docsetPath = index.docsetPath
+    guard let databaseQueue = index.indexDBQueue else {
+      Self.logger.error("nil databaseQueue for searchIndex: \(index)")
+      return
+    }
     do {
-      for try await progress in DocsetIndexerWorker.createSearchIndex(forAbsoluteDocsetPath: docsetPath) {
+      for try await progress in DocsetIndexerWorker.createSearchIndex(withDatabaseQueue: databaseQueue) {
         Self.logger.debug("indexing - createSearchIndex: \(index), progress: \(progress)")
         index.status.accept(.indexing(progress: 0.2 * progress))
       }
-      for try await progress in DocsetIndexerWorker.createQueryIndex(forAbsoluteDocsetPath: docsetPath) {
+      for try await progress in DocsetIndexerWorker.createQueryIndex(withDatabaseQueue: databaseQueue) {
         Self.logger.debug("indexing - createQueryIndex: \(index), progress: \(progress)")
         index.status.accept(.indexing(progress: 0.2 + 0.8 * progress))
       }

@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+import GRDB
 @preconcurrency import RxCocoa
 @preconcurrency import RxRelay
 
@@ -40,6 +41,8 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
   let docsetPath: String
   let identifier: String
 
+  let indexDBQueue: DatabaseQueue?
+
   convenience init(docset: Docset) {
     self.init(docsetPath: docset.path, identifier: docset.identifier)
   }
@@ -47,7 +50,16 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
   init(docsetPath: String, identifier: String) {
     self.docsetPath = docsetPath
     self.identifier = identifier
+
     statusDriver = status.asDriverOnErrorJustIgnore()
+
+    let dbPath = docsetPath.appendingPathComponent("Contents/Resources/docSet.dsidx")
+    do {
+      indexDBQueue = try DatabaseQueue(path: dbPath)
+    } catch {
+      indexDBQueue = nil
+      Self.logger.error("searchIndex: \(self) failed to initialize databaseQueue with error: \(error)")
+    }
   }
 
 }
