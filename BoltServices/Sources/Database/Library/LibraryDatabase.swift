@@ -65,7 +65,7 @@ public final class LibraryDatabase: LoggerProvider {
 
   public lazy var allDocsetInstallations: AnyPublisher<[DocsetInstallation], Never> = ValueObservation
     .trackingConstantRegion(DocsetInstallation.fetchAll)
-    .publisher(in: dbPool)
+    .publisher(in: dbPool, scheduling: .immediate)
     // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
       if case let .failure(error) = completion {
@@ -77,7 +77,7 @@ public final class LibraryDatabase: LoggerProvider {
 
   public lazy var allCustomFeeds: AnyPublisher<[CustomFeedEntity], Never> = ValueObservation
     .trackingConstantRegion(CustomFeedEntity.fetchAll)
-    .publisher(in: dbPool)
+    .publisher(in: dbPool, scheduling: .immediate)
     // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
       if case let .failure(error) = completion {
@@ -89,7 +89,7 @@ public final class LibraryDatabase: LoggerProvider {
 
   public lazy var allDownloadTasks: AnyPublisher<[DownloadTaskEntity], Never> = ValueObservation
     .trackingConstantRegion(DownloadTaskEntity.fetchAll)
-    .publisher(in: dbPool)
+    .publisher(in: dbPool, scheduling: .immediate)
     // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
       if case let .failure(error) = completion {

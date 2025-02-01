@@ -44,29 +44,26 @@ final class FeedsServiceTests: NetworkingStubbedTestCase {
       .sink { _ in }
       .cancel()
 
-    // wait some time to start, since we don't want the initial value sent from database observation
-    DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .milliseconds(500))) { [feedsService] in
-      let expectedResult: [[String]] = [[], [testFeed.id], []]
+    let expectedResult: [[String]] = [[], [testFeed.id], []]
 
-      var results = [[String]]()
+    var results = [[String]]()
 
-      feedsService.customFeedsObservable()
-        .prefix(expectedResult.count)
-        .eraseToAnyPublisher()
-        .sink(receiveCompletion: { _ in
-          XCTAssertEqual(results, expectedResult)
-          expectation.fulfill()
-        }, receiveValue: { val in
-          results.append(val.map { $0.id })
-        })
-        .store(in: &cancellableBag)
+    feedsService.customFeedsObservable()
+      .prefix(expectedResult.count)
+      .eraseToAnyPublisher()
+      .sink(receiveCompletion: { _ in
+        XCTAssertEqual(results, expectedResult)
+        expectation.fulfill()
+      }, receiveValue: { val in
+        results.append(val.map { $0.id })
+      })
+      .store(in: &cancellableBag)
 
-      do {
-        try feedsService.insertCustomFeed(testFeed)
-        try feedsService.deleteCustomFeeds(testFeed)
-      } catch {
-        XCTFail("error thrown: \(error)")
-      }
+    do {
+      try feedsService.insertCustomFeed(testFeed)
+      try feedsService.deleteCustomFeeds(testFeed)
+    } catch {
+      XCTFail("error thrown: \(error)")
     }
 
     wait(for: [expectation], timeout: 5)

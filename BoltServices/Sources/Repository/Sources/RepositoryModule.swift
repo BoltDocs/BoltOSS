@@ -26,6 +26,7 @@ public extension Container {
   private static var initialize: PerformOnce = {
     let repositoryRegistry = Container.shared.repositoryRegistry()
     repositoryRegistry.registerRepository(CustomFeedRepository(), forIdentifier: .custom)
+    let _ = Container.shared.feedsService.resolve()
     return {}
   }()
 
