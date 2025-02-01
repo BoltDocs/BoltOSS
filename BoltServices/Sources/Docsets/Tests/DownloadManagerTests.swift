@@ -36,7 +36,9 @@ final class DownloadManagerTests: XCTestCase {
   @MainActor
   override func setUp() async throws {
     try await super.setUp()
-    let _ = downloadManager
+
+    Container.shared.docsetsModuleInitializer()()
+
     await downloadManager.cancelAllTasks()
   }
 

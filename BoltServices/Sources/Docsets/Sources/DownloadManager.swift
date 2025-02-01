@@ -81,10 +81,9 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
 
   private var taskIdentifierMap = Atomic<IdentifierMap>([:])
 
-  private lazy var taskEntities: AnyPublisher<[DownloadTaskEntity], Never> = {
-    LibraryDatabase.shared.allDownloadTasks
-      .eraseToAnyPublisher()
-  }()
+  private var taskEntities = CurrentValueSubject<[DownloadTaskEntity], Never>([])
+
+  private var cancellables = Set<AnyCancellable>()
 
   func setBackgroundDownloadCompletionHandler(_ handler: (() -> Void)?) {
     backgroundDownloader.backgroundDownloadCompletionHandler = handler
@@ -101,6 +100,10 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
   }()
 
   init() {
+    LibraryDatabase.shared.allDownloadTasks
+      .assign(to: \.value, on: taskEntities)
+      .store(in: &cancellables)
+
     if let tasks: [DownloadTaskEntity] = try? LibraryDatabase.shared.fetchAllDownloadTasks() {
       taskIdentifierMap.value = Dictionary(
         uniqueKeysWithValues: tasks
@@ -110,6 +113,7 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
     } else {
       Self.logger.error("Failed to fetch all download tasks.")
     }
+
     let _ = backgroundDownloader
   }
 
@@ -188,7 +192,7 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
   }
 
   func allTasks() -> AnyPublisher<[DownloadTaskEntity], Never> {
-    return taskEntities
+    return taskEntities.eraseToAnyPublisher()
   }
 
   func progress(forIdentifier identifier: String) -> AnyPublisher<DownloadProgress?, Never> {

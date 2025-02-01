@@ -37,6 +37,7 @@ public extension Container {
   private static var initialize: PerformOnce = {
     DocsetsModule.setupLocalStorage()
     let _ = Container.shared.downloadManager()
+    let _ = Container.shared.libraryDocsetsManager()
     return {}
   }()
 

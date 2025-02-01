@@ -32,6 +32,7 @@ class NetworkingStubbedTestCase: XCTestCase, StubbedNetworkingDelegate {
     super.setUp()
     Container.shared.manager.push()
     Container.shared.networking.register { StubbedNetworking(delegate: self) }
+    Container.shared.repositoryModuleInitializer()()
   }
 
   override static func tearDown() {
