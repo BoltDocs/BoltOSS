@@ -56,7 +56,7 @@ final actor DocsetIndexer: LoggerProvider {
           return
         }
 
-        guard index.status.value == .uninitialized else {
+        guard Self.canCreateSearchIndex(for: index) else {
           Self.logger.error("ignoring searchIndex: \(index): already initialized")
           self.semaphore.signal()
           await self.indexNextDocset()
@@ -77,6 +77,17 @@ final actor DocsetIndexer: LoggerProvider {
     return indexerQueue.remove(at: 0)
   }
 
+  private static func canCreateSearchIndex(for index: DocsetSearchIndex) -> Bool {
+    switch index.status.value {
+    case .uninitialized:
+      return true
+    case .error:
+      return true
+    default:
+      return false
+    }
+  }
+
   private static func performIndex(forSearchIndex index: DocsetSearchIndex) async {
     Self.logger.info("start indexing for searchIndex: \(index)")
     guard let databaseQueue = index.indexDBQueue else {
@@ -84,6 +95,7 @@ final actor DocsetIndexer: LoggerProvider {
       return
     }
     do {
+      index.status.accept(.indexing(progress: nil))
       for try await progress in DocsetIndexerWorker.createSearchIndex(withDatabaseQueue: databaseQueue) {
         Self.logger.debug("indexing - createSearchIndex: \(index), progress: \(progress)")
         index.status.accept(.indexing(progress: 0.2 * progress))
@@ -96,7 +108,7 @@ final actor DocsetIndexer: LoggerProvider {
       index.status.accept(.ready)
     } catch {
       Self.logger.error("indexing failed: \(index), error: \(error)")
-      index.status.accept(.error)
+      index.status.accept(.error(SearchServiceError(underlyingError: error)))
     }
   }
 

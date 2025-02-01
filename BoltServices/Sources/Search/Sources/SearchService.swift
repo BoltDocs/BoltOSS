@@ -18,6 +18,21 @@ import Factory
 
 import BoltTypes
 
+public final class SearchServiceError: ServiceError {
+
+  public let underlyingError: Error
+
+  public init(underlyingError: Error) {
+    self.underlyingError = underlyingError
+    super.init()
+  }
+
+  override public var errorDescription: String {
+    return underlyingError.localizedDescription
+  }
+
+}
+
 @MainActor
 public protocol SearchService: AnyObject {
 

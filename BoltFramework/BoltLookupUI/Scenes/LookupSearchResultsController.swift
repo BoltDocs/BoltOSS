@@ -17,14 +17,28 @@
 import UIKit
 
 import BoltModuleExports
+import BoltRxSwift
+import BoltSearch
+import BoltTypes
 
+import Factory
 import SnapKit
 
 final class LookupSearchResultsController: UIViewController {
 
+  @Injected(\.searchService)
+  private var searchService: SearchService
+
   private var sceneState: SceneState
 
   private var navigationViewController: LookupNavigationViewController
+
+  private var currentSearchIndexRelay = BehaviorRelay<DocsetSearchIndex?>(value: nil)
+
+  private var disposeBag = DisposeBag()
+  private var searchUnavailableViewDisposeBag = DisposeBag()
+
+  private var searchUnavailableView: LookupSearchUnavailableUIView?
 
   @available(*, unavailable)
   required init?(coder: NSCoder) {
@@ -42,6 +56,55 @@ final class LookupSearchResultsController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    sceneState.currentScope
+      .distinctUntilChanged()
+      .map { [searchService] scope -> DocsetSearchIndex? in
+        switch scope {
+        case let .docset(docset):
+          return searchService.searchIndex(forDocset: docset)
+        default:
+          return nil
+        }
+      }
+      .drive(currentSearchIndexRelay)
+      .disposed(by: disposeBag)
+
+    currentSearchIndexRelay
+      .subscribe(with: self) { owner, index in
+        owner.searchUnavailableViewDisposeBag = DisposeBag()
+
+        owner.searchUnavailableView?.removeFromSuperview()
+        owner.searchUnavailableView = nil
+
+        guard let index = index else {
+          return
+        }
+
+        let searchUnavailableView = LookupSearchUnavailableUIView(searchIndex: index)
+
+        index.statusDriver
+          .map { status -> Bool in
+            if case .ready = status {
+              return true
+            } else {
+              return false
+            }
+          }
+          .drive { hidden in
+            searchUnavailableView.isHidden = hidden
+          }
+          .disposed(by: owner.searchUnavailableViewDisposeBag)
+
+        owner.searchUnavailableView = searchUnavailableView
+
+        owner.view.addSubview(searchUnavailableView)
+        searchUnavailableView.snp.makeConstraints { make in
+          make.edges.equalToSuperview()
+        }
+      }
+      .disposed(by: disposeBag)
+
     addChild(navigationViewController) {
       view.insertSubview($0, at: 0)
       $0.snp.makeConstraints { make in

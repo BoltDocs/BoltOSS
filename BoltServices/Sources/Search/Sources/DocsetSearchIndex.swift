@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+import Foundation
+
 import GRDB
 @preconcurrency import RxCocoa
 @preconcurrency import RxRelay
@@ -21,6 +23,28 @@ import GRDB
 import BoltRxSwift
 import BoltTypes
 import BoltUtils
+
+enum DocsetSearchIndexError: LocalizedError {
+
+  case noDatabaseQueue
+  case noSearchIndex
+  case noQueryIndex
+  case underlyingError(_: Error)
+
+  var errorDescription: String? {
+    switch self {
+    case .noDatabaseQueue:
+      return "DocsetSearchIndexError: failed to initialize initialize the database queue"
+    case .noSearchIndex:
+      return "DocsetSearchIndexError: search index table not found"
+    case .noQueryIndex:
+      return "DocsetSearchIndexError: query index table not found"
+    case let .underlyingError(error):
+      return "DocsetSearchIndexError: underlyingError: \(error.localizedDescription)"
+    }
+  }
+
+}
 
 public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerProvider {
 
@@ -30,9 +54,9 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
 
   public enum Status: Equatable {
     case uninitialized
-    case indexing(progress: Double)
+    case indexing(progress: Double?)
     case ready
-    case error
+    case error(_: SearchServiceError)
   }
 
   let status = BehaviorRelay<Status>(value: .uninitialized)
@@ -42,6 +66,8 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
   let identifier: String
 
   let indexDBQueue: DatabaseQueue?
+
+  private let indexDBPath: String
 
   convenience init(docset: Docset) {
     self.init(docsetPath: docset.path, identifier: docset.identifier)
@@ -53,12 +79,46 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
 
     statusDriver = status.asDriverOnErrorJustIgnore()
 
-    let dbPath = docsetPath.appendingPathComponent("Contents/Resources/docSet.dsidx")
+    indexDBPath = docsetPath.appendingPathComponent("Contents/Resources/docSet.dsidx")
+
     do {
-      indexDBQueue = try DatabaseQueue(path: dbPath)
+      indexDBQueue = try DatabaseQueue(path: indexDBPath)
     } catch {
       indexDBQueue = nil
-      Self.logger.error("searchIndex: \(self) failed to initialize databaseQueue with error: \(error)")
+      Self.logger.error("searchIndex: \(self) failed to initialize database queue with error: \(error)")
+    }
+
+    Task {
+      if let error = await checkSearchIndexValid() {
+        status.accept(.error(SearchServiceError(underlyingError: error)))
+      } else {
+        status.accept(.ready)
+      }
+    }
+  }
+
+  private func checkSearchIndexValid() async -> DocsetSearchIndexError? {
+    return await withCheckedContinuation { continuation in
+      let dbPath = indexDBPath
+      do {
+        guard let dbQueue = indexDBQueue else {
+          return continuation.resume(returning: .noDatabaseQueue)
+        }
+        try dbQueue.read { db in
+          if !(try db.tableExists("searchindex")) {
+            Self.logger.error("search index invalid, path: \(dbPath), search index table not exist")
+            return continuation.resume(returning: .noSearchIndex)
+          }
+          if !(try db.tableExists("queryindex")) {
+            Self.logger.error("search index invalid, path: \(dbPath), query index table not exist")
+            return continuation.resume(returning: .noQueryIndex)
+          }
+          return continuation.resume(returning: nil)
+        }
+      } catch {
+        Self.logger.error("search index invalid for path: \(dbPath), error: \(error)")
+        return continuation.resume(returning: .underlyingError(error))
+      }
     }
   }
 
