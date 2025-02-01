@@ -24,7 +24,6 @@ import BoltUtils
 import Factory
 
 @testable import BoltDocsets
-@testable import BoltRepository
 
 final class LibraryDocsetsManagerTests: XCTestCase {
 
@@ -34,6 +33,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
   override func setUpWithError() throws {
     try super.setUpWithError()
 
+    Container.shared.docsetsModuleInitializer()()
     Container.shared.searchModuleInitializer()()
 
     try FileManager.default.createDirectory(atPath: LocalFileSystem.downloadsAbsolutePath, withIntermediateDirectories: true)
