@@ -44,6 +44,7 @@ final class DownloadManagerTests: XCTestCase {
   override func tearDown() async throws {
     try await super.tearDown()
     await downloadManager.cancelAllTasks()
+    try? FileManager.default.removeItem(atPath: LocalFileSystem.downloadsAbsolutePath)
   }
 
   func testStartDownload() async throws {
