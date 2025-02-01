@@ -97,6 +97,27 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
     }
   }
 
+  public func fetchTypeList() async throws -> [TypeCountPair] {
+    guard let dbQueue = indexDBQueue else {
+      throw DocsetSearchIndexError.noDatabaseQueue
+    }
+    return try await DocsetSearcher.typeList(forIndexDBQueue: dbQueue)
+  }
+
+  public func fetchAllEntries(forType type: EntryType?) async throws -> [Entry] {
+    guard let dbQueue = indexDBQueue else {
+      throw DocsetSearchIndexError.noDatabaseQueue
+    }
+    return try await DocsetSearcher.allEntries(forIndexDBQueue: dbQueue, type: type)
+  }
+
+  public func fetchEntries(forQuery rawQuery: String, type: EntryType?) async throws -> [Entry] {
+    guard let dbQueue = indexDBQueue else {
+      throw DocsetSearchIndexError.noDatabaseQueue
+    }
+    return try await DocsetSearcher.entries(forIndexDBQueue: dbQueue, rawQuery: rawQuery, type: type)
+  }
+
   private func checkSearchIndexValid() async -> DocsetSearchIndexError? {
     return await withCheckedContinuation { continuation in
       let dbPath = indexDBPath

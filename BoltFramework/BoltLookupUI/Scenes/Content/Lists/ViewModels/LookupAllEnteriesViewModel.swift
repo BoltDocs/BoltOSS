@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+import Factory
 import RxCocoa
 import RxSwift
 
@@ -44,12 +45,15 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
 
   private let docset: Docset
 
+  private let docsetSearchIndex: DocsetSearchIndex
+
   private let activityIndicator = ActivityIndicator()
   private let disposeBag = DisposeBag()
 
   init(routingState: LookupRoutingState, docset: Docset) {
     self.routingState = routingState
     self.docset = docset
+    self.docsetSearchIndex = Container.shared.searchService().searchIndex(forDocset: docset)
     setupObservations()
   }
 
@@ -79,10 +83,10 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
       .disposed(by: disposeBag)
 
     routingState.searchQuery
-      .flatMapLatest { [docset, activityIndicator] queryString -> Observable<Result<[LookupListCellItem], Error>> in
+      .flatMapLatest { [docset, docsetSearchIndex, activityIndicator] queryString -> Observable<Result<[LookupListCellItem], Error>> in
         if queryString.isEmpty {
           return Single<[TypeCountPair]>.create {
-            return try await DocsetSearcher.typeList(forDocset: docset)
+            return try await docsetSearchIndex.fetchTypeList()
           }
           .map { types -> [LookupListTypeItem] in
             return types.map { type in
@@ -94,7 +98,7 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
           .trackActivity(activityIndicator)
         } else {
           return Single<[Entry]>.create {
-            return try await DocsetSearcher.entries(forDocset: docset, rawQuery: queryString, type: nil)
+            return try await docsetSearchIndex.fetchEntries(forQuery: queryString, type: nil)
           }
           .map { entries -> [LookupListEntryItem] in
             return entries.map { entry in

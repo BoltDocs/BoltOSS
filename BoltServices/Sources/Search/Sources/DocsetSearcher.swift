@@ -21,13 +21,11 @@ import GRDB
 import BoltTypes
 import BoltUtils
 
-public struct DocsetSearcher {
+struct DocsetSearcher {
 
-  public static func typeList(forDocset docset: Docset) async throws -> [TypeCountPair] {
+  static func typeList(forIndexDBQueue dbQueue: DatabaseQueue) async throws -> [TypeCountPair] {
     return try await withCheckedThrowingContinuation { continuation in
       do {
-        let dbPath = docset.path.appendingPathComponent("Contents/Resources/docSet.dsidx")
-        let dbQueue = try DatabaseQueue(path: dbPath)
         try dbQueue.read { db in
           let result = try TypeCountPair.fetchPairs().fetchAll(db)
           continuation.resume(returning: result)
@@ -38,11 +36,9 @@ public struct DocsetSearcher {
     }
   }
 
-  public static func allEntries(forDocset docset: Docset, type: EntryType?) async throws -> [Entry] {
+  static func allEntries(forIndexDBQueue dbQueue: DatabaseQueue, type: EntryType?) async throws -> [Entry] {
     return try await withCheckedThrowingContinuation { continuation in
-      let dbPath = docset.path.appendingPathComponent("Contents/Resources/docSet.dsidx")
       do {
-        let dbQueue = try DatabaseQueue(path: dbPath)
         try dbQueue.read { db in
           let perfectRequest = try SearchIndex.fetchAll(type: type)
           let entries = try fetchEntries(forDB: db, request: perfectRequest)
@@ -54,13 +50,11 @@ public struct DocsetSearcher {
     }
   }
 
-  public static func entries(forDocset docset: Docset, rawQuery: String, type: EntryType?) async throws -> [Entry] {
+  static func entries(forIndexDBQueue dbQueue: DatabaseQueue, rawQuery: String, type: EntryType?) async throws -> [Entry] {
     // always fetch perfect, prefix and suffix matches
     // perfect matches comes first, then prefix and suffix
     return try await withCheckedThrowingContinuation { continuation in
-      let dbPath = docset.path.appendingPathComponent("Contents/Resources/docSet.dsidx")
       do {
-        let dbQueue = try DatabaseQueue(path: dbPath)
         try dbQueue.read { db in
           var duplicateHash = Set<Int64>()
 

@@ -17,6 +17,7 @@
 import RxCocoa
 import RxSwift
 
+@MainActor
 protocol LookupListViewModel {
 
   var title: Driver<String> { get }
