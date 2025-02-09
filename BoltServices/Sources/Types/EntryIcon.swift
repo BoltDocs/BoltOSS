@@ -18,9 +18,9 @@ import Foundation
 
 import BoltUtils
 
-public enum EntryIcon: Hashable {
+public enum EntryIcon: Sendable, Hashable {
 
-  public enum Bundled: Hashable {
+  public enum Bundled: Sendable, Hashable {
     case name(_: String)
     case docsetIcon(_: DocsetIcons)
   }

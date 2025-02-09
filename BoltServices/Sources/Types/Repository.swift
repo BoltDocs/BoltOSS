@@ -18,7 +18,7 @@ import Foundation
 
 import Factory
 
-public struct RepositoryIdentifier: Codable, RawRepresentable, Hashable {
+public struct RepositoryIdentifier: Sendable, Codable, RawRepresentable, Hashable {
 
   private enum Repository: String {
     case main

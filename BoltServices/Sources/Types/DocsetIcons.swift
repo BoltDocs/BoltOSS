@@ -15,7 +15,7 @@
 //
 import Foundation
 
-public enum DocsetIcons: String, CaseIterable {
+public enum DocsetIcons: String, Sendable, CaseIterable {
 
   case dash = "Dash"
   case google = "Google"

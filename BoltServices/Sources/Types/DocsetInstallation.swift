@@ -16,13 +16,16 @@
 
 import Foundation
 
-public final class DocsetInstallation: LibraryRecord, Codable, Hashable, CustomStringConvertible {
+public final class DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, CustomStringConvertible {
 
-  public var uuid: UUID
-  public var name: String
-  public var version: String
-  public var installedAsLatestVersion: Bool
-  public var repository: RepositoryIdentifier
+  public let uuid: UUID
+  public let name: String
+  public let version: String
+  public let installedAsLatestVersion: Bool
+  public let repository: RepositoryIdentifier
+
+  public let uuidString: String
+  public let identifier: String
 
   enum CodingKeys: String, CodingKey {
     case uuid
@@ -42,11 +45,32 @@ public final class DocsetInstallation: LibraryRecord, Codable, Hashable, CustomS
     self.version = version
     self.installedAsLatestVersion = installedAsLatestVersion
     self.repository = repository
+
+    uuidString = uuid.uuidString
+    identifier = InstallationIdentifier.fromName(
+      name,
+      version: version,
+      installedAsLatestVersion: installedAsLatestVersion,
+      repository: repository
+    )
   }
 
-  public lazy var uuidString: String = {
-    return uuid.uuidString
-  }()
+  public init(from decoder: any Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    uuid = try container.decode(UUID.self, forKey: .uuid)
+    name = try container.decode(String.self, forKey: .name)
+    version = try container.decode(String.self, forKey: .version)
+    installedAsLatestVersion = try container.decode(Bool.self, forKey: .installedAsLatestVersion)
+    repository = try container.decode(RepositoryIdentifier.self, forKey: .repository)
+
+    uuidString = uuid.uuidString
+    identifier = InstallationIdentifier.fromName(
+      name,
+      version: version,
+      installedAsLatestVersion: installedAsLatestVersion,
+      repository: repository
+    )
+  }
 
   public static func == (lhs: DocsetInstallation, rhs: DocsetInstallation) -> Bool {
     return lhs.uuid == rhs.uuid
@@ -55,15 +79,6 @@ public final class DocsetInstallation: LibraryRecord, Codable, Hashable, CustomS
   public func hash(into hasher: inout Hasher) {
     hasher.combine(uuid)
   }
-
-  public lazy var identifier: String = {
-    return InstallationIdentifier.fromName(
-      name,
-      version: version,
-      installedAsLatestVersion: installedAsLatestVersion,
-      repository: repository
-    )
-  }()
 
   public var description: String {
     return "DocsetInstallation(identifier: \(identifier))"

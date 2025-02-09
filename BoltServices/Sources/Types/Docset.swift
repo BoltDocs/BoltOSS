@@ -18,13 +18,13 @@ import Foundation
 
 import BoltUtils
 
-public struct DocsetInfo {
+public struct DocsetInfo: Sendable {
 
-  public enum Format {
+  public enum Format: Sendable {
     case dash, zDash
   }
 
-  public enum PlatformFamily: RawRepresentable {
+  public enum PlatformFamily: Sendable, RawRepresentable {
     public typealias RawValue = String
 
     case mainOrOther(name: String)
@@ -67,7 +67,7 @@ public struct DocsetInfo {
   }
 
   // - SeeAlso: dash-ios/DHUserRepo.mL308
-  public struct Keyword {
+  public struct Keyword: Sendable {
 
     public let inAppSearch: String
 
@@ -139,7 +139,7 @@ public struct DocsetInfo {
 
 }
 
-public struct Docset {
+public struct Docset: Sendable {
 
   public let installation: DocsetInstallation
   public let path: String
