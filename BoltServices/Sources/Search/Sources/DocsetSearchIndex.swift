@@ -69,11 +69,11 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
 
   private let indexDBPath: String
 
-  convenience init(docset: Docset) {
-    self.init(docsetPath: docset.path, identifier: docset.identifier)
+  convenience init(docset: Docset) async {
+    await self.init(docsetPath: docset.path, identifier: docset.identifier)
   }
 
-  init(docsetPath: String, identifier: String) {
+  init(docsetPath: String, identifier: String) async {
     self.docsetPath = docsetPath
     self.identifier = identifier
 
@@ -88,12 +88,10 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
       Self.logger.error("searchIndex: \(self) failed to initialize database queue with error: \(error)")
     }
 
-    Task {
-      if let error = await checkSearchIndexValid() {
-        status.accept(.error(SearchServiceError(underlyingError: error)))
-      } else {
-        status.accept(.ready)
-      }
+    if let error = await checkSearchIndexValid() {
+      status.accept(.error(SearchServiceError(underlyingError: error)))
+    } else {
+      status.accept(.ready)
     }
   }
 

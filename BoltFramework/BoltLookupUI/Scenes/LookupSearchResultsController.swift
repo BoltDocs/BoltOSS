@@ -59,14 +59,16 @@ final class LookupSearchResultsController: UIViewController {
 
     sceneState.currentScope
       .distinctUntilChanged()
-      .map { [searchService] scope -> DocsetSearchIndex? in
+      .asObservable()
+      .asyncMap { [searchService] scope -> DocsetSearchIndex? in
         switch scope {
         case let .docset(docset):
-          return searchService.searchIndex(forDocset: docset)
+          return await searchService.searchIndex(forDocset: docset)
         default:
           return nil
         }
       }
+      .asDriverOnErrorJustIgnore()
       .drive(currentSearchIndexRelay)
       .disposed(by: disposeBag)
 

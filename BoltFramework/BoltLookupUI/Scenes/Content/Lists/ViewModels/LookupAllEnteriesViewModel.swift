@@ -24,6 +24,9 @@ import RoutableNavigation
 
 final class LookupAllEntriesViewModel: LookupListViewModel {
 
+  @LazyInjected(\.searchService)
+  private var searchService: SearchService
+
   let itemSelected = PublishRelay<LookupListCellItem>()
 
   private let _results = BehaviorRelay<Result<[LookupListCellItem], Error>>(value: .success([]))
@@ -45,15 +48,12 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
 
   private let docset: Docset
 
-  private let docsetSearchIndex: DocsetSearchIndex
-
   private let activityIndicator = ActivityIndicator()
   private let disposeBag = DisposeBag()
 
   init(routingState: LookupRoutingState, docset: Docset) {
     self.routingState = routingState
     self.docset = docset
-    self.docsetSearchIndex = Container.shared.searchService().searchIndex(forDocset: docset)
     setupObservations()
   }
 
@@ -83,9 +83,10 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
       .disposed(by: disposeBag)
 
     routingState.searchQuery
-      .flatMapLatest { [docset, docsetSearchIndex, activityIndicator] queryString -> Observable<Result<[LookupListCellItem], Error>> in
+      .flatMapLatest { [docset, searchService, activityIndicator] queryString -> Observable<Result<[LookupListCellItem], Error>> in
         if queryString.isEmpty {
           return Single<[TypeCountPair]>.create {
+            let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
             return try await docsetSearchIndex.fetchTypeList()
           }
           .map { types -> [LookupListTypeItem] in
@@ -98,6 +99,7 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
           .trackActivity(activityIndicator)
         } else {
           return Single<[Entry]>.create {
+            let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
             return try await docsetSearchIndex.fetchEntries(forQuery: queryString, type: nil)
           }
           .map { entries -> [LookupListEntryItem] in

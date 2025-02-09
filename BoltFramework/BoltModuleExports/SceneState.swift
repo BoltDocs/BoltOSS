@@ -38,7 +38,7 @@ public protocol DistributionService {
 
 }
 
-public enum LookupScope: Hashable {
+public enum LookupScope: Sendable, Hashable {
   case docset(_: Docset)
   case history
   case favorites

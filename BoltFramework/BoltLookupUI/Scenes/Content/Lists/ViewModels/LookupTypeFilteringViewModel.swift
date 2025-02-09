@@ -25,6 +25,9 @@ import RoutableNavigation
 
 final class LookupTypeFilteringViewModel: LookupListViewModel {
 
+  @LazyInjected(\.searchService)
+  private var searchService: SearchService
+
   let itemSelected = PublishRelay<LookupListCellItem>()
 
   private let _results = BehaviorRelay<Result<[LookupListCellItem], Error>>(value: .success([]))
@@ -47,8 +50,6 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
   private let type: EntryType
   private let docset: Docset
 
-  private let docsetSearchIndex: DocsetSearchIndex
-
   private let activityIndicator = ActivityIndicator()
   private let disposeBag = DisposeBag()
 
@@ -56,7 +57,6 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
     self.routingState = routingState
     self.type = type
     self.docset = docset
-    self.docsetSearchIndex = Container.shared.searchService().searchIndex(forDocset: docset)
     setupObservations()
   }
 
@@ -80,9 +80,10 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
       .disposed(by: disposeBag)
 
     routingState.searchQuery
-      .flatMapLatest { [docset, docsetSearchIndex, type, activityIndicator] query -> Observable<Result<[LookupListCellItem], Error>> in
+      .flatMapLatest { [docset, searchService, type, activityIndicator] query -> Observable<Result<[LookupListCellItem], Error>> in
         if query.isEmpty {
           return Single<[Entry]>.create {
+            let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
             return try await docsetSearchIndex.fetchAllEntries(forType: type)
           }
           .map { entries -> [LookupListCellItem] in
@@ -95,6 +96,7 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
           .trackActivity(activityIndicator)
         } else {
           return Single<[Entry]>.create {
+            let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
             return try await docsetSearchIndex.fetchEntries(forQuery: query, type: type)
           }
           .map { entries -> [LookupListCellItem] in

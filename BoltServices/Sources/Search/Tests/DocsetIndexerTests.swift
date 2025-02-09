@@ -46,12 +46,13 @@ final class DocsetIndexerTests: XCTestCase {
     }
 
     var expectations = [XCTestExpectation]()
+    var indices = [DocsetSearchIndex]()
 
     let disposeBag = DisposeBag()
 
-    let indices = (0..<numberOfIndicesToQueue).map { idx -> DocsetSearchIndex in
+    for idx in 0..<numberOfIndicesToQueue {
       let docsetPath = tmpDir.appendingPathComponent("Bash_\(idx).docset")
-      let index = DocsetSearchIndex(docsetPath: docsetPath, identifier: "Bash_\(idx)")
+      let index = await DocsetSearchIndex(docsetPath: docsetPath, identifier: "Bash_\(idx)")
       let expectation = XCTestExpectation(description: "index \(idx) completes")
       index.status
         .subscribe(on: MainScheduler.instance)
@@ -62,7 +63,7 @@ final class DocsetIndexerTests: XCTestCase {
         }
         .disposed(by: disposeBag)
       expectations.append(expectation)
-      return index
+      indices.append(index)
     }
 
     let docsetIndexer = DocsetIndexer(maxConcurrentTasks: 1)

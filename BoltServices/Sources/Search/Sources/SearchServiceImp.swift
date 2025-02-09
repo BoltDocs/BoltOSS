@@ -22,20 +22,20 @@ final class SearchServiceImp: SearchService {
 
   private var searchIndices = [String: DocsetSearchIndex]()
 
-  func searchIndex(forDocsetPath docsetPath: String, identifier: String) -> DocsetSearchIndex {
+  func searchIndex(forDocsetPath docsetPath: String, identifier: String) async -> DocsetSearchIndex {
     if let index = searchIndices[docsetPath] {
       return index
     }
-    let index = DocsetSearchIndex(docsetPath: docsetPath, identifier: identifier)
+    let index = await DocsetSearchIndex(docsetPath: docsetPath, identifier: identifier)
     searchIndices[docsetPath] = index
     return index
   }
 
-  func searchIndex(forDocset docset: Docset) -> DocsetSearchIndex {
+  func searchIndex(forDocset docset: Docset) async -> DocsetSearchIndex {
     if let index = searchIndices[docset.path] {
       return index
     }
-    let index = DocsetSearchIndex(docset: docset)
+    let index = await DocsetSearchIndex(docset: docset)
     searchIndices[docset.path] = index
     return index
   }

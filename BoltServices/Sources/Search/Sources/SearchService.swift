@@ -36,8 +36,8 @@ public final class SearchServiceError: ServiceError {
 @MainActor
 public protocol SearchService: AnyObject {
 
-  func searchIndex(forDocsetPath docsetPath: String, identifier: String) -> DocsetSearchIndex
-  func searchIndex(forDocset docset: Docset) -> DocsetSearchIndex
+  func searchIndex(forDocsetPath docsetPath: String, identifier: String) async -> DocsetSearchIndex
+  func searchIndex(forDocset docset: Docset) async -> DocsetSearchIndex
 
   func queueToCreateSearchIndex(_: DocsetSearchIndex) async
 
