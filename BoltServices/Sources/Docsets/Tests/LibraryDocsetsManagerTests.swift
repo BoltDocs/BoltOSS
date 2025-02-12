@@ -17,6 +17,7 @@
 import Foundation
 import XCTest
 
+import BoltSearch
 import BoltTestingUtils
 import BoltTypes
 import BoltUtils

@@ -14,13 +14,56 @@
 // limitations under the License.
 //
 
-import BoltTypes
+import Combine
+import Factory
 
-final class SearchServiceImp: SearchService {
+import BoltDocsets
+import BoltTypes
+import BoltUtils
+
+final class SearchServiceImp: SearchService, LoggerProvider {
+
+  @Injected(\.libraryDocsetsManager)
+  private var libraryDocsetsManager: LibraryDocsetsManager
 
   private let docsetIndexer = DocsetIndexer(maxConcurrentTasks: 1)
 
   private var searchIndices = [String: DocsetSearchIndex]()
+
+  private var cancellables = Set<AnyCancellable>()
+
+  init() {
+    libraryDocsetsManager
+      .installedDocsets()
+      .withPrevious([])
+      .sink { [weak self] previous, current in
+        guard let self = self else {
+          return
+        }
+
+        let mapToDocset: (LibraryInstallationQueryResult) -> Docset? = {
+          if case let .docset(docset) = $0 {
+            return docset
+          }
+          return nil
+        }
+
+        let prevDocsets = Set(previous.compactMap(mapToDocset))
+        let currentDocsets = Set(current.compactMap(mapToDocset))
+
+        let addedDocsets = currentDocsets.subtracting(prevDocsets)
+
+        Self.logger.info("queue to index newly added docsets: \(addedDocsets)")
+
+        Task {
+          for docset in addedDocsets {
+            let searchIndex = await self.searchIndex(forDocset: docset)
+            await self.queueToCreateSearchIndex(searchIndex)
+          }
+        }
+      }
+      .store(in: &cancellables)
+  }
 
   func searchIndex(forDocsetPath docsetPath: String, identifier: String) async -> DocsetSearchIndex {
     if let index = searchIndices[docsetPath] {

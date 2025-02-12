@@ -24,7 +24,7 @@ import BoltCombineExtensions
 import BoltTypes
 import BoltUtils
 
-public struct DocsetIndexerWorker: LoggerProvider {
+struct DocsetIndexerWorker: LoggerProvider {
 
   struct ZIndex: Codable, FetchableRecord {
 
@@ -58,7 +58,7 @@ public struct DocsetIndexerWorker: LoggerProvider {
     attributes: .concurrent
   )
 
-  public static func createSearchIndex(withDatabaseQueue dbQueue: DatabaseQueue) -> AsyncThrowingStream<Double, Error> {
+  static func createSearchIndex(withDatabaseQueue dbQueue: DatabaseQueue) -> AsyncThrowingStream<Double, Error> {
     return AsyncThrowingStream { continuation in
       do {
         try dbQueue.write { db in
@@ -126,7 +126,7 @@ public struct DocsetIndexerWorker: LoggerProvider {
     }
   }
 
-  public static func createQueryIndex(withDatabaseQueue dbQueue: DatabaseQueue) -> AsyncThrowingStream<Double, Error> {
+  static func createQueryIndex(withDatabaseQueue dbQueue: DatabaseQueue) -> AsyncThrowingStream<Double, Error> {
     return AsyncThrowingStream { continuation in
       do {
         try dbQueue.write { db in

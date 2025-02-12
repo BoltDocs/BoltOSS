@@ -21,7 +21,6 @@ import Factory
 
 import BoltCombineExtensions
 import BoltDatabase
-import BoltSearch
 import BoltTypes
 import BoltUtils
 
@@ -67,15 +66,6 @@ struct DocsetInstaller {
                 repository: entry.feed.repository
               )
               try LibraryDatabase.shared.insertDocsetInstallation(docsetInstallation)
-
-              Task {
-                let searchService = Container.shared.searchService()
-                let searchIndex = await searchService.searchIndex(
-                  forDocsetPath: docsetPath,
-                  identifier: docsetInstallation.description
-                )
-                await searchService.queueToCreateSearchIndex(searchIndex)
-              }
             } catch {
               promise(.failure(error))
             }

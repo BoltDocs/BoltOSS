@@ -174,6 +174,14 @@ public struct Docset: Sendable {
 
 }
 
+extension Docset: CustomStringConvertible {
+
+  public var description: String {
+    return "Docset(identifier: \(identifier), path: \(path))"
+  }
+
+}
+
 extension Docset: LibraryRecord {
 
   public var uuid: UUID {
