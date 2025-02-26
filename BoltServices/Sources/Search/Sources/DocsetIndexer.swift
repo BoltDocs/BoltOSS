@@ -16,6 +16,8 @@
 
 import Dispatch
 import Factory
+import GRDB
+import Overture
 
 import BoltUtils
 
@@ -96,11 +98,27 @@ final actor DocsetIndexer: LoggerProvider {
     }
     do {
       index.status.accept(.indexing(progress: nil))
-      for try await progress in DocsetIndexerWorker.createSearchIndex(withDatabaseQueue: databaseQueue) {
+
+      let dsIdxPath = index.docsetPath.appendingPathComponent("Contents/Resources/docSet.dsidx")
+      let configuration = update(Configuration()) {
+        $0.journalMode = .wal
+      }
+      let dsIdxQueue = try DatabaseQueue(
+        path: dsIdxPath,
+        configuration: configuration
+      )
+
+      for try await progress in DocsetIndexerWorker.createSearchIndex(
+        withDatabaseQueue: databaseQueue,
+        dsIndexQueue: dsIdxQueue
+      ) {
         Self.logger.debug("indexing - createSearchIndex: \(index), progress: \(progress)")
         index.status.accept(.indexing(progress: 0.2 * progress))
       }
-      for try await progress in DocsetIndexerWorker.createQueryIndex(withDatabaseQueue: databaseQueue) {
+      for try await progress in DocsetIndexerWorker.createQueryIndex(
+        withDatabaseQueue: databaseQueue,
+        dsIndexQueue: dsIdxQueue
+      ) {
         Self.logger.debug("indexing - createQueryIndex: \(index), progress: \(progress)")
         index.status.accept(.indexing(progress: 0.2 + 0.8 * progress))
       }

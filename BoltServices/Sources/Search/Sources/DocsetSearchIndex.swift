@@ -79,7 +79,7 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
 
     statusDriver = status.asDriverOnErrorJustIgnore()
 
-    indexDBPath = docsetPath.appendingPathComponent("Contents/Resources/docSet.dsidx")
+    indexDBPath = docsetPath.appendingPathComponent("Contents/Resources/boltIdx.db")
 
     do {
       indexDBQueue = try DatabaseQueue(path: indexDBPath)

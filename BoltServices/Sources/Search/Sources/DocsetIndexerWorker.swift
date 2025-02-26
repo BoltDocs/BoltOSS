@@ -58,7 +58,10 @@ struct DocsetIndexerWorker: LoggerProvider {
     attributes: .concurrent
   )
 
-  static func createSearchIndex(withDatabaseQueue dbQueue: DatabaseQueue) -> AsyncThrowingStream<Double, Error> {
+  static func createSearchIndex(
+    withDatabaseQueue dbQueue: DatabaseQueue,
+    dsIndexQueue dsIdxQueue: DatabaseQueue
+  ) -> AsyncThrowingStream<Double, Error> {
     return AsyncThrowingStream { continuation in
       do {
         try dbQueue.write { db in
@@ -75,43 +78,45 @@ struct DocsetIndexerWorker: LoggerProvider {
             table.column("path", .text)
           }
 
-          let zCount = try Int.fetchOne(
-            db,
-            sql:
-              """
-              SELECT COUNT(*)
-              FROM ztoken
-              """
-          )!
+          try dsIdxQueue.read { dxIdxDB in
+            let zCount = try Int.fetchOne(
+              dxIdxDB,
+              sql:
+                """
+                SELECT COUNT(*)
+                FROM ztoken
+                """
+            )!
 
-          let zIndices = try ZIndex.fetchCursor(
-            db,
-            sql:
-              """
-              SELECT ztokenname AS name,
-                ztypename AS type,
-                zpath AS path,
-                zanchor AS anchor
-              FROM ztoken
-              INNER JOIN ztokenmetainformation
-                ON ztoken.zmetainformation = ztokenmetainformation.z_pk
-              INNER JOIN zfilepath
-                ON ztokenmetainformation.zfile = zfilepath.z_pk
-              INNER JOIN ztokentype
-                ON ztoken.ztokentype = ztokentype.z_pk
-              """
-          )
+            let zIndices = try ZIndex.fetchCursor(
+              dxIdxDB,
+              sql:
+                """
+                SELECT ztokenname AS name,
+                  ztypename AS type,
+                  zpath AS path,
+                  zanchor AS anchor
+                FROM ztoken
+                INNER JOIN ztokenmetainformation
+                  ON ztoken.zmetainformation = ztokenmetainformation.z_pk
+                INNER JOIN zfilepath
+                  ON ztokenmetainformation.zfile = zfilepath.z_pk
+                INNER JOIN ztokentype
+                  ON ztoken.ztokentype = ztokentype.z_pk
+                """
+            )
 
-          var currentCount = 0
-          while let zIndex = try zIndices.next() {
-            try Task.checkCancellation()
-            if let searchIndex = zIndex.searchIndex {
-              do {
-                try searchIndex.insert(db)
-                currentCount += 1
-                continuation.yield(Double(currentCount) / Double(zCount))
-              } catch {
-                Self.logger.warning("Unable to insert index: \(String(describing: searchIndex))")
+            var currentCount = 0
+            while let zIndex = try zIndices.next() {
+              try Task.checkCancellation()
+              if let searchIndex = zIndex.searchIndex {
+                do {
+                  try searchIndex.insert(db)
+                  currentCount += 1
+                  continuation.yield(Double(currentCount) / Double(zCount))
+                } catch {
+                  Self.logger.warning("Unable to insert index: \(String(describing: searchIndex))")
+                }
               }
             }
           }
@@ -126,7 +131,10 @@ struct DocsetIndexerWorker: LoggerProvider {
     }
   }
 
-  static func createQueryIndex(withDatabaseQueue dbQueue: DatabaseQueue) -> AsyncThrowingStream<Double, Error> {
+  static func createQueryIndex(
+    withDatabaseQueue dbQueue: DatabaseQueue,
+    dsIndexQueue dsIdxQueue: DatabaseQueue
+  ) -> AsyncThrowingStream<Double, Error> {
     return AsyncThrowingStream { continuation in
       do {
         try dbQueue.write { db in
