@@ -38,6 +38,10 @@ struct Dependencies {
     .product(name: "GRDB", package: "GRDB.swift")
   }
 
+  static var Overture: PackageDescription.Target.Dependency {
+    .product(name: "Overture", package: "swift-overture")
+  }
+
   static var UUIDShortener: PackageDescription.Target.Dependency {
     .product(name: "UUIDShortener", package: "uuid-shortener")
   }
@@ -98,7 +102,7 @@ let moduleTargets: [Target] = [
   ),
   .target(
     name: "BoltSearch",
-    dependencies: [Dependencies.GRDB, "BoltCombineExtensions", "BoltDocsets", "BoltRxSwift", "BoltTypes"],
+    dependencies: [Dependencies.GRDB, Dependencies.Overture, "BoltCombineExtensions", "BoltDocsets", "BoltRxSwift", "BoltTypes"],
     path: "./Sources/Search/Sources",
     swiftSettings: [
       .swiftLanguageMode(.v5)
@@ -204,6 +208,7 @@ let dependencies: [Package.Dependency] = [
   .package(url: "https://github.com/Alamofire/Alamofire.git", revision: "5.10.2"),
   .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", revision: "5.0.2"),
   .package(url: "https://github.com/yahoojapan/SwiftyXMLParser.git", revision: "5.6.0"),
+  .package(url: "https://github.com/pointfreeco/swift-overture.git", revision: "0.5.0"),
   .package(url: "https://github.com/Dean151/uuid-shortener", revision: "v1.0.0"),
 ]
 
