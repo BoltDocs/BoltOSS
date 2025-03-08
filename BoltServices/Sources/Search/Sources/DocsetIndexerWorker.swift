@@ -65,57 +65,69 @@ struct DocsetIndexerWorker: LoggerProvider {
     return AsyncThrowingStream { continuation in
       do {
         try dbQueue.write { db in
-          guard !(try db.tableExists("searchindex")) else {
-            return
-          }
+          try dsIdxQueue.read { dsIdxDB in
+            try db.create(table: "searchindex", ifNotExists: true) { table in
+              table.autoIncrementedPrimaryKey("id")
+              table.column("name", .integer)
+              table.column("type", .text)
+              table.column("path", .text)
+            }
 
-          Self.logger.info("No searchindex table found, treating as zDash format.")
-
-          try db.create(table: "searchindex", ifNotExists: true) { table in
-            table.autoIncrementedPrimaryKey("id")
-            table.column("name", .integer)
-            table.column("type", .text)
-            table.column("path", .text)
-          }
-
-          try dsIdxQueue.read { dxIdxDB in
-            let zCount = try Int.fetchOne(
-              dxIdxDB,
-              sql:
-                """
-                SELECT COUNT(*)
-                FROM ztoken
-                """
-            )!
-
-            let zIndices = try ZIndex.fetchCursor(
-              dxIdxDB,
-              sql:
-                """
-                SELECT ztokenname AS name,
-                  ztypename AS type,
-                  zpath AS path,
-                  zanchor AS anchor
-                FROM ztoken
-                INNER JOIN ztokenmetainformation
-                  ON ztoken.zmetainformation = ztokenmetainformation.z_pk
-                INNER JOIN zfilepath
-                  ON ztokenmetainformation.zfile = zfilepath.z_pk
-                INNER JOIN ztokentype
-                  ON ztoken.ztokentype = ztokentype.z_pk
-                """
-            )
-
-            var currentCount = 0
-            while let zIndex = try zIndices.next() {
-              try Task.checkCancellation()
-              if let searchIndex = zIndex.searchIndex {
+            if try dsIdxDB.tableExists("searchindex") {
+              let searchIndexCount = try SearchIndex.fetchCount(dsIdxDB)
+              let searchIndices = try SearchIndex.fetchCursor(dsIdxDB)
+              var currentCount = 0
+              while let searchIndex = try searchIndices.next() {
+                try Task.checkCancellation()
                 do {
                   try searchIndex.insert(db)
                   currentCount += 1
-                  continuation.yield(Double(currentCount) / Double(zCount))
+                  continuation.yield(Double(currentCount) / Double(searchIndexCount))
                 } catch {
                   Self.logger.warning("Unable to insert index: \(String(describing: searchIndex))")
+                }
+              }
+            } else {
+              Self.logger.info("No searchindex table found, treating as zDash format.")
+
+              let zCount = try Int.fetchOne(
+                dsIdxDB,
+                sql:
+                  """
+                  SELECT COUNT(*)
+                  FROM ztoken
+                  """
+              )!
+
+              let zIndices = try ZIndex.fetchCursor(
+                dsIdxDB,
+                sql:
+                  """
+                  SELECT ztokenname AS name,
+                    ztypename AS type,
+                    zpath AS path,
+                    zanchor AS anchor
+                  FROM ztoken
+                  INNER JOIN ztokenmetainformation
+                    ON ztoken.zmetainformation = ztokenmetainformation.z_pk
+                  INNER JOIN zfilepath
+                    ON ztokenmetainformation.zfile = zfilepath.z_pk
+                  INNER JOIN ztokentype
+                    ON ztoken.ztokentype = ztokentype.z_pk
+                  """
+              )
+
+              var currentCount = 0
+              while let zIndex = try zIndices.next() {
+                try Task.checkCancellation()
+                if let searchIndex = zIndex.searchIndex {
+                  do {
+                    try searchIndex.insert(db)
+                    currentCount += 1
+                    continuation.yield(Double(currentCount) / Double(zCount))
+                  } catch {
+                    Self.logger.warning("Unable to insert index: \(String(describing: searchIndex))")
+                  }
                 }
               }
             }
