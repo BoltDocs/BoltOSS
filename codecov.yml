@@ -1,3 +1,7 @@
-github_checks: false
+comment: false
+coverage:
+  status:
+    project: off
+    patch: off
 fixes:
   - "/Volumes/workspace/repository/BoltOSS/::"
