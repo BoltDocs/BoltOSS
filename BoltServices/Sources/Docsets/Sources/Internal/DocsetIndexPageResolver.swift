@@ -172,8 +172,11 @@ package struct DocsetIndexPageResolver: LoggerProvider {
       if indexPagePath.isHTTPURL() {
         return indexPagePath
       }
-      if matcher.findFirstMatchInPaths([indexPagePath]) != nil {
-        return indexPagePath
+      if let url = URL(string: indexPagePath) {
+        let path = url.path
+        if matcher.findFirstMatchInPaths([path]) != nil{
+          return indexPagePath
+        }
       }
     }
     var matchList = indexPathsToMatch
