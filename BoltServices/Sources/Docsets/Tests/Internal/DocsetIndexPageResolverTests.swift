@@ -51,4 +51,14 @@ final class DocsetIndexPageResolverTests: XCTestCase {
     XCTAssertEqual(resolvedPath, "https://example.com/")
   }
 
+  func testResolveSpecialLocalIndexPagePaths() throws {
+    let resolvedPath = DocsetIndexPageResolver._resolveIndexPagePath(
+      forPurposedIndexPagePath: "127.0.0.1:3000",
+      platformFamily: .mainOrOther(name: "main"),
+      generatorFamily: nil,
+      matcher: StubPathMatcher(paths: ["Stub.docset/Contents/Resources/Documents/127.0.0.1:3000"])
+    )
+    XCTAssertEqual(resolvedPath, "127.0.0.1:3000")
+  }
+
 }
