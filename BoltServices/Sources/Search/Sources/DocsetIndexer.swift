@@ -100,13 +100,7 @@ final actor DocsetIndexer: LoggerProvider {
       index.status.accept(.indexing(progress: nil))
 
       let dsIdxPath = index.docsetPath.appendingPathComponent("Contents/Resources/docSet.dsidx")
-      let configuration = update(Configuration()) {
-        $0.journalMode = .wal
-      }
-      let dsIdxQueue = try DatabaseQueue(
-        path: dsIdxPath,
-        configuration: configuration
-      )
+      let dsIdxQueue = try DatabaseQueue(path: dsIdxPath)
 
       for try await progress in DocsetIndexerWorker.createSearchIndex(
         withDatabaseQueue: databaseQueue,

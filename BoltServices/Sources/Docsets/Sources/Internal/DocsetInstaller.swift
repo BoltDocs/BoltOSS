@@ -18,13 +18,15 @@ import Combine
 import Foundation
 
 import Factory
+import GRDB
+import Overture
 
 import BoltCombineExtensions
 import BoltDatabase
 import BoltTypes
 import BoltUtils
 
-struct DocsetInstaller {
+struct DocsetInstaller: LoggerProvider {
 
   static let shared = Self()
 
@@ -49,6 +51,11 @@ struct DocsetInstaller {
           return nil
         }
         .tryMap { docsetPath in
+          do {
+            try Self.removeWALFiles(forDocsetPath: docsetPath)
+          } catch {
+            Self.logger.error("DocsetInstaller: removeWALFiles failed with error: \(error)")
+          }
           try LibraryDocsetsFileSystemBridge.writeMetadata(
             ofEntry: entry,
             toDocsetPath: docsetPath
@@ -72,6 +79,34 @@ struct DocsetInstaller {
         }, receiveValue: { _ in })
     }
     .eraseToAnyPublisher()
+  }
+
+  private static func removeWALFiles(forDocsetPath docsetPath: String) throws {
+    let resourcesPath = docsetPath.appendingPathComponent("Contents/Resources")
+
+    let indexDBPath = resourcesPath.appendingPathComponent("docSet.dsidx")
+    let walPath = resourcesPath.appendingPathComponent("docSet.dsidx-wal")
+    let shmPath = resourcesPath.appendingPathComponent("docSet.dsidx-shm")
+
+    let fileManager = FileManager.default
+
+    guard fileManager.fileExists(atPath: walPath) || fileManager.fileExists(atPath: shmPath) else {
+      return
+    }
+
+    // swiftlint:disable:next redundant_void_return
+    try { () -> Void in
+      let configuration = update(Configuration()) {
+        $0.journalMode = .wal
+      }
+      let _ = try DatabaseQueue(
+        path: indexDBPath,
+        configuration: configuration
+      )
+    }()
+
+    try fileManager.removeItem(atPath: walPath)
+    try fileManager.removeItem(atPath: shmPath)
   }
 
 }

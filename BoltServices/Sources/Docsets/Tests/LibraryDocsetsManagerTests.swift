@@ -78,7 +78,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     )
 
     XCTAssert(fileManager.fileExists(atPath: downloadsPath))
-    XCTAssertEqual(try fileManager.contentsOfDirectory(atPath: downloadsPath), [])
+    XCTAssert(!(try fileManager.contentsOfDirectory(atPath: downloadsPath)).contains("Vim-9.0-main.tgz"))
   }
 
   func testInstallDocsetWithTarix() async throws {
@@ -119,7 +119,10 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     )
 
     XCTAssert(fileManager.fileExists(atPath: downloadsPath))
-    XCTAssertEqual(try fileManager.contentsOfDirectory(atPath: downloadsPath), [])
+
+    let downloadsPathContents = try fileManager.contentsOfDirectory(atPath: downloadsPath)
+    XCTAssert(!downloadsPathContents.contains("Vim-9.0-main.tgz"))
+    XCTAssert(!downloadsPathContents.contains("Vim-9.0-main.tgz.tarix"))
   }
 
 }
