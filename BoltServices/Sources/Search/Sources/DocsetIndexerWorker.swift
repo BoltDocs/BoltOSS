@@ -143,10 +143,7 @@ struct DocsetIndexerWorker: LoggerProvider {
     }
   }
 
-  static func createQueryIndex(
-    withDatabaseQueue dbQueue: DatabaseQueue,
-    dsIndexQueue dsIdxQueue: DatabaseQueue
-  ) -> AsyncThrowingStream<Double, Error> {
+  static func createQueryIndex(withDatabaseQueue dbQueue: DatabaseQueue) -> AsyncThrowingStream<Double, Error> {
     return AsyncThrowingStream { continuation in
       do {
         try dbQueue.write { db in

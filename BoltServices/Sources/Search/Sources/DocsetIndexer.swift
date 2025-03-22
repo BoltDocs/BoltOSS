@@ -109,10 +109,7 @@ final actor DocsetIndexer: LoggerProvider {
         Self.logger.debug("indexing - createSearchIndex: \(index), progress: \(progress)")
         index.status.accept(.indexing(progress: 0.2 * progress))
       }
-      for try await progress in DocsetIndexerWorker.createQueryIndex(
-        withDatabaseQueue: databaseQueue,
-        dsIndexQueue: dsIdxQueue
-      ) {
+      for try await progress in DocsetIndexerWorker.createQueryIndex(withDatabaseQueue: databaseQueue) {
         Self.logger.debug("indexing - createQueryIndex: \(index), progress: \(progress)")
         index.status.accept(.indexing(progress: 0.2 + 0.8 * progress))
       }

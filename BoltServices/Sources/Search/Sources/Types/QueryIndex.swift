@@ -18,7 +18,7 @@ import Foundation
 
 import GRDB
 
-package struct QueryIndex: Codable, PersistableRecord {
+package struct QueryIndex: Equatable, Codable, FetchableRecord, PersistableRecord {
 
   package static var databaseTableName: String {
     return "queryindex"
