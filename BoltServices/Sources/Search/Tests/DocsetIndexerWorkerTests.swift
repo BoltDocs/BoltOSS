@@ -73,7 +73,7 @@ final class DocsetIndexerWorkerTests: XCTestCase {
       )
     }
 
-    for try await _ in DocsetIndexerWorker.createQueryIndex(withDatabaseQueue: dbQueue, dsIndexQueue: dsIdxQueue) { }
+    for try await _ in DocsetIndexerWorker.createQueryIndex(withDatabaseQueue: dbQueue) { }
 
     let queryIndex = try await dbQueue.read { db in
       return try QueryIndex
