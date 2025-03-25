@@ -17,6 +17,7 @@
 import Foundation
 
 import GRDB
+import Overture
 @preconcurrency import RxCocoa
 @preconcurrency import RxRelay
 
@@ -27,18 +28,15 @@ import BoltUtils
 enum DocsetSearchIndexError: LocalizedError {
 
   case noDatabaseQueue
-  case noSearchIndex
-  case noQueryIndex
+  case uninitializedDatabase
   case underlyingError(_: Error)
 
   var errorDescription: String? {
     switch self {
     case .noDatabaseQueue:
       return "DocsetSearchIndexError: failed to initialize initialize the database queue"
-    case .noSearchIndex:
-      return "DocsetSearchIndexError: search index table not found"
-    case .noQueryIndex:
-      return "DocsetSearchIndexError: query index table not found"
+    case .uninitializedDatabase:
+      return "DocsetSearchIndexError: index database not initialized"
     case let .underlyingError(error):
       return "DocsetSearchIndexError: underlyingError: \(error.localizedDescription)"
     }
@@ -47,6 +45,10 @@ enum DocsetSearchIndexError: LocalizedError {
 }
 
 public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerProvider {
+
+  struct Versions {
+    static let current = 1
+  }
 
   public var description: String {
     return "DocsetSearchIndex(identifier: \(identifier))"
@@ -82,7 +84,14 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
     indexDBPath = docsetPath.appendingPathComponent("Contents/Resources/boltIdx.db")
 
     do {
-      indexDBQueue = try DatabaseQueue(path: indexDBPath)
+      indexDBQueue = try DatabaseQueue(
+        path: indexDBPath,
+        configuration: update(Configuration()) {
+          $0.prepareDatabase { db in
+            db.trace { Self.logger.trace("\($0)") }
+          }
+        }
+      )
     } catch {
       indexDBQueue = nil
       Self.logger.error("searchIndex: \(self) failed to initialize database queue with error: \(error)")
@@ -124,13 +133,9 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
           return continuation.resume(returning: .noDatabaseQueue)
         }
         try dbQueue.read { db in
-          if !(try db.tableExists("searchindex")) {
-            Self.logger.error("search index invalid, path: \(dbPath), search index table not exist")
-            return continuation.resume(returning: .noSearchIndex)
-          }
-          if !(try db.tableExists("queryindex")) {
-            Self.logger.error("search index invalid, path: \(dbPath), query index table not exist")
-            return continuation.resume(returning: .noQueryIndex)
+          let version = try IndexMetadata.fetchOne(db)?.version
+          if version != Versions.current {
+            return continuation.resume(returning: .uninitializedDatabase)
           }
           return continuation.resume(returning: nil)
         }

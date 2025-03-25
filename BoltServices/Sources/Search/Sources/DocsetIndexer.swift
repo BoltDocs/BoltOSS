@@ -99,21 +99,35 @@ final actor DocsetIndexer: LoggerProvider {
     do {
       index.status.accept(.indexing(progress: nil))
 
-      let dsIdxPath = index.docsetPath.appendingPathComponent("Contents/Resources/docSet.dsidx")
-      let dsIdxQueue = try DatabaseQueue(path: dsIdxPath)
+      try await databaseQueue.erase()
 
-      for try await progress in DocsetIndexerWorker.createSearchIndex(
-        withDatabaseQueue: databaseQueue,
-        dsIndexQueue: dsIdxQueue
-      ) {
-        Self.logger.debug("indexing - createSearchIndex: \(index), progress: \(progress)")
-        index.status.accept(.indexing(progress: 0.2 * progress))
+      try await databaseQueue.write { db in
+        try IndexDatabase.createIndexInfoTable(db: db)
       }
-      for try await progress in DocsetIndexerWorker.createQueryIndex(withDatabaseQueue: databaseQueue) {
-        Self.logger.debug("indexing - createQueryIndex: \(index), progress: \(progress)")
-        index.status.accept(.indexing(progress: 0.2 + 0.8 * progress))
+
+      try await {
+        let dsIdxPath = index.docsetPath.appendingPathComponent("Contents/Resources/docSet.dsidx")
+        let dsIdxQueue = try DatabaseQueue(path: dsIdxPath)
+
+        for try await progress in DocsetIndexerWorker.createSearchIndex(
+          withDatabaseQueue: databaseQueue,
+          dsIndexQueue: dsIdxQueue
+        ) {
+          Self.logger.debug("indexing - createSearchIndex: \(index), progress: \(progress)")
+          index.status.accept(.indexing(progress: 0.2 * progress))
+        }
+        for try await progress in DocsetIndexerWorker.createQueryIndex(withDatabaseQueue: databaseQueue) {
+          Self.logger.debug("indexing - createQueryIndex: \(index), progress: \(progress)")
+          index.status.accept(.indexing(progress: 0.2 + 0.8 * progress))
+        }
+      }()
+
+      try await databaseQueue.write { db in
+        try IndexMetadata(version: DocsetSearchIndex.Versions.current).save(db)
       }
+
       Self.logger.info("indexing finished: \(index)")
+
       index.status.accept(.ready)
     } catch {
       Self.logger.error("indexing failed: \(index), error: \(error)")

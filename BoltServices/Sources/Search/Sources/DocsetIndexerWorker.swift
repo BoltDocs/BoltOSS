@@ -147,10 +147,6 @@ struct DocsetIndexerWorker: LoggerProvider {
     return AsyncThrowingStream { continuation in
       do {
         try dbQueue.write { db in
-          if try db.tableExists("queryindex") {
-            try db.drop(table: "queryindex")
-          }
-
           try db.create(virtualTable: "queryindex", using: FTS4()) { table in
             table.column("search_id")
             table.column("perfect")
