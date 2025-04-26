@@ -92,12 +92,12 @@ final class FeedsServiceImp: FeedsServiceInternal {
     try LibraryDatabase.shared.deleteCustomFeed(feed.customFeedEntity)
   }
 
-  func fetchEntries(forCustomFeed feed: CustomFeed) async throws -> [FeedEntry] {
+  func fetchEntries(forCustomFeed feed: CustomFeed) async throws -> FeedEntries {
     let xml = try await networking.fetchEntries(atURL: feed.urlString)
     let entryElement = xml["entry"]
 
     guard let version = entryElement["version"].text else {
-      return []
+      return FeedEntries()
     }
 
     let accessor = entryElement["url"]
@@ -122,7 +122,7 @@ final class FeedsServiceImp: FeedsServiceInternal {
     }
 
     guard let url = resolveURL() else {
-      return []
+      return FeedEntries()
     }
 
     let latest = FeedEntry(
@@ -132,7 +132,7 @@ final class FeedsServiceImp: FeedsServiceInternal {
       isDocsetBundle: false,
       docsetLocation: ResourceLocations.URL(url)
     )
-    return [latest]
+    return FeedEntries(items: [latest])
   }
 
 }

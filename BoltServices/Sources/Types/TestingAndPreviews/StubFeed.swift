@@ -34,8 +34,8 @@ public struct StubFeed: Feed {
   public var isUnavailable = false
   public var unavailableMessage: String?
 
-  public func fetchEntries() throws -> [BoltTypes.FeedEntry] {
-    return []
+  public func fetchEntries() throws -> FeedEntries {
+    return FeedEntries()
   }
 
   public static var defaultIconImage: PlatformImage {

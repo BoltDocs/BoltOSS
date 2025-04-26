@@ -230,7 +230,7 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
       forceUpdate: false
     )
     for feed in allFeeds where feed.id == downloadTaskEntity.name {
-      let entries = try await feed.fetchEntries()
+      let entries = try await feed.fetchEntries().items
       for entry in entries where entry.id == downloadTaskEntity.identifier {
         return entry as FeedEntry
       }

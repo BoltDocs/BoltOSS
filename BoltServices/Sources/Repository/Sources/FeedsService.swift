@@ -54,7 +54,7 @@ public protocol FeedsService {
 
 protocol FeedsServiceInternal: FeedsService {
 
-  func fetchEntries(forCustomFeed feed: CustomFeed) async throws -> [FeedEntry]
+  func fetchEntries(forCustomFeed feed: CustomFeed) async throws -> FeedEntries
 
 }
 

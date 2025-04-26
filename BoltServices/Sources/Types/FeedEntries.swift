@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 Bolt Contributors
+// Copyright (C) 2025 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,23 +14,16 @@
 // limitations under the License.
 //
 
-import BoltUtils
+import Foundation
 
-public protocol Feed: EntryIconProvider {
+public struct FeedEntries {
 
-  var repository: RepositoryIdentifier { get }
+  public var items: [FeedEntry]
+  public var shouldHideVersions: Bool
 
-  var id: String { get }
-  var displayName: String { get }
-  var aliases: [String] { get }
-
-  var supportsArchiveIndex: Bool { get }
-
-  var icon: EntryIcon { get }
-
-  var isUnavailable: Bool { get }
-  var unavailableMessage: String? { get }
-
-  func fetchEntries() async throws -> FeedEntries
+  public init(items: [FeedEntry] = [], shouldHideVersions: Bool = false) {
+    self.items = items
+    self.shouldHideVersions = shouldHideVersions
+  }
 
 }

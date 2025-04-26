@@ -50,7 +50,7 @@ final class CustomFeedTests: NetworkingStubbedTestCase {
         urlString: "https://test.internal/Alamofire.xml"
       )
     )
-    let feedEntries = try await feed.fetchEntries()
+    let feedEntries = try await feed.fetchEntries().items
     XCTAssertEqual(feedEntries.count, 1)
     XCTAssertEqual(feedEntries[0].feed.id, feed.id)
     XCTAssertEqual(feedEntries[0].version, "5.6.4")
@@ -68,7 +68,7 @@ final class CustomFeedTests: NetworkingStubbedTestCase {
         urlString: "https://test.internal/multiple-urls.xml"
       )
     )
-    let feedEntries = try await feed.fetchEntries()
+    let feedEntries = try await feed.fetchEntries().items
     XCTAssertEqual(feedEntries.count, 1)
     XCTAssertEqual(feedEntries[0].feed.id, feed.id)
     XCTAssertEqual(feedEntries[0].version, "1.0.0")
