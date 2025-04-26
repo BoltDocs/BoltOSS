@@ -21,7 +21,11 @@ public struct FeedEntries {
   public var items: [FeedEntry]
   public var shouldHideVersions: Bool
 
-  public init(items: [FeedEntry] = [], shouldHideVersions: Bool = false) {
+  public init() {
+    self.init(items: [], shouldHideVersions: false)
+  }
+
+  public init(items: [FeedEntry], shouldHideVersions: Bool) {
     self.items = items
     self.shouldHideVersions = shouldHideVersions
   }

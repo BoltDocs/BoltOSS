@@ -19,6 +19,7 @@ import Foundation
 
 import Factory
 import IssueReporting
+import SwiftyXMLParser
 
 import BoltCombineExtensions
 import BoltDatabase
@@ -100,9 +101,8 @@ final class FeedsServiceImp: FeedsServiceInternal {
       return FeedEntries()
     }
 
-    let accessor = entryElement["url"]
-
     let resolveURL = { () -> URL? in
+      let accessor = entryElement["url"]
       switch accessor {
       case let .singleElement(element):
         if let urlString = element.text, let url = URL(string: urlString) {
@@ -125,14 +125,72 @@ final class FeedsServiceImp: FeedsServiceInternal {
       return FeedEntries()
     }
 
-    let latest = FeedEntry(
+    // swiftlint:disable:next discouraged_optional_collection
+    let resolveOtherVersions = { () -> [String]? in
+      let otherVersions = entryElement["other-versions"]
+      // swiftlint:disable:next discouraged_optional_collection
+      let buildVersions = { (elements: [XML.Element]) -> [String]? in
+        var versions = [String]()
+        for element in elements {
+          for childElement in element.childElements where childElement.name == "version" {
+            for childElement in childElement.childElements where childElement.name == "name" {
+              if let text = childElement.text {
+                versions.append(text)
+              }
+            }
+          }
+        }
+        return versions
+      }
+
+      switch otherVersions {
+      case let .singleElement(element):
+        return buildVersions([element])
+      case let .sequence(elements):
+        return buildVersions(elements)
+      case .failure:
+        return nil
+      }
+    }
+
+    let versions = resolveOtherVersions()
+
+    // swiftlint:disable:next discouraged_optional_collection
+    let versionsEntry: [FeedEntry]? = versions?.compactMap { version -> FeedEntry? in
+      let lastPathComponent = url.lastPathComponent
+
+      guard !lastPathComponent.isEmpty, lastPathComponent != "/" else {
+        return nil
+      }
+
+      let versionedURL = url.deletingLastPathComponent().appending(
+        components: "versions",
+        lastPathComponent.deletingPathExtension,
+        version,
+        lastPathComponent
+      )
+
+      return FeedEntry(
+        feed: feed,
+        version: version,
+        isTrackedAsLatest: false,
+        isDocsetBundle: false,
+        docsetLocation: ResourceLocations.URL(versionedURL)
+      )
+    }
+
+    let latestEntry = FeedEntry(
       feed: feed,
       version: version,
-      isTrackedAsLatest: false,
+      isTrackedAsLatest: true,
       isDocsetBundle: false,
       docsetLocation: ResourceLocations.URL(url)
     )
-    return FeedEntries(items: [latest])
+
+    return FeedEntries(
+      items: [latestEntry] + (versionsEntry ?? []),
+      shouldHideVersions: versionsEntry == nil
+    )
   }
 
 }
