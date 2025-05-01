@@ -86,19 +86,23 @@ final class LibraryFeedInfoVersionsSectionModelImp: FeedInfoVersionsSectionModel
       )
       .map { feedEntries, records -> FeedInfoVersionsSectionListModel in
         let items = feedEntries.items.map { entry -> FeedInfoVersionsSectionListModel.Item in
-          var installableStatus: FeedInfoVersionsSectionListModel.InstallableStatus = .installable
-          for record in records {
-            guard record.name == entry.feed.id else {
-              continue
-            }
-            if record.installedAsLatestVersion, entry.isTrackedAsLatest {
+          var installableStatus: FeedInfoVersionsSectionListModel.InstallableStatus
+          if entry.isTrackedAsLatest {
+            // FIXME: may contain multiple matching records here
+            if let record = records.first(where: { $0.version == entry.version && $0.installedAsLatestVersion == true }) {
               if record.version == entry.version {
                 installableStatus = .latest
               } else {
                 installableStatus = .updateAvailable(currentVersion: record.version)
               }
-            } else if record.version == entry.version {
+            } else {
+              installableStatus = .installable
+            }
+          } else {
+            if records.contains(where: { $0.version == entry.version && $0.installedAsLatestVersion == false }) {
               installableStatus = .installed
+            } else {
+              installableStatus = .installable
             }
           }
           return FeedInfoVersionsSectionListModel.Item(feedEntry: entry, installableStatus: installableStatus)
