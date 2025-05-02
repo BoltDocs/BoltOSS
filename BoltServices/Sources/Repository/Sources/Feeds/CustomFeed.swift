@@ -39,7 +39,7 @@ struct CustomFeedRepository: FeedRepository {
 
 }
 
-public struct CustomFeed: Feed, Identifiable {
+public struct CustomFeed: Feed, Identifiable, Equatable {
 
   private(set) var customFeedEntity: CustomFeedEntity
 
@@ -75,6 +75,12 @@ public struct CustomFeed: Feed, Identifiable {
 
   public func fetchEntries() async throws -> FeedEntries {
     return try await Container.shared.feedsService().asInternal().fetchEntries(forCustomFeed: self)
+  }
+
+  // MARK: - Equatable
+
+  public static func == (lhs: Self, rhs: Self) -> Bool {
+    return lhs.customFeedEntity == rhs.customFeedEntity
   }
 
   // MARK: - EntryIconProvider

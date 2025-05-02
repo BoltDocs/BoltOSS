@@ -49,14 +49,14 @@ final class FeedsServiceImp: FeedsServiceInternal {
       .store(in: &cancellableBag)
   }
 
-  func fetchAllFeeds(forRepository repositoryIdentifier: RepositoryIdentifier, forceUpdate: Bool) async throws(FeedsServiceError) -> [Feed] {
+  func fetchAllFeeds(forRepository repositoryIdentifier: RepositoryIdentifier, cacheIfPossible: Bool) async throws(FeedsServiceError) -> [Feed] {
     guard let repository = repositoryRegistry.repository(forIdentifier: repositoryIdentifier) else {
       reportIssue("Unhandled repository type: \(repositoryIdentifier)")
       return []
     }
 
     if repository.canFetchFeeds {
-      if !forceUpdate, let cachedFeeds = feedsCaches[repositoryIdentifier] {
+      if cacheIfPossible, let cachedFeeds = feedsCaches[repositoryIdentifier] {
         return cachedFeeds
       }
       do {

@@ -227,7 +227,7 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
   func feedEntry(forDownloadTaskEntity downloadTaskEntity: DownloadTaskEntity) async throws -> FeedEntry? {
     let allFeeds = try await feedsService.fetchAllFeeds(
       forRepository: downloadTaskEntity.repository,
-      forceUpdate: false
+      cacheIfPossible: true
     )
     for feed in allFeeds where feed.id == downloadTaskEntity.name {
       let entries = try await feed.fetchEntries().items

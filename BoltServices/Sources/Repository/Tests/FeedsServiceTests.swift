@@ -32,6 +32,24 @@ final class FeedsServiceTests: NetworkingStubbedTestCase {
   @LazyInjected(\.feedsService)
   private var feedsService: FeedsService
 
+  func testFetchCustomFeeds() throws {
+    let testFeed = CustomFeed(entity: CustomFeedEntity(name: "Test1", urlString: "https://boltdocs.app/feed"))
+
+    try feedsService.insertCustomFeed(testFeed)
+
+    let expectation = XCTestExpectation()
+
+    DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .microseconds(500))) {
+      Task {
+        let fetchedFeeds = try await self.feedsService.fetchAllFeeds(forRepository: .custom, cacheIfPossible: true)
+        XCTAssertEqual(try XCTUnwrap(fetchedFeeds as? [CustomFeed]), [testFeed])
+        expectation.fulfill()
+      }
+    }
+
+    wait(for: [expectation], timeout: 5)
+  }
+
   func testCustomFeedsOperations() throws {
     var cancellableBag = Set<AnyCancellable>()
 

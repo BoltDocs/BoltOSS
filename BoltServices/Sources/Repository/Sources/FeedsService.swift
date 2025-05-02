@@ -40,7 +40,7 @@ public final class FeedsServiceError: ServiceError {
 
 public protocol FeedsService {
 
-  func fetchAllFeeds(forRepository repositoryIdentifier: RepositoryIdentifier, forceUpdate: Bool) async throws(FeedsServiceError) -> [Feed]
+  func fetchAllFeeds(forRepository repositoryIdentifier: RepositoryIdentifier, cacheIfPossible: Bool) async throws(FeedsServiceError) -> [Feed]
 
   func customFeedsObservable() -> AnyPublisher<[CustomFeed], Never>
 
