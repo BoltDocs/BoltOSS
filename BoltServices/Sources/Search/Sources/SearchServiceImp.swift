@@ -34,7 +34,7 @@ final class SearchServiceImp: SearchService, LoggerProvider {
 
   init() {
     libraryDocsetsManager
-      .installedDocsets()
+      .installedDocsetsPublisher
       .withPrevious([])
       .sink { [weak self] previous, current in
         guard let self = self else {

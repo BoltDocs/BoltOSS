@@ -81,7 +81,7 @@ final class LibraryFeedInfoVersionsSectionModelImp: FeedInfoVersionsSectionModel
     let handleRefreshing: () -> AnyPublisher<Result<FeedInfoVersionsSectionListModel, Error>, Never> = { [libraryDocsetsManager] in
       return Publishers.CombineLatest(
         fetchEntriesPublisher(),
-        libraryDocsetsManager.installedRecords()
+        libraryDocsetsManager.installedRecordsPublisher
           .setFailureType(to: Error.self)
       )
       .map { feedEntries, records -> FeedInfoVersionsSectionListModel in

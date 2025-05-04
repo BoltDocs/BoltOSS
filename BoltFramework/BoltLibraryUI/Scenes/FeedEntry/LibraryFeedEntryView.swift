@@ -82,7 +82,7 @@ private final class DataSource: ObservableObject {
   init(entry: FeedEntry) {
     self.entry = entry
 
-    libraryDocsetsManager.installedRecords()
+    libraryDocsetsManager.installedRecordsPublisher
       .map { installations in
         return installations.contains { installation in
           return installation.name == entry.feed.id &&

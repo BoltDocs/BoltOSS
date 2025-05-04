@@ -56,9 +56,11 @@ public extension Container {
 
 public protocol LibraryDocsetsManager {
 
-  func installedDocsets() -> AnyPublisher<[LibraryInstallationQueryResult], Never>
+  var installedDocsets: [LibraryInstallationQueryResult] { get }
+  var installedDocsetsPublisher: AnyPublisher<[LibraryInstallationQueryResult], Never> { get }
 
-  func installedRecords() -> AnyPublisher<[LibraryRecord], Never>
+  var installedRecords: [LibraryRecord] { get }
+  var installedRecordsPublisher: AnyPublisher<[LibraryRecord], Never> { get }
 
   func installDocset(
     forEntry entry: FeedEntry,
@@ -76,12 +78,27 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
 
   private lazy var _installedDocsets = CurrentValueSubject<[LibraryInstallationQueryResult], Never>([])
 
-  func installedDocsets() -> AnyPublisher<[LibraryInstallationQueryResult], Never> {
+  var installedDocsets: [LibraryInstallationQueryResult] {
+    return _installedDocsets.value
+  }
+
+  var installedDocsetsPublisher: AnyPublisher<[LibraryInstallationQueryResult], Never> {
     return _installedDocsets
       .eraseToAnyPublisher()
   }
 
-  func installedRecords() -> AnyPublisher<[LibraryRecord], Never> {
+  var installedRecords: [LibraryRecord] {
+    return _installedDocsets.value.map { result in
+      switch result {
+      case let .docset(docset):
+        return docset
+      case let .broken(installation):
+        return installation
+      }
+    }
+  }
+
+  var installedRecordsPublisher: AnyPublisher<[LibraryRecord], Never> {
     return _installedDocsets
       .map { result in
         return result.map { res in

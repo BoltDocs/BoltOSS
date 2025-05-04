@@ -164,7 +164,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     // TODO: build favorites and history section
     dataSource.apply(dataSourceSnapshot)
 
-    libraryDocsetsManager.installedDocsets()
+    libraryDocsetsManager.installedDocsetsPublisher
       .asInfallible()
       .bind(to: docsets)
       .disposed(by: disposeBag)
