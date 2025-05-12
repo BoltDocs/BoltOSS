@@ -24,6 +24,8 @@ final class DoubleColumnSplitViewController: UISplitViewController, UISplitViewC
     showsSecondaryOnlyButton = true
     displayModeButtonVisibility = .always
     preferredSplitBehavior = .automatic
+
+    primaryBackgroundStyle = .sidebar
   }
 
   @available(*, unavailable)

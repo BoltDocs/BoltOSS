@@ -34,7 +34,13 @@ final class HomeCollectionView: UICollectionView {
     self.isForCollapsedSidebar = isForCollapsedSidebar
 
     self.headerRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, _, title in
-      cell.contentConfiguration = update(UIListContentConfiguration.sidebarHeader()) {
+      cell.contentConfiguration = update({ () -> UIListContentConfiguration in
+        #if targetEnvironment(macCatalyst)
+        return cell.defaultContentConfiguration()
+        #else
+        return isForCollapsedSidebar ? .prominentInsetGroupedHeader() : cell.defaultContentConfiguration()
+        #endif
+      }()) {
         $0.text = title
       }
       cell.accessories = [
@@ -45,11 +51,7 @@ final class HomeCollectionView: UICollectionView {
     }
 
     self.cellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, LibraryInstallationQueryResult> { cell, _, queryResult in
-      #if targetEnvironment(macCatalyst)
-      cell.backgroundConfiguration = update(cell.defaultBackgroundConfiguration()) {
-        $0.cornerRadius = 8.0
-      }
-      #endif
+      cell.backgroundConfiguration = cell.defaultBackgroundConfiguration()
       cell.contentConfiguration = update(cell.defaultContentConfiguration()) {
         let standardDimension = UIListContentConfiguration.ImageProperties.standardDimension
         $0.imageProperties.reservedLayoutSize = CGSize(
