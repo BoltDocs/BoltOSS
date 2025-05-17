@@ -58,12 +58,22 @@ final class HomeCollectionView: UICollectionView {
           width: standardDimension,
           height: standardDimension
         )
+
+        $0.prefersSideBySideTextAndSecondaryText = false
+        $0.textToSecondaryTextVerticalPadding = 0
+
         switch queryResult {
         case let .docset(docset):
           $0.text = docset.displayName
+          if !docset.installedAsLatestVersion {
+            $0.secondaryText = docset.version
+          }
           $0.image = docset.iconImageForList
         case let .broken(installation):
           $0.text = installation.name
+          if installation.installedAsLatestVersion {
+            $0.secondaryText = installation.version
+          }
           $0.image = UIImage(systemName: "text.book.closed")
         }
       }
