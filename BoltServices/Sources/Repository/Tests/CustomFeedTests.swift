@@ -150,7 +150,7 @@ final class CustomFeedTests: NetworkingStubbedTestCase {
     XCTAssertFalse(items[1].isTrackedAsLatest)
     XCTAssertEqual(
       items[1].docsetLocation as! URLResourceLocation,
-      ResourceLocations.URL(URL(string: "https://test.internal/versions/TestFeed/1.0.0/TestFeed.tgz")!) as! URLResourceLocation
+      ResourceLocations.URL(URL(string: "https://test.internal/zzz/versions/TestFeed/1.0.0/TestFeed.tgz")!) as! URLResourceLocation
     )
   }
 

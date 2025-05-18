@@ -164,7 +164,8 @@ final class FeedsServiceImp: FeedsServiceInternal {
       }
 
       let versionedURL = url.deletingLastPathComponent().appending(
-        components: "versions",
+        components: "zzz",
+        "versions",
         lastPathComponent.deletingPathExtension,
         version,
         lastPathComponent
