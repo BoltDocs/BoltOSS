@@ -15,26 +15,25 @@
 //
 
 import Foundation
-import XCTest
+import Testing
 
 import BoltTestingUtils
 
 @testable import BoltArchives
 
-final class TarUnarchiverTests: XCTestCase {
+struct TarUnarchiverTests {
 
-  func testExtractGzippedTarFile() async throws {
+  @Test func extractGzippedTarFile() async throws {
     let sourcePath = Bundle.module.path(forResource: "TestResources/Bash.tgz")!
     let destPath = NSTemporaryDirectory().appendingPathComponent(UUID().uuidString)
-    let result = try await awaitPublisher(
-      TarUnarchiver.extractGzippedTarFile(fromSourcePath: sourcePath, toDestPath: destPath),
-      timeout: 10
+    let result = try await awaitPublisherForSwiftTesting(
+      TarUnarchiver.extractGzippedTarFile(fromSourcePath: sourcePath, toDestPath: destPath)
     )
     guard case let .completed(path) = result else {
-      XCTFail("unarchiver ends with non-error result")
+      Issue.record("unarchiver ends with non-error result")
       return
     }
-    XCTAssert(
+    #expect(
       FileManager.default.contentsEqual(
         atPath: path.appendingPathComponent("Bash.docset"),
         andPath: Bundle.module.path(forResource: "TestResources/Bash.docset")!
@@ -42,7 +41,7 @@ final class TarUnarchiverTests: XCTestCase {
     )
   }
 
-  func testDataFromGippedIndexedTarFile() throws {
+  @Test func dataFromGippedIndexedTarFile() throws {
     let tgzURL = Bundle.module.url(forResource: "TestResources/Bash.tgz")!
 
     let indexFileURL = Bundle.module.url(forResource: "TestResources/Bash.tgz.tarix.txt")!
@@ -52,7 +51,7 @@ final class TarUnarchiverTests: XCTestCase {
     for line in indexLines {
       let matches = line.regexMatch(#""(.*?)","(\d+) (\d+) (\d+)""#)
       guard matches.count == 1, matches[0].count == 5 else {
-        XCTFail("Incorrect tar index txt data")
+        Issue.record("Incorrect tar index txt data")
         return
       }
 
@@ -62,12 +61,12 @@ final class TarUnarchiverTests: XCTestCase {
 
       let gunzippedSegment = try TarUnarchiver.rawDataFromTarFile(tarAbsoluteURL: tgzURL, blockLength: blockLength, offset: offset)
       guard let (path, data) = gunzippedSegment else {
-        XCTFail("Failed to extract tar data segment")
+        Issue.record("Failed to extract tar data segment")
         return
       }
 
       let localData = try Data(contentsOf: Bundle.module.url(forResource: "TestResources/" + path)!)
-      XCTAssertEqual(data, localData)
+      #expect(data == localData)
     }
   }
 

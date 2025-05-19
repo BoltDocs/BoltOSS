@@ -15,7 +15,7 @@
 //
 
 import Foundation
-import XCTest
+import Testing
 
 import Gzip
 
@@ -23,9 +23,9 @@ import BoltUtils
 
 @testable import BoltArchives
 
-final class GZipExtensionTests: XCTestCase {
+struct GZipExtensionTests {
 
-  func testGunzippedFromFileHandle() throws {
+  @Test func gunzippedFromFileHandle() throws {
     let indexFileURL = Bundle.module.url(forResource: "TestResources/Bash.tgz.tarix.txt")!
     let indexFileContent = try String(contentsOf: indexFileURL, encoding: .utf8)
     let indexLines = indexFileContent.components(separatedBy: "\n")
@@ -37,7 +37,7 @@ final class GZipExtensionTests: XCTestCase {
     for line in indexLines {
       let matches = line.regexMatch(#""(.*?)","(\d+) (\d+) (\d+)""#)
       guard matches.count == 1, matches[0].count == 5 else {
-        XCTFail("Incorrect tar index txt data")
+        Issue.record("Incorrect tar index txt data")
         return
       }
       let blockStart = Int(matches[0][2])!
@@ -52,30 +52,34 @@ final class GZipExtensionTests: XCTestCase {
       )
       let subData = gunzippedData.subdata(in: (blockStart * 512)..<(((blockStart + blockLength) * 512)))
       if gUnzippedSegment != subData {
-        XCTFail("Mismatched data at: blockStart: \(blockStart), offset: \(offset) blockLength: \(blockLength)")
+        Issue.record("Mismatched data at: blockStart: \(blockStart), offset: \(offset) blockLength: \(blockLength)")
       }
     }
     try fileHandle.close()
   }
 
-  func testInvalidFileHandle() throws {
+  @Test func invalidFileHandle() throws {
     let fileHandle = try FileHandle(forReadingFrom: TestResources.tgzURL)
-    try fileHandle.close()
-    XCTAssertThrowsError(try Gzip.gunzipped(fromFileHandle: fileHandle, offset: 29892, outputSize: 14 * 512))
-  }
-
-  func testInvalidOffset() throws {
-    let fileHandle = try FileHandle(forReadingFrom: TestResources.tgzURL)
-    XCTAssertThrowsError(try Gzip.gunzipped(fromFileHandle: fileHandle, offset: 600000, outputSize: 2 * 512, wBits: -Gzip.maxWindowBits))
+    #expect(throws: GzipError.self) {
+      try Gzip.gunzipped(fromFileHandle: fileHandle, offset: 29892, outputSize: 14 * 512)
+    }
     try fileHandle.close()
   }
 
-  func testInvalidDataSize() throws {
+  @Test func invalidOffset() throws {
+    let fileHandle = try FileHandle(forReadingFrom: TestResources.tgzURL)
+    #expect(throws: GzipError.self) {
+      try Gzip.gunzipped(fromFileHandle: fileHandle, offset: 600000, outputSize: 2 * 512, wBits: -Gzip.maxWindowBits)
+    }
+    try fileHandle.close()
+  }
+
+  @Test func invalidDataSize() throws {
     let fileHandle = try FileHandle(forReadingFrom: TestResources.tgzURL)
 
     let data = try Gzip.gunzipped(fromFileHandle: fileHandle, offset: 617018, outputSize: 3 * 512, wBits: -Gzip.maxWindowBits)
 
-    XCTAssertEqual(data.count, 3 * 512)
+    #expect(data.count == 3 * 512)
 
     let gunzippedData = TestResources.gunzippedTarData
 
@@ -84,19 +88,19 @@ final class GZipExtensionTests: XCTestCase {
     let gunzippedSegment = gunzippedData.subdata(in: (3203 * 512)..<(((3203 + 2) * 512)))
 
     if gunzippedSegment != validSegment {
-      XCTFail("Mismatched data segment")
+      Issue.record("Mismatched data segment")
     }
 
     if emptySegment.contains(where: { $0 != 0 }) {
-      XCTFail("Non-zero bytes in result data segment")
+      Issue.record("Non-zero bytes in result data segment")
     }
 
     try fileHandle.close()
   }
 
-  func testInvalidBufferSize() throws {
+  @Test func invalidBufferSize() throws {
     let fileHandle = try FileHandle(forReadingFrom: TestResources.tgzURL)
-    XCTAssertThrowsError(
+    #expect(throws: GzipError.self) {
       try Gzip.gunzipped(
         fromFileHandle: fileHandle,
         offset: 600000,
@@ -104,8 +108,8 @@ final class GZipExtensionTests: XCTestCase {
         wBits: -Gzip.maxWindowBits,
         bufferSize: 0
       )
-    )
-    XCTAssertThrowsError(
+    }
+    #expect(throws: GzipError.self) {
       try Gzip.gunzipped(
         fromFileHandle: fileHandle,
         offset: 600000,
@@ -113,7 +117,7 @@ final class GZipExtensionTests: XCTestCase {
         wBits: -Gzip.maxWindowBits,
         bufferSize: -512
       )
-    )
+    }
     try fileHandle.close()
   }
 

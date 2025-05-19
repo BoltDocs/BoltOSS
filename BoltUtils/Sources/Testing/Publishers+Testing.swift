@@ -17,6 +17,7 @@
 /// - SeeAlso: https://www.swiftbysundell.com/articles/unit-testing-combine-based-swift-code/
 
 import Combine
+import Testing
 import XCTest
 
 public extension XCTestCase {
@@ -68,4 +69,41 @@ public extension XCTestCase {
     return try unwrappedResult.get()
   }
 
+}
+
+public func awaitPublisherForSwiftTesting<T: Publisher>(
+  _ publisher: T,
+  sourceLocation: SourceLocation = #_sourceLocation
+) async throws -> T.Output {
+  var result: Result<T.Output, Error>?
+
+  await confirmation(
+    "Awaiting publisher",
+    sourceLocation: sourceLocation
+  ) { confirmation in
+    var cancellable: Cancellable?
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      cancellable = publisher.sink { completion in
+        switch completion {
+        case .failure(let error):
+          result = .failure(error)
+        case .finished:
+          break
+        }
+        continuation.resume()
+      } receiveValue: { value in
+        result = .success(value)
+      }
+    }
+    confirmation.confirm()
+    cancellable?.cancel()
+  }
+
+  let unwrappedResult = try #require(
+    result,
+    "Awaited publisher did not produce any output",
+    sourceLocation: sourceLocation
+  )
+
+  return try unwrappedResult.get()
 }

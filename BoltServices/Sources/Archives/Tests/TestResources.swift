@@ -15,7 +15,6 @@
 //
 
 import Foundation
-import XCTest
 
 import BoltUtils
 

@@ -126,6 +126,7 @@ indentation: 2
 attributes:
   always_on_same_line:
     - "@IBAction"
+    - "@Test"
     - "@objc"
 
 colon:

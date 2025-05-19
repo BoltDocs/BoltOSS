@@ -15,7 +15,7 @@
 //
 
 import Foundation
-import XCTest
+import Testing
 
 import GRDB
 
@@ -23,9 +23,9 @@ import BoltTestingUtils
 
 @testable import BoltArchives
 
-final class TarixUnarchiverTests: XCTestCase {
+struct TarixUnarchiverTests {
 
-  func testDataFromIndexedTar() async throws {
+  @Test func dataFromIndexedTar() async throws {
     let dbQueue = try DatabaseQueue(path: Bundle.module.path(forResource: "TestResources/Bash.tgz", ofType: "tarix")!)
     let indices = try await dbQueue.read { db -> [TarIndex] in
       let selectStatement = try db.cachedStatement(
@@ -41,16 +41,16 @@ final class TarixUnarchiverTests: XCTestCase {
         tarixDBPath: Bundle.module.path(forResource: "TestResources/Bash.tgz", ofType: "tarix")!,
         atPath: index.path
       )
-      XCTAssertNotNil(res)
+      try #require(res != nil)
       let (path, data) = res!
-      XCTAssertEqual(path, index.path)
+      try #require(path == index.path)
 
       let fileData = try Data(contentsOf: Bundle.module.resourceURL!.appendingPathComponent("TestResources").appendingPathComponent(path))
-      XCTAssertEqual(data, fileData)
+      try #require(data == fileData)
     }
   }
 
-  func testExtractListedFiles() async throws{
+  @Test func extractListedFiles() async throws{
     let destPath = NSTemporaryDirectory().appendingPathComponent(UUID().uuidString)
     let publisher = TarixUnarchiver.extractListedFiles(
       forTarix: Bundle.module.path(forResource: "TestResources/Bash.tgz", ofType: "tarix")!,
@@ -58,16 +58,16 @@ final class TarixUnarchiverTests: XCTestCase {
       toPath: destPath
     )
 
-    let result = try await awaitPublisher(publisher)
+    let result = try await awaitPublisherForSwiftTesting(publisher)
 
     guard case let .completed(path) = result else {
-      XCTFail("not returning success")
+      Issue.record("not returning success")
       return
     }
 
-    XCTAssertEqual(path, destPath)
+    #expect(path == destPath)
 
-    XCTAssert(FileManager.default.contentsEqual(atPath: path.appendingPathComponent("Bash.docset"), andPath: Bundle.module.path(forResource: "TestResources/Bash_with_tarix", ofType: "docset")!))
+    #expect(FileManager.default.contentsEqual(atPath: path.appendingPathComponent("Bash.docset"), andPath: Bundle.module.path(forResource: "TestResources/Bash_with_tarix", ofType: "docset")!))
   }
 
 }
