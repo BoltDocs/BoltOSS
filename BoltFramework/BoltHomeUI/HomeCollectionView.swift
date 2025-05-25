@@ -126,11 +126,11 @@ final class HomeCollectionView: UICollectionView {
         let getInfoButton = UIAction(
           title: BoltLocalizations.getInfo,
           image: UIImage(systemName: "info.circle")
-        ) { _ in
+        ) { [weak self] _ in
           guard let self = self else {
             return
           }
-          self.onGetInfo(queryResult: self.docset(forIndexPath: indexPath))
+          onGetInfo(queryResult: docset(forIndexPath: indexPath))
         }
         let deleteButton = UIAction(
           title: UIKitLocalizations.delete,
@@ -140,7 +140,7 @@ final class HomeCollectionView: UICollectionView {
           guard let self = self else {
             return
           }
-          onDeleteItem(queryResult: self.docset(forIndexPath: indexPath))
+          onDeleteItem(queryResult: docset(forIndexPath: indexPath))
         }
         return UIMenu(children: [getInfoButton, deleteButton])
       }
@@ -169,18 +169,18 @@ final class HomeCollectionView: UICollectionView {
           guard let self = self else {
             return
           }
-          let handled = self.onGetInfo(queryResult: self.docset(forIndexPath: indexPath))
+          let handled = onGetInfo(queryResult: docset(forIndexPath: indexPath))
           completion(handled)
         }
       let deleteAction =
         UIContextualAction(
           style: .destructive,
           title: UIKitLocalizations.delete
-        ) { _, _, completion in
+        ) { [weak self] _, _, completion in
           guard let self = self else {
             return
           }
-          self.onDeleteItem(queryResult: self.docset(forIndexPath: indexPath), completion)
+          onDeleteItem(queryResult: docset(forIndexPath: indexPath), completion)
         }
 
       return UISwipeActionsConfiguration(actions: [deleteAction, getInfoAction])
