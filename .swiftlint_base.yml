@@ -16,6 +16,7 @@ disabled_rules:
   - orphaned_doc_comment
   - redundant_discardable_let
   - todo
+  - type_body_length
   - type_name
 
 opt_in_rules:

@@ -77,13 +77,22 @@ final class HomeCollectionView: UICollectionView {
           $0.image = UIImage(systemName: "text.book.closed")
         }
       }
+
+      var accessories: [UICellAccessory] = [
+        .multiselect(displayed: .whenEditing),
+      ]
       if isForCollapsedSidebar {
-        cell.accessories = [.disclosureIndicator()]
+        accessories.append(.disclosureIndicator(displayed: .whenNotEditing))
       }
+      cell.accessories = accessories
     }
 
     super.init(frame: .zero, collectionViewLayout: UICollectionViewLayout())
-    self.collectionViewLayout = createLayout()
+
+    collectionViewLayout = createLayout()
+
+    allowsSelectionDuringEditing = true
+    allowsMultipleSelectionDuringEditing = true
   }
 
   @available(*, unavailable)
@@ -137,24 +146,34 @@ final class HomeCollectionView: UICollectionView {
           image: UIImage(systemName: "trash"),
           attributes: .destructive
         ) { [weak self] _ in
-          guard let self = self else {
+          guard let self = self, let queryResult = docset(forIndexPath: indexPath) else {
             return
           }
-          onDeleteItem(queryResult: docset(forIndexPath: indexPath))
+          onDeleteItems([queryResult])
         }
         return UIMenu(children: [getInfoButton, deleteButton])
       }
     )
   }
 
-  private func docset(forIndexPath indexPath: IndexPath) -> LibraryInstallationQueryResult? {
-    if
-      let item = (self.dataSource as? UICollectionViewDiffableDataSource<String, DocsetsListModel>)?.itemIdentifier(for: indexPath),
-      case let .docset(queryResult) = item
-    {
-      return queryResult
+  func docset(forIndexPath indexPath: IndexPath) -> LibraryInstallationQueryResult? {
+    //swiftlint:disable:next redundant_nil_coalescing
+    return docsets(forIndexPaths: [indexPath]).first ?? nil
+  }
+
+  func docsets(forIndexPaths indexPaths: [IndexPath]) -> [LibraryInstallationQueryResult?] {
+    guard let dataSource = (dataSource as? UICollectionViewDiffableDataSource<String, DocsetsListModel>) else {
+      return []
     }
-    return nil
+    return indexPaths.map {
+      if
+        let item = dataSource.itemIdentifier(for: $0),
+        case let .docset(queryResult) = item
+      {
+        return queryResult
+      }
+      return nil
+    }
   }
 
   private func createTrailingSwipeActionsConfigurationProvider()
@@ -177,10 +196,11 @@ final class HomeCollectionView: UICollectionView {
           style: .destructive,
           title: UIKitLocalizations.delete
         ) { [weak self] _, _, completion in
-          guard let self = self else {
+          guard let self = self, let queryResult = docset(forIndexPath: indexPath) else {
             return
           }
-          onDeleteItem(queryResult: docset(forIndexPath: indexPath), completion)
+          onDeleteItems([queryResult])
+          completion(true)
         }
 
       return UISwipeActionsConfiguration(actions: [deleteAction, getInfoAction])
@@ -202,22 +222,30 @@ final class HomeCollectionView: UICollectionView {
     }
   }
 
-  private func onDeleteItem(
-    queryResult: LibraryInstallationQueryResult?,
-    _ completion: ((Bool) -> Void)? = nil
-  ) {
-    guard let queryResult = queryResult else {
-      completion?(false)
+  func onDeleteItems(_ queryResults: [LibraryInstallationQueryResult]) {
+    guard !queryResults.isEmpty else {
       return
     }
 
-    let installationToUninstall = queryResult.installation
-    let uninstallName = queryResult.displayName
+    let performUninstallDocsets = { [libraryDocsetsManager] in
+      for queryResult in queryResults {
+        try? libraryDocsetsManager.uninstallDocset(forInstallation: queryResult.installation)
+      }
+    }
 
-    let alertMessage = !uninstallName.isEmpty ?
-      "Home-List-DeleteAlert-deleteDocsetMessageFormat".boltLocalized(uninstallName) :
-      "Home-List-DeleteAlert-deleteDocsetMessage".boltLocalized
+    let alertMessage: String
 
+    if queryResults.count == 1 {
+      let queryResult = queryResults.first!
+
+      let uninstallName = queryResult.displayName
+
+      alertMessage = !uninstallName.isEmpty ?
+        "Home-List-DeleteAlert-deleteDocsetMessageFormat".boltLocalized(uninstallName) :
+        "Home-List-DeleteAlert-deleteDocsetMessage".boltLocalized
+    } else {
+      alertMessage = "Home-List-DeleteAlert-deleteDocsetMessageMultiple".boltLocalized(queryResults.count)
+    }
     GlobalUI.presentAlertController(
       UIAlertController.alert(
         withTitle: "Home-List-DeleteAlert-deleteDocsetTitle".boltLocalized,
@@ -225,14 +253,9 @@ final class HomeCollectionView: UICollectionView {
         confirmAction: (
           BoltLocalizations.confirm,
           UIAlertAction.Style.destructive,
-          { [libraryDocsetsManager] in
-            try? libraryDocsetsManager.uninstallDocset(forInstallation: installationToUninstall)
-            completion?(true)
-          }
+          { performUninstallDocsets() }
         ),
-        cancelAction: (UIKitLocalizations.cancel, {
-          completion?(false)
-        })
+        cancelAction: (UIKitLocalizations.cancel, nil)
       )
     )
   }

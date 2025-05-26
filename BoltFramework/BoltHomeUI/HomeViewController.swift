@@ -51,6 +51,25 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
   private let sceneState: SceneState
   private let isForCollapsedSidebar: Bool
 
+  private let isEditingRelay = BehaviorRelay<Bool>(value: false)
+  private lazy var isEditingObservable = {
+    return isEditingRelay.asObservable().distinctUntilChanged()
+  }()
+
+  private lazy var toolbarTrashItem: UIBarButtonItem = {
+    return update(UIBarButtonItem()) {
+      $0.primaryAction = UIAction(
+        image: UIImage(systemName: "trash")
+      ) { [weak self] _ in
+        guard let self = self, let selectedIndexPaths = collectionView.indexPathsForSelectedItems else {
+          return
+        }
+        let queryResults = collectionView.docsets(forIndexPaths: selectedIndexPaths).compactMap { $0 }
+        collectionView.onDeleteItems(queryResults)
+      }
+    }
+  }()
+
   public init(sceneState: SceneState, isForCollapsedSidebar: Bool) {
     self.sceneState = sceneState
     self.isForCollapsedSidebar = isForCollapsedSidebar
@@ -70,31 +89,102 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
   private func setupToolbar() {
     navigationController?.setToolbarHidden(false, animated: true)
-    toolbarItems = [
-      update(UIBarButtonItem()) {
-        $0.primaryAction = UIAction(
-          image: UIImage(systemName: "gear")
-        ) { [weak self] _ in
-          self?.sceneState.dispatch(action: .onHomeViewTapMenuItemPreferences)
+
+    let rightBarButtonItems = isEditingObservable.map { isEditing -> [UIBarButtonItem] in
+      isEditing ? [
+        update(
+          UIBarButtonItem(
+            systemItem: .done,
+            primaryAction: UIAction { [weak self] _ in
+              self?.isEditingRelay.accept(false)
+            }
+          )
+        ) {
+          $0.tintColor = UIColor.tintColor
+        },
+      ] : [
+        update(
+          UIBarButtonItem(
+            title: nil,
+            image: UIImage(systemName: "ellipsis.circle"),
+            primaryAction: nil,
+            menu: UIMenu(
+              title: "",
+              children: [
+                UIAction(
+                  title: "Select",
+                  image: UIImage(systemName: "checkmark.circle")
+                ) { [weak self] _ in
+                  self?.isEditingRelay.accept(true)
+                },
+              ]
+            )
+          )
+        ) {
+          $0.tintColor = UIColor.tintColor
+        },
+      ]
+    }
+
+    rightBarButtonItems
+      .bind(to: navigationItem.rx.rightBarButtonItems)
+      .disposed(by: disposeBag)
+
+    Observable.merge(
+      isEditingRelay.mapToVoid(),
+      collectionView.rx.itemSelected.mapToVoid(),
+      collectionView.rx.itemDeselected.mapToVoid(),
+    )
+    .map { [collectionView] _ -> Bool in
+      guard let selectedItems = collectionView.indexPathsForSelectedItems else {
+        return false
+      }
+      return !selectedItems.isEmpty
+    }
+    .bind(to: toolbarTrashItem.rx.isEnabled)
+    .disposed(by: disposeBag)
+
+    let toolbarItems = isEditingRelay.map { [toolbarTrashItem] isEditing -> [UIBarButtonItem] in
+      var items = isEditing ? [
+        toolbarTrashItem,
+        .flexibleSpace(),
+      ] : [
+        update(UIBarButtonItem()) {
+          $0.primaryAction = UIAction(
+            image: UIImage(systemName: "gear")
+          ) { [weak self] _ in
+            self?.sceneState.dispatch(action: .onHomeViewTapMenuItemPreferences)
+          }
+        },
+        .flexibleSpace(),
+        update(UIBarButtonItem()) {
+          $0.primaryAction = UIAction(
+            title: "Downloads"
+          ) { [weak self] _ in
+            self?.sceneState.dispatch(action: .onHomeViewTapMenuItemDownloads)
+          }
+        },
+        .flexibleSpace(),
+      ]
+      items.append(
+        update(UIBarButtonItem()) {
+          $0.primaryAction = UIAction(
+            image: UIImage(systemName: "plus")
+          ) { [weak self] _ in
+            guard let self = self else {
+              return
+            }
+            isEditingRelay.accept(false)
+            sceneState.dispatch(action: .onHomeViewTapMenuItemLibrary)
+          }
         }
-      },
-      .flexibleSpace(),
-      update(UIBarButtonItem()) {
-        $0.primaryAction = UIAction(
-          title: "Downloads"
-        ) { [weak self] _ in
-          self?.sceneState.dispatch(action: .onHomeViewTapMenuItemDownloads)
-        }
-      },
-      .flexibleSpace(),
-      update(UIBarButtonItem()) {
-        $0.primaryAction = UIAction(
-          image: UIImage(systemName: "plus")
-        ) { [weak self] _ in
-          self?.sceneState.dispatch(action: .onHomeViewTapMenuItemLibrary)
-        }
-      },
-    ]
+      )
+      return items
+    }
+
+    toolbarItems
+      .bind(to: rx.toolbarItems)
+      .disposed(by: disposeBag)
   }
 
   private func setupCollectionView() {
@@ -107,6 +197,9 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
         make.bottom.equalToSuperview()
       }
     }
+    isEditingRelay
+      .bind(to: collectionView.rx.isEditing)
+      .disposed(by: disposeBag)
   }
 
   private func setupSearchController() {
@@ -215,6 +308,9 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
     collectionView.rx.itemSelected
       .subscribe(with: self) { owner, indexPath in
+        guard !owner.isEditingRelay.value else {
+          return
+        }
         owner.collectionView.deselectItem(at: indexPath, animated: false)
         guard let dataSource = owner.dataSource, let model = dataSource.itemIdentifier(for: indexPath) else {
           return
