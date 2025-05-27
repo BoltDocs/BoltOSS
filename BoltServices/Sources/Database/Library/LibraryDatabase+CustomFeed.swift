@@ -20,29 +20,21 @@ import GRDB
 
 import BoltTypes
 
-extension LibraryDatabase {
+public extension LibraryDatabase {
 
-  func createCustomFeedsTable(_ db: Database) throws {
-    try db.create(table: "custom-feeds", ifNotExists: true) { table in
-      table.column("uuid", .text).primaryKey()
-      table.column("name", .text).notNull()
-      table.column("url", .text).notNull()
-    }
-  }
-
-  public func insertCustomFeed(_ feed: CustomFeedEntity) throws {
+  func insertCustomFeed(_ feed: CustomFeedEntity) throws {
     try dbPool.write { db in
       try feed.insert(db)
     }
   }
 
-  public func updateCustomFeed(_ feed: CustomFeedEntity) throws {
+  func updateCustomFeed(_ feed: CustomFeedEntity) throws {
     try dbPool.write { db in
       try feed.update(db)
     }
   }
 
-  public func deleteCustomFeed(_ feed: CustomFeedEntity) throws {
+  func deleteCustomFeed(_ feed: CustomFeedEntity) throws {
     let _ = try dbPool.write { db in
       try feed.delete(db)
     }

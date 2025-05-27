@@ -18,35 +18,15 @@ import Foundation
 
 import GRDB
 
-extension LibraryDatabase {
+public extension LibraryDatabase {
 
-  func createDownloadTaskTable(_ db: Database) throws {
-    try db.create(table: "download-tasks", ifNotExists: true) { table in
-      table.column("id", .text).notNull()
-      table.column("feedName", .text).notNull()
-      table.column("displayName", .text).notNull()
-      table.column("version", .text).notNull()
-      table.column("installedAsLatestVersion", .boolean).notNull()
-      table.column("repository", .text).notNull()
-      table.column("backingTask", .text).notNull()
-      table.primaryKey(["id"])
-    }
-    try db.create(
-      index: "byIdentifier",
-      on: "download-tasks",
-      columns: ["feedName", "version", "installedAsLatestVersion", "repository"],
-      unique: true,
-      ifNotExists: true
-    )
-  }
-
-  public func fetchAllDownloadTasks() throws -> [DownloadTaskEntity] {
+  func fetchAllDownloadTasks() throws -> [DownloadTaskEntity] {
     return try dbPool.read { db in
       return try DownloadTaskEntity.fetchAll(db)
     }
   }
 
-  public func insertDownloadTask(_ task: DownloadTaskEntity) throws {
+  func insertDownloadTask(_ task: DownloadTaskEntity) throws {
     try dbPool.write { db in
       if var existingTask = try? DownloadTaskEntity.fetchOne(db, key: [
         DownloadTaskEntity.CodingKeys.identifier.rawValue: task.identifier,
@@ -59,7 +39,7 @@ extension LibraryDatabase {
     }
   }
 
-  public func updateDownloadMarkComplete(forBackingTaskID id: String) throws {
+  func updateDownloadMarkComplete(forBackingTaskID id: String) throws {
     try dbPool.write { db in
       let existingTasks = try DownloadTaskEntity
         .filter(Column(DownloadTaskEntity.CodingKeys.status.rawValue) == id)
@@ -74,7 +54,7 @@ extension LibraryDatabase {
     }
   }
 
-  public func deleteDownloadTask(forIdentifier id: String) throws {
+  func deleteDownloadTask(forIdentifier id: String) throws {
     let _ = try dbPool.write { db in
       try DownloadTaskEntity
         .filter(key: id)
@@ -82,7 +62,7 @@ extension LibraryDatabase {
     }
   }
 
-  public func deleteDownloadTask(forBackingTaskID id: String) throws {
+  func deleteDownloadTask(forBackingTaskID id: String) throws {
     let _ = try dbPool.write { db in
       try DownloadTaskEntity
         .filter(Column(DownloadTaskEntity.CodingKeys.status.rawValue) == id)
@@ -90,7 +70,7 @@ extension LibraryDatabase {
     }
   }
 
-  public func deleteIncompleteDownloadTask(keepBackingTaskIDs ids: [String]) throws {
+  func deleteIncompleteDownloadTask(keepBackingTaskIDs ids: [String]) throws {
     let _ = try dbPool.write { db in
       let filter = [
         !ids.contains(Column(DownloadTaskEntity.CodingKeys.status.rawValue)),
@@ -104,7 +84,7 @@ extension LibraryDatabase {
     }
   }
 
-  public func deleteAllOngoingTasks() throws {
+  func deleteAllOngoingTasks() throws {
     let _ = try dbPool.write { db in
       try DownloadTaskEntity
         .filter(Column(DownloadTaskEntity.CodingKeys.status.rawValue) != "-1")

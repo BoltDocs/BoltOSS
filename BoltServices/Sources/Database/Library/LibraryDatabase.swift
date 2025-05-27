@@ -29,6 +29,8 @@ public final class LibraryDatabase: LoggerProvider {
 
   let dbPool: DatabasePool
 
+  private var migrator = createMigrator()
+
   private init() {
     do {
       var configuration = Configuration()
@@ -47,17 +49,9 @@ public final class LibraryDatabase: LoggerProvider {
         path: path,
         configuration: configuration
       )
-      try createTableIfNeeded()
+      try migrator.migrate(dbPool)
     } catch {
       fatalError("Failed to init database with error: \(error.localizedDescription)")
-    }
-  }
-
-  private func createTableIfNeeded() throws {
-    try dbPool.write { db in
-      try createInstallationTable(db)
-      try createCustomFeedsTable(db)
-      try createDownloadTaskTable(db)
     }
   }
 

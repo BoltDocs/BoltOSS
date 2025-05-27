@@ -20,25 +20,15 @@ import GRDB
 
 import BoltTypes
 
-extension LibraryDatabase {
+public extension LibraryDatabase {
 
-  func createInstallationTable(_ db: Database) throws {
-    try db.create(table: "docset-installations", ifNotExists: true) { table in
-      table.column("uuid", .text).primaryKey()
-      table.column("name", .text).notNull()
-      table.column("version", .text).notNull()
-      table.column("installedAsLatestVersion", .boolean).notNull()
-      table.column("source", .text).notNull()
-    }
-  }
-
-  public func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws {
+  func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws {
     try dbPool.write { db in
       try docsetInstallation.insert(db)
     }
   }
 
-  public func deleteDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws {
+  func deleteDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws {
     let  _ = try dbPool.write { db in
       try docsetInstallation.delete(db)
     }
