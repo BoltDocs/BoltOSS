@@ -133,7 +133,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     Observable.merge(
       isEditingRelay.mapToVoid(),
       collectionView.rx.itemSelected.mapToVoid(),
-      collectionView.rx.itemDeselected.mapToVoid(),
+      collectionView.rx.itemDeselected.mapToVoid()
     )
     .map { [collectionView] _ -> Bool in
       guard let selectedItems = collectionView.indexPathsForSelectedItems else {
