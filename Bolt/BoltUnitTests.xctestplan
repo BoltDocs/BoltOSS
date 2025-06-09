@@ -50,6 +50,13 @@
     {
       "target" : {
         "containerPath" : "container:BoltServices",
+        "identifier" : "BoltDatabaseTests",
+        "name" : "BoltDatabaseTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:BoltServices",
         "identifier" : "BoltDocsetsTests",
         "name" : "BoltDocsetsTests"
       }

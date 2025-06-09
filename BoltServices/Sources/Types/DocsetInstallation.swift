@@ -23,28 +23,38 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
   public let version: String
   public let installedAsLatestVersion: Bool
   public let repository: RepositoryIdentifier
+  public var orderIndex: Int
 
   public let uuidString: String
   public let identifier: String
 
-  enum CodingKeys: String, CodingKey {
+  public enum CodingKeys: String, CodingKey {
     case uuid
     case name
     case version
     case installedAsLatestVersion
     case repository = "source"
+    case orderIndex
   }
 
   public static var databaseTableName: String {
     return "docset-installations"
   }
 
-  public init(uuid: UUID = UUID(), name: String, version: String, installedAsLatestVersion: Bool, repository: RepositoryIdentifier) {
+  public init(
+    uuid: UUID = UUID(),
+    name: String,
+    version: String,
+    installedAsLatestVersion: Bool,
+    repository: RepositoryIdentifier,
+    orderIndex: Int = 0
+  ) {
     self.uuid = uuid
     self.name = name
     self.version = version
     self.installedAsLatestVersion = installedAsLatestVersion
     self.repository = repository
+    self.orderIndex = orderIndex
 
     uuidString = uuid.uuidString
     identifier = InstallationIdentifier.fromName(
@@ -62,6 +72,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
     version = try container.decode(String.self, forKey: .version)
     installedAsLatestVersion = try container.decode(Bool.self, forKey: .installedAsLatestVersion)
     repository = try container.decode(RepositoryIdentifier.self, forKey: .repository)
+    orderIndex = try container.decode(Int.self, forKey: .orderIndex)
 
     uuidString = uuid.uuidString
     identifier = InstallationIdentifier.fromName(

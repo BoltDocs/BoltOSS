@@ -65,6 +65,22 @@ extension LibraryDatabase {
       try createDownloadTaskTable()
     }
 
+    migrator.registerMigration("Add Order Index for Installations Table") { db in
+      try db.alter(table: "docset-installations") { t in
+        t.add(column: "orderIndex", .integer).notNull().defaults(to: 0)
+      }
+      try db.execute(
+        sql:
+          """
+          WITH ranked AS (
+            SELECT rowid AS id, ((ROW_NUMBER() OVER (ORDER BY rowid)) - 1) AS rank FROM "docset-installations"
+          )
+          UPDATE "docset-installations"
+          SET orderIndex = (SELECT rank FROM ranked WHERE ranked.id = rowid)
+          """
+      )
+    }
+
     return migrator
   }
 

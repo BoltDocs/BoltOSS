@@ -70,7 +70,7 @@ let moduleTargets: [Target] = [
   .target(
     name: "BoltDatabase",
     dependencies: [Dependencies.GRDB, "BoltCombineExtensions", "BoltTypes"],
-    path: "./Sources/Database",
+    path: "./Sources/Database/Sources",
     swiftSettings: [
       .swiftLanguageMode(.v5)
     ]
@@ -158,6 +158,11 @@ let testingUtils: [Target] = [
 
 let testTargets: [Target] = [
   .testTarget(name: "BoltArchivesTests", dependencies: ["BoltTestingUtils", "BoltArchives"], path: "./Sources/Archives/Tests", resources: [.copy("./TestResources")]),
+  .testTarget(
+    name: "BoltDatabaseTests",
+    dependencies: [Dependencies.GRDB, "BoltDatabase"],
+    path: "./Sources/Database/Tests"
+  ),
   .testTarget(name: "BoltNetworkingTests", dependencies: ["BoltNetworking"], path: "./Sources/Networking/Tests"),
   .testTarget(
     name: "BoltRepositoryTests",
