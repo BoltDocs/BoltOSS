@@ -84,10 +84,14 @@ struct NetworkingImpl: Networking {
       throw NetworkingError.locationResolutionError(resourceLocation: location)
     }
 
-    let response = await session.request(downloadURL, method: .head)
-      .validate()
-      .serializingData()
-      .response
+    let response = await session.request(
+      downloadURL,
+      method: .head,
+      headers: HTTPHeaders([HTTPHeader.acceptEncoding("identity")])
+    )
+    .validate()
+    .serializingData()
+    .response
 
     if let error = response.error {
       throw NetworkingError.externalError(error)

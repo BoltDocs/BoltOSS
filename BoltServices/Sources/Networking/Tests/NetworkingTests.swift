@@ -56,16 +56,14 @@ final class NetworkingTests: XCTestCase {
     let byteSize = try await networking.getFileSize(
       atLocation: ResourceLocations.URL(URL(string: "https://kapeli.com/feeds/zzz/versions/NodeJS/14.14.0/NodeJS.tgz")!)
     )
-    XCTAssertNotNil(byteSize)
-    XCTAssert(byteSize! > 0)
+    XCTAssert(try XCTUnwrap(byteSize) > 0)
   }
 
   func testGetFileSizeAtURLLocation() async throws {
     let byteSize = try await networking.getFileSize(
       atLocation: ResourceLocations.URL(URL(string: "https://alamofire.github.io/Alamofire/docsets/Alamofire.tgz")!)
     )
-    XCTAssertNotNil(byteSize)
-    XCTAssert(byteSize! > 0)
+    XCTAssert(try XCTUnwrap(byteSize) > 0)
   }
 
 }
