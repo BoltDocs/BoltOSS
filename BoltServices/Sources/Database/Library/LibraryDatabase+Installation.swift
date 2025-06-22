@@ -28,9 +28,9 @@ public extension LibraryDatabase {
     }
   }
 
-  func deleteDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws {
+  func deleteDocsetInstallation(withUUID uuid: UUID) throws {
     let  _ = try dbPool.write { db in
-      try docsetInstallation.delete(db)
+      try DocsetInstallation.deleteOne(db, key: uuid)
     }
   }
 

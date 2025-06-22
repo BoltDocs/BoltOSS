@@ -331,7 +331,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
                   "Confirm",
                   UIAlertAction.Style.destructive,
                   { [libraryDocsetsManager = owner.libraryDocsetsManager] in
-                    try? libraryDocsetsManager.uninstallDocset(forInstallation: installation)
+                    try? libraryDocsetsManager.uninstallDocset(forRecord: installation)
                   }
                 ),
                 cancelAction: (UIKitLocalizations.cancel, nil)

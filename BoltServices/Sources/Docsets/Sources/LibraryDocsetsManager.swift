@@ -28,10 +28,10 @@ public enum LibraryInstallationQueryResult: Hashable {
   case docset(_: Docset)
   case broken(_: DocsetInstallation)
 
-  public var installation: DocsetInstallation {
+  public var record: LibraryRecord {
     switch self {
     case let .docset(docset):
-      return docset.installation
+      return docset
     case let .broken(installation):
       return installation
     }
@@ -68,7 +68,7 @@ public protocol LibraryDocsetsManager {
     usingTarix: Bool
   ) -> AnyPublisher<InstallationProgress, Error>
 
-  func uninstallDocset(forInstallation installation: DocsetInstallation) throws
+  func uninstallDocset(forRecord record: LibraryRecord) throws
 
 }
 
@@ -138,10 +138,10 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
 
   // MARK: - Uninstall
 
-  func uninstallDocset(forInstallation installation: DocsetInstallation) throws {
-    try LibraryDatabase.shared.deleteDocsetInstallation(installation)
+  func uninstallDocset(forRecord record: LibraryRecord) throws {
+    try LibraryDatabase.shared.deleteDocsetInstallation(withUUID: record.uuid)
     try FileManager.default.removeItem(
-      atPath: LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(installation.uuidString)
+      atPath: LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(record.uuidString)
     )
   }
 

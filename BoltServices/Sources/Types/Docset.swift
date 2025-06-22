@@ -139,9 +139,16 @@ public struct DocsetInfo: Sendable {
 
 }
 
-public struct Docset: Sendable {
+public struct Docset: LibraryRecord, Sendable {
 
-  public let installation: DocsetInstallation
+  public var uuid: UUID
+  public var uuidString: String
+  public var name: String
+  public var version: String
+  public var installedAsLatestVersion: Bool
+  public var repository: RepositoryIdentifier
+  public var identifier: String
+
   public let path: String
   public let icon: EntryIcon
 
@@ -166,7 +173,14 @@ public struct Docset: Sendable {
     docsetInfo: DocsetInfo,
     icon: EntryIcon
   ) {
-    self.installation = installation
+    self.uuid = installation.uuid
+    self.uuidString = installation.uuidString
+    self.name = installation.name
+    self.version = installation.version
+    self.installedAsLatestVersion = installation.installedAsLatestVersion
+    self.repository = installation.repository
+    self.identifier = installation.identifier
+
     self.path = path
     self.docsetInfo = docsetInfo
     self.icon = icon
@@ -178,38 +192,6 @@ extension Docset: CustomStringConvertible {
 
   public var description: String {
     return "Docset(identifier: \(identifier), path: \(path))"
-  }
-
-}
-
-extension Docset: LibraryRecord {
-
-  public var uuid: UUID {
-    return installation.uuid
-  }
-
-  public var uuidString: String {
-    return installation.uuidString
-  }
-
-  public var name: String {
-    return installation.name
-  }
-
-  public var version: String {
-    return installation.version
-  }
-
-  public var installedAsLatestVersion: Bool {
-    return installation.installedAsLatestVersion
-  }
-
-  public var repository: RepositoryIdentifier {
-    return installation.repository
-  }
-
-  public var identifier: String {
-    return installation.identifier
   }
 
 }
@@ -243,11 +225,11 @@ extension Docset: EntryIconProvider {
 extension Docset: Hashable {
 
   public static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.installation.uuid == rhs.installation.uuid
+    return lhs.uuid == rhs.uuid
   }
 
   public func hash(into hasher: inout Hasher) {
-    hasher.combine(installation.uuid)
+    hasher.combine(uuid)
   }
 
 }

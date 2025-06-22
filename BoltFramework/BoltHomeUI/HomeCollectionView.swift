@@ -229,7 +229,7 @@ final class HomeCollectionView: UICollectionView {
 
     let performUninstallDocsets = { [libraryDocsetsManager] in
       for queryResult in queryResults {
-        try? libraryDocsetsManager.uninstallDocset(forInstallation: queryResult.installation)
+        try? libraryDocsetsManager.uninstallDocset(forRecord: queryResult.record)
       }
     }
 

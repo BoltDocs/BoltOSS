@@ -16,7 +16,7 @@
 
 import Foundation
 
-public final class DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, CustomStringConvertible {
+public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, CustomStringConvertible {
 
   public let uuid: UUID
   public let name: String
@@ -72,7 +72,7 @@ public final class DocsetInstallation: LibraryRecord, Sendable, Codable, Hashabl
     )
   }
 
-  public static func == (lhs: DocsetInstallation, rhs: DocsetInstallation) -> Bool {
+  public static func == (lhs: Self, rhs: Self) -> Bool {
     return lhs.uuid == rhs.uuid
   }
 
