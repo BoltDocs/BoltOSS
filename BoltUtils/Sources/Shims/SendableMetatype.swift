@@ -14,34 +14,10 @@
 // limitations under the License.
 //
 
-import RxSwift
-
 #if swift(>=6.2)
-
-public extension ObservableType where Self: SendableMetatype, Element: Sendable {
-
-  func asyncMap<Result>(_ transform: @Sendable @escaping (Element) async throws -> Result) -> Observable<Result> {
-    flatMap { element in
-      Single.create {
-        try await transform(element)
-      }
-    }
-  }
-
-}
 
 #else
 
-public extension ObservableType where Element: Sendable {
-
-  func asyncMap<Result>(_ transform: @Sendable @escaping (Element) async throws -> Result) -> Observable<Result> {
-    flatMap { element in
-      Single.create {
-        try await transform(element)
-      }
-    }
-  }
-
-}
+public protocol SendableMetatype { }
 
 #endif

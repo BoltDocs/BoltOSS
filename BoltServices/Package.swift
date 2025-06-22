@@ -77,7 +77,7 @@ let moduleTargets: [Target] = [
   ),
   .target(
     name: "BoltDocsets",
-    dependencies: [Dependencies.GRDB, "BoltArchives", "BoltDatabase", "BoltRepository", "BoltURLSchemes", "BoltUtils"],
+    dependencies: [Dependencies.GRDB, Dependencies.Overture, "BoltArchives", "BoltDatabase", "BoltRepository", "BoltURLSchemes", "BoltUtils"],
     path: "./Sources/Docsets/Sources",
     swiftSettings: [
       .swiftLanguageMode(.v5)
@@ -93,7 +93,7 @@ let moduleTargets: [Target] = [
   ),
   .target(
     name: "BoltTypes",
-    dependencies: ["BoltUtils", "Factory"],
+    dependencies: ["BoltUtils", "Factory", "SwiftyJSON"],
     path: "./Sources/Types",
     resources: [.process("Resources")],
     swiftSettings: [

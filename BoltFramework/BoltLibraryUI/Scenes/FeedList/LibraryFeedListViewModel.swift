@@ -22,7 +22,7 @@ import BoltServices
 import BoltUIFoundation
 import BoltUtils
 
-protocol LibraryFeedListViewModel: ObservableObject {
+protocol LibraryFeedListViewModel: ObservableObject, SendableMetatype {
 
   init()
 
