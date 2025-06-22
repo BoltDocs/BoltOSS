@@ -79,6 +79,7 @@ final class HomeCollectionView: UICollectionView {
       }
 
       var accessories: [UICellAccessory] = [
+        .reorder(displayed: .whenEditing),
         .multiselect(displayed: .whenEditing),
       ]
       if isForCollapsedSidebar {

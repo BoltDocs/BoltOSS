@@ -49,8 +49,7 @@ struct MigrationTests {
     let installations = try await dbQueue.read { db in
       let request = DocsetInstallation
         .all()
-        .order([Column(DocsetInstallation.CodingKeys.orderIndex)])
-        .order([Column.rowID])
+        .order([Column(DocsetInstallation.CodingKeys.orderIndex), Column.rowID])
 
       return try DocsetInstallation
         .fetchAll(db, request)

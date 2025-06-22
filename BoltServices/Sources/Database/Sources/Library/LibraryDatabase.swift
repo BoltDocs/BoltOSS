@@ -58,7 +58,12 @@ public final class LibraryDatabase: LoggerProvider {
   // TODO: Check if we really need `.immediate` here
 
   public lazy var allDocsetInstallations: AnyPublisher<[DocsetInstallation], Never> = ValueObservation
-    .trackingConstantRegion(DocsetInstallation.fetchAll)
+    .trackingConstantRegion { db in
+      let request = DocsetInstallation
+        .all()
+        .order([Column(DocsetInstallation.CodingKeys.orderIndex), Column.rowID])
+      return try request.fetchAll(db)
+    }
     .publisher(in: dbPool, scheduling: .immediate)
     // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in

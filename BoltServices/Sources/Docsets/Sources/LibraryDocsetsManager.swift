@@ -70,6 +70,8 @@ public protocol LibraryDocsetsManager {
 
   func uninstallDocset(forRecord record: LibraryRecord) throws
 
+  func updateInstalledDocsetsOrder(_ records: [LibraryRecord]) throws
+
 }
 
 final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
@@ -143,6 +145,10 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
     try FileManager.default.removeItem(
       atPath: LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(record.uuidString)
     )
+  }
+
+  func updateInstalledDocsetsOrder(_ records: [LibraryRecord]) throws {
+    try LibraryDatabase.shared.updateDocsetInstallationOrder(records)
   }
 
 }

@@ -248,12 +248,48 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       }
     }
 
+    dataSource.reorderingHandlers.canReorderItem = { _ in return true }
+
+    dataSource.reorderingHandlers.didReorder = { [libraryDocsetsManager] transaction in
+      guard let docsetSectionTransaction = transaction
+        .sectionTransactions
+        .first(where: { $0.sectionIdentifier == SectionNames.docsets })
+      else {
+        return
+      }
+      let snapshot = docsetSectionTransaction.finalSnapshot
+      let allItems: [DocsetsListModel] = {
+        guard let rootItem = snapshot.rootItems.first else {
+          return []
+        }
+        return docsetSectionTransaction.finalSnapshot.items.filter {
+          snapshot.parent(of: $0) == rootItem
+        }
+      }()
+      let records = allItems
+        .compactMap { listModel -> LibraryRecord? in
+          switch listModel {
+          case let .docset(queryResult):
+            return queryResult.record
+          case .header:
+            reportIssue("docset reordering: unexpected listModel type")
+            return nil
+          }
+        }
+      do {
+        try libraryDocsetsManager.updateInstalledDocsetsOrder(records)
+      } catch {
+        Self.logger.error("docset reordering: updateInstalledDocsetsOrder failed with error: \(error)")
+      }
+    }
+
     var dataSourceSnapshot = NSDiffableDataSourceSnapshot<String, DocsetsListModel>()
     dataSourceSnapshot.appendSections([
       SectionNames.docsets,
       SectionNames.favorites,
       SectionNames.history,
     ])
+
     // TODO: build favorites and history section
     dataSource.apply(dataSourceSnapshot)
 

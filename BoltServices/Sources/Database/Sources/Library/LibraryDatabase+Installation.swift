@@ -25,12 +25,25 @@ public extension LibraryDatabase {
   func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws {
     try dbPool.write { db in
       try docsetInstallation.insert(db)
+      try DocsetInstallation
+        .filter(key: docsetInstallation.uuid)
+        .updateAll(db, [Column(DocsetInstallation.CodingKeys.orderIndex).set(to: Column.rowID)])
     }
   }
 
   func deleteDocsetInstallation(withUUID uuid: UUID) throws {
     let  _ = try dbPool.write { db in
       try DocsetInstallation.deleteOne(db, key: uuid)
+    }
+  }
+
+  func updateDocsetInstallationOrder(_ records: [LibraryRecord]) throws {
+    try dbPool.write { db in
+      for (idx, record) in records.enumerated() {
+        try DocsetInstallation
+          .filter(key: record.uuid)
+          .updateAll(db, [Column(DocsetInstallation.CodingKeys.orderIndex).set(to: idx)])
+      }
     }
   }
 
