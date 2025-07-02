@@ -129,8 +129,7 @@ let moduleTargets: [Target] = [
       "BoltTypes",
       "BoltURLSchemes",
     ],
-    path: "./Sources",
-    sources: ["Application", "BoltServicesModule.swift", "BoltServicesExports.swift"],
+    path: "./Sources/BoltServices",
     swiftSettings: [
       .swiftLanguageMode(.v5),
     ]
