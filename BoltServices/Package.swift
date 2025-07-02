@@ -93,12 +93,19 @@ let moduleTargets: [Target] = [
   ),
   .target(
     name: "BoltTypes",
-    dependencies: ["BoltUtils", "Factory", "SwiftyJSON"],
+    dependencies: ["BoltTypesAssets", "BoltUtils", "Factory", "SwiftyJSON"],
     path: "./Sources/Types",
-    resources: [.process("Resources")],
+    exclude: ["Assets", "Resources"],
     swiftSettings: [
       .swiftLanguageMode(.v5)
     ]
+  ),
+  .target(
+    name: "BoltTypesAssets",
+    path: "./Sources/Types",
+    sources: ["Assets"],
+    resources: [.process("Resources")],
+    publicHeadersPath: "./Assets/include"
   ),
   .target(
     name: "BoltSearch",

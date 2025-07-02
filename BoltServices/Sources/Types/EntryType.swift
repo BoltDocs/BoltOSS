@@ -18,6 +18,7 @@ import Foundation
 
 import SwiftyJSON
 
+import BoltTypesAssets
 import BoltUtils
 
 public struct EntryType: Equatable, LoggerProvider {
@@ -49,7 +50,7 @@ public struct EntryType: Equatable, LoggerProvider {
       sortingOrder: 0,
       aliases: [],
       imageName: "type-icons/Unknown",
-      colorResource: BoltColorResource(named: "type-colors/dark-black", in: Bundle.module)
+      colorResource: BoltColorResource(named: "type-colors/dark-black", in: BLTTypes.assetsBundle)
     )
   }()
 

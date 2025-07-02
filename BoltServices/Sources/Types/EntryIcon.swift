@@ -16,6 +16,7 @@
 
 import Foundation
 
+import BoltTypesAssets
 import BoltUtils
 
 public enum EntryIcon: Sendable, Hashable {
@@ -39,7 +40,7 @@ public enum EntryIcon: Sendable, Hashable {
       case let .docsetIcon(docsetIcon):
         iconName = "docset-icons/\(docsetIcon.rawValue)"
       }
-      return BoltImageResource(named: iconName, in: .module).platformImage
+      return BoltImageResource(named: iconName, in: BLTTypes.assetsBundle).platformImage
     case .data(let imageData):
       return PlatformImage(data: imageData)
     case .providerDefault:
