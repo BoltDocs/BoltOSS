@@ -14,24 +14,12 @@
 // limitations under the License.
 //
 
-#import "include/BLTTypes.h"
+#import <Foundation/Foundation.h>
 
-@implementation BLTTypes
+//! Project version number for BoltTypesAssets.
+FOUNDATION_EXPORT double BoltTypesAssetsVersionNumber;
 
-+ (NSBundle *)assetsBundle {
-#if SWIFT_PACKAGE
-  return SWIFTPM_MODULE_BUNDLE;
-#else
-  NSBundle *moduleBundle = [NSBundle bundleForClass:BLTTypes.class];
-  NSString *resourceBundlePath = [moduleBundle pathForResource:@"BoltServices_BoltTypesAssets" ofType:@"bundle"];
-  if ([resourceBundlePath length]) {
-    NSBundle *resourceBundle = [NSBundle bundleWithURL:[NSURL fileURLWithPath:resourceBundlePath]];
-    if (resourceBundle) {
-      return resourceBundle;
-    }
-  }
-  return moduleBundle;
-#endif
-}
+//! Project version string for BoltTypesAssets.
+FOUNDATION_EXPORT const unsigned char BoltTypesAssetsVersionString[];
 
-@end
+#import "BLTTypes.h"
