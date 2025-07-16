@@ -51,6 +51,21 @@ public extension UserDefaults {
     }
   }
 
+  @objc dynamic var updateCheckingFrequency: Int {
+    get {
+      if
+        let value = object(forKey: "updateCheckingFrequency"),
+          let intValue = value as? Int
+      {
+        return intValue
+      }
+      return -1
+    }
+    set {
+      setValue(newValue, forKey: "updateCheckingFrequency")
+    }
+  }
+
   @available(iOS 16.4, *)
   @objc dynamic var webViewInspectable: Bool {
     get {

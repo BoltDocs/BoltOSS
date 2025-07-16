@@ -24,10 +24,60 @@ import BoltServices
 import BoltUIFoundation
 import BoltUtils
 
+// swiftlint:disable switch_case_on_newline
+
+private enum UpdateCheckingFrequency: CaseIterable, CustomStringConvertible, CustomLocalizedStringResourceConvertible {
+
+  case daily, weekly, monthly, never
+
+  init(seconds: Int) {
+    guard seconds > 0 else {
+      self = .never
+      return
+    }
+    if let value = Self.allCases.first(where: { seconds <= $0.toSeconds }) {
+      self = value
+    } else {
+      self = Self.allCases.last!
+    }
+  }
+
+  var toSeconds: Int {
+    switch self {
+    case .daily: 86400 // 24 * 3600
+    case .weekly: 604800 // 7 * 24 * 3600
+    case .monthly: 2592000 // 30 * 24 * 3600
+    case .never: -1
+    }
+  }
+
+  var description: String {
+    switch self {
+    case .daily: "Daily"
+    case .weekly: "Weekly"
+    case .monthly: "Monthly"
+    case .never: "Never"
+    }
+  }
+
+  var localizedStringResource: LocalizedStringResource {
+    switch self {
+    case .daily: "Preferences-Home-DocsetUpdates-updateCheckingFrequencyDaily".boltLocalizedStringResource
+    case .weekly: "Preferences-Home-DocsetUpdates-updateCheckingFrequencyWeekly".boltLocalizedStringResource
+    case .monthly: "Preferences-Home-DocsetUpdates-updateCheckingFrequencyMonthly".boltLocalizedStringResource
+    case .never: "Preferences-Home-DocsetUpdates-updateCheckingFrequencyNever".boltLocalizedStringResource
+    }
+  }
+
+}
+
+// swiftlint:enable switch_case_on_newline
+
 private class PreferencesHomeViewModel: ObservableObject {
 
   @Published var disablesPrivateBrowsing = false
   @Published var enablesDesktopMode = false
+  @Published var updateCheckingFrequency = UpdateCheckingFrequency.never
   @Published var webViewInspectable = false
 
   init() {
@@ -35,6 +85,9 @@ private class PreferencesHomeViewModel: ObservableObject {
       .assign(to: &$disablesPrivateBrowsing)
     UserDefaults.standard.publisher(for: \.enablesDesktopMode)
       .assign(to: &$enablesDesktopMode)
+    UserDefaults.standard.publisher(for: \.updateCheckingFrequency)
+      .map(UpdateCheckingFrequency.init(seconds:))
+      .assign(to: &$updateCheckingFrequency)
     if #available(iOS 16.4, *) {
       UserDefaults.standard.publisher(for: \.webViewInspectable)
         .assign(to: &$webViewInspectable)
@@ -115,6 +168,22 @@ public struct PreferencesHomeView: View {
               await CacheCleaner.clearCache()
               isCacheClearing = false
             }
+          }
+        }
+        Section("Preferences-Home-DocsetUpdates-sectionTitle".boltLocalized) {
+          Picker(
+            "Preferences-Home-DocsetUpdates-updateCheckingFrequencyPickerTitle".boltLocalized,
+            selection: Binding<UpdateCheckingFrequency>(
+              get: { viewModel.updateCheckingFrequency },
+              set: { UserDefaults.standard.updateCheckingFrequency = $0.toSeconds }
+            )
+          ) {
+            ForEach(UpdateCheckingFrequency.allCases, id: \.self) {
+              Text(String(localized: $0.localizedStringResource))
+            }
+          }
+          .pickerStyle(.navigationLink)
+          Button("Preferences-Home-DocsetUpdates-checkForUpdatesButtonTitle".boltLocalized) {
           }
         }
         Section("Preferences-Home-About-sectionTitle".boltLocalized) {
