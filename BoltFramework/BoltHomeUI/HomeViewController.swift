@@ -29,8 +29,25 @@ import BoltModuleExports
 import BoltServices
 import BoltUIFoundation
 
+enum HomeListSection: Hashable {
+  case docsets
+  case favorites
+  case history
+
+  var localized: String {
+    switch self {
+    case .docsets:
+      return "Home-List-SectionTitles-docsets".boltLocalized
+    case .favorites:
+      return "Home-List-SectionTitles-favorites".boltLocalized
+    case .history:
+      return "Home-List-SectionTitles-history".boltLocalized
+    }
+  }
+}
+
 enum DocsetsListModel: Hashable {
-  case header(String)
+  case header(HomeListSection)
   case docset(LibraryInstallationQueryResult)
 }
 
@@ -41,12 +58,6 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
   @Injected(\.libraryDocsetsManager)
   private var libraryDocsetsManager: LibraryDocsetsManager
-
-  struct SectionNames {
-    static let docsets = "Docsets"
-    static let favorites = "Favorites"
-    static let history = "History"
-  }
 
   private let sceneState: SceneState
   private let isForCollapsedSidebar: Bool
@@ -112,11 +123,12 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
               title: "",
               children: [
                 UIAction(
-                  title: "Select",
+                  title: UIKitLocalizations.select,
                   image: UIImage(systemName: "checkmark.circle")
                 ) { [weak self] _ in
                   self?.isEditingRelay.accept(true)
                 },
+                Self.createDiagnosticsMenu(),
               ]
             )
           )
@@ -159,7 +171,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
         .flexibleSpace(),
         update(UIBarButtonItem()) {
           $0.primaryAction = UIAction(
-            title: "Downloads"
+            title: "Home-Toolbar-DownloadsButtonTitle".boltLocalized
           ) { [weak self] _ in
             self?.sceneState.dispatch(action: .onHomeViewTapMenuItemDownloads)
           }
@@ -213,17 +225,17 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     navigationItem.hidesSearchBarWhenScrolling = false
 
     searchBar.autocapitalizationType = .none
-    searchBar.placeholder = "Filter"
+    searchBar.placeholder = UIKitLocalizations.search
   }
 
   var docsets = BehaviorRelay<[LibraryInstallationQueryResult]>(value: [])
 
-  var dataSource: UICollectionViewDiffableDataSource<String, DocsetsListModel>!
+  var dataSource: UICollectionViewDiffableDataSource<HomeListSection, DocsetsListModel>!
 
   override public func viewDidLoad() {
     super.viewDidLoad()
 
-    title = "Library"
+    title = "Home-List-title".boltLocalized
 
     view.backgroundColor = .secondarySystemBackground
 
@@ -235,15 +247,15 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
     dataSource = UICollectionViewDiffableDataSource(
       collectionView: collectionView
-    ) { collectionView, indexPath, DocsetsListModel in
+    ) { collectionView, indexPath, docsetsListModel in
       guard let collectionView = collectionView as? HomeCollectionView else {
         reportIssue("Unexpected collectionView cell type")
         return nil
       }
-      switch DocsetsListModel {
-      case .header(let title):
-        return collectionView.headerRegistration.cellProvider(collectionView, indexPath, title)
-      case .docset(let docset):
+      switch docsetsListModel {
+      case let .header(section):
+        return collectionView.headerRegistration.cellProvider(collectionView, indexPath, section.localized)
+      case let .docset(docset):
         return collectionView.cellRegistration.cellProvider(collectionView, indexPath, docset)
       }
     }
@@ -253,7 +265,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     dataSource.reorderingHandlers.didReorder = { [libraryDocsetsManager] transaction in
       guard let docsetSectionTransaction = transaction
         .sectionTransactions
-        .first(where: { $0.sectionIdentifier == SectionNames.docsets })
+        .first(where: { $0.sectionIdentifier == HomeListSection.docsets })
       else {
         return
       }
@@ -283,11 +295,11 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       }
     }
 
-    var dataSourceSnapshot = NSDiffableDataSourceSnapshot<String, DocsetsListModel>()
+    var dataSourceSnapshot = NSDiffableDataSourceSnapshot<HomeListSection, DocsetsListModel>()
     dataSourceSnapshot.appendSections([
-      SectionNames.docsets,
-      SectionNames.favorites,
-      SectionNames.history,
+      HomeListSection.docsets,
+      HomeListSection.favorites,
+      HomeListSection.history,
     ])
 
     // TODO: build favorites and history section
@@ -312,7 +324,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     }
     .map { docsets in
       update(NSDiffableDataSourceSectionSnapshot<DocsetsListModel>()) {
-        let headerDocsetsListModel = DocsetsListModel.header("Docsets")
+        let headerDocsetsListModel = DocsetsListModel.header(.docsets)
         $0.append([headerDocsetsListModel])
 
         let symbolDocsetsListModelArray = docsets.map { DocsetsListModel.docset($0) }
@@ -322,7 +334,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       }
     }
     .drive { [dataSource] snapshot in
-      dataSource?.apply(snapshot, to: SectionNames.docsets, animatingDifferences: true)
+      dataSource?.apply(snapshot, to: HomeListSection.docsets, animatingDifferences: true)
     }
     .disposed(by: disposeBag)
 
@@ -361,11 +373,11 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
           case let .broken(installation):
             GlobalUI.presentAlertController(
               UIAlertController.alert(
-                withTitle: "Uninstall",
-                message: "Do you really want to uninstall \(installation.name)",
+                withTitle: "Home-List-RemoveDamagedDocsetAlert-title".boltLocalized,
+                message: "Home-List-RemoveDamagedDocsetAlert-message".boltLocalized(installation.name),
                 confirmAction: (
-                  "Confirm",
-                  UIAlertAction.Style.destructive,
+                  UIKitLocalizations.ok,
+                  UIAlertAction.Style.default,
                   { [libraryDocsetsManager = owner.libraryDocsetsManager] in
                     try? libraryDocsetsManager.uninstallDocset(forRecord: installation)
                   }
