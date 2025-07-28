@@ -72,11 +72,10 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       $0.primaryAction = UIAction(
         image: UIImage(systemName: "trash")
       ) { [weak self] _ in
-        guard let self = self, let selectedIndexPaths = collectionView.indexPathsForSelectedItems else {
+        guard let self = self else {
           return
         }
-        let viewModels = collectionView.viewModel(forIndexPaths: selectedIndexPaths).compactMap { $0 }
-        collectionView.onDeleteItems(viewModels)
+        listViewController.deleteItems(atIndexPaths: listViewController.selectedIndexPathsForEditing)
       }
     }
   }()
@@ -92,10 +91,8 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     fatalError("\(#function) has not been implemented")
   }
 
-  private lazy var collectionView: HomeListCollectionView = {
-    return update(HomeListCollectionView(isForCollapsedSidebar: isForCollapsedSidebar)) {
-      $0.delegate = self
-    }
+  private lazy var listViewController: HomeListViewController = {
+    HomeListViewController(isForCollapsedSidebar: isForCollapsedSidebar)
   }()
 
   private func setupToolbar() {
@@ -142,18 +139,14 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       .bind(to: navigationItem.rx.rightBarButtonItems)
       .disposed(by: disposeBag)
 
-    Observable.merge(
-      isEditingRelay.mapToVoid(),
-      collectionView.rx.itemSelected.mapToVoid(),
-      collectionView.rx.itemDeselected.mapToVoid()
+    Driver.combineLatest(
+      isEditingRelay.asDriver(),
+      listViewController.selectedIndexPathsForEditingDriver,
     )
-    .map { [collectionView] _ -> Bool in
-      guard let selectedItems = collectionView.indexPathsForSelectedItems else {
-        return false
-      }
-      return !selectedItems.isEmpty
+    .map { isEditing, indexPaths -> Bool in
+      return isEditing && !indexPaths.isEmpty
     }
-    .bind(to: toolbarTrashItem.rx.isEnabled)
+    .drive(toolbarTrashItem.rx.isEnabled)
     .disposed(by: disposeBag)
 
     let toolbarItems = isEditingRelay.map { [toolbarTrashItem] isEditing -> [UIBarButtonItem] in
@@ -199,8 +192,8 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       .disposed(by: disposeBag)
   }
 
-  private func setupCollectionView() {
-    with(collectionView) {
+  private func setupListViewController() {
+    addChild(listViewController) {
       view.addSubview($0)
       $0.snp.makeConstraints { make in
         make.top.equalToSuperview()
@@ -210,7 +203,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       }
     }
     isEditingRelay
-      .bind(to: collectionView.rx.isEditing)
+      .bind(to: listViewController.isEditingObserver)
       .disposed(by: disposeBag)
   }
 
@@ -230,7 +223,9 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
   var docsets = BehaviorRelay<[LibraryInstallationQueryResult]>(value: [])
 
-  var dataSource: UICollectionViewDiffableDataSource<HomeListSection, DocsetsListModel>!
+  var dataSource: UICollectionViewDiffableDataSource<HomeListSection, DocsetsListModel> {
+    return listViewController.dataSource
+  }
 
   override public func viewDidLoad() {
     super.viewDidLoad()
@@ -243,23 +238,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
     setupToolbar()
     setupSearchController()
-    setupCollectionView()
-
-    dataSource = UICollectionViewDiffableDataSource(
-      collectionView: collectionView
-    ) { collectionView, indexPath, docsetsListModel in
-      guard let collectionView = collectionView as? HomeListCollectionView else {
-        reportIssue("Unexpected collectionView cell type")
-        return nil
-      }
-      switch docsetsListModel {
-      case let .header(section):
-        return collectionView.headerRegistration.cellProvider(collectionView, indexPath, section.localized)
-      case let .docset(queryResult):
-        let viewModel = HomeListItemViewModel(queryResult: queryResult)
-        return collectionView.cellRegistration.cellProvider(collectionView, indexPath, viewModel)
-      }
-    }
+    setupListViewController()
 
     dataSource.reorderingHandlers.canReorderItem = { _ in return true }
 
@@ -335,7 +314,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       }
     }
     .drive { [dataSource] snapshot in
-      dataSource?.apply(snapshot, to: HomeListSection.docsets, animatingDifferences: true)
+      dataSource.apply(snapshot, to: HomeListSection.docsets, animatingDifferences: true)
     }
     .disposed(by: disposeBag)
 
@@ -350,18 +329,14 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
             }
             return nil
           }(scope)
-          owner.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
+          owner.listViewController.selectItem(at: indexPath, animated: true, scrollPosition: .top)
         }
         .disposed(by: disposeBag)
     }
 
-    collectionView.rx.itemSelected
-      .subscribe(with: self) { owner, indexPath in
-        guard !owner.isEditingRelay.value else {
-          return
-        }
-        owner.collectionView.deselectItem(at: indexPath, animated: false)
-        guard let dataSource = owner.dataSource, let model = dataSource.itemIdentifier(for: indexPath) else {
+    listViewController.itemSelectedSignal
+      .emit(with: self) { owner, indexPath in
+        guard let model = owner.dataSource.itemIdentifier(for: indexPath) else {
           return
         }
         switch model {
@@ -399,22 +374,6 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
   private func updateNavBarAppearance() {
     configureNavigationBarAppearance(enforceLargeTitle: true)
-  }
-
-}
-
-extension HomeViewController: UICollectionViewDelegate {
-
-  public func collectionView(
-    _ collectionView: UICollectionView,
-    contextMenuConfigurationForItemAt indexPath: IndexPath,
-    point: CGPoint
-  ) -> UIContextMenuConfiguration? {
-    guard let collectionView = collectionView as? HomeListCollectionView else {
-      reportIssue("Unexpected collectionView type")
-      return nil
-    }
-    return collectionView.itemContextMenuConfiguration(forIndexPath: indexPath)
   }
 
 }

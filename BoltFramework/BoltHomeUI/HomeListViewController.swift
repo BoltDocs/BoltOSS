@@ -20,6 +20,7 @@ import Factory
 import Overture
 
 import BoltLocalizations
+import BoltRxSwift
 import BoltServices
 import BoltUIFoundation
 
@@ -47,9 +48,15 @@ final class HomeListCollectionViewItemCell: UICollectionViewListCell {
 
 }
 
-final class HomeListCollectionView: UICollectionView {
+final class HomeListViewController: UIViewController, UICollectionViewDelegate, HasDisposeBag {
 
   private let isForCollapsedSidebar: Bool
+
+  private lazy var collectionView: UICollectionView = {
+    return update(UICollectionView(frame: .zero, collectionViewLayout: createLayout())) {
+      $0.delegate = self
+    }
+  }()
 
   init(isForCollapsedSidebar: Bool) {
     self.isForCollapsedSidebar = isForCollapsedSidebar
@@ -85,12 +92,12 @@ final class HomeListCollectionView: UICollectionView {
       cell.accessories = accessories
     }
 
-    super.init(frame: .zero, collectionViewLayout: UICollectionViewLayout())
+    super.init(nibName: nil, bundle: nil)
 
-    collectionViewLayout = createLayout()
+    collectionView.allowsSelectionDuringEditing = true
+    collectionView.allowsMultipleSelectionDuringEditing = true
 
-    allowsSelectionDuringEditing = true
-    allowsMultipleSelectionDuringEditing = true
+    collectionView.dataSource = dataSource
   }
 
   @available(*, unavailable)
@@ -98,8 +105,84 @@ final class HomeListCollectionView: UICollectionView {
     fatalError("\(#function) has not been implemented")
   }
 
-  let headerRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, String>
-  let cellRegistration: UICollectionView.CellRegistration<HomeListCollectionViewItemCell, HomeListItemViewModel>
+  private let headerRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, String>
+  private let cellRegistration: UICollectionView.CellRegistration<HomeListCollectionViewItemCell, HomeListItemViewModel>
+
+  private(set) lazy var dataSource: UICollectionViewDiffableDataSource<HomeListSection, DocsetsListModel> = createDataSource()
+
+  private(set) lazy var isEditingObserver: AnyObserver<Bool> = { isEditingSubject.asObserver() }()
+  private var isEditingSubject = PublishSubject<Bool>()
+
+  var selectedIndexPathsForEditing: [IndexPath] { selectedIndexPathsForEditingRelay.value }
+  private(set) lazy var selectedIndexPathsForEditingDriver: Driver<[IndexPath]> = { selectedIndexPathsForEditingRelay.asDriver() }()
+  private var selectedIndexPathsForEditingRelay = BehaviorRelay<[IndexPath]>(value: [])
+
+  private(set) lazy var itemSelectedSignal: Signal<IndexPath> = { itemSelectedRelay.asSignal() }()
+  private var itemSelectedRelay = PublishRelay<IndexPath>()
+
+  func selectItem(at indexPath: IndexPath?, animated: Bool, scrollPosition: UICollectionView.ScrollPosition) {
+    collectionView.selectItem(at: indexPath, animated: animated, scrollPosition: scrollPosition)
+  }
+
+  func deleteItems(atIndexPaths indexPaths: [IndexPath]) {
+    let viewModels = viewModel(forIndexPaths: indexPaths).compactMap { $0 }
+    onDeleteItems(viewModels)
+  }
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    with(collectionView) {
+      view.addSubview($0)
+      $0.snp.makeConstraints { make in
+        make.edges.equalToSuperview()
+      }
+    }
+
+    isEditingSubject
+      .bind(to: collectionView.rx.isEditing)
+      .disposed(by: disposeBag)
+
+    collectionView.rx.itemSelected
+      .subscribe(with: self) { owner, indexPath in
+        let collectionView = owner.collectionView
+        if !collectionView.isEditing {
+          collectionView.deselectItem(at: indexPath, animated: false)
+          owner.itemSelectedRelay.accept(indexPath)
+        }
+      }
+      .disposed(by: disposeBag)
+
+    Observable.merge(
+      isEditingSubject.mapToVoid(),
+      collectionView.rx.itemSelected.mapToVoid(),
+      collectionView.rx.itemDeselected.mapToVoid()
+    )
+    .subscribe(with: self) { owner, _ in
+      let collectionView = owner.collectionView
+      if collectionView.isEditing {
+        owner.selectedIndexPathsForEditingRelay.accept(collectionView.indexPathsForSelectedItems ?? [])
+      }
+    }
+    .disposed(by: disposeBag)
+  }
+
+  private func createDataSource() -> UICollectionViewDiffableDataSource<HomeListSection, DocsetsListModel> {
+    return UICollectionViewDiffableDataSource(
+      collectionView: collectionView
+    ) { [weak self] collectionView, indexPath, docsetsListModel in
+      guard let self = self else {
+        return nil
+      }
+      switch docsetsListModel {
+      case let .header(section):
+        return headerRegistration.cellProvider(collectionView, indexPath, section.localized)
+      case let .docset(queryResult):
+        let viewModel = HomeListItemViewModel(queryResult: queryResult)
+        return cellRegistration.cellProvider(collectionView, indexPath, viewModel)
+      }
+    }
+  }
 
   private func createLayout() -> UICollectionViewLayout {
     let _isForCollapsedSidebar = isForCollapsedSidebar
@@ -124,36 +207,6 @@ final class HomeListCollectionView: UICollectionView {
     })
   }
 
-  func itemContextMenuConfiguration(
-    forIndexPath indexPath: IndexPath
-  ) -> UIContextMenuConfiguration? {
-    return UIContextMenuConfiguration(
-      // swiftlint:disable:next trailing_closure
-      actionProvider: { [weak self] _ in
-        let getInfoButton = UIAction(
-          title: BoltLocalizations.getInfo,
-          image: UIImage(systemName: "info.circle")
-        ) { [weak self] _ in
-          guard let self = self else {
-            return
-          }
-          onGetInfo(viewModel: viewModel(forIndexPath: indexPath))
-        }
-        let deleteButton = UIAction(
-          title: UIKitLocalizations.delete,
-          image: UIImage(systemName: "trash"),
-          attributes: .destructive
-        ) { [weak self] _ in
-          guard let self = self, let viewModel = viewModel(forIndexPath: indexPath) else {
-            return
-          }
-          onDeleteItems([viewModel])
-        }
-        return UIMenu(children: [getInfoButton, deleteButton])
-      }
-    )
-  }
-
   func viewModel(forIndexPath indexPath: IndexPath) -> HomeListItemViewModel? {
     //swiftlint:disable:next redundant_nil_coalescing
     return viewModel(forIndexPaths: [indexPath]).first ?? nil
@@ -161,14 +214,14 @@ final class HomeListCollectionView: UICollectionView {
 
   func viewModel(forIndexPaths indexPaths: [IndexPath]) -> [HomeListItemViewModel?] {
     return indexPaths.map { indexPath in
-      if let cell = cellForItem(at: indexPath) as? HomeListCollectionViewItemCell {
+      if let cell = collectionView.cellForItem(at: indexPath) as? HomeListCollectionViewItemCell {
         return cell.viewModel
       }
       return nil
     }
   }
 
-  func createTrailingSwipeActionsConfigurationProvider()
+  private func createTrailingSwipeActionsConfigurationProvider()
     -> UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider?
   {
     return { [weak self] indexPath in
@@ -178,6 +231,7 @@ final class HomeListCollectionView: UICollectionView {
           title: BoltLocalizations.getInfo
         ) { [weak self] _, _, completion in
           guard let self = self else {
+            completion(false)
             return
           }
           let handled = onGetInfo(viewModel: viewModel(forIndexPath: indexPath))
@@ -188,10 +242,11 @@ final class HomeListCollectionView: UICollectionView {
           style: .destructive,
           title: UIKitLocalizations.delete
         ) { [weak self] _, _, completion in
-          guard let self = self, let viewModel = viewModel(forIndexPath: indexPath) else {
+          guard let self = self else  {
+            completion(false)
             return
           }
-          onDeleteItems([viewModel])
+          deleteItems(atIndexPaths: [indexPath])
           completion(true)
         }
 
@@ -210,7 +265,7 @@ final class HomeListCollectionView: UICollectionView {
     return false
   }
 
-  func onDeleteItems(_ viewModels: [HomeListItemViewModel]) {
+  private func onDeleteItems(_ viewModels: [HomeListItemViewModel]) {
     guard !viewModels.isEmpty else {
       return
     }
@@ -243,6 +298,43 @@ final class HomeListCollectionView: UICollectionView {
         ),
         cancelAction: (UIKitLocalizations.cancel, nil)
       )
+    )
+  }
+
+  // MARK: - UICollectionViewDelegate
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    contextMenuConfigurationForItemAt indexPath: IndexPath,
+    point: CGPoint
+  ) -> UIContextMenuConfiguration? {
+    guard viewModel(forIndexPath: indexPath) != nil else {
+      return nil
+    }
+    return UIContextMenuConfiguration(
+      // swiftlint:disable:next trailing_closure
+      actionProvider: { [weak self] _ in
+        let getInfoButton = UIAction(
+          title: BoltLocalizations.getInfo,
+          image: UIImage(systemName: "info.circle")
+        ) { [weak self] _ in
+          guard let self = self else {
+            return
+          }
+          onGetInfo(viewModel: viewModel(forIndexPath: indexPath))
+        }
+        let deleteButton = UIAction(
+          title: UIKitLocalizations.delete,
+          image: UIImage(systemName: "trash"),
+          attributes: .destructive
+        ) { [weak self] _ in
+          guard let self = self else {
+            return
+          }
+          deleteItems(atIndexPaths: [indexPath])
+        }
+        return UIMenu(children: [getInfoButton, deleteButton])
+      }
     )
   }
 
