@@ -23,10 +23,31 @@ import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
 
-final class HomeCollectionView: UICollectionView {
+final class HomeListCollectionViewItemCell: UICollectionViewListCell {
 
-  @Injected(\.libraryDocsetsManager)
-  private var libraryDocsetsManager: LibraryDocsetsManager
+  private(set) var viewModel: HomeListItemViewModel?
+
+  func configureCellContent(forViewModel viewModel: HomeListItemViewModel) {
+    self.viewModel = viewModel
+    contentConfiguration = update(defaultContentConfiguration()) {
+      let standardDimension = UIListContentConfiguration.ImageProperties.standardDimension
+      $0.imageProperties.reservedLayoutSize = CGSize(
+        width: standardDimension,
+        height: standardDimension
+      )
+
+      $0.prefersSideBySideTextAndSecondaryText = false
+      $0.textToSecondaryTextVerticalPadding = 0
+
+      $0.text = viewModel.title
+      $0.secondaryText = viewModel.subTitle
+      $0.image = viewModel.image
+    }
+  }
+
+}
+
+final class HomeListCollectionView: UICollectionView {
 
   private let isForCollapsedSidebar: Bool
 
@@ -50,33 +71,9 @@ final class HomeCollectionView: UICollectionView {
       ]
     }
 
-    self.cellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, LibraryInstallationQueryResult> { cell, _, queryResult in
+    self.cellRegistration = UICollectionView.CellRegistration<HomeListCollectionViewItemCell, HomeListItemViewModel> { cell, _, viewModel in
       cell.backgroundConfiguration = cell.defaultBackgroundConfiguration()
-      cell.contentConfiguration = update(cell.defaultContentConfiguration()) {
-        let standardDimension = UIListContentConfiguration.ImageProperties.standardDimension
-        $0.imageProperties.reservedLayoutSize = CGSize(
-          width: standardDimension,
-          height: standardDimension
-        )
-
-        $0.prefersSideBySideTextAndSecondaryText = false
-        $0.textToSecondaryTextVerticalPadding = 0
-
-        switch queryResult {
-        case let .docset(docset):
-          $0.text = docset.displayName
-          if !docset.installedAsLatestVersion {
-            $0.secondaryText = docset.version
-          }
-          $0.image = docset.iconImageForList
-        case let .broken(installation):
-          $0.text = installation.name
-          if installation.installedAsLatestVersion {
-            $0.secondaryText = installation.version
-          }
-          $0.image = UIImage(systemName: "text.book.closed")
-        }
-      }
+      cell.configureCellContent(forViewModel: viewModel)
 
       var accessories: [UICellAccessory] = [
         .reorder(displayed: .whenEditing),
@@ -102,7 +99,7 @@ final class HomeCollectionView: UICollectionView {
   }
 
   let headerRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, String>
-  let cellRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, LibraryInstallationQueryResult>
+  let cellRegistration: UICollectionView.CellRegistration<HomeListCollectionViewItemCell, HomeListItemViewModel>
 
   private func createLayout() -> UICollectionViewLayout {
     let _isForCollapsedSidebar = isForCollapsedSidebar
@@ -140,44 +137,38 @@ final class HomeCollectionView: UICollectionView {
           guard let self = self else {
             return
           }
-          onGetInfo(queryResult: docset(forIndexPath: indexPath))
+          onGetInfo(viewModel: viewModel(forIndexPath: indexPath))
         }
         let deleteButton = UIAction(
           title: UIKitLocalizations.delete,
           image: UIImage(systemName: "trash"),
           attributes: .destructive
         ) { [weak self] _ in
-          guard let self = self, let queryResult = docset(forIndexPath: indexPath) else {
+          guard let self = self, let viewModel = viewModel(forIndexPath: indexPath) else {
             return
           }
-          onDeleteItems([queryResult])
+          onDeleteItems([viewModel])
         }
         return UIMenu(children: [getInfoButton, deleteButton])
       }
     )
   }
 
-  func docset(forIndexPath indexPath: IndexPath) -> LibraryInstallationQueryResult? {
+  func viewModel(forIndexPath indexPath: IndexPath) -> HomeListItemViewModel? {
     //swiftlint:disable:next redundant_nil_coalescing
-    return docsets(forIndexPaths: [indexPath]).first ?? nil
+    return viewModel(forIndexPaths: [indexPath]).first ?? nil
   }
 
-  func docsets(forIndexPaths indexPaths: [IndexPath]) -> [LibraryInstallationQueryResult?] {
-    guard let dataSource = (dataSource as? UICollectionViewDiffableDataSource<String, DocsetsListModel>) else {
-      return []
-    }
-    return indexPaths.map {
-      if
-        let item = dataSource.itemIdentifier(for: $0),
-        case let .docset(queryResult) = item
-      {
-        return queryResult
+  func viewModel(forIndexPaths indexPaths: [IndexPath]) -> [HomeListItemViewModel?] {
+    return indexPaths.map { indexPath in
+      if let cell = cellForItem(at: indexPath) as? HomeListCollectionViewItemCell {
+        return cell.viewModel
       }
       return nil
     }
   }
 
-  private func createTrailingSwipeActionsConfigurationProvider()
+  func createTrailingSwipeActionsConfigurationProvider()
     -> UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider?
   {
     return { [weak self] indexPath in
@@ -189,7 +180,7 @@ final class HomeCollectionView: UICollectionView {
           guard let self = self else {
             return
           }
-          let handled = onGetInfo(queryResult: docset(forIndexPath: indexPath))
+          let handled = onGetInfo(viewModel: viewModel(forIndexPath: indexPath))
           completion(handled)
         }
       let deleteAction =
@@ -197,10 +188,10 @@ final class HomeCollectionView: UICollectionView {
           style: .destructive,
           title: UIKitLocalizations.delete
         ) { [weak self] _, _, completion in
-          guard let self = self, let queryResult = docset(forIndexPath: indexPath) else {
+          guard let self = self, let viewModel = viewModel(forIndexPath: indexPath) else {
             return
           }
-          onDeleteItems([queryResult])
+          onDeleteItems([viewModel])
           completion(true)
         }
 
@@ -211,41 +202,31 @@ final class HomeCollectionView: UICollectionView {
   // MARK: Actions
 
   @discardableResult
-  private func onGetInfo(queryResult: LibraryInstallationQueryResult?) -> Bool {
-    guard let queryResult = queryResult else {
-      return false
-    }
-    if case let .docset(docset) = queryResult {
+  private func onGetInfo(viewModel: HomeListItemViewModel?) -> Bool {
+    if let docset = viewModel?.docset {
       BoltHomeNavigator.presentDocsetInfo(docset)
       return true
-    } else {
-      return false
     }
+    return false
   }
 
-  func onDeleteItems(_ queryResults: [LibraryInstallationQueryResult]) {
-    guard !queryResults.isEmpty else {
+  func onDeleteItems(_ viewModels: [HomeListItemViewModel]) {
+    guard !viewModels.isEmpty else {
       return
-    }
-
-    let performUninstallDocsets = { [libraryDocsetsManager] in
-      for queryResult in queryResults {
-        try? libraryDocsetsManager.uninstallDocset(forRecord: queryResult.record)
-      }
     }
 
     let alertMessage: String
 
-    if queryResults.count == 1 {
-      let queryResult = queryResults.first!
+    if viewModels.count == 1 {
+      let viewModel = viewModels.first!
 
-      let uninstallName = queryResult.displayName
+      let uninstallName = viewModel.title ?? ""
 
       alertMessage = !uninstallName.isEmpty ?
         "Home-List-DeleteAlert-deleteDocsetMessageFormat".boltLocalized(uninstallName) :
         "Home-List-DeleteAlert-deleteDocsetMessage".boltLocalized
     } else {
-      alertMessage = "Home-List-DeleteAlert-deleteDocsetMessageMultiple".boltLocalized(queryResults.count)
+      alertMessage = "Home-List-DeleteAlert-deleteDocsetMessageMultiple".boltLocalized(viewModels.count)
     }
     GlobalUI.presentAlertController(
       UIAlertController.alert(
@@ -254,7 +235,11 @@ final class HomeCollectionView: UICollectionView {
         confirmAction: (
           BoltLocalizations.confirm,
           UIAlertAction.Style.destructive,
-          { performUninstallDocsets() }
+          {
+            for viewModel in viewModels {
+              viewModel.deleteItem()
+            }
+          }
         ),
         cancelAction: (UIKitLocalizations.cancel, nil)
       )
