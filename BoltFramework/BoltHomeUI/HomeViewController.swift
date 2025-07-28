@@ -75,8 +75,8 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
         guard let self = self, let selectedIndexPaths = collectionView.indexPathsForSelectedItems else {
           return
         }
-        let queryResults = collectionView.docsets(forIndexPaths: selectedIndexPaths).compactMap { $0 }
-        collectionView.onDeleteItems(queryResults)
+        let viewModels = collectionView.viewModel(forIndexPaths: selectedIndexPaths).compactMap { $0 }
+        collectionView.onDeleteItems(viewModels)
       }
     }
   }()
@@ -92,8 +92,8 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     fatalError("\(#function) has not been implemented")
   }
 
-  private lazy var collectionView: HomeCollectionView = {
-    return update(HomeCollectionView(isForCollapsedSidebar: isForCollapsedSidebar)) {
+  private lazy var collectionView: HomeListCollectionView = {
+    return update(HomeListCollectionView(isForCollapsedSidebar: isForCollapsedSidebar)) {
       $0.delegate = self
     }
   }()
@@ -248,15 +248,16 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     dataSource = UICollectionViewDiffableDataSource(
       collectionView: collectionView
     ) { collectionView, indexPath, docsetsListModel in
-      guard let collectionView = collectionView as? HomeCollectionView else {
+      guard let collectionView = collectionView as? HomeListCollectionView else {
         reportIssue("Unexpected collectionView cell type")
         return nil
       }
       switch docsetsListModel {
       case let .header(section):
         return collectionView.headerRegistration.cellProvider(collectionView, indexPath, section.localized)
-      case let .docset(docset):
-        return collectionView.cellRegistration.cellProvider(collectionView, indexPath, docset)
+      case let .docset(queryResult):
+        let viewModel = HomeListItemViewModel(queryResult: queryResult)
+        return collectionView.cellRegistration.cellProvider(collectionView, indexPath, viewModel)
       }
     }
 
@@ -409,7 +410,7 @@ extension HomeViewController: UICollectionViewDelegate {
     contextMenuConfigurationForItemAt indexPath: IndexPath,
     point: CGPoint
   ) -> UIContextMenuConfiguration? {
-    guard let collectionView = collectionView as? HomeCollectionView else {
+    guard let collectionView = collectionView as? HomeListCollectionView else {
       reportIssue("Unexpected collectionView type")
       return nil
     }
