@@ -1,5 +1,5 @@
 {
-  "originHash" : "3185d2ad865809ed3a915297d08046ea7f6a387467a1e4e5538db6ccf8dc3e58",
+  "originHash" : "0a41f48c2b6bba65a18c59a08ad5835c1ba327752c6ca4edbe5b7722f833f625",
   "pins" : [
     {
       "identity" : "accessibilitysnapshot",
@@ -88,7 +88,7 @@
       "location" : "https://github.com/BoltDocs/GzipSwift.git",
       "state" : {
         "branch" : "6.1.0",
-        "revision" : "38e50cc8c18dd189d5e5e6505450c4fdcdd950ed"
+        "revision" : "8adf624148c7a73ad21f6cdd041f4dcc86dd120a"
       }
     },
     {
