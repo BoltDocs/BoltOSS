@@ -117,7 +117,7 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
       }
       .disposed(by: disposeBag)
 
-    setupToolBarItems()
+    setupToolbarItems()
   }
 
   override public func viewWillAppear(_ animated: Bool) {
@@ -204,7 +204,7 @@ extension BrowserViewController {
     }
   }
 
-  private func setupToolBarItems() {
+  private func setupToolbarItems() {
     let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 
     let moreButton = UIBarButtonItem(

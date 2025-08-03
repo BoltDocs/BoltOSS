@@ -52,7 +52,7 @@ public enum SceneAction {
 
   case onHomeViewTapMenuItemLibrary
   case onHomeViewTapMenuItemPreferences
-  case onHomeViewTapMenuItemDownloads
+  case onHomeViewTapToolbarItemDownloads
 
 }
 
@@ -107,7 +107,7 @@ public class SceneState: HasDisposeBag {
       _onPresentLibrary.accept(())
     case .onHomeViewTapMenuItemPreferences:
       _onPresentPreferences.accept(())
-    case .onHomeViewTapMenuItemDownloads:
+    case .onHomeViewTapToolbarItemDownloads:
       _onPresentDownloads.accept(())
     }
   }

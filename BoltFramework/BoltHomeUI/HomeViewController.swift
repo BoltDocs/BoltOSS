@@ -166,7 +166,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
           $0.primaryAction = UIAction(
             title: "Home-Toolbar-DownloadsButtonTitle".boltLocalized
           ) { [weak self] _ in
-            self?.sceneState.dispatch(action: .onHomeViewTapMenuItemDownloads)
+            self?.sceneState.dispatch(action: .onHomeViewTapToolbarItemDownloads)
           }
         },
         .flexibleSpace(),
