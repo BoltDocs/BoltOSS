@@ -56,7 +56,7 @@ private class SecondaryNavigationController: UIViewController {
 
 public final class SceneManager {
 
-  weak var window: UIWindow!
+  weak var rootWindow: UIWindow!
 
   private lazy var doubleColumnSplitViewController: DoubleColumnSplitViewController = {
     return update(DoubleColumnSplitViewController()) {
@@ -79,26 +79,26 @@ public final class SceneManager {
   private let disposeBag = DisposeBag()
 
   public init(_ window: UIWindow) {
-    self.window = window
+    self.rootWindow = window
 
     state.onPresentLibrary
       // swiftlint:disable:next trailing_closure
-      .emit(onNext: {
-        BoltAppNavigator.presentLibrary()
+      .emit(with: self, onNext: { owner, _ in
+        BoltAppNavigator.presentLibrary(forWindow: owner.rootWindow)
       })
       .disposed(by: disposeBag)
 
     state.onPresentPreferences
       // swiftlint:disable:next trailing_closure
-      .emit(onNext: {
-        BoltAppNavigator.presentPreferences()
+      .emit(with: self, onNext: { owner, _ in
+        BoltAppNavigator.presentPreferences(forWindow: owner.rootWindow)
       })
       .disposed(by: disposeBag)
 
     state.onPresentDownloads
       // swiftlint:disable:next trailing_closure
-      .emit(onNext: {
-        BoltAppNavigator.presentDownloads()
+      .emit(with: self, onNext: { owner, _ in
+        BoltAppNavigator.presentDownloads(forWindow: owner.rootWindow)
       })
       .disposed(by: disposeBag)
 

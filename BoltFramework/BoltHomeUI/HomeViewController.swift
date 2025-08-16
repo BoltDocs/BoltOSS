@@ -158,7 +158,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
           $0.primaryAction = UIAction(
             image: UIImage(systemName: "gear")
           ) { [weak self] _ in
-            self?.sceneState.dispatch(action: .onHomeViewTapMenuItemPreferences)
+            self?.sceneState.dispatch(action: .onPresentPreferences)
           }
         },
         .flexibleSpace(),
@@ -166,7 +166,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
           $0.primaryAction = UIAction(
             title: "Home-Toolbar-DownloadsButtonTitle".boltLocalized
           ) { [weak self] _ in
-            self?.sceneState.dispatch(action: .onHomeViewTapToolbarItemDownloads)
+            self?.sceneState.dispatch(action: .onPresentDownloads)
           }
         },
         .flexibleSpace(),
@@ -180,7 +180,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
               return
             }
             isEditingRelay.accept(false)
-            sceneState.dispatch(action: .onHomeViewTapMenuItemLibrary)
+            sceneState.dispatch(action: .onPresentLibrary)
           }
         }
       )

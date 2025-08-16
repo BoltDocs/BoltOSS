@@ -50,48 +50,34 @@ public enum SceneAction {
   case updateCurrentScope(_: LookupScope)
   case updateCurrentURL(_: URL)
 
-  case onHomeViewTapMenuItemLibrary
-  case onHomeViewTapMenuItemPreferences
-  case onHomeViewTapToolbarItemDownloads
+  case onPresentLibrary
+  case onPresentPreferences
+  case onPresentDownloads
 
 }
 
 public class SceneState: HasDisposeBag {
 
   private let _onPresentLibrary = PublishRelay<Void>()
-  public lazy var onPresentLibrary: Signal<Void> = {
-    return _onPresentLibrary.asSignal()
-  }()
+  public lazy var onPresentLibrary: Signal<Void> = { _onPresentLibrary.asSignal() }()
 
   private let _onPresentPreferences = PublishRelay<Void>()
-  public lazy var onPresentPreferences: Signal<Void> = {
-    return _onPresentPreferences.asSignal()
-  }()
+  public lazy var onPresentPreferences: Signal<Void> = { _onPresentPreferences.asSignal() }()
 
   private let _onPresentDownloads = PublishRelay<Void>()
-  public lazy var onPresentDownloads: Signal<Void> = {
-    return _onPresentDownloads.asSignal()
-  }()
+  public lazy var onPresentDownloads: Signal<Void> = { _onPresentDownloads.asSignal() }()
 
   private let _lookupListVisible = BehaviorRelay<Bool>(value: false)
-  public lazy var lookupListVisible: Driver<Bool> = {
-    return _lookupListVisible.asDriver()
-  }()
+  public lazy var lookupListVisible: Driver<Bool> = { _lookupListVisible.asDriver() }()
 
   private let _currentScope = BehaviorRelay<LookupScope?>(value: nil)
-  public lazy var currentScope: Driver<LookupScope?> = {
-    return _currentScope.asDriver()
-  }()
+  public lazy var currentScope: Driver<LookupScope?> = { _currentScope.asDriver() }()
 
   private let _currentPageURL = PublishRelay<URL>()
-  public lazy var currentPageURL: Signal<URL> = {
-    return _currentPageURL.asSignal()
-  }()
+  public lazy var currentPageURL: Signal<URL> = { _currentPageURL.asSignal() }()
 
   private let _currentOnlinePageURL = PublishRelay<URL?>()
-  public lazy var currentOnlinePageURL: Signal<URL?> = {
-    return _currentOnlinePageURL.asSignal()
-  }()
+  public lazy var currentOnlinePageURL: Signal<URL?> = { _currentOnlinePageURL.asSignal() }()
 
   public let actions = PublishRelay<SceneAction>()
 
@@ -103,11 +89,11 @@ public class SceneState: HasDisposeBag {
       _currentScope.accept(scope)
     case let .updateCurrentURL(url):
       _currentPageURL.accept(url)
-    case .onHomeViewTapMenuItemLibrary:
+    case .onPresentLibrary:
       _onPresentLibrary.accept(())
-    case .onHomeViewTapMenuItemPreferences:
+    case .onPresentPreferences:
       _onPresentPreferences.accept(())
-    case .onHomeViewTapToolbarItemDownloads:
+    case .onPresentDownloads:
       _onPresentDownloads.accept(())
     }
   }

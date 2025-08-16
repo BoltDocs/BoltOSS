@@ -23,30 +23,30 @@ import BoltUIFoundation
 
 struct BoltAppNavigator {
 
-  static func presentLibrary() {
+  static func presentLibrary(forWindow window: UIWindow) {
     let homeViewController = UIHostingController(
       rootView: SheetContainer { LibraryHomeListView() }
     )
     homeViewController.modalPresentationStyle = .formSheet
-    if let root = UIApplication.shared.keyWindowOfActiveScene?.topViewController {
+    if let root = window.topViewController {
       root.present(homeViewController, animated: true)
     }
   }
 
-  static func presentPreferences() {
+  static func presentPreferences(forWindow window: UIWindow) {
     let preferencesViewController = UIHostingController(rootView: PreferencesHomeView())
     preferencesViewController.modalPresentationStyle = .formSheet
-    if let root = UIApplication.shared.keyWindowOfActiveScene?.topViewController {
+    if let root = window.topViewController {
       root.present(preferencesViewController, animated: true)
     }
   }
 
-  static func presentDownloads() {
+  static func presentDownloads(forWindow window: UIWindow) {
     let downloadsViewController = UIHostingController(
       rootView: SheetContainer { LibraryDownloadsListView() }
     )
     downloadsViewController.modalPresentationStyle = .formSheet
-    if let root = UIApplication.shared.keyWindowOfActiveScene?.topViewController {
+    if let root = window.topViewController {
       root.present(downloadsViewController, animated: true)
     }
   }
