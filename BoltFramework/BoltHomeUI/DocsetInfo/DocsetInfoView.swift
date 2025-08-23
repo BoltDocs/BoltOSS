@@ -30,18 +30,31 @@ struct DocsetInfoView: View {
   var docset: Docset
 
   var body: some View {
-    // TODO: support for docset keywords
-    NavigationView {
-      Form {
+    VStack(spacing: 0) {
+      HStack {
+        Label {
+          Text(docset.displayName)
+            .font(.headline)
+        } icon: {
+          Image(uiImage: docset.iconImage)
+            .resizable()
+        }
+        .labelStyle(ListItemLabelStyle(spacing: 8, iconSize: CGSize(width: 24, height: 24)))
+        Spacer()
+        Button(
+          action: { dismiss() },
+          label: {
+            Image(systemName: "xmark.circle.fill")
+              .foregroundStyle(.gray.opacity(0.5))
+              .font(.title2)
+          }
+        )
+      }
+      .padding()
+      // TODO: support for docset keywords
+      List {
         // basic info
         Section {
-          // icon and display name
-          Label {
-            Text(docset.displayName)
-          } icon: {
-            Image(uiImage: docset.iconImage)
-          }
-          .labelStyle(ListItemLabelStyle(spacing: 8, iconSize: CGSize(width: 30, height: 30)))
           // identifier
           HStack {
             Text("Identifier")
@@ -81,16 +94,7 @@ struct DocsetInfoView: View {
           }
         }
       }
-      .listStyle(.insetGrouped)
-      .navigationTitle(docset.displayName)
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalizations.done) {
-            dismiss()
-          }
-        }
-      }
+      .listStyle(.plain)
     }
   }
 
