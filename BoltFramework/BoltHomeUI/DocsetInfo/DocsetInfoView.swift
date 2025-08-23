@@ -21,6 +21,7 @@ import IssueReporting
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
+import BoltUtils
 
 private struct ListItemView<Content: View>: View {
 
@@ -117,10 +118,12 @@ struct DocsetInfoView: View {
         }
       }
       .listStyle(.plain)
-      Button("Diagnostics") {
-        isDiagnosticsModeOn.toggle()
+      if RuntimeEnvironment.isInternalBuild {
+        Button("Diagnostics") {
+          isDiagnosticsModeOn.toggle()
+        }
+        .padding()
       }
-      .padding()
     }
   }
 

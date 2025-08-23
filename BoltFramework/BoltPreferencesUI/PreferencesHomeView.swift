@@ -192,7 +192,7 @@ public struct PreferencesHomeView: View {
             destination: PreferencesAboutView()
           )
         }
-        if Self.isInternalBuild {
+        if RuntimeEnvironment.isInternalBuild {
           Section("Preferences-Home-InternalDiagnostics-sectionTitle".boltLocalized) {
             if let distributionService = distributionService {
               Button("Preferences-Home-InternalDiagnostics-checkUpdateButtonTitle".boltLocalized) {
@@ -249,13 +249,6 @@ public struct PreferencesHomeView: View {
       }
     }
     .navigationViewStyle(.stack)
-  }
-
-  private static var isInternalBuild: Bool {
-    return
-      RuntimeEnvironment.currentAppEnvironment == .adhoc ||
-      RuntimeEnvironment.currentAppEnvironment == .simulator ||
-      RuntimeEnvironment.currentAppEnvironment == .catalyst
   }
 
 }

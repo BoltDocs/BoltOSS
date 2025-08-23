@@ -51,6 +51,13 @@ public enum RuntimeEnvironment {
   #endif
   }
 
+  public static var isInternalBuild: Bool {
+    return
+      currentAppEnvironment == .adhoc ||
+      currentAppEnvironment == .simulator ||
+      currentAppEnvironment == .catalyst
+  }
+
   public static var isRunningTests: Bool {
     return ProcessInfo.processInfo.environment.keys.contains { $0.starts(with: "XCTest" ) }
   }

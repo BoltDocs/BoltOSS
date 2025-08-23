@@ -28,6 +28,7 @@ import BoltLocalizations
 import BoltModuleExports
 import BoltServices
 import BoltUIFoundation
+import BoltUtils
 
 enum HomeListSection: Hashable {
   case docsets
@@ -118,15 +119,20 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
             primaryAction: nil,
             menu: UIMenu(
               title: "",
-              children: [
-                UIAction(
-                  title: UIKitLocalizations.select,
-                  image: UIImage(systemName: "checkmark.circle")
-                ) { [weak self] _ in
-                  self?.isEditingRelay.accept(true)
-                },
-                Self.createDiagnosticsMenu(),
-              ]
+              children: update(
+                [
+                  UIAction(
+                    title: UIKitLocalizations.select,
+                    image: UIImage(systemName: "checkmark.circle")
+                  ) { [weak self] _ in
+                    self?.isEditingRelay.accept(true)
+                  },
+                ]
+              ) {
+                if RuntimeEnvironment.isInternalBuild {
+                  $0.append(Self.createDiagnosticsMenu())
+                }
+              }
             )
           )
         ) {
