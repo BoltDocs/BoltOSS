@@ -225,6 +225,9 @@ final class HomeListViewController: UIViewController, UICollectionViewDelegate, 
     -> UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider?
   {
     return { [weak self] indexPath in
+      guard let self = self, viewModel(forIndexPath: indexPath) != nil else {
+        return nil
+      }
       let getInfoAction =
         UIContextualAction(
           style: .normal,
@@ -249,7 +252,6 @@ final class HomeListViewController: UIViewController, UICollectionViewDelegate, 
           deleteItems(atIndexPaths: [indexPath])
           completion(true)
         }
-
       return UISwipeActionsConfiguration(actions: [deleteAction, getInfoAction])
     }
   }
