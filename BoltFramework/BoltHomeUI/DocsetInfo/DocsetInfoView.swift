@@ -22,6 +22,27 @@ import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
 
+private struct ListItemView<Content: View>: View {
+
+  private let title: String
+  private let content: () -> Content
+
+  init(_ title: String, @ViewBuilder content: @escaping () -> Content) {
+    self.title = title
+    self.content = content
+  }
+
+  var body: some View {
+    HStack {
+      Text(title)
+        .foregroundStyle(.secondary)
+      Spacer()
+      content()
+    }
+  }
+
+}
+
 struct DocsetInfoView: View {
 
   @Environment(\.dismiss)
@@ -56,19 +77,15 @@ struct DocsetInfoView: View {
         // basic info
         Section {
           // identifier
-          HStack {
-            Text("Identifier")
-            Spacer()
+          ListItemView("Identifier") {
             Text(docset.name)
           }
-          HStack {
-            Text("Version")
-            Spacer()
+          ListItemView("Version") {
             Text(docset.version)
           }
-          HStack {
+          ListItemView("Auto Updates") {
             BoltToggle(
-              "Auto Updates",
+              "",
               isOn: .constant(docset.installedAsLatestVersion)
             )
             .disabled(true)
@@ -76,9 +93,7 @@ struct DocsetInfoView: View {
         }
         // feed
         Section {
-          HStack {
-            Text("Installed From")
-            Spacer()
+          ListItemView("Installed From") {
             switch docset.repository {
             case .main:
               Text("Main")
