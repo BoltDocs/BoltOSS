@@ -50,6 +50,8 @@ struct DocsetInfoView: View {
 
   var docset: Docset
 
+  @State private var isDiagnosticsModeOn = false
+
   var body: some View {
     VStack(spacing: 0) {
       HStack {
@@ -76,10 +78,6 @@ struct DocsetInfoView: View {
       List {
         // basic info
         Section {
-          // identifier
-          ListItemView("Identifier") {
-            Text(docset.name)
-          }
           ListItemView("Version") {
             Text(docset.version)
           }
@@ -108,8 +106,21 @@ struct DocsetInfoView: View {
             }
           }
         }
+        // diagnostics
+        Section {
+          if isDiagnosticsModeOn {
+            // identifier
+            ListItemView("Identifier") {
+              Text(docset.name)
+            }
+          }
+        }
       }
       .listStyle(.plain)
+      Button("Diagnostics") {
+        isDiagnosticsModeOn.toggle()
+      }
+      .padding()
     }
   }
 
