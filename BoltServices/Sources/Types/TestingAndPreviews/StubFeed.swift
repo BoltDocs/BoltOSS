@@ -38,8 +38,8 @@ public struct StubFeed: Feed {
     return FeedEntries()
   }
 
-  public static var defaultIconImage: PlatformImage {
-    return PlatformImage()
+  public static var defaultIconImage: IdentifiableImage {
+    return IdentifiableImage()
   }
 
   public init(

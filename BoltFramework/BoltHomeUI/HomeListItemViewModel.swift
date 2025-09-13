@@ -57,7 +57,7 @@ struct HomeListItemViewModel {
       if !docset.installedAsLatestVersion {
         subTitle = docset.version
       }
-      image = docset.iconImageForList
+      image = docset.iconImageForList?.image
     case let .broken(installation):
       title = installation.name
       if installation.installedAsLatestVersion {

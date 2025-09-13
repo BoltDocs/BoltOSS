@@ -198,25 +198,32 @@ extension Docset: CustomStringConvertible {
 
 extension Docset: EntryIconProvider {
 
-  public static let defaultIconImage: PlatformImage = {
+  public static let defaultIconImage: IdentifiableImage = {
+    let symbolName = "books.vertical"
     #if os(iOS)
-    PlatformImage(
-      systemName: "books.vertical",
-      withConfiguration: PlatformImage.SymbolConfiguration(
-        pointSize: 16
-      )
-    )!
+    return IdentifiableImage(
+      image: PlatformImage(
+        systemName: symbolName,
+        withConfiguration: PlatformImage.SymbolConfiguration(
+          pointSize: 16
+        )
+      )!,
+      id: symbolName
+    )
     #else
-    PlatformImage(
-      systemSymbolName: "books.vertical",
-      accessibilityDescription: nil
-    )!
-    .withSymbolConfiguration(
-      PlatformImage.SymbolConfiguration(
-        pointSize: 16,
-        weight: .regular
-      )
-    )!
+    return IdentifiableImage(
+      image: PlatformImage(
+        systemSymbolName: symbolName,
+        accessibilityDescription: nil
+      )!
+      .withSymbolConfiguration(
+        PlatformImage.SymbolConfiguration(
+          pointSize: 16,
+          weight: .regular
+        )
+      )!,
+      id: symbolName
+    )
     #endif
   }()
 

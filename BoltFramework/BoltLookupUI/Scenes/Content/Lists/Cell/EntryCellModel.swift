@@ -47,7 +47,7 @@ struct LookupListDocsetItem: LookupListCellItem {
       name: docset.displayName,
       prompt: "\(docset.keyword.inAppSearch):",
       shouldShowDisclosureIndicator: true,
-      docsetIcon: docset.iconImage,
+      docsetIcon: docset.iconImage.image,
       typeIcon: nil
     )
   }
@@ -70,7 +70,7 @@ struct LookupListEntryItem: LookupListCellItem {
       prompt: "",
       shouldShowDisclosureIndicator: false,
       docsetIcon: nil,
-      typeIcon: type.iconImage
+      typeIcon: type.iconImage.image
     )
   }
 
@@ -92,7 +92,7 @@ struct LookupListTypeItem: LookupListCellItem {
       prompt: String(typeCountPair.count),
       shouldShowDisclosureIndicator: true,
       docsetIcon: nil,
-      typeIcon: type.iconImage
+      typeIcon: type.iconImage.image
     )
   }
 

@@ -133,13 +133,15 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
     docsetInfo: DocsetInfo
   ) -> EntryIcon {
     let localIconFies = ["icon@2x.png", "icon.png", "icon.tiff"]
-    let imageData = localIconFies.firstMap { file in
-      let url = URL(fileURLWithPath: docsetPath)
-        .appendingPathComponent(file)
-      return try? Data(contentsOf: url)
+    let dataAndPath: (Data, String)? = localIconFies.firstMap { file in
+      let path = docsetPath.appendingPathComponent(file)
+      if let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+        return (data, path)
+      }
+      return nil
     }
-    if let imageData = imageData {
-      return .data(imageData)
+    if let dataAndPath = dataAndPath {
+      return .data(dataAndPath.0, identifier: dataAndPath.1)
     } else if let docsetIcon = DocsetIcons(rawValue: docsetInfo.platformFamily.name) {
       return .bundled(.docsetIcon(docsetIcon))
     } else if let docsetIcon = DocsetIcons(rawValue: installation.name) {

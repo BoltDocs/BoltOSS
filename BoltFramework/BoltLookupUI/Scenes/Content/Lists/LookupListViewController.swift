@@ -181,7 +181,7 @@ private struct LookupListStubbedEntryItem: LookupListCellItem {
       prompt: "",
       shouldShowDisclosureIndicator: false,
       docsetIcon: nil,
-      typeIcon: type.iconImage
+      typeIcon: type.iconImage.image
     )
   }
 

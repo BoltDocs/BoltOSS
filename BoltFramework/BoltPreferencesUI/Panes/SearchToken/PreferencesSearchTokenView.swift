@@ -83,7 +83,7 @@ final class PreferencesTypeBrowserViewController: UITableViewController, UISearc
     let cell = tableView.dequeueReusableCell(withIdentifier: "TypeCell", for: indexPath)
     var contentConfiguration = UIListContentConfiguration.cell()
     contentConfiguration.text = type.singular
-    contentConfiguration.image = type.iconImage
+    contentConfiguration.image = type.iconImage.image
     contentConfiguration.imageProperties.maximumSize = CGSize(width: 20, height: 20)
     cell.contentConfiguration = contentConfiguration
     return cell
@@ -110,7 +110,7 @@ final class PreferencesTypeBrowserViewController: UITableViewController, UISearc
 
   private func updateSearchToken(forIndexPath indexPath: IndexPath) {
     let type = entryTypes[indexPath.row]
-    let image = type.iconImage.resized(to: CGSize(width: 16, height: 16))
+    let image = type.iconImage.image.resized(to: CGSize(width: 16, height: 16))
     let token = UISearchToken(icon: image, text: type.singular)
 
     searchBar.searchTextField.tokens = [token]

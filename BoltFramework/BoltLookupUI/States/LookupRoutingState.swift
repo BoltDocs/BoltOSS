@@ -118,7 +118,7 @@ final class LookupRoutingState: HasDisposeBag {
             return nil
           case let .types(_, type):
             // images should be manually resized for UISearchToken
-            let image = type.iconImage.resized(to: CGSize(width: 16, height: 16))
+            let image = type.iconImage.image.resized(to: CGSize(width: 16, height: 16))
             return UISearchToken(icon: image, text: type.plural)
           }
         }

@@ -140,7 +140,7 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
           NavigationLink {
             DeferredView { LibraryFeedInfoView(feed) }
           } label: {
-            LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
+            LibraryFeedListItemView(image: feed.iconImageForList?.image, title: feed.displayName)
           } // NavigationLink
           .tint(Color.primary)
         } // ForEach

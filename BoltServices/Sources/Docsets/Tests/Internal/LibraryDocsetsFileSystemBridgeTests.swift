@@ -65,7 +65,8 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
       EntryIcon.bundled(.docsetIcon(.cpp))
     )
 
-    let iconData = try Data(contentsOf: Bundle.module.url(forResource: "TestResources/CustomIcon.docset/icon@2x.png")!)
+    let iconURL = try XCTUnwrap(Bundle.module.url(forResource: "TestResources/CustomIcon.docset/icon@2x.png"))
+    let iconData = try Data(contentsOf: iconURL)
     XCTAssertEqual(
       LibraryDocsetsFileSystemBridge._docsetIcon(
         fromDocsetPath: Bundle.module.path(forResource: "TestResources/CustomIcon.docset")!,
@@ -81,7 +82,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
           ]
         )
       ),
-      EntryIcon.data(iconData)
+      EntryIcon.data(iconData, identifier: iconURL.path())
     )
 
     XCTAssertEqual(

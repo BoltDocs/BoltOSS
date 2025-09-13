@@ -21,22 +21,23 @@ import BoltServices
 
 public extension EntryIconProvider {
 
-  var iconImageForList: UIImage? {
-    let image = iconImage
-    return image.isSymbolImage ? image
-    : iconImage
-      .roundedCorner(
-        withSize: CGSize(width: 30, height: 30),
-        contentSize: CGSize(width: 18, height: 18),
-        backgroundColor: .white,
-        cornerRadius: 6,
-        borderWidth: 0.25,
-        borderColor: .gray
-      )
+  var iconImageForList: IdentifiableImage? {
+    let image = iconImage.image
+    let uiImage = image.isSymbolImage ? image
+      : image
+        .roundedCorner(
+          withSize: CGSize(width: 30, height: 30),
+          contentSize: CGSize(width: 18, height: 18),
+          backgroundColor: .white,
+          cornerRadius: 6,
+          borderWidth: 0.25,
+          borderColor: .gray
+        )
+    return IdentifiableImage(image: uiImage ?? UIImage(), id: iconImage.id)
   }
 
   var iconImageForInfo: UIImage? {
-    return iconImage
+    return iconImage.image
       .roundedCorner(
         withSize: CGSize(width: 56, height: 56),
         contentSize: CGSize(width: 32, height: 32),

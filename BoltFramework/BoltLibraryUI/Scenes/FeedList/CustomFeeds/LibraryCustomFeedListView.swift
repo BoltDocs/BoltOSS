@@ -79,7 +79,7 @@ struct LibraryCustomFeedListView: View {
         NavigationLink {
           DeferredView { LibraryFeedInfoView(feed) }
         } label: {
-          LibraryFeedListItemView(image: feed.iconImageForList, title: feed.displayName)
+          LibraryFeedListItemView(image: feed.iconImageForList?.image, title: feed.displayName)
         } // NavigationLink
         .contextMenu {
           Button {

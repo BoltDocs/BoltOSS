@@ -27,10 +27,10 @@ public enum EntryIcon: Sendable, Hashable {
   }
 
   case bundled(_: Bundled)
-  case data(_: Data)
+  case data(_: Data, identifier: String)
   case providerDefault
 
-  public var platformImage: PlatformImage? {
+  public var platformImage: IdentifiableImage? {
     switch self {
     case .bundled(let icon):
       let iconName: String
@@ -40,9 +40,15 @@ public enum EntryIcon: Sendable, Hashable {
       case let .docsetIcon(docsetIcon):
         iconName = "docset-icons/\(docsetIcon.rawValue)"
       }
-      return BoltImageResource(named: iconName, in: BLTTypes.assetsBundle).platformImage
-    case .data(let imageData):
-      return PlatformImage(data: imageData)
+      guard let image = BoltImageResource(named: iconName, in: BLTTypes.assetsBundle).platformImage else {
+        return nil
+      }
+      return IdentifiableImage(image: image, id: iconName)
+    case let .data(imageData, identifier):
+      guard let image = PlatformImage(data: imageData) else {
+        return nil
+      }
+      return IdentifiableImage(image: image, id: identifier)
     case .providerDefault:
       return nil
     }
@@ -53,15 +59,15 @@ public enum EntryIcon: Sendable, Hashable {
 public protocol EntryIconProvider {
 
   var icon: EntryIcon { get }
-  static var defaultIconImage: PlatformImage { get }
+  static var defaultIconImage: IdentifiableImage { get }
 
-  var iconImage: PlatformImage { get }
+  var iconImage: IdentifiableImage { get }
 
 }
 
 public extension EntryIconProvider {
 
-  var iconImage: PlatformImage {
+  var iconImage: IdentifiableImage {
     return icon.platformImage ?? Self.defaultIconImage
   }
 

@@ -60,7 +60,7 @@ struct DocsetInfoView: View {
           Text(docset.displayName)
             .font(.headline)
         } icon: {
-          Image(uiImage: docset.iconImage)
+          Image(uiImage: docset.iconImage.image)
             .resizable()
         }
         .labelStyle(ListItemLabelStyle(spacing: 8, iconSize: CGSize(width: 24, height: 24)))

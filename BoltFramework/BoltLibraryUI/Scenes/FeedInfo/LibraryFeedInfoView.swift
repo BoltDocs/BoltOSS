@@ -37,7 +37,7 @@ struct LibraryFeedInfoView: View {
     var body: some View {
       Section("Feed") {
         HStack {
-          let image = feed.iconImageForList
+          let image = feed.iconImageForList?.image
           Image(uiImage: image ?? UIImage())
             .if(image?.isSymbolImage ?? false) {
               $0.renderingMode(.template)

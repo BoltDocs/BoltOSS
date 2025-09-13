@@ -85,25 +85,32 @@ public struct CustomFeed: Feed, Identifiable, Equatable {
 
   // MARK: - EntryIconProvider
 
-  public static var defaultIconImage: PlatformImage = {
+  public static var defaultIconImage: IdentifiableImage = {
+    let symbolName = "books.vertical"
     #if os(iOS)
-    PlatformImage(
-      systemName: "books.vertical",
-      withConfiguration: PlatformImage.SymbolConfiguration(
-        pointSize: 16
-      )
-    )!
+    return IdentifiableImage(
+      image: PlatformImage(
+        systemName: symbolName,
+        withConfiguration: PlatformImage.SymbolConfiguration(
+          pointSize: 16
+        )
+      )!,
+      id: symbolName
+    )
     #else
-    PlatformImage(
-      systemSymbolName: "books.vertical",
-      accessibilityDescription: nil
-    )!
-    .withSymbolConfiguration(
-      PlatformImage.SymbolConfiguration(
-        pointSize: 16,
-        weight: .regular
-      )
-    )!
+    return IdentifiableImage(
+      image: PlatformImage(
+        systemSymbolName: symbolName,
+        accessibilityDescription: nil
+      )!
+      .withSymbolConfiguration(
+        PlatformImage.SymbolConfiguration(
+          pointSize: 16,
+          weight: .regular
+        )
+      )!,
+      id: symbolName
+    )
     #endif
   }()
 
