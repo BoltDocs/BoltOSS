@@ -37,6 +37,12 @@ public extension LibraryDatabase {
     }
   }
 
+  func updateDocsetInstallation(_ update: DocsetInstallationUpdate) throws {
+    try dbPool.write { db in
+      try update.update(in: db)
+    }
+  }
+
   func updateDocsetInstallationOrder(_ records: [LibraryRecord]) throws {
     try dbPool.write { db in
       for (idx, record) in records.enumerated() {

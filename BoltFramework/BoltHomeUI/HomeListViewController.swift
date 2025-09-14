@@ -42,7 +42,7 @@ final class HomeListCollectionViewItemCell: UICollectionViewListCell {
 
       $0.text = viewModel.title
       $0.secondaryText = viewModel.subTitle
-      $0.image = viewModel.image
+      $0.image = viewModel.image?.image
     }
   }
 
