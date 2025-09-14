@@ -34,6 +34,10 @@ struct HomeListItemViewModel {
     return queryResult.record.uuid
   }
 
+  var record: LibraryRecord {
+    return queryResult.record
+  }
+
   var docset: Docset? {
     switch queryResult {
     case let .docset(docset):

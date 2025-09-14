@@ -177,8 +177,7 @@ final class HomeListViewController: UIViewController, UICollectionViewDelegate, 
       switch docsetsListModel {
       case let .header(section):
         return headerRegistration.cellProvider(collectionView, indexPath, section.localized)
-      case let .docset(queryResult):
-        let viewModel = HomeListItemViewModel(queryResult: queryResult)
+      case let .docset(viewModel):
         return cellRegistration.cellProvider(collectionView, indexPath, viewModel)
       }
     }
