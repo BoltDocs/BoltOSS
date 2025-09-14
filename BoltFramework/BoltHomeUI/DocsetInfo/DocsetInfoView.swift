@@ -16,8 +16,10 @@
 
 import SwiftUI
 
+import Factory
 import IssueReporting
 
+import BoltDatabase
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
@@ -44,23 +46,131 @@ private struct ListItemView<Content: View>: View {
 
 }
 
+private struct ListItemStringContentView: View {
+
+  private let content: Binding<String>
+  private let editable: Bool
+
+  init(content: Binding<String>, editable: Bool) {
+    self.content = content
+    self.editable = editable
+  }
+
+  var body: some View {
+    HStack {
+      if editable {
+        TextField("", text: content)
+          .multilineTextAlignment(.trailing)
+      } else {
+        Text(content.wrappedValue)
+      }
+    }
+  }
+
+}
+
+private struct ListItemBoolContentView: View {
+
+  private let value: Binding<Bool>
+  private let editable: Bool
+
+  init(value: Binding<Bool>, editable: Bool) {
+    self.value = value
+    self.editable = editable
+  }
+
+  var body: some View {
+    HStack {
+      if editable {
+        Picker("", selection: value) {
+          Text("Yes").tag(true)
+          Text("No").tag(false)
+        }
+      } else {
+        Text(value.wrappedValue ? "Yes" : "No")
+      }
+    }
+  }
+
+}
+
+public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
+
+  @Injected(\.libraryDocsetsManager)
+  private var libraryDocsetManager: LibraryDocsetsManager
+
+  private let docset: Docset
+
+  @Published private(set) var isDiagnosticsModeOn: Bool = false
+
+  @Published var version: String
+  @Published var installedAsLatestVersion: Bool
+
+  var identifier: String { docset.name }
+
+  var displayName: String { docset.displayName }
+
+  var iconImage: IdentifiableImage { docset.iconImage }
+
+  var repository: String {
+    switch docset.repository {
+    case .main:
+      return "Main"
+    case .cheatsheet:
+      return "Cheatsheet"
+    case .userContributed:
+      return "User Contributed"
+    case .custom:
+      return "Custom"
+    case let repository:
+      reportIssue("Unhandled repository type: \(repository)")
+      return "Unknown"
+    }
+  }
+
+  public init(docset: Docset) {
+    self.docset = docset
+    self.version = docset.version
+    self.installedAsLatestVersion = docset.installedAsLatestVersion
+  }
+
+  func toggleDiagnosticsMode() {
+    isDiagnosticsModeOn.toggle()
+    if !isDiagnosticsModeOn {
+      let update = DocsetInstallationUpdate(
+        uuid: docset.uuid,
+        version: version,
+        installedAsLatestVersion: installedAsLatestVersion
+      )
+      do {
+        try libraryDocsetManager.updateDocsetInstallation(update)
+      } catch {
+        Self.logger.error("failed to save docset update, error: \(error)")
+      }
+    }
+  }
+
+}
+
 struct DocsetInfoView: View {
 
   @Environment(\.dismiss)
   private var dismiss: DismissAction
 
-  var docset: Docset
+  @StateObject private var viewModel: DocsetInfoViewModel
 
-  @State private var isDiagnosticsModeOn = false
+  init(docset: Docset) {
+    _viewModel = StateObject(wrappedValue: DocsetInfoViewModel(docset: docset))
+  }
 
   var body: some View {
     VStack(spacing: 0) {
       HStack {
         Label {
-          Text(docset.displayName)
+          Text(viewModel.displayName)
             .font(.headline)
         } icon: {
-          Image(uiImage: docset.iconImage.image)
+          Image(uiImage: viewModel.iconImage.image)
             .resizable()
         }
         .labelStyle(ListItemLabelStyle(spacing: 8, iconSize: CGSize(width: 24, height: 24)))
@@ -80,39 +190,30 @@ struct DocsetInfoView: View {
         // basic info
         Section {
           ListItemView("Version") {
-            Text(docset.version)
+            ListItemStringContentView(
+              content: $viewModel.version,
+              editable: viewModel.isDiagnosticsModeOn
+            )
           }
           ListItemView("Auto Updates") {
-            BoltToggle(
-              "",
-              isOn: .constant(docset.installedAsLatestVersion)
+            ListItemBoolContentView(
+              value: $viewModel.installedAsLatestVersion,
+              editable: viewModel.isDiagnosticsModeOn
             )
-            .disabled(true)
           }
         }
         // feed
         Section {
           ListItemView("Installed From") {
-            switch docset.repository {
-            case .main:
-              Text("Main")
-            case .cheatsheet:
-              Text("Cheatsheet")
-            case .userContributed:
-              Text("User Contributed")
-            case .custom:
-              Text("Custom")
-            case let repository:
-              let _ = reportIssue("Unhandled repository type: \(repository)")
-            }
+            Text(viewModel.repository)
           }
         }
         // diagnostics
         Section {
-          if isDiagnosticsModeOn {
+          if viewModel.isDiagnosticsModeOn {
             // identifier
             ListItemView("Identifier") {
-              Text(docset.name)
+              Text(viewModel.identifier)
             }
           }
         }
@@ -120,7 +221,7 @@ struct DocsetInfoView: View {
       .listStyle(.plain)
       if RuntimeEnvironment.isInternalBuild {
         Button("Diagnostics") {
-          isDiagnosticsModeOn.toggle()
+          viewModel.toggleDiagnosticsMode()
         }
         .padding()
       }

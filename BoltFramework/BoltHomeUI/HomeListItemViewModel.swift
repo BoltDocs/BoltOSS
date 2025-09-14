@@ -28,7 +28,7 @@ struct HomeListItemViewModel {
 
   var title: String?
   var subTitle: String?
-  var image: UIImage?
+  var image: IdentifiableImage?
 
   var uuid: UUID {
     return queryResult.record.uuid
@@ -57,13 +57,16 @@ struct HomeListItemViewModel {
       if !docset.installedAsLatestVersion {
         subTitle = docset.version
       }
-      image = docset.iconImageForList?.image
+      image = docset.iconImageForList
     case let .broken(installation):
       title = installation.name
       if installation.installedAsLatestVersion {
         subTitle = installation.version
       }
-      image = UIImage(systemName: "text.book.closed")
+      let symbolName = "text.book.closed"
+      if let uiImage = UIImage(systemName: symbolName) {
+        image = IdentifiableImage(image: uiImage, id: symbolName)
+      }
     }
   }
 
@@ -76,11 +79,18 @@ struct HomeListItemViewModel {
 extension HomeListItemViewModel: Hashable {
 
   static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.uuid == rhs.uuid
+    return
+      lhs.uuid == rhs.uuid &&
+      lhs.title == rhs.title &&
+      lhs.subTitle == rhs.subTitle &&
+      lhs.image?.id == rhs.image?.id
   }
 
   func hash(into hasher: inout Hasher) {
     hasher.combine(uuid)
+    hasher.combine(title)
+    hasher.combine(subTitle)
+    hasher.combine(image?.id)
   }
 
 }
