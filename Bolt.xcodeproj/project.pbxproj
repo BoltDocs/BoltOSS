@@ -615,7 +615,7 @@
 			repositoryURL = "https://github.com/EmergeTools/SnapshotPreviews";
 			requirement = {
 				kind = exactVersion;
-				version = 0.10.20;
+				version = 0.10.24;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
