@@ -24,6 +24,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
   public let installedAsLatestVersion: Bool
   public let repository: RepositoryIdentifier
   public var orderIndex: Int
+  public let latestVersion: String?
 
   public let uuidString: String
   public let identifier: String
@@ -35,6 +36,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
     case installedAsLatestVersion
     case repository = "source"
     case orderIndex
+    case latestVersion
   }
 
   public static var databaseTableName: String {
@@ -47,7 +49,8 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
     version: String,
     installedAsLatestVersion: Bool,
     repository: RepositoryIdentifier,
-    orderIndex: Int = 0
+    orderIndex: Int = 0,
+    latestVersion: String? = nil
   ) {
     self.uuid = uuid
     self.name = name
@@ -55,6 +58,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
     self.installedAsLatestVersion = installedAsLatestVersion
     self.repository = repository
     self.orderIndex = orderIndex
+    self.latestVersion = latestVersion
 
     uuidString = uuid.uuidString
     identifier = InstallationIdentifier.fromName(
@@ -73,6 +77,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
     installedAsLatestVersion = try container.decode(Bool.self, forKey: .installedAsLatestVersion)
     repository = try container.decode(RepositoryIdentifier.self, forKey: .repository)
     orderIndex = try container.decode(Int.self, forKey: .orderIndex)
+    latestVersion = try container.decode(String?.self, forKey: .latestVersion)
 
     uuidString = uuid.uuidString
     identifier = InstallationIdentifier.fromName(

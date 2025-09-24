@@ -168,13 +168,16 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
           }
         },
         .flexibleSpace(),
-        update(UIBarButtonItem()) {
-          $0.primaryAction = UIAction(
-            title: "Home-Toolbar-DownloadsButtonTitle".boltLocalized
-          ) { [weak self] _ in
-            self?.sceneState.dispatch(action: .onPresentDownloads)
+        UIBarButtonItem(
+          customView: update(ToolbarDownloadsItemView()) {
+            $0.downloadsButtonAction = { [weak self] in
+              self?.sceneState.dispatch(action: .onPresentDownloads)
+            }
+            $0.updatesButtonAction = { [weak self] in
+              self?.sceneState.dispatch(action: .onPresentUpdates)
+            }
           }
-        },
+        ),
         .flexibleSpace(),
       ]
       items.append(

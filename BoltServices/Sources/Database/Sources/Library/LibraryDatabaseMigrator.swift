@@ -81,6 +81,12 @@ extension LibraryDatabase {
       )
     }
 
+    migrator.registerMigration("Add Latest Version Column for Installations Table") { db in
+      try db.alter(table: "docset-installations") { t in
+        t.add(column: "latestVersion", .text)
+      }
+    }
+
     return migrator
   }
 

@@ -18,6 +18,7 @@ import SwiftUI
 
 import Factory
 
+import BoltDocsets
 import BoltLocalizations
 import BoltModuleExports
 import BoltServices
@@ -80,7 +81,14 @@ private class PreferencesHomeViewModel: ObservableObject {
   @Published var updateCheckingFrequency = UpdateCheckingFrequency.never
   @Published var webViewInspectable = false
 
-  init() {
+  @Injected(\.docsetUpdateChecker)
+  private var docsetUpdateChecker: DocsetUpdateChecker
+
+  private var sceneState: SceneState
+
+  init(sceneState: SceneState) {
+    self.sceneState = sceneState
+
     UserDefaults.standard.publisher(for: \.disablesPrivateBrowsing)
       .assign(to: &$disablesPrivateBrowsing)
     UserDefaults.standard.publisher(for: \.enablesDesktopMode)
@@ -88,9 +96,40 @@ private class PreferencesHomeViewModel: ObservableObject {
     UserDefaults.standard.publisher(for: \.updateCheckingFrequency)
       .map(UpdateCheckingFrequency.init(seconds:))
       .assign(to: &$updateCheckingFrequency)
+
     if #available(iOS 16.4, *) {
       UserDefaults.standard.publisher(for: \.webViewInspectable)
         .assign(to: &$webViewInspectable)
+    }
+  }
+
+  func checkForDocsetUpdates() {
+    Task { [sceneState] in
+      let updatableEntries = await docsetUpdateChecker.fetchDocsetUpdates(useCachedEntries: false)
+      let updatableEntriesCount = updatableEntries.count
+      if updatableEntriesCount > 0 {
+        await GlobalUI.presentAlertController(
+          UIAlertController.alert(
+            withTitle: "Preferences-Home-DocsetUpdatesAvailableAlert-title".boltLocalized,
+            message: "Preferences-Home-DocsetUpdatesAvailableAlert-message".boltLocalized(updatableEntriesCount),
+            confirmAction: (
+              UIKitLocalizations.ok,
+              UIAlertAction.Style.default, {
+                sceneState.dispatch(action: .onPresentUpdates)
+              }
+            ),
+            cancelAction: (UIKitLocalizations.cancel, { })
+          )
+        )
+      } else {
+        await GlobalUI.presentAlertController(
+          UIAlertController.alert(
+            withTitle: "Preferences-Home-DocsetsUpToDateAlert-title".boltLocalized,
+            message: "Preferences-Home-DocsetsUpToDateAlert-message".boltLocalized,
+            confirmAction: (UIKitLocalizations.ok, .default, nil)
+          )
+        )
+      }
     }
   }
 
@@ -101,7 +140,7 @@ public struct PreferencesHomeView: View {
   @Environment(\.dismiss)
   private var dismiss: DismissAction
 
-  @StateObject private var viewModel = PreferencesHomeViewModel()
+  @StateObject private var viewModel: PreferencesHomeViewModel
 
   @Injected(\.distributionService)
   private var distributionService: DistributionService?
@@ -126,7 +165,9 @@ public struct PreferencesHomeView: View {
     }
   }
 
-  public init() { }
+  public init(sceneState: SceneState) {
+    _viewModel = StateObject(wrappedValue: PreferencesHomeViewModel(sceneState: sceneState))
+  }
 
   public var body: some View {
     NavigationView {
@@ -184,6 +225,7 @@ public struct PreferencesHomeView: View {
           }
           .pickerStyle(.navigationLink)
           Button("Preferences-Home-DocsetUpdates-checkForUpdatesButtonTitle".boltLocalized) {
+            viewModel.checkForDocsetUpdates()
           }
         }
         Section("Preferences-Home-About-sectionTitle".boltLocalized) {
