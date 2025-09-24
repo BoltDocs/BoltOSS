@@ -91,7 +91,10 @@ public final class SceneManager {
     state.onPresentPreferences
       // swiftlint:disable:next trailing_closure
       .emit(with: self, onNext: { owner, _ in
-        BoltAppNavigator.presentPreferences(forWindow: owner.rootWindow)
+        BoltAppNavigator.presentPreferences(
+          forWindow: owner.rootWindow,
+          sceneState: owner.state
+        )
       })
       .disposed(by: disposeBag)
 
@@ -99,6 +102,15 @@ public final class SceneManager {
       // swiftlint:disable:next trailing_closure
       .emit(with: self, onNext: { owner, _ in
         BoltAppNavigator.presentDownloads(forWindow: owner.rootWindow)
+      })
+      .disposed(by: disposeBag)
+
+    state.onPresentDocsetUpdates
+      // swiftlint:disable:next trailing_closure
+      .emit(with: self, onNext: { owner, _ in
+        BoltAppNavigator.presentDocsetUpdates(
+          forWindow: owner.rootWindow
+        )
       })
       .disposed(by: disposeBag)
 

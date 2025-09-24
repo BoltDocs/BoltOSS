@@ -17,8 +17,8 @@
 import SwiftUI
 
 import BoltLibraryUI
+import BoltModuleExports
 import BoltPreferencesUI
-
 import BoltUIFoundation
 
 struct BoltAppNavigator {
@@ -33,8 +33,12 @@ struct BoltAppNavigator {
     }
   }
 
-  static func presentPreferences(forWindow window: UIWindow) {
-    let preferencesViewController = UIHostingController(rootView: PreferencesHomeView())
+  static func presentPreferences(
+    forWindow window: UIWindow,
+    sceneState: SceneState
+  ) {
+    let preferencesView = PreferencesHomeView(sceneState: sceneState)
+    let preferencesViewController = UIHostingController(rootView: preferencesView)
     preferencesViewController.modalPresentationStyle = .formSheet
     if let root = window.topViewController {
       root.present(preferencesViewController, animated: true)
@@ -48,6 +52,16 @@ struct BoltAppNavigator {
     downloadsViewController.modalPresentationStyle = .formSheet
     if let root = window.topViewController {
       root.present(downloadsViewController, animated: true)
+    }
+  }
+
+  static func presentDocsetUpdates(forWindow window: UIWindow) {
+    let updatesViewController = UIHostingController(
+      rootView: SheetContainer { LibraryUpdatesListView() }
+    )
+    updatesViewController.modalPresentationStyle = .formSheet
+    if let root = window.topViewController {
+      root.present(updatesViewController, animated: true)
     }
   }
 

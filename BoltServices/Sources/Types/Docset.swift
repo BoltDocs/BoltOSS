@@ -146,6 +146,7 @@ public struct Docset: LibraryRecord, Sendable {
   public var name: String
   public var version: String
   public var installedAsLatestVersion: Bool
+  public var latestVersion: String?
   public var repository: RepositoryIdentifier
   public var identifier: String
 
@@ -178,6 +179,7 @@ public struct Docset: LibraryRecord, Sendable {
     self.name = installation.name
     self.version = installation.version
     self.installedAsLatestVersion = installation.installedAsLatestVersion
+    self.latestVersion = installation.latestVersion
     self.repository = installation.repository
     self.identifier = installation.identifier
 

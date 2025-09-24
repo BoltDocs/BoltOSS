@@ -30,6 +30,22 @@ public protocol LibraryRecord {
 
   var installedAsLatestVersion: Bool { get }
 
+  var latestVersion: String? { get }
+
   var identifier: String { get }
+
+}
+
+public extension LibraryRecord {
+
+  var hasNewerVersion: Bool {
+    if !installedAsLatestVersion {
+      return false
+    } else if let latestVersion = latestVersion {
+      return version != latestVersion
+    } else {
+      return false
+    }
+  }
 
 }

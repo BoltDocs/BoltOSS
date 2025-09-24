@@ -28,19 +28,22 @@ public struct DocsetInstallationUpdate: TableRecord {
   public var version: String?
   public var installedAsLatestVersion: Bool?
   public var repository: RepositoryIdentifier?
+  public var latestVersion: String?
 
   public init(
     uuid: UUID,
     name: String? = nil,
     version: String? = nil,
     installedAsLatestVersion: Bool? = nil,
-    repository: RepositoryIdentifier? = nil
+    repository: RepositoryIdentifier? = nil,
+    latestVersion: String? = nil
   ) {
     self.uuid = uuid
     self.name = name
     self.version = version
     self.installedAsLatestVersion = installedAsLatestVersion
     self.repository = repository
+    self.latestVersion = latestVersion
   }
 
   public static var databaseTableName: String {
@@ -75,6 +78,13 @@ public struct DocsetInstallationUpdate: TableRecord {
       assignments.append(
         Column(DocsetInstallation.CodingKeys.repository)
           .set(to: repository.rawValue)
+      )
+    }
+
+    if let latestVersion = latestVersion {
+      assignments.append(
+        Column(DocsetInstallation.CodingKeys.latestVersion)
+          .set(to: latestVersion)
       )
     }
 
