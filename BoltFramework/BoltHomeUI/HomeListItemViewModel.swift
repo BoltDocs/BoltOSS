@@ -54,9 +54,13 @@ struct HomeListItemViewModel {
     switch queryResult {
     case let .docset(docset):
       title = docset.displayName
-      if !docset.installedAsLatestVersion {
-        subTitle = docset.version
-      }
+      subTitle = { () -> String in
+        if docset.installedAsLatestVersion {
+          return "Latest"
+        } else {
+          return docset.version
+        }
+      }()
       image = docset.iconImageForList
     case let .broken(installation):
       title = installation.name

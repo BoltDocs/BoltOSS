@@ -74,6 +74,8 @@ public protocol LibraryDocsetsManager {
 
   func updateInstalledDocsetsOrder(_ records: [LibraryRecord]) throws
 
+  func updateDocsetLatestVersion(_ version: String, record: LibraryRecord) throws
+
 }
 
 final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
@@ -155,6 +157,12 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
 
   func updateInstalledDocsetsOrder(_ records: [LibraryRecord]) throws {
     try LibraryDatabase.shared.updateDocsetInstallationOrder(records)
+  }
+
+  func updateDocsetLatestVersion(_ version: String, record: LibraryRecord) throws {
+    try LibraryDatabase.shared.updateDocsetInstallation(
+      DocsetInstallationUpdate(uuid: record.uuid, latestVersion: version)
+    )
   }
 
 }

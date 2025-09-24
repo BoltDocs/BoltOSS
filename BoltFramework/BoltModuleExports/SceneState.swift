@@ -53,6 +53,7 @@ public enum SceneAction {
   case onPresentLibrary
   case onPresentPreferences
   case onPresentDownloads
+  case onPresentUpdates
 
 }
 
@@ -66,6 +67,11 @@ public class SceneState: HasDisposeBag {
 
   private let _onPresentDownloads = PublishRelay<Void>()
   public lazy var onPresentDownloads: Signal<Void> = { _onPresentDownloads.asSignal() }()
+
+  private let _onPresentDocsetUpdates = PublishRelay<Void>()
+  public lazy var onPresentDocsetUpdates: Signal<Void> = {
+    return _onPresentDocsetUpdates.asSignal()
+  }()
 
   private let _lookupListVisible = BehaviorRelay<Bool>(value: false)
   public lazy var lookupListVisible: Driver<Bool> = { _lookupListVisible.asDriver() }()
@@ -95,6 +101,8 @@ public class SceneState: HasDisposeBag {
       _onPresentPreferences.accept(())
     case .onPresentDownloads:
       _onPresentDownloads.accept(())
+    case .onPresentUpdates:
+      _onPresentDocsetUpdates.accept(())
     }
   }
 
