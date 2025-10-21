@@ -16,14 +16,31 @@
 
 #import "include/BLTTypes.h"
 
+static NSString * const kResourceBundleName = @"BoltServices_BoltTypesAssets";
+
 @implementation BLTTypes
 
 + (NSBundle *)assetsBundle {
 #if SWIFT_PACKAGE
+#if DEBUG
+  NSString *overrideBundlePath = [NSProcessInfo processInfo].environment[@"PACKAGE_RESOURCE_BUNDLE_PATH"];
+  if ([overrideBundlePath length]) {
+    NSBundle *overrideBundle = [NSBundle bundleWithPath:overrideBundlePath];
+    if (overrideBundle) {
+      NSString *resourceBundlePath = [overrideBundle pathForResource:kResourceBundleName ofType:@"bundle"];
+      if ([resourceBundlePath length]) {
+        NSBundle *resourceBundle = [NSBundle bundleWithURL:[NSURL fileURLWithPath:resourceBundlePath]];
+        if (resourceBundle) {
+          return resourceBundle;
+        }
+      }
+    }
+  }
+#endif
   return SWIFTPM_MODULE_BUNDLE;
 #else
   NSBundle *moduleBundle = [NSBundle bundleForClass:BLTTypes.class];
-  NSString *resourceBundlePath = [moduleBundle pathForResource:@"BoltServices_BoltTypesAssets" ofType:@"bundle"];
+  NSString *resourceBundlePath = [moduleBundle pathForResource:kResourceBundleName ofType:@"bundle"];
   if ([resourceBundlePath length]) {
     NSBundle *resourceBundle = [NSBundle bundleWithURL:[NSURL fileURLWithPath:resourceBundlePath]];
     if (resourceBundle) {
