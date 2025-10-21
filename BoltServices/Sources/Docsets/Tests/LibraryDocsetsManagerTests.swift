@@ -72,7 +72,6 @@ final class LibraryDocsetsManagerTests: XCTestCase {
           isDocsetBundle: false,
           docsetLocation: ResourceLocations.stubbed
         ),
-        isInstalledAsLatest: false,
         usingTarix: false
       )
     )
@@ -113,7 +112,6 @@ final class LibraryDocsetsManagerTests: XCTestCase {
           isDocsetBundle: false,
           docsetLocation: ResourceLocations.stubbed
         ),
-        isInstalledAsLatest: false,
         usingTarix: true
       )
     )

@@ -62,11 +62,7 @@ public protocol LibraryDocsetsManager {
   var installedRecords: [LibraryRecord] { get }
   var installedRecordsPublisher: AnyPublisher<[LibraryRecord], Never> { get }
 
-  func installDocset(
-    forEntry entry: FeedEntry,
-    isInstalledAsLatest: Bool,
-    usingTarix: Bool
-  ) -> AnyPublisher<InstallationProgress, Error>
+  func installDocset(forEntry entry: FeedEntry, usingTarix: Bool) -> AnyPublisher<InstallationProgress, Error>
 
   func uninstallDocset(forRecord record: LibraryRecord) throws
 
@@ -134,11 +130,7 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
       .store(in: &cancellables)
   }
 
-  func installDocset(
-    forEntry entry: FeedEntry,
-    isInstalledAsLatest: Bool,
-    usingTarix: Bool
-  ) -> AnyPublisher<InstallationProgress, Error> {
+  func installDocset(forEntry entry: FeedEntry, usingTarix: Bool) -> AnyPublisher<InstallationProgress, Error> {
     return DocsetInstaller.shared.installDocset(forEntry: entry, usingTarix: usingTarix)
   }
 

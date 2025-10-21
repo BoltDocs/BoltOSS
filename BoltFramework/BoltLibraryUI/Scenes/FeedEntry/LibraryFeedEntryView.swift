@@ -358,7 +358,6 @@ struct LibraryFeedEntryView: View {
   private func startInstall() {
     let observable = libraryDocsetsManager.installDocset(
       forEntry: dataSource.entry,
-      isInstalledAsLatest: false,
       usingTarix: dataSource.supportsTarix && installsWithTarix
     )
     // swiftlint:disable:next trailing_closure
