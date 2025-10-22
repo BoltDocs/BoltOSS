@@ -26,7 +26,7 @@ import BoltUtils
 struct GZipExtensionTests {
 
   @Test func gunzippedFromFileHandle() throws {
-    let indexFileURL = Bundle.module.url(forResource: "TestResources/Bash.tgz.tarix.txt")!
+    let indexFileURL = Bundle.module.url(forResource: "TestResources/Bash.tarix.txt")!
     let indexFileContent = try String(contentsOf: indexFileURL, encoding: .utf8)
     let indexLines = indexFileContent.components(separatedBy: "\n")
 

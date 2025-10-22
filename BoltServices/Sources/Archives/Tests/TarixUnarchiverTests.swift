@@ -26,7 +26,7 @@ import BoltTestingUtils
 struct TarixUnarchiverTests {
 
   @Test func dataFromIndexedTar() async throws {
-    let dbQueue = try DatabaseQueue(path: Bundle.module.path(forResource: "TestResources/Bash.tgz", ofType: "tarix")!)
+    let dbQueue = try DatabaseQueue(path: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tarix")!)
     let indices = try await dbQueue.read { db -> [TarIndex] in
       let selectStatement = try db.cachedStatement(
         sql: "SELECT * FROM tarindex"
@@ -38,7 +38,7 @@ struct TarixUnarchiverTests {
     for index in indices {
       let res = try await TarixUnarchiver.dataFromIndexedTar(
         tarFilePath: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tgz")!,
-        tarixDBPath: Bundle.module.path(forResource: "TestResources/Bash.tgz", ofType: "tarix")!,
+        tarixDBPath: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tarix")!,
         atPath: index.path
       )
       try #require(res != nil)
@@ -53,7 +53,7 @@ struct TarixUnarchiverTests {
   @Test func extractListedFiles() async throws{
     let destPath = NSTemporaryDirectory().appendingPathComponent(UUID().uuidString)
     let publisher = TarixUnarchiver.extractListedFiles(
-      forTarix: Bundle.module.path(forResource: "TestResources/Bash.tgz", ofType: "tarix")!,
+      forTarix: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tarix")!,
       fromTarFile: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tgz")!,
       toPath: destPath
     )
