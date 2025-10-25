@@ -356,7 +356,7 @@ struct LibraryFeedEntryView: View {
   }
 
   private func startInstall() {
-    let observable = libraryDocsetsManager.installDocset(
+    let observable = libraryDocsetsManager.installOrUpdateDocset(
       forEntry: dataSource.entry,
       usingTarix: dataSource.supportsTarix && installsWithTarix
     )
