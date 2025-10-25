@@ -56,7 +56,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     )
 
     let _ = try await awaitPublisher(
-      libraryDocsetsManager.installDocset(
+      libraryDocsetsManager.installOrUpdateDocset(
         forEntry: FeedEntry(
           feed: StubFeed(
             repository: .main,
@@ -96,7 +96,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     )
 
     let _ = try await awaitPublisher(
-      libraryDocsetsManager.installDocset(
+      libraryDocsetsManager.installOrUpdateDocset(
         forEntry: FeedEntry(
           feed: StubFeed(
             repository: .main,
@@ -119,8 +119,69 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     XCTAssert(fileManager.fileExists(atPath: downloadsPath))
 
     let downloadsPathContents = try fileManager.contentsOfDirectory(atPath: downloadsPath)
-    XCTAssert(!downloadsPathContents.contains("Vim-9.0-main.tgz"))
-    XCTAssert(!downloadsPathContents.contains("Vim-9.0-main.tgz.tarix"))
+    XCTAssertFalse(downloadsPathContents.contains("Vim-9.0-main.tgz"))
+    XCTAssertFalse(downloadsPathContents.contains("Vim-9.0-main.tgz.tarix"))
+  }
+
+  func testUpdateExistingDocset() async throws {
+    try await installDocsetTrackedAsLatest(version: "/8")
+
+    try await Task.sleep(for: .milliseconds(1000))
+
+    let docsetsBeforeUpdate = libraryDocsetsManager.installedDocsets.filter { result in
+      result.record.name == "Bash"
+    }
+    XCTAssertEqual(docsetsBeforeUpdate.count, 1)
+    XCTAssertEqual(docsetsBeforeUpdate.first?.record.version, "/8")
+
+    try await installDocsetTrackedAsLatest(version: "/9")
+
+    try await Task.sleep(for: .milliseconds(1000))
+
+    let docsetsAfterUpdate = libraryDocsetsManager.installedDocsets.filter { result in
+      result.record.name == "Bash"
+    }
+
+    XCTAssertEqual(docsetsAfterUpdate.count, 1)
+    XCTAssertEqual(docsetsAfterUpdate.first?.record.version, "/9")
+  }
+
+  private func installDocsetTrackedAsLatest(version: String) async throws {
+    let fileManager = FileManager.default
+    let downloadsPath = LocalFileSystem.downloadsAbsolutePath
+
+    let identifier = "Bash-\(version.replacingOccurrences(of: "/", with: "_"))-latest-main"
+
+    try fileManager.copyItem(
+      atPath: try XCTUnwrap(Bundle.module.path(forResource: "TestResources/Bash.tgz")),
+      toPath: downloadsPath.appendingPathComponent("\(identifier).tgz")
+    )
+
+    try fileManager.copyItem(
+      atPath: try XCTUnwrap(Bundle.module.path(forResource: "TestResources/Bash.tgz.tarix")),
+      toPath: downloadsPath.appendingPathComponent("\(identifier).tgz.tarix")
+    )
+
+    let _ = try await awaitPublisher(
+      libraryDocsetsManager.installOrUpdateDocset(
+        forEntry: FeedEntry(
+          feed: StubFeed(
+            repository: .main,
+            id: "Bash",
+            displayName: "Bash",
+            aliases: [],
+            shouldHideVersions: true,
+            supportsArchiveIndex: true,
+            icon: EntryIcon.bundled(.docsetIcon(.bash))
+          ),
+          version: version,
+          isTrackedAsLatest: true,
+          isDocsetBundle: false,
+          docsetLocation: ResourceLocations.stubbed
+        ),
+        usingTarix: true
+      )
+    )
   }
 
 }

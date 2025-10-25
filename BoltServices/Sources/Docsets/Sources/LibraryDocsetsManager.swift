@@ -62,7 +62,7 @@ public protocol LibraryDocsetsManager {
   var installedRecords: [LibraryRecord] { get }
   var installedRecordsPublisher: AnyPublisher<[LibraryRecord], Never> { get }
 
-  func installDocset(forEntry entry: FeedEntry, usingTarix: Bool) -> AnyPublisher<InstallationProgress, Error>
+  func installOrUpdateDocset(forEntry entry: FeedEntry, usingTarix: Bool) -> AnyPublisher<InstallationProgress, Error>
 
   func uninstallDocset(forRecord record: LibraryRecord) throws
 
@@ -130,7 +130,23 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
       .store(in: &cancellables)
   }
 
-  func installDocset(forEntry entry: FeedEntry, usingTarix: Bool) -> AnyPublisher<InstallationProgress, Error> {
+  func installOrUpdateDocset(forEntry entry: FeedEntry, usingTarix: Bool) -> AnyPublisher<InstallationProgress, Error> {
+    if entry.isTrackedAsLatest {
+      let outdatedRecords = installedRecords.filter { record in
+        return
+          record.repository == entry.feed.repository &&
+          record.name == entry.feed.id &&
+          record.version != entry.version
+      }
+      for record in outdatedRecords {
+        Self.logger.info("DocsetUninstaller: uninstalling outdated record: \(record.identifier)")
+        do {
+          try uninstallDocset(forRecord: record)
+        } catch {
+          Self.logger.info("DocsetUninstaller: failed to uninstall outdated record: \(record.identifier), \(error)")
+        }
+      }
+    }
     return DocsetInstaller.shared.installDocset(forEntry: entry, usingTarix: usingTarix)
   }
 
