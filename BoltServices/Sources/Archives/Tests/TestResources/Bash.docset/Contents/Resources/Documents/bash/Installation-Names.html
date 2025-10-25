@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,9 @@ A copy of the license is included in the section entitled
 <link href="Compiling-For-Multiple-Architectures.html" rel="prev" title="Compiling For Multiple Architectures">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,61 +46,62 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Installation-Names">
-<div class="header">
+<div class="section-level-extent" id="Installation-Names">
+<div class="nav-panel">
 <p>
 Next: <a href="Specifying-the-System-Type.html" accesskey="n" rel="next">Specifying the System Type</a>, Previous: <a href="Compiling-For-Multiple-Architectures.html" accesskey="p" rel="prev">Compiling For Multiple Architectures</a>, Up: <a href="Installing-Bash.html" accesskey="u" rel="up">Installing Bash</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Installation-Names-1"></span><h3 class="section">10.4 Installation Names</h3>
+<h3 class="section" id="Installation-Names-1"><span>10.4 Installation Names<a class="copiable-link" href="#Installation-Names-1"> &para;</a></span></h3>
 
-<p>By default, &lsquo;<samp>make install</samp>&rsquo; will install into
-<samp>/usr/local/bin</samp>, <samp>/usr/local/man</samp>, etc.;
-that is, the <em>installation prefix</em> defaults to <samp>/usr/local</samp>.
-You can specify an installation prefix other than <samp>/usr/local</samp> by
-giving <code>configure</code> the option <samp>--prefix=<var>PATH</var></samp>,
-or by specifying a value for the <code>prefix</code> &lsquo;<samp>make</samp>&rsquo;
-variable when running &lsquo;<samp>make install</samp>&rsquo;
-(e.g., &lsquo;<samp>make install prefix=<var>PATH</var></samp>&rsquo;).
-The <code>prefix</code> variable provides a default for <code>exec_prefix</code> and
-other variables used when installing bash.
+<p>By default, &lsquo;<samp class="samp">make install</samp>&rsquo; will install into
+<samp class="file">/usr/local/bin</samp>, <samp class="file">/usr/local/man</samp>, etc.;
+that is, the <em class="dfn">installation prefix</em> defaults to <samp class="file">/usr/local</samp>.
+You can specify an installation prefix other than <samp class="file">/usr/local</samp> by
+giving <code class="code">configure</code> the option <samp class="option">--prefix=<var class="var">PATH</var></samp>,
+or by specifying a value for the <code class="env">prefix</code> &lsquo;<samp class="samp">make</samp>&rsquo;
+variable when running &lsquo;<samp class="samp">make install</samp>&rsquo;
+(e.g., &lsquo;<samp class="samp">make install prefix=<var class="var">PATH</var></samp>&rsquo;).
+The <code class="env">prefix</code> variable provides a default for <code class="env">exec_prefix</code> and
+other variables used when installing Bash.
 </p>
 <p>You can specify separate installation prefixes for
 architecture-specific files and architecture-independent files. 
-If you give <code>configure</code> the option
-<samp>--exec-prefix=<var>PATH</var></samp>, &lsquo;<samp>make install</samp>&rsquo; will use
-<var>PATH</var> as the prefix for installing programs and libraries.
+If you give <code class="code">configure</code> the option
+<samp class="option">--exec-prefix=<var class="var">PATH</var></samp>, &lsquo;<samp class="samp">make install</samp>&rsquo; will use
+<var class="var">PATH</var> as the prefix for installing programs and libraries.
 Documentation and other data files will still use the regular prefix.
 </p>
 <p>If you would like to change the installation locations for a single run,
-you can specify these variables as arguments to <code>make</code>:
-&lsquo;<samp>make install exec_prefix=/</samp>&rsquo; will install <code>bash</code> and
-<code>bashbug</code> into <samp>/bin</samp> instead of the default <samp>/usr/local/bin</samp>.
+you can specify these variables as arguments to <code class="code">make</code>:
+&lsquo;<samp class="samp">make install exec_prefix=/</samp>&rsquo; will install <code class="code">bash</code> and
+<code class="code">bashbug</code> into <samp class="file">/bin</samp> instead of the default <samp class="file">/usr/local/bin</samp>.
 </p>
-<p>If you want to see the files bash will install and where it will install
+<p>If you want to see the files Bash will install and where it will install
 them without changing anything on your system, specify the variable
-<code>DESTDIR</code> as an argument to <code>make</code>. Its value should be the
-absolute directory path you&rsquo;d like to use as the root of your sample
-installation tree. For example,
+<code class="env">DESTDIR</code> as an argument to <code class="code">make</code>.
+Its value should be the absolute directory path you&rsquo;d like to use as the
+root of your sample installation tree.
+For example,
 </p>
 <div class="example">
-<pre class="example">mkdir /fs1/bash-install
+<pre class="example-preformatted">mkdir /fs1/bash-install
 make install DESTDIR=/fs1/bash-install
 </pre></div>
 
-<p>will install <code>bash</code> into <samp>/fs1/bash-install/usr/local/bin/bash</samp>,
+<p>will install <code class="code">bash</code> into <samp class="file">/fs1/bash-install/usr/local/bin/bash</samp>,
 the documentation into directories within
-<samp>/fs1/bash-install/usr/local/share</samp>, the example loadable builtins into
-<samp>/fs1/bash-install/usr/local/lib/bash</samp>, and so on.
-You can use the usual <code>exec_prefix</code> and <code>prefix</code> variables to alter
-the directory paths beneath the value of <code>DESTDIR</code>.
+<samp class="file">/fs1/bash-install/usr/local/share</samp>, the example loadable builtins into
+<samp class="file">/fs1/bash-install/usr/local/lib/bash</samp>, and so on.
+You can use the usual <code class="env">exec_prefix</code> and <code class="env">prefix</code> variables to alter
+the directory paths beneath the value of <code class="env">DESTDIR</code>.
 </p>
 <p>The GNU Makefile standards provide a more complete description of these
 variables and their effects.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Specifying-the-System-Type.html">Specifying the System Type</a>, Previous: <a href="Compiling-For-Multiple-Architectures.html">Compiling For Multiple Architectures</a>, Up: <a href="Installing-Bash.html">Installing Bash</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

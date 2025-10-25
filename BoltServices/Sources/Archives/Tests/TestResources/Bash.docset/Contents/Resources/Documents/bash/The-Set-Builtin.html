@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -31,21 +31,9 @@ A copy of the license is included in the section entitled
 <link href="The-Shopt-Builtin.html" rel="next" title="The Shopt Builtin">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -54,351 +42,373 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="The-Set-Builtin">
-<div class="header">
+<div class="subsection-level-extent" id="The-Set-Builtin">
+<div class="nav-panel">
 <p>
 Next: <a href="The-Shopt-Builtin.html" accesskey="n" rel="next">The Shopt Builtin</a>, Up: <a href="Modifying-Shell-Behavior.html" accesskey="u" rel="up">Modifying Shell Behavior</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="The-Set-Builtin-1"></span><h4 class="subsection">4.3.1 The Set Builtin</h4>
+<h4 class="subsection" id="The-Set-Builtin-1"><span>4.3.1 The Set Builtin<a class="copiable-link" href="#The-Set-Builtin-1"> ¶</a></span></h4>
 
-<p>This builtin is so complicated that it deserves its own section.  <code>set</code>
+<p>This builtin is so complicated that it deserves its own section.  <code class="code">set</code>
 allows you to change the values of shell options and set the positional
 parameters, or to display the names and values of shell variables.
 </p>
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Builtin/set"></a><dt id="index-set"><span><code>set</code><a href="#index-set" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dl class="table">
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/set"></a><a id="index-set"></a><span><code class="code">set</code><a class="copiable-link" href="#index-set"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">set [-abefhkmnptuvxBCEHPT] [-o <var>option-name</var>] [--] [-] [<var>argument</var> …]
-set [+abefhkmnptuvxBCEHPT] [+o <var>option-name</var>] [--] [-] [<var>argument</var> …]
+<pre class="example-preformatted">set [-abefhkmnptuvxBCEHPT] [-o <var class="var">option-name</var>] [--] [-] [<var class="var">argument</var> ...]
+set [+abefhkmnptuvxBCEHPT] [+o <var class="var">option-name</var>] [--] [-] [<var class="var">argument</var> ...]
+set -o
+set +o
 </pre></div>
 
-<p>If no options or arguments are supplied, <code>set</code> displays the names
+<p>If no options or arguments are supplied, <code class="code">set</code> displays the names
 and values of all shell variables and functions, sorted according to the
 current locale, in a format that may be reused as input
 for setting or resetting the currently-set variables.
 Read-only variables cannot be reset.
-In <small>POSIX</small> mode, only shell variables are listed.
+In <small class="sc">POSIX</small> mode, only shell variables are listed.
 </p>
 <p>When options are supplied, they set or unset shell attributes.
-Options, if specified, have the following meanings:
+Any arguments remaining after option processing replace the
+positional parameters.
 </p>
-<dl compact="compact">
-<dt><span><code>-a</code></span></dt>
+<p>Options, if specified, have the following meanings:
+</p>
+<dl class="table">
+<dt><code class="code">-a</code></dt>
 <dd><p>Each variable or function that is created or modified is given the
 export attribute and marked for export to the environment of
 subsequent commands.
 </p>
 </dd>
-<dt><span><code>-b</code></span></dt>
+<dt><code class="code">-b</code></dt>
 <dd><p>Cause the status of terminated background jobs to be reported
-immediately, rather than before printing the next primary prompt.
+immediately, rather than before printing the next primary prompt
+or, under some circumstances,  when a foreground command exits.
+This is effective only when job control is enabled.
 </p>
 </dd>
-<dt><span><code>-e</code></span></dt>
+<dt><code class="code">-e</code></dt>
 <dd><p>Exit immediately if
-a pipeline (see <a href="Pipelines.html">Pipelines</a>), which may consist of a single simple command
-(see <a href="Simple-Commands.html">Simple Commands</a>),
-a list (see <a href="Lists.html">Lists of Commands</a>),
-or a compound command (see <a href="Compound-Commands.html">Compound Commands</a>)
+a pipeline (see <a class="pxref" href="Pipelines.html">Pipelines</a>), which may consist of a single simple command
+(see <a class="pxref" href="Simple-Commands.html">Simple Commands</a>),
+a list (see <a class="pxref" href="Lists.html">Lists of Commands</a>),
+or a compound command (see <a class="pxref" href="Compound-Commands.html">Compound Commands</a>)
 returns a non-zero status.
 The shell does not exit if the command that fails is part of the
-command list immediately following a <code>while</code> or <code>until</code> keyword,
-part of the test in an <code>if</code> statement,
-part of any command executed in a <code>&amp;&amp;</code> or <code>||</code> list except
-the command following the final <code>&amp;&amp;</code> or <code>||</code>,
-any command in a pipeline but the last,
-or if the command’s return status is being inverted with <code>!</code>.
+command list immediately following a
+<code class="code">while</code> or <code class="code">until</code> reserved word,
+part of the test in an <code class="code">if</code> statement,
+part of any command executed in a <code class="code">&amp;&amp;</code> or <code class="code">||</code> list except
+the command following the final <code class="code">&amp;&amp;</code> or <code class="code">||</code>,
+any command in a pipeline but the last
+(subject to the state of the <code class="code">pipefail</code> shell option),
+or if the command’s return status is being inverted with <code class="code">!</code>.
 If a compound command other than a subshell
 returns a non-zero status because a command failed
-while <samp>-e</samp> was being ignored, the shell does not exit.
-A trap on <code>ERR</code>, if set, is executed before the shell exits.
+while <samp class="option">-e</samp> was being ignored, the shell does not exit.
+A trap on <code class="code">ERR</code>, if set, is executed before the shell exits.
 </p>
 <p>This option applies to the shell environment and each subshell environment
-separately (see <a href="Command-Execution-Environment.html">Command Execution Environment</a>), and may cause
+separately (see <a class="pxref" href="Command-Execution-Environment.html">Command Execution Environment</a>), and may cause
 subshells to exit before executing all the commands in the subshell.
 </p>
 <p>If a compound command or shell function executes in a context where
-<samp>-e</samp> is being ignored,
+<samp class="option">-e</samp> is being ignored,
 none of the commands executed within the compound command or function body
-will be affected by the <samp>-e</samp> setting, even if <samp>-e</samp> is set
+will be affected by the <samp class="option">-e</samp> setting, even if <samp class="option">-e</samp> is set
 and a command returns a failure status.
-If a compound command or shell function sets <samp>-e</samp> while executing in
-a context where <samp>-e</samp> is ignored, that setting will not have any
+If a compound command or shell function sets <samp class="option">-e</samp> while executing in
+a context where <samp class="option">-e</samp> is ignored, that setting will not have any
 effect until the compound command or the command containing the function
 call completes.
 </p>
 </dd>
-<dt><span><code>-f</code></span></dt>
+<dt><code class="code">-f</code></dt>
 <dd><p>Disable filename expansion (globbing).
 </p>
 </dd>
-<dt><span><code>-h</code></span></dt>
+<dt><code class="code">-h</code></dt>
 <dd><p>Locate and remember (hash) commands as they are looked up for execution.
 This option is enabled by default.
 </p>
 </dd>
-<dt><span><code>-k</code></span></dt>
+<dt><code class="code">-k</code></dt>
 <dd><p>All arguments in the form of assignment statements are placed
 in the environment for a command, not just those that precede
 the command name.
 </p>
 </dd>
-<dt><span><code>-m</code></span></dt>
-<dd><p>Job control is enabled (see <a href="Job-Control.html">Job Control</a>).
+<dt><code class="code">-m</code></dt>
+<dd><p>Job control is enabled (see <a class="pxref" href="Job-Control.html">Job Control</a>).
 All processes run in a separate process group.
 When a background job completes, the shell prints a line
 containing its exit status.
 </p>
 </dd>
-<dt><span><code>-n</code></span></dt>
+<dt><code class="code">-n</code></dt>
 <dd><p>Read commands but do not execute them.
 This may be used to check a script for syntax errors.
 This option is ignored by interactive shells.
 </p>
 </dd>
-<dt><span><code>-o <var>option-name</var></code></span></dt>
+<dt><code class="code">-o <var class="var">option-name</var></code></dt>
 <dd>
-<p>Set the option corresponding to <var>option-name</var>:
+<p>Set the option corresponding to <var class="var">option-name</var>.
+If <samp class="option">-o</samp> is supplied with no <var class="var">option-name</var>,
+<code class="code">set</code> prints the current shell options settings.
+If <samp class="option">+o</samp> is supplied with no <var class="var">option-name</var>,
+<code class="code">set</code> prints a series of
+<code class="code">set</code>
+commands to recreate the current option settings
+on the standard output.
+Valid option names are:
 </p>
-<dl compact="compact">
-<dt><span><code>allexport</code></span></dt>
-<dd><p>Same as <code>-a</code>.
-</p>
-</dd>
-<dt><span><code>braceexpand</code></span></dt>
-<dd><p>Same as <code>-B</code>.
-</p>
-</dd>
-<dt><span><code>emacs</code></span></dt>
-<dd><p>Use an <code>emacs</code>-style line editing interface (see <a href="Command-Line-Editing.html">Command Line Editing</a>).
-This also affects the editing interface used for <code>read -e</code>.
-</p>
-</dd>
-<dt><span><code>errexit</code></span></dt>
-<dd><p>Same as <code>-e</code>.
+<dl class="table">
+<dt><code class="code">allexport</code></dt>
+<dd><p>Same as <code class="code">-a</code>.
 </p>
 </dd>
-<dt><span><code>errtrace</code></span></dt>
-<dd><p>Same as <code>-E</code>.
+<dt><code class="code">braceexpand</code></dt>
+<dd><p>Same as <code class="code">-B</code>.
 </p>
 </dd>
-<dt><span><code>functrace</code></span></dt>
-<dd><p>Same as <code>-T</code>.
+<dt><code class="code">emacs</code></dt>
+<dd><p>Use an <code class="code">emacs</code>-style line editing interface (see <a class="pxref" href="Command-Line-Editing.html">Command Line Editing</a>).
+This also affects the editing interface used for <code class="code">read -e</code>.
 </p>
 </dd>
-<dt><span><code>hashall</code></span></dt>
-<dd><p>Same as <code>-h</code>.
+<dt><code class="code">errexit</code></dt>
+<dd><p>Same as <code class="code">-e</code>.
 </p>
 </dd>
-<dt><span><code>histexpand</code></span></dt>
-<dd><p>Same as <code>-H</code>.
+<dt><code class="code">errtrace</code></dt>
+<dd><p>Same as <code class="code">-E</code>.
 </p>
 </dd>
-<dt><span><code>history</code></span></dt>
-<dd><p>Enable command history, as described in <a href="Bash-History-Facilities.html">Bash History Facilities</a>.
+<dt><code class="code">functrace</code></dt>
+<dd><p>Same as <code class="code">-T</code>.
+</p>
+</dd>
+<dt><code class="code">hashall</code></dt>
+<dd><p>Same as <code class="code">-h</code>.
+</p>
+</dd>
+<dt><code class="code">histexpand</code></dt>
+<dd><p>Same as <code class="code">-H</code>.
+</p>
+</dd>
+<dt><code class="code">history</code></dt>
+<dd><p>Enable command history, as described in <a class="ref" href="Bash-History-Facilities.html">Bash History Facilities</a>.
 This option is on by default in interactive shells.
 </p>
 </dd>
-<dt><span><code>ignoreeof</code></span></dt>
+<dt><code class="code">ignoreeof</code></dt>
 <dd><p>An interactive shell will not exit upon reading EOF.
 </p>
 </dd>
-<dt><span><code>keyword</code></span></dt>
-<dd><p>Same as <code>-k</code>.
+<dt><code class="code">keyword</code></dt>
+<dd><p>Same as <code class="code">-k</code>.
 </p>
 </dd>
-<dt><span><code>monitor</code></span></dt>
-<dd><p>Same as <code>-m</code>.
+<dt><code class="code">monitor</code></dt>
+<dd><p>Same as <code class="code">-m</code>.
 </p>
 </dd>
-<dt><span><code>noclobber</code></span></dt>
-<dd><p>Same as <code>-C</code>.
+<dt><code class="code">noclobber</code></dt>
+<dd><p>Same as <code class="code">-C</code>.
 </p>
 </dd>
-<dt><span><code>noexec</code></span></dt>
-<dd><p>Same as <code>-n</code>.
+<dt><code class="code">noexec</code></dt>
+<dd><p>Same as <code class="code">-n</code>.
 </p>
 </dd>
-<dt><span><code>noglob</code></span></dt>
-<dd><p>Same as <code>-f</code>.
+<dt><code class="code">noglob</code></dt>
+<dd><p>Same as <code class="code">-f</code>.
 </p>
 </dd>
-<dt><span><code>nolog</code></span></dt>
+<dt><code class="code">nolog</code></dt>
 <dd><p>Currently ignored.
 </p>
 </dd>
-<dt><span><code>notify</code></span></dt>
-<dd><p>Same as <code>-b</code>.
+<dt><code class="code">notify</code></dt>
+<dd><p>Same as <code class="code">-b</code>.
 </p>
 </dd>
-<dt><span><code>nounset</code></span></dt>
-<dd><p>Same as <code>-u</code>.
+<dt><code class="code">nounset</code></dt>
+<dd><p>Same as <code class="code">-u</code>.
 </p>
 </dd>
-<dt><span><code>onecmd</code></span></dt>
-<dd><p>Same as <code>-t</code>.
+<dt><code class="code">onecmd</code></dt>
+<dd><p>Same as <code class="code">-t</code>.
 </p>
 </dd>
-<dt><span><code>physical</code></span></dt>
-<dd><p>Same as <code>-P</code>.
+<dt><code class="code">physical</code></dt>
+<dd><p>Same as <code class="code">-P</code>.
 </p>
 </dd>
-<dt><span><code>pipefail</code></span></dt>
+<dt><code class="code">pipefail</code></dt>
 <dd><p>If set, the return value of a pipeline is the value of the last
 (rightmost) command to exit with a non-zero status, or zero if all
 commands in the pipeline exit successfully.
 This option is disabled by default.
 </p>
 </dd>
-<dt><span><code>posix</code></span></dt>
-<dd><p>Change the behavior of Bash where the default operation differs
-from the <small>POSIX</small> standard to match the standard
-(see <a href="Bash-POSIX-Mode.html">Bash POSIX Mode</a>).
+<dt><code class="code">posix</code></dt>
+<dd><p>Enable <small class="sc">POSIX</small> mode;
+change the behavior of Bash where the default operation differs
+from the <small class="sc">POSIX</small> standard to match the standard
+(see <a class="pxref" href="Bash-POSIX-Mode.html">Bash and POSIX</a>).
 This is intended to make Bash behave as a strict superset of that
 standard.
 </p>
 </dd>
-<dt><span><code>privileged</code></span></dt>
-<dd><p>Same as <code>-p</code>.
+<dt><code class="code">privileged</code></dt>
+<dd><p>Same as <code class="code">-p</code>.
 </p>
 </dd>
-<dt><span><code>verbose</code></span></dt>
-<dd><p>Same as <code>-v</code>.
+<dt><code class="code">verbose</code></dt>
+<dd><p>Same as <code class="code">-v</code>.
 </p>
 </dd>
-<dt><span><code>vi</code></span></dt>
-<dd><p>Use a <code>vi</code>-style line editing interface.
-This also affects the editing interface used for <code>read -e</code>.
+<dt><code class="code">vi</code></dt>
+<dd><p>Use a <code class="code">vi</code>-style line editing interface.
+This also affects the editing interface used for <code class="code">read -e</code>.
 </p>
 </dd>
-<dt><span><code>xtrace</code></span></dt>
-<dd><p>Same as <code>-x</code>.
+<dt><code class="code">xtrace</code></dt>
+<dd><p>Same as <code class="code">-x</code>.
 </p></dd>
 </dl>
 
 </dd>
-<dt><span><code>-p</code></span></dt>
+<dt><code class="code">-p</code></dt>
 <dd><p>Turn on privileged mode.
-In this mode, the <code>$BASH_ENV</code> and <code>$ENV</code> files are not
+In this mode, the <code class="env">$BASH_ENV</code> and <code class="env">$ENV</code> files are not
 processed, shell functions are not inherited from the environment,
-and the <code>SHELLOPTS</code>, <code>BASHOPTS</code>, <code>CDPATH</code> and <code>GLOBIGNORE</code>
+and the <code class="env">SHELLOPTS</code>, <code class="env">BASHOPTS</code>, <code class="env">CDPATH</code> and <code class="env">GLOBIGNORE</code>
 variables, if they appear in the environment, are ignored.
 If the shell is started with the effective user (group) id not equal to the
-real user (group) id, and the <samp>-p</samp> option is not supplied, these actions
+real user (group) id, and the <samp class="option">-p</samp> option is not supplied, these actions
 are taken and the effective user id is set to the real user id.
-If the <samp>-p</samp> option is supplied at startup, the effective user id is
+If the <samp class="option">-p</samp> option is supplied at startup, the effective user id is
 not reset.
 Turning this option off causes the effective user
 and group ids to be set to the real user and group ids.
 </p>
 </dd>
-<dt><span><code>-r</code></span></dt>
-<dd><p>Enable restricted shell mode.
+<dt><code class="code">-r</code></dt>
+<dd><p>Enable restricted shell mode (see <a class="pxref" href="The-Restricted-Shell.html">The Restricted Shell</a>).
 This option cannot be unset once it has been set.
 </p>
 </dd>
-<dt><span><code>-t</code></span></dt>
+<dt><code class="code">-t</code></dt>
 <dd><p>Exit after reading and executing one command.
 </p>
 </dd>
-<dt><span><code>-u</code></span></dt>
+<dt><code class="code">-u</code></dt>
 <dd><p>Treat unset variables and parameters other than the special parameters
-‘<samp>@</samp>’ or ‘<samp>*</samp>’,
-or array variables subscripted with ‘<samp>@</samp>’ or ‘<samp>*</samp>’,
+‘<samp class="samp">@</samp>’ or ‘<samp class="samp">*</samp>’,
+or array variables subscripted with ‘<samp class="samp">@</samp>’ or ‘<samp class="samp">*</samp>’,
 as an error when performing parameter expansion.
 An error message will be written to the standard error, and a non-interactive
 shell will exit.
 </p>
 </dd>
-<dt><span><code>-v</code></span></dt>
-<dd><p>Print shell input lines as they are read.
+<dt><code class="code">-v</code></dt>
+<dd><p>Print shell input lines to standard error as they are read.
 </p>
 </dd>
-<dt><span><code>-x</code></span></dt>
-<dd><p>Print a trace of simple commands, <code>for</code> commands, <code>case</code>
-commands, <code>select</code> commands, and arithmetic <code>for</code> commands
-and their arguments or associated word lists after they are
-expanded and before they are executed.  The value of the <code>PS4</code>
-variable is expanded and the resultant value is printed before
+<dt><code class="code">-x</code></dt>
+<dd><p>Print a trace of simple commands, <code class="code">for</code> commands, <code class="code">case</code>
+commands, <code class="code">select</code> commands, and arithmetic <code class="code">for</code> commands
+and their arguments or associated word lists to the standard error
+after they are expanded and before they are executed.
+The shell prints the expanded value of the <code class="env">PS4</code> variable before
 the command and its expanded arguments.
 </p>
 </dd>
-<dt><span><code>-B</code></span></dt>
-<dd><p>The shell will perform brace expansion (see <a href="Brace-Expansion.html">Brace Expansion</a>).
+<dt><code class="code">-B</code></dt>
+<dd><p>The shell will perform brace expansion (see <a class="pxref" href="Brace-Expansion.html">Brace Expansion</a>).
 This option is on by default.
 </p>
 </dd>
-<dt><span><code>-C</code></span></dt>
-<dd><p>Prevent output redirection using ‘<samp>&gt;</samp>’, ‘<samp>&gt;&amp;</samp>’, and ‘<samp>&lt;&gt;</samp>’
+<dt><code class="code">-C</code></dt>
+<dd><p>Prevent output redirection using ‘<samp class="samp">&gt;</samp>’, ‘<samp class="samp">&gt;&amp;</samp>’, and ‘<samp class="samp">&lt;&gt;</samp>’
 from overwriting existing files.
+Using the redirection operator ‘<samp class="samp">&gt;|</samp>’ instead of ‘<samp class="samp">&gt;</samp>’
+will override this and force the creation of an output file.
 </p>
 </dd>
-<dt><span><code>-E</code></span></dt>
-<dd><p>If set, any trap on <code>ERR</code> is inherited by shell functions, command
+<dt><code class="code">-E</code></dt>
+<dd><p>If set, any trap on <code class="code">ERR</code> is inherited by shell functions, command
 substitutions, and commands executed in a subshell environment.
-The <code>ERR</code> trap is normally not inherited in such cases.
+The <code class="code">ERR</code> trap is normally not inherited in such cases.
 </p>
 </dd>
-<dt><span><code>-H</code></span></dt>
-<dd><p>Enable ‘<samp>!</samp>’ style history substitution (see <a href="History-Interaction.html">History Expansion</a>).
+<dt><code class="code">-H</code></dt>
+<dd><p>Enable ‘<samp class="samp">!</samp>’ style history substitution (see <a class="pxref" href="History-Interaction.html">History Expansion</a>).
 This option is on by default for interactive shells.
 </p>
 </dd>
-<dt><span><code>-P</code></span></dt>
-<dd><p>If set, do not resolve symbolic links when performing commands such as
-<code>cd</code> which change the current directory.  The physical directory
-is used instead.  By default, Bash follows
+<dt><code class="code">-P</code></dt>
+<dd><p>If set, Bash does not resolve symbolic links when executing commands
+such as <code class="code">cd</code> which change the current directory.
+It uses the physical directory structure instead.
+By default, Bash follows
 the logical chain of directories when performing commands
 which change the current directory.
 </p>
-<p>For example, if <samp>/usr/sys</samp> is a symbolic link to <samp>/usr/local/sys</samp>
+<p>For example, if <samp class="file">/usr/sys</samp> is a symbolic link to <samp class="file">/usr/local/sys</samp>
 then:
 </p><div class="example">
-<pre class="example">$ cd /usr/sys; echo $PWD
+<pre class="example-preformatted">$ cd /usr/sys; echo $PWD
 /usr/sys
 $ cd ..; pwd
 /usr
 </pre></div>
 
-<p>If <code>set -P</code> is on, then:
+<p>If <code class="code">set -P</code> is on, then:
 </p><div class="example">
-<pre class="example">$ cd /usr/sys; echo $PWD
+<pre class="example-preformatted">$ cd /usr/sys; echo $PWD
 /usr/local/sys
 $ cd ..; pwd
 /usr/local
 </pre></div>
 
 </dd>
-<dt><span><code>-T</code></span></dt>
-<dd><p>If set, any trap on <code>DEBUG</code> and <code>RETURN</code> are inherited by
+<dt><code class="code">-T</code></dt>
+<dd><p>If set, any traps on <code class="code">DEBUG</code> and <code class="code">RETURN</code> are inherited by
 shell functions, command substitutions, and commands executed
 in a subshell environment.
-The <code>DEBUG</code> and <code>RETURN</code> traps are normally not inherited
+The <code class="code">DEBUG</code> and <code class="code">RETURN</code> traps are normally not inherited
 in such cases.
 </p>
 </dd>
-<dt><span><code>--</code></span></dt>
-<dd><p>If no arguments follow this option, then the positional parameters are
-unset.  Otherwise, the positional parameters are set to the
-<var>arguments</var>, even if some of them begin with a ‘<samp>-</samp>’.
+<dt><code class="code">--</code></dt>
+<dd><p>If no arguments follow this option, unset the positional parameters.
+Otherwise, the positional parameters are set to the
+<var class="var">arguments</var>, even if some of them begin with a ‘<samp class="samp">-</samp>’.
 </p>
 </dd>
-<dt><span><code>-</code></span></dt>
-<dd><p>Signal the end of options, cause all remaining <var>arguments</var>
-to be assigned to the positional parameters.  The <samp>-x</samp>
-and <samp>-v</samp>  options are turned off.
+<dt><code class="code">-</code></dt>
+<dd><p>Signal the end of options, and assign all remaining <var class="var">arguments</var>
+to the positional parameters.
+The <samp class="option">-x</samp> and <samp class="option">-v</samp> options are turned off.
 If there are no arguments, the positional parameters remain unchanged.
 </p></dd>
 </dl>
 
-<p>Using ‘<samp>+</samp>’ rather than ‘<samp>-</samp>’ causes these options to be
-turned off.  The options can also be used upon invocation of the
-shell.  The current set of options may be found in <code>$-</code>.
+<p>Using ‘<samp class="samp">+</samp>’ rather than ‘<samp class="samp">-</samp>’ causes these options to be
+turned off.
+The options can also be used upon invocation of the shell.
+The current set of options may be found in <code class="code">$-</code>.
 </p>
-<p>The remaining N <var>arguments</var> are positional parameters and are
-assigned, in order, to <code>$1</code>, <code>$2</code>, …  <code>$N</code>.
-The special parameter <code>#</code> is set to N.
+<p>The remaining N <var class="var">arguments</var> are positional parameters and are
+assigned, in order, to <code class="code">$1</code>, <code class="code">$2</code>, …  <code class="code">$N</code>.
+The special parameter <code class="code">#</code> is set to N.
 </p>
 <p>The return status is always zero unless an invalid option is supplied.
 </p></dd>
@@ -406,7 +416,7 @@ The special parameter <code>#</code> is set to N.
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>, Up: <a href="Modifying-Shell-Behavior.html">Modifying Shell Behavior</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

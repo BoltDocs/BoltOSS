@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -32,21 +32,9 @@ A copy of the license is included in the section entitled
 <link href="Looping-Constructs.html" rel="prev" title="Looping Constructs">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -55,90 +43,91 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsubsection" id="Conditional-Constructs">
-<div class="header">
+<div class="subsubsection-level-extent" id="Conditional-Constructs">
+<div class="nav-panel">
 <p>
 Next: <a href="Command-Grouping.html" accesskey="n" rel="next">Grouping Commands</a>, Previous: <a href="Looping-Constructs.html" accesskey="p" rel="prev">Looping Constructs</a>, Up: <a href="Compound-Commands.html" accesskey="u" rel="up">Compound Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Conditional-Constructs-1"></span><h4 class="subsubsection">3.2.5.2 Conditional Constructs</h4>
-<span id="index-commands_002c-conditional"></span>
+<h4 class="subsubsection" id="Conditional-Constructs-1"><span>3.2.5.2 Conditional Constructs<a class="copiable-link" href="#Conditional-Constructs-1"> ¶</a></span></h4>
+<a class="index-entry-id" id="index-commands_002c-conditional"></a>
 
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Word/if"></a><dt id="index-if"><span><code>if</code><a href="#index-if" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><a class="dashAnchor" name="//apple_ref/Word/then"></a><span id="index-then"></span>
-<a class="dashAnchor" name="//apple_ref/Word/else"></a><span id="index-else"></span>
-<a class="dashAnchor" name="//apple_ref/Word/elif"></a><span id="index-elif"></span>
-<a class="dashAnchor" name="//apple_ref/Word/fi"></a><span id="index-fi"></span>
-<p>The syntax of the <code>if</code> command is:
+<dl class="table">
+<dt><a class="dashAnchor" name="//apple_ref/Word/then"></a><a class="index-entry-id" id="index-then"></a>
+<a class="dashAnchor" name="//apple_ref/Word/else"></a><a class="index-entry-id" id="index-else"></a>
+<a class="dashAnchor" name="//apple_ref/Word/elif"></a><a class="index-entry-id" id="index-elif"></a>
+<a class="dashAnchor" name="//apple_ref/Word/fi"></a><a class="index-entry-id" id="index-fi"></a>
+<a class="dashAnchor" name="//apple_ref/Word/if"></a><a id="index-if"></a><span><code class="code">if</code><a class="copiable-link" href="#index-if"> ¶</a></span></dt>
+<dd><p>The syntax of the <code class="code">if</code> command is:
 </p>
 <div class="example">
-<pre class="example">if <var>test-commands</var>; then
-  <var>consequent-commands</var>;
-[elif <var>more-test-commands</var>; then
-  <var>more-consequents</var>;]
-[else <var>alternate-consequents</var>;]
+<pre class="example-preformatted">if <var class="var">test-commands</var>; then
+  <var class="var">consequent-commands</var>;
+[elif <var class="var">more-test-commands</var>; then
+  <var class="var">more-consequents</var>;]
+[else <var class="var">alternate-consequents</var>;]
 fi
 </pre></div>
 
-<p>The <var>test-commands</var> list is executed, and if its return status is zero,
-the <var>consequent-commands</var> list is executed.
-If <var>test-commands</var> returns a non-zero status, each <code>elif</code> list
+<p>The <var class="var">test-commands</var> list is executed, and if its return status is zero,
+the <var class="var">consequent-commands</var> list is executed.
+If <var class="var">test-commands</var> returns a non-zero status, each <code class="code">elif</code> list
 is executed in turn, and if its exit status is zero,
-the corresponding <var>more-consequents</var> is executed and the   
+the corresponding <var class="var">more-consequents</var> is executed and the   
 command completes.
-If ‘<samp>else <var>alternate-consequents</var></samp>’ is present, and
-the final command in the final <code>if</code> or <code>elif</code> clause
-has a non-zero exit status, then <var>alternate-consequents</var> is executed.
+If ‘<samp class="samp">else <var class="var">alternate-consequents</var></samp>’ is present, and
+the final command in the final <code class="code">if</code> or <code class="code">elif</code> clause
+has a non-zero exit status, then <var class="var">alternate-consequents</var> is executed.
 The return status is the exit status of the last command executed, or
 zero if no condition tested true.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Word/case"></a><dt id="index-case"><span><code>case</code><a href="#index-case" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><a class="dashAnchor" name="//apple_ref/Word/in"></a><span id="index-in"></span>
-<a class="dashAnchor" name="//apple_ref/Word/esac"></a><span id="index-esac"></span>
-<p>The syntax of the <code>case</code> command is:
+<dt><a class="dashAnchor" name="//apple_ref/Word/in"></a><a class="index-entry-id" id="index-in"></a>
+<a class="dashAnchor" name="//apple_ref/Word/esac"></a><a class="index-entry-id" id="index-esac"></a>
+<a class="dashAnchor" name="//apple_ref/Word/case"></a><a id="index-case"></a><span><code class="code">case</code><a class="copiable-link" href="#index-case"> ¶</a></span></dt>
+<dd><p>The syntax of the <code class="code">case</code> command is:
 </p>
 <div class="example">
-<pre class="example">case <var>word</var> in
-    [ [(] <var>pattern</var> [| <var>pattern</var>]…) <var>command-list</var> ;;]…
+<pre class="example-preformatted">case <var class="var">word</var> in
+    [ [(] <var class="var">pattern</var> [| <var class="var">pattern</var>]...) <var class="var">command-list</var> ;;]...
 esac
 </pre></div>
 
-<p><code>case</code> will selectively execute the <var>command-list</var> corresponding to
-the first <var>pattern</var> that matches <var>word</var>.
+<p><code class="code">case</code> will selectively execute the <var class="var">command-list</var> corresponding to
+the first <var class="var">pattern</var> that matches <var class="var">word</var>,
+proceeding from the first pattern to the last.
 The match is performed according
-to the rules described below in <a href="Pattern-Matching.html">Pattern Matching</a>.
-If the <code>nocasematch</code> shell option
-(see the description of <code>shopt</code> in <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>)
+to the rules described below in <a class="ref" href="Pattern-Matching.html">Pattern Matching</a>.
+If the <code class="code">nocasematch</code> shell option
+(see the description of <code class="code">shopt</code> in <a class="ref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>)
 is enabled, the match is performed without regard to the case
 of alphabetic characters.
-The ‘<samp>|</samp>’ is used to separate multiple patterns, and the ‘<samp>)</samp>’
-operator terminates a pattern list.
-A list of patterns and an associated command-list is known
-as a <var>clause</var>.
+The ‘<samp class="samp">|</samp>’ is used to separate multiple patterns in a pattern list,
+and the ‘<samp class="samp">)</samp>’ operator terminates the pattern list.
+A pattern list and an associated <var class="var">command-list</var> is known
+as a <var class="var">clause</var>.
 </p>
-<p>Each clause must be terminated with ‘<samp>;;</samp>’, ‘<samp>;&amp;</samp>’, or ‘<samp>;;&amp;</samp>’.
-The <var>word</var> undergoes tilde expansion, parameter expansion, command
-substitution, arithmetic expansion, and quote removal
-(see <a href="Shell-Parameter-Expansion.html">Shell Parameter Expansion</a>)
-before matching is attempted.
-Each <var>pattern</var> undergoes tilde expansion, parameter expansion,
+<p>Each clause must be terminated with ‘<samp class="samp">;;</samp>’, ‘<samp class="samp">;&amp;</samp>’, or ‘<samp class="samp">;;&amp;</samp>’.
+The <var class="var">word</var> undergoes tilde expansion, parameter expansion, command
+substitution, process substitution, arithmetic expansion, and quote removal
+(see <a class="pxref" href="Shell-Parameter-Expansion.html">Shell Parameter Expansion</a>)
+before the shell attempts to match the pattern.
+Each <var class="var">pattern</var> undergoes tilde expansion, parameter expansion,
 command substitution, arithmetic expansion, process substitution, and
 quote removal.
 </p>
-<p>There may be an arbitrary number of <code>case</code> clauses, each terminated
-by a ‘<samp>;;</samp>’, ‘<samp>;&amp;</samp>’, or ‘<samp>;;&amp;</samp>’.
+<p>There may be an arbitrary number of <code class="code">case</code> clauses, each terminated
+by a ‘<samp class="samp">;;</samp>’, ‘<samp class="samp">;&amp;</samp>’, or ‘<samp class="samp">;;&amp;</samp>’.
 The first pattern that matches determines the
 command-list that is executed.
-It’s a common idiom to use ‘<samp>*</samp>’ as the final pattern to define the
+It’s a common idiom to use ‘<samp class="samp">*</samp>’ as the final pattern to define the
 default case, since that pattern will always match.
 </p>
-<p>Here is an example using <code>case</code> in a script that could be used to
+<p>Here is an example using <code class="code">case</code> in a script that could be used to
 describe one interesting feature of an animal:
 </p>
 <div class="example">
-<pre class="example">echo -n "Enter the name of an animal: "
+<pre class="example-preformatted">echo -n "Enter the name of an animal: "
 read ANIMAL
 echo -n "The $ANIMAL has "
 case $ANIMAL in
@@ -150,52 +139,53 @@ echo " legs."
 </pre></div>
 
 
-<p>If the ‘<samp>;;</samp>’ operator is used, no subsequent matches are attempted after
-the first pattern match.
-Using ‘<samp>;&amp;</samp>’  in place of ‘<samp>;;</samp>’ causes execution to continue with
-the <var>command-list</var> associated with the next clause, if any.
-Using ‘<samp>;;&amp;</samp>’ in place of ‘<samp>;;</samp>’ causes the shell to test the patterns
-in the next clause, if any, and execute any associated <var>command-list</var>
-on a successful match,
+<p>If the ‘<samp class="samp">;;</samp>’ operator is used, the <code class="code">case</code> command completes
+after the first pattern match.
+Using ‘<samp class="samp">;&amp;</samp>’  in place of ‘<samp class="samp">;;</samp>’ causes execution to continue with
+the <var class="var">command-list</var> associated with the next clause, if any.
+Using ‘<samp class="samp">;;&amp;</samp>’ in place of ‘<samp class="samp">;;</samp>’ causes the shell to test the patterns
+in the next clause, if any, and execute any associated <var class="var">command-list</var>
+if the match succeeds,
 continuing the case statement execution as if the pattern list had not matched.
 </p>
-<p>The return status is zero if no <var>pattern</var> is matched.  Otherwise, the
-return status is the exit status of the <var>command-list</var> executed.
+<p>The return status is zero if no <var class="var">pattern</var> matches. 
+Otherwise, the return status is the exit status of the
+last <var class="var">command-list</var> executed.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Word/select"></a><dt id="index-select"><span><code>select</code><a href="#index-select" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Word/select"></a><a id="index-select"></a><span><code class="code">select</code><a class="copiable-link" href="#index-select"> ¶</a></span></dt>
 <dd>
-<p>The <code>select</code> construct allows the easy generation of menus.
-It has almost the same syntax as the <code>for</code> command:
+<p>The <code class="code">select</code> construct allows the easy generation of menus.
+It has almost the same syntax as the <code class="code">for</code> command:
 </p>
 <div class="example">
-<pre class="example">select <var>name</var> [in <var>words</var> …]; do <var>commands</var>; done
+<pre class="example-preformatted">select <var class="var">name</var> [in <var class="var">words</var> ...]; do <var class="var">commands</var>; done
 </pre></div>
 
-<p>The list of words following <code>in</code> is expanded, generating a list
-of items, and the set of expanded words is printed on the standard
-error output stream, each preceded by a number.  If the
-‘<samp>in <var>words</var></samp>’ is omitted, the positional parameters are printed,
-as if ‘<samp>in "$@"</samp>’ had been specified.
-<code>select</code> then displays the <code>PS3</code>
+<p>First, expand the list of words following <code class="code">in</code>, generating a list
+of items, and print the set of expanded words on the standard
+error stream, each preceded by a number.
+If the ‘<samp class="samp">in <var class="var">words</var></samp>’ is omitted, print the positional parameters,
+as if ‘<samp class="samp">in "$@"</samp>’ had been specified.
+<code class="code">select</code> then displays the <code class="env">PS3</code>
 prompt and reads a line from the standard input.
 If the line consists of a number corresponding to one of the displayed
-words, then the value of <var>name</var> is set to that word.
-If the line is empty, the words and prompt are displayed again.
-If <code>EOF</code> is read, the <code>select</code> command completes and returns 1.
-Any other value read causes <var>name</var> to be set to null.
-The line read is saved in the variable <code>REPLY</code>.
+words, then <code class="code">select</code> sets the value of <var class="var">name</var> to that word.
+If the line is empty, <code class="code">select</code> displays the words and prompt again.
+If <code class="code">EOF</code> is read, <code class="code">select</code> completes and returns 1.
+Any other value read causes <var class="var">name</var> to be set to null.
+The line read is saved in the variable <code class="env">REPLY</code>.
 </p>
-<p>The <var>commands</var> are executed after each selection until a
-<code>break</code> command is executed, at which
-point the <code>select</code> command completes.
+<p>The <var class="var">commands</var> are executed after each selection until a
+<code class="code">break</code> command is executed, at which
+point the <code class="code">select</code> command completes.
 </p>
 <p>Here is an example that allows the user to pick a filename from the
 current directory, and displays the name and index of the file
 selected.
 </p>
 <div class="example">
-<pre class="example">select fname in *;
+<pre class="example-preformatted">select fname in *;
 do
 	echo you picked $fname \($REPLY\)
 	break;
@@ -203,55 +193,56 @@ done
 </pre></div>
 
 </dd>
-<dt><span><code>((…))</code></span></dt>
+<dt><code class="code">((…))</code></dt>
 <dd><div class="example">
-<pre class="example">(( <var>expression</var> ))
+<pre class="example-preformatted">(( <var class="var">expression</var> ))
 </pre></div>
 
-<p>The arithmetic <var>expression</var> is evaluated according to the rules
-described below (see <a href="Shell-Arithmetic.html">Shell Arithmetic</a>).
-The <var>expression</var> undergoes the same expansions
+<p>The arithmetic <var class="var">expression</var> is evaluated according to the rules
+described below (see <a class="pxref" href="Shell-Arithmetic.html">Shell Arithmetic</a>).
+The <var class="var">expression</var> undergoes the same expansions
 as if it were within double quotes,
-but double quote characters in <var>expression</var> are not treated specially
-are removed.
+but unescaped double quote characters
+in <var class="var">expression</var> are not treated
+specially and are removed.
+Since this can potentially result in empty strings,
+this command treats those as expressions that evaluate to 0.
 If the value of the expression is non-zero, the return status is 0;
 otherwise the return status is 1. 
 </p>
-
 </dd>
-<a class="dashAnchor" name="//apple_ref/Word/%5B%5B"></a><dt id="index-_005b_005b"><span><code>[[…]]</code><a href="#index-_005b_005b" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><a class="dashAnchor" name="//apple_ref/Word/%5D%5D"></a><span id="index-_005d_005d"></span>
-<div class="example">
-<pre class="example">[[ <var>expression</var> ]]
+<dt><a class="dashAnchor" name="//apple_ref/Word/%5D%5D"></a><a class="index-entry-id" id="index-_005d_005d"></a>
+<a class="dashAnchor" name="//apple_ref/Word/%5B%5B"></a><a id="index-_005b_005b"></a><span><code class="code">[[…]]</code><a class="copiable-link" href="#index-_005b_005b"> ¶</a></span></dt>
+<dd><div class="example">
+<pre class="example-preformatted">[[ <var class="var">expression</var> ]]
 </pre></div>
 
-<p>Return a status of 0 or 1 depending on the evaluation of
-the conditional expression <var>expression</var>.
+<p>Evaluate the conditional expression <var class="var">expression</var> and
+return a status of zero (true) or non-zero (false).
 Expressions are composed of the primaries described below in
-<a href="Bash-Conditional-Expressions.html">Bash Conditional Expressions</a>.
-The words between the <code>[[</code> and <code>]]</code> do not undergo word splitting
+<a class="ref" href="Bash-Conditional-Expressions.html">Bash Conditional Expressions</a>.
+The words between the <code class="code">[[</code> and <code class="code">]]</code> do not undergo word splitting
 and filename expansion.
 The shell performs tilde expansion, parameter and
 variable expansion, arithmetic expansion, command substitution, process
-substitution, and quote removal on those words
-(the expansions that would occur if the words were enclosed in double quotes).
-Conditional operators such as ‘<samp>-f</samp>’ must be unquoted to be recognized
+substitution, and quote removal on those words.
+Conditional operators such as ‘<samp class="samp">-f</samp>’ must be unquoted to be recognized
 as primaries.
 </p>
-<p>When used with <code>[[</code>, the ‘<samp>&lt;</samp>’ and ‘<samp>&gt;</samp>’ operators sort
+<p>When used with <code class="code">[[</code>, the ‘<samp class="samp">&lt;</samp>’ and ‘<samp class="samp">&gt;</samp>’ operators sort
 lexicographically using the current locale.
 </p>
-<p>When the ‘<samp>==</samp>’ and ‘<samp>!=</samp>’ operators are used, the string to the
+<p>When the ‘<samp class="samp">==</samp>’ and ‘<samp class="samp">!=</samp>’ operators are used, the string to the
 right of the operator is considered a pattern and matched according
-to the rules described below in <a href="Pattern-Matching.html">Pattern Matching</a>,
-as if the <code>extglob</code> shell option were enabled.
-The ‘<samp>=</samp>’ operator is identical to ‘<samp>==</samp>’.
-If the <code>nocasematch</code> shell option
-(see the description of <code>shopt</code> in <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>)
+to the rules described below in <a class="ref" href="Pattern-Matching.html">Pattern Matching</a>,
+as if the <code class="code">extglob</code> shell option were enabled.
+The ‘<samp class="samp">=</samp>’ operator is identical to ‘<samp class="samp">==</samp>’.
+If the <code class="code">nocasematch</code> shell option
+(see the description of <code class="code">shopt</code> in <a class="ref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>)
 is enabled, the match is performed without regard to the case
 of alphabetic characters.
-The return value is 0 if the string matches (‘<samp>==</samp>’) or does not
-match (‘<samp>!=</samp>’) the pattern, and 1 otherwise.
+The return value is 0 if the string matches (‘<samp class="samp">==</samp>’) or does not
+match (‘<samp class="samp">!=</samp>’) the pattern, and 1 otherwise.
 </p>
 <p>If you quote any part of the pattern,
 using any of the shell’s quoting mechanisms,
@@ -259,17 +250,17 @@ the quoted portion is matched literally.
 This means every character in the quoted portion matches itself,
 instead of having any special pattern matching meaning.
 </p>
-<p>An additional binary operator, ‘<samp>=~</samp>’, is available, with the same
-precedence as ‘<samp>==</samp>’ and ‘<samp>!=</samp>’.
-When you use ‘<samp>=~</samp>’, the string to the right of the operator is considered
-a <small>POSIX</small> extended regular expression pattern and matched accordingly
-(using the <small>POSIX</small> <code>regcomp</code> and <code>regexec</code> interfaces
-usually described in <i>regex</i>(3)).
+<p>An additional binary operator, ‘<samp class="samp">=~</samp>’, is available, with the same
+precedence as ‘<samp class="samp">==</samp>’ and ‘<samp class="samp">!=</samp>’.
+When you use ‘<samp class="samp">=~</samp>’, the string to the right of the operator is considered
+a <small class="sc">POSIX</small> extended regular expression pattern and matched accordingly
+(using the <small class="sc">POSIX</small> <code class="code">regcomp</code> and <code class="code">regexec</code> interfaces
+usually described in <i class="i">regex</i>(3)).
 The return value is 0 if the string matches the pattern, and 1 if it does not.
 If the regular expression is syntactically incorrect, the conditional
 expression returns 2.
-If the <code>nocasematch</code> shell option
-(see the description of <code>shopt</code> in <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>)
+If the <code class="code">nocasematch</code> shell option
+(see the description of <code class="code">shopt</code> in <a class="ref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>)
 is enabled, the match is performed without regard to the case
 of alphabetic characters.
 </p>
@@ -279,52 +270,52 @@ instead of as a regular expression (see above).
 If the pattern is stored in a shell variable, quoting the variable
 expansion forces the entire pattern to be matched literally.
 </p>
-<p>The pattern will match if it matches any part of the string.
+<p>The match succeeds if the pattern matches any part of the string.
 If you want to force the pattern to match the entire string,
-anchor the pattern using the ‘<samp>^</samp>’ and ‘<samp>$</samp>’ regular expression
+anchor the pattern using the ‘<samp class="samp">^</samp>’ and ‘<samp class="samp">$</samp>’ regular expression
 operators.
 </p>
 <p>For example, the following will match a line
-(stored in the shell variable <code>line</code>)
+(stored in the shell variable <code class="code">line</code>)
 if there is a sequence of characters anywhere in the value consisting of
 any number, including zero, of 
-characters in the <code>space</code> character class,
-immediately followed by zero or one instances of ‘<samp>a</samp>’,
-then a ‘<samp>b</samp>’:
+characters in the <code class="code">space</code> character class,
+immediately followed by zero or one instances of ‘<samp class="samp">a</samp>’,
+then a ‘<samp class="samp">b</samp>’:
 </p>
 <div class="example">
-<pre class="example">[[ $line =~ [[:space:]]*(a)?b ]]
+<pre class="example-preformatted">[[ $line =~ [[:space:]]*(a)?b ]]
 </pre></div>
 
-<p>That means values for <code>line</code> like
-‘<samp>aab</samp>’, ‘<samp>  aaaaaab</samp>’, ‘<samp>xaby</samp>’, and ‘<samp> ab</samp>’
+<p>That means values for <code class="code">line</code> like
+‘<samp class="samp">aab</samp>’, ‘<samp class="samp">  aaaaaab</samp>’, ‘<samp class="samp">xaby</samp>’, and ‘<samp class="samp"> ab</samp>’
 will all match,
-as will a line containing a ‘<samp>b</samp>’ anywhere in its value.
+as will a line containing a ‘<samp class="samp">b</samp>’ anywhere in its value.
 </p>
 <p>If you want to match a character that’s special to the regular expression
-grammar (‘<samp>^$|[]()\.*+?</samp>’), it has to be quoted to remove its special
+grammar (‘<samp class="samp">^$|[]()\.*+?</samp>’), it has to be quoted to remove its special
 meaning.
-This means that in the pattern ‘<samp>xxx.txt</samp>’, the ‘<samp>.</samp>’ matches any
+This means that in the pattern ‘<samp class="samp">xxx.txt</samp>’, the ‘<samp class="samp">.</samp>’ matches any
 character in the string (its usual regular expression meaning), but in the
-pattern ‘<samp>"xxx.txt"</samp>’, it can only match a literal ‘<samp>.</samp>’.
+pattern ‘<samp class="samp">"xxx.txt"</samp>’, it can only match a literal ‘<samp class="samp">.</samp>’.
 </p>
 <p>Likewise, if you want to include a character in your pattern that has a
 special meaning to the regular expression grammar, you must make sure it’s
 not quoted.
 If you want to anchor a pattern at the beginning or end of the string,
-for instance, you cannot quote the ‘<samp>^</samp>’ or ‘<samp>$</samp>’
+for instance, you cannot quote the ‘<samp class="samp">^</samp>’ or ‘<samp class="samp">$</samp>’
 characters using any form of shell quoting.
 </p>
-<p>If you want to match ‘<samp>initial string</samp>’ at the start of a line,
+<p>If you want to match ‘<samp class="samp">initial string</samp>’ at the start of a line,
 the following will work:
 </p><div class="example">
-<pre class="example">[[ $line =~ ^"initial string" ]]
+<pre class="example-preformatted">[[ $line =~ ^"initial string" ]]
 </pre></div>
 <p>but this will not:
 </p><div class="example">
-<pre class="example">[[ $line =~ "^initial string" ]]
+<pre class="example-preformatted">[[ $line =~ "^initial string" ]]
 </pre></div>
-<p>because in the second example the ‘<samp>^</samp>’ is quoted and doesn’t have its
+<p>because in the second example the ‘<samp class="samp">^</samp>’ is quoted and doesn’t have its
 usual special meaning.
 </p>
 <p>It is sometimes difficult to specify a regular expression properly
@@ -337,7 +328,7 @@ shell.
 For example, the following is equivalent to the pattern used above:
 </p>
 <div class="example">
-<pre class="example">pattern='[[:space:]]*(a)?b'
+<pre class="example-preformatted">pattern='[[:space:]]*(a)?b'
 [[ $line =~ $pattern ]]
 </pre></div>
 
@@ -345,7 +336,7 @@ For example, the following is equivalent to the pattern used above:
 backslashes are used by both the shell and regular expressions to remove
 the special meaning from the following character.
 This means that after the shell’s word expansions complete
-(see <a href="Shell-Expansions.html">Shell Expansions</a>),
+(see <a class="pxref" href="Shell-Expansions.html">Shell Expansions</a>),
 any backslashes remaining in parts of the pattern
 that were originally not quoted can remove the
 special meaning of pattern characters.
@@ -353,10 +344,10 @@ If any part of the pattern is quoted, the shell does its best to ensure that
 the regular expression treats those remaining backslashes as literal,
 if they appeared in a quoted portion.
 </p>
-<p>The following two sets of commands are <em>not</em> equivalent:
+<p>The following two sets of commands are <em class="emph">not</em> equivalent:
 </p>
 <div class="example">
-<pre class="example">pattern='\.'
+<pre class="example-preformatted">pattern='\.'
 
 [[ . =~ $pattern ]]
 [[ . =~ \. ]]
@@ -368,13 +359,14 @@ if they appeared in a quoted portion.
 <p>The first two matches will succeed, but the second two will not, because
 in the second two the backslash will be part of the pattern to be matched.
 In the first two examples, the pattern passed to the regular expression
-parser is ‘<samp>\.</samp>’. The backslash removes the special meaning from
-‘<samp>.</samp>’, so the literal ‘<samp>.</samp>’ matches.
+parser is ‘<samp class="samp">\.</samp>’.
+The backslash removes the special meaning from
+‘<samp class="samp">.</samp>’, so the literal ‘<samp class="samp">.</samp>’ matches.
 In the second two examples, the pattern passed to the regular expression
-parser has the backslash quoted (e.g., ‘<samp>\\\.</samp>’), which will not match
+parser has the backslash quoted (e.g., ‘<samp class="samp">\\\.</samp>’), which will not match
 the string, since it does not contain a backslash.
-If the string in the first examples were anything other than ‘<samp>.</samp>’, say
-‘<samp>a</samp>’, the pattern would not match, because the quoted ‘<samp>.</samp>’ in the
+If the string in the first examples were anything other than ‘<samp class="samp">.</samp>’, say
+‘<samp class="samp">a</samp>’, the pattern would not match, because the quoted ‘<samp class="samp">.</samp>’ in the
 pattern loses its special meaning of matching any single character.
 </p>
 <p>Bracket expressions in regular expressions can be sources of errors as well,
@@ -384,10 +376,10 @@ However, you can use bracket expressions to match special pattern characters
 without quoting them, so they are sometimes useful for this purpose.
 </p>
 <p>Though it might seem like a strange way to write it, the following pattern
-will match a ‘<samp>.</samp>’ in the string:
+will match a ‘<samp class="samp">.</samp>’ in the string:
 </p>
 <div class="example">
-<pre class="example">[[ . =~ [.] ]]
+<pre class="example-preformatted">[[ . =~ [.] ]]
 </pre></div>
 
 <p>The shell performs any word expansions before passing the pattern
@@ -400,51 +392,51 @@ The intention is to avoid making shell programmers quote things twice
 as much as possible, so shell quoting should be sufficient to quote
 special pattern characters where that’s necessary.
 </p>
-<p>The array variable <code>BASH_REMATCH</code> records which parts of the string
+<p>The array variable <code class="code">BASH_REMATCH</code> records which parts of the string
 matched the pattern.
-The element of <code>BASH_REMATCH</code> with index 0 contains the portion of
+The element of <code class="code">BASH_REMATCH</code> with index 0 contains the portion of
 the string matching the entire regular expression.
 Substrings matched by parenthesized subexpressions within the regular
-expression are saved in the remaining <code>BASH_REMATCH</code> indices.
-The element of <code>BASH_REMATCH</code> with index <var>n</var> is the portion of the
-string matching the <var>n</var>th parenthesized subexpression.
+expression are saved in the remaining <code class="code">BASH_REMATCH</code> indices.
+The element of <code class="code">BASH_REMATCH</code> with index <var class="var">n</var> is the portion of the
+string matching the <var class="var">n</var>th parenthesized subexpression.
 </p>
 <p>Bash sets
-<code>BASH_REMATCH</code>
+<code class="code">BASH_REMATCH</code>
 in the global scope; declaring it as a local variable will lead to
 unexpected results.
 </p>
 <p>Expressions may be combined using the following operators, listed
 in decreasing order of precedence:
 </p>
-<dl compact="compact">
-<dt><span><code>( <var>expression</var> )</code></span></dt>
-<dd><p>Returns the value of <var>expression</var>.
+<dl class="table">
+<dt><code class="code">( <var class="var">expression</var> )</code></dt>
+<dd><p>Returns the value of <var class="var">expression</var>.
 This may be used to override the normal precedence of operators.
 </p>
 </dd>
-<dt><span><code>! <var>expression</var></code></span></dt>
-<dd><p>True if <var>expression</var> is false.
+<dt><code class="code">! <var class="var">expression</var></code></dt>
+<dd><p>True if <var class="var">expression</var> is false.
 </p>
 </dd>
-<dt><span><code><var>expression1</var> &amp;&amp; <var>expression2</var></code></span></dt>
-<dd><p>True if both <var>expression1</var> and <var>expression2</var> are true.
+<dt><code class="code"><var class="var">expression1</var> &amp;&amp; <var class="var">expression2</var></code></dt>
+<dd><p>True if both <var class="var">expression1</var> and <var class="var">expression2</var> are true.
 </p>
 </dd>
-<dt><span><code><var>expression1</var> || <var>expression2</var></code></span></dt>
-<dd><p>True if either <var>expression1</var> or <var>expression2</var> is true.
+<dt><code class="code"><var class="var">expression1</var> || <var class="var">expression2</var></code></dt>
+<dd><p>True if either <var class="var">expression1</var> or <var class="var">expression2</var> is true.
 </p></dd>
 </dl>
 
-<p>The <code>&amp;&amp;</code> and <code>||</code> operators do not evaluate <var>expression2</var> if the
-value of <var>expression1</var> is sufficient to determine the return
+<p>The <code class="code">&amp;&amp;</code> and <code class="code">||</code> operators do not evaluate <var class="var">expression2</var> if the
+value of <var class="var">expression1</var> is sufficient to determine the return
 value of the entire conditional expression.
 </p></dd>
 </dl>
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Command-Grouping.html">Grouping Commands</a>, Previous: <a href="Looping-Constructs.html">Looping Constructs</a>, Up: <a href="Compound-Commands.html">Compound Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

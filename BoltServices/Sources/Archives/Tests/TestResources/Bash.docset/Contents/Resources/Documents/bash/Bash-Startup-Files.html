@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,9 @@ A copy of the license is included in the section entitled
 <link href="Invoking-Bash.html" rel="prev" title="Invoking Bash">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,132 +46,153 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Bash-Startup-Files">
-<div class="header">
+<div class="section-level-extent" id="Bash-Startup-Files">
+<div class="nav-panel">
 <p>
 Next: <a href="Interactive-Shells.html" accesskey="n" rel="next">Interactive Shells</a>, Previous: <a href="Invoking-Bash.html" accesskey="p" rel="prev">Invoking Bash</a>, Up: <a href="Bash-Features.html" accesskey="u" rel="up">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Bash-Startup-Files-1"></span><h3 class="section">6.2 Bash Startup Files</h3>
-<span id="index-startup-files"></span>
+<h3 class="section" id="Bash-Startup-Files-1"><span>6.2 Bash Startup Files<a class="copiable-link" href="#Bash-Startup-Files-1"> &para;</a></span></h3>
+<a class="index-entry-id" id="index-startup-files"></a>
 
 <p>This section describes how Bash executes its startup files.
 If any of the files exist but cannot be read, Bash reports an error.
 Tildes are expanded in filenames as described above under
-Tilde Expansion (see <a href="Tilde-Expansion.html">Tilde Expansion</a>).
+Tilde Expansion (see <a class="pxref" href="Tilde-Expansion.html">Tilde Expansion</a>).
 </p>
-<p>Interactive shells are described in <a href="Interactive-Shells.html">Interactive Shells</a>.
+<p>Interactive shells are described in <a class="ref" href="Interactive-Shells.html">Interactive Shells</a>.
 </p>
-<span id="Invoked-as-an-interactive-login-shell_002c-or-with-_002d_002dlogin"></span><h4 class="subsubheading">Invoked as an interactive login shell, or with <samp>--login</samp></h4>
+<h4 class="subsubheading" id="Invoked-as-an-interactive-login-shell_002c-or-with-_002d_002dlogin"><span>Invoked as an interactive login shell, or with <samp class="option">--login</samp><a class="copiable-link" href="#Invoked-as-an-interactive-login-shell_002c-or-with-_002d_002dlogin"> &para;</a></span></h4>
 
 <p>When Bash is invoked as an interactive login shell, or as a
-non-interactive shell with the <samp>--login</samp> option, it first reads and
-executes commands from the file <samp>/etc/profile</samp>, if that file exists.
-After reading that file, it looks for <samp>~/.bash_profile</samp>,
-<samp>~/.bash_login</samp>, and <samp>~/.profile</samp>, in that order, and reads
+non-interactive shell with the <samp class="option">--login</samp> option, it first reads and
+executes commands from the file <samp class="file">/etc/profile</samp>, if that file exists.
+After reading that file, it looks for <samp class="file">~/.bash_profile</samp>,
+<samp class="file">~/.bash_login</samp>, and <samp class="file">~/.profile</samp>, in that order, and reads
 and executes commands from the first one that exists and is readable.
-The <samp>--noprofile</samp> option may be used when the shell is started to
-inhibit this behavior.
+The
+<samp class="option">--noprofile</samp>
+option inhibits this behavior.
 </p>
 <p>When an interactive login shell exits,
-or a non-interactive login shell executes the <code>exit</code> builtin command,
+or a non-interactive login shell executes the <code class="code">exit</code> builtin command,
 Bash reads and executes commands from
-the file <samp>~/.bash_logout</samp>, if it exists.
+the file <samp class="file">~/.bash_logout</samp>, if it exists.
 </p>
-<span id="Invoked-as-an-interactive-non_002dlogin-shell"></span><h4 class="subsubheading">Invoked as an interactive non-login shell</h4>
+<h4 class="subsubheading" id="Invoked-as-an-interactive-non_002dlogin-shell"><span>Invoked as an interactive non-login shell<a class="copiable-link" href="#Invoked-as-an-interactive-non_002dlogin-shell"> &para;</a></span></h4>
 
-<p>When an interactive shell that is not a login shell is started, Bash
-reads and executes commands from <samp>~/.bashrc</samp>, if that file exists.
-This may be inhibited by using the <samp>--norc</samp> option.
-The <samp>--rcfile <var>file</var></samp> option will force Bash to read and
-execute commands from <var>file</var> instead of <samp>~/.bashrc</samp>.
+<p>When Bash runs as an interactive shell that is not a login shell, it
+reads and executes commands from <samp class="file">~/.bashrc</samp>, if that file exists.
+The <samp class="option">--norc</samp> option inhibits this behavior.
+The <samp class="option">--rcfile <var class="var">file</var></samp> option
+causes Bash to
+use <var class="var">file</var> instead of <samp class="file">~/.bashrc</samp>.
 </p>
-<p>So, typically, your <samp>~/.bash_profile</samp> contains the line
+<p>So, typically, your <samp class="file">~/.bash_profile</samp> contains the line
 </p><div class="example">
-<pre class="example"><code>if [ -f ~/.bashrc ]; then . ~/.bashrc; fi</code>
+<pre class="example-preformatted"><code class="code">if [ -f ~/.bashrc ]; then . ~/.bashrc; fi</code>
 </pre></div>
 <p>after (or before) any login-specific initializations.
 </p>
-<span id="Invoked-non_002dinteractively"></span><h4 class="subsubheading">Invoked non-interactively</h4>
+<h4 class="subsubheading" id="Invoked-non_002dinteractively"><span>Invoked non-interactively<a class="copiable-link" href="#Invoked-non_002dinteractively"> &para;</a></span></h4>
 
 <p>When Bash is started non-interactively, to run a shell script,
-for example, it looks for the variable <code>BASH_ENV</code> in the environment,
+for example, it looks for the variable <code class="env">BASH_ENV</code> in the environment,
 expands its value if it appears there, and uses the expanded value as
-the name of a file to read and execute.  Bash behaves as if the
-following command were executed:
+the name of a file to read and execute.
+Bash behaves as if the following command were executed:
 </p><div class="example">
-<pre class="example"><code>if [ -n &quot;$BASH_ENV&quot; ]; then . &quot;$BASH_ENV&quot;; fi</code>
+<pre class="example-preformatted"><code class="code">if [ -n &quot;$BASH_ENV&quot; ]; then . &quot;$BASH_ENV&quot;; fi</code>
 </pre></div>
-<p>but the value of the <code>PATH</code> variable is not used to search for the
+<p>but does not the value of the <code class="env">PATH</code> variable to search for the
 filename.
 </p>
 <p>As noted above, if a non-interactive shell is invoked with the
-<samp>--login</samp> option, Bash attempts to read and execute commands from the
+<samp class="option">--login</samp> option,
+Bash attempts to read and execute commands from the
 login shell startup files. 
 </p>
-<span id="Invoked-with-name-sh"></span><h4 class="subsubheading">Invoked with name <code>sh</code></h4>
+<h4 class="subsubheading" id="Invoked-with-name-sh"><span>Invoked with name <code class="code">sh</code><a class="copiable-link" href="#Invoked-with-name-sh"> &para;</a></span></h4>
 
-<p>If Bash is invoked with the name <code>sh</code>, it tries to mimic the
-startup behavior of historical versions of <code>sh</code> as closely as
-possible, while conforming to the <small>POSIX</small> standard as well.
+<p>If Bash is invoked with the name <code class="command">sh</code>,
+it tries to mimic the startup behavior of historical versions of
+<code class="command">sh</code> as closely as possible,
+while conforming to the
+<small class="sc">POSIX</small>
+standard as well.
 </p>
 <p>When invoked as an interactive login shell, or as a non-interactive
-shell with the <samp>--login</samp> option, it first attempts to read
-and execute commands from <samp>/etc/profile</samp> and <samp>~/.profile</samp>, in
-that order.
-The <samp>--noprofile</samp> option may be used to inhibit this behavior.
-When invoked as an interactive shell with the name <code>sh</code>, Bash
-looks for the variable <code>ENV</code>, expands its value if it is defined,
-and uses the expanded value as the name of a file to read and execute.
-Since a shell invoked as <code>sh</code> does not attempt to read and execute
-commands from any other startup files, the <samp>--rcfile</samp> option has
-no effect.
-A non-interactive shell invoked with the name <code>sh</code> does not attempt
-to read any other startup files.
+shell with the <samp class="option">--login</samp> option, it first attempts to read
+and execute commands from
+<samp class="file">/etc/profile</samp> and <samp class="file">~/.profile</samp>,
+in that order.
+The <samp class="option">--noprofile</samp> option inhibits this behavior.
 </p>
-<p>When invoked as <code>sh</code>, Bash enters <small>POSIX</small> mode after
-the startup files are read.
+<p>When invoked as an interactive shell with the name <code class="command">sh</code>, Bash
+looks for the variable <code class="env">ENV</code>,
+expands its value if it is defined, and uses the
+expanded value as the name of a file to read and execute.
+Since a shell invoked as <code class="command">sh</code>
+does not attempt to read and execute commands from any other startup
+files, the
+<samp class="option">--rcfile</samp>
+option has no effect.
 </p>
-<span id="Invoked-in-POSIX-mode"></span><h4 class="subsubheading">Invoked in <small>POSIX</small> mode</h4>
+<p>A non-interactive shell invoked with the name <code class="command">sh</code>
+does not attempt to read any other startup files.
+</p>
+<p>When invoked as <code class="command">sh</code>, Bash enters <small class="sc">POSIX</small> mode after reading
+the startup files.
+</p>
+<h4 class="subsubheading" id="Invoked-in-posix-mode"><span>Invoked in <small class="sc">POSIX</small> mode<a class="copiable-link" href="#Invoked-in-posix-mode"> &para;</a></span></h4>
 
-<p>When Bash is started in <small>POSIX</small> mode, as with the
-<samp>--posix</samp> command line option, it follows the <small>POSIX</small> standard
-for startup files.
-In this mode, interactive shells expand the <code>ENV</code> variable
-and commands are read and executed from the file whose name is the
+<p>When Bash is started in <small class="sc">POSIX</small> mode, as with the
+<samp class="option">--posix</samp> command line option, it follows the
+<small class="sc">POSIX</small>
+standard for startup files.
+In this mode, interactive shells expand the <code class="env">ENV</code> variable
+and read and execute commands from the file whose name is the
 expanded value.
 No other startup files are read.
 </p>
-<span id="Invoked-by-remote-shell-daemon"></span><h4 class="subsubheading">Invoked by remote shell daemon</h4>
+<h4 class="subsubheading" id="Invoked-by-remote-shell-daemon"><span>Invoked by remote shell daemon<a class="copiable-link" href="#Invoked-by-remote-shell-daemon"> &para;</a></span></h4>
 
-<p>Bash attempts to determine when it is being run with its standard input
+<p>Bash
+attempts to determine when it is being run with its standard input
 connected to a network connection, as when executed by
-the historical remote shell daemon, usually <code>rshd</code>,
-or the secure shell daemon <code>sshd</code>.
-If Bash
+the historical and rarely-seen remote shell daemon, usually <code class="code">rshd</code>,
+or the secure shell daemon <code class="code">sshd</code>.
+If
+Bash
 determines it is being run non-interactively in this fashion,
-it reads and executes commands from <samp>~/.bashrc</samp>, if that
-file exists and is readable.
-It will not do this if invoked as <code>sh</code>.
-The <samp>--norc</samp> option may be used to inhibit this behavior, and the
-<samp>--rcfile</samp> option may be used to force another file to be read, but
-neither <code>rshd</code> nor <code>sshd</code> generally invoke the shell with those
+it reads and executes commands from
+<samp class="file">~/.bashrc</samp>,
+if that file exists and is readable.
+Bash does not read this file if invoked as <code class="code">sh</code>.
+The
+<samp class="option">--norc</samp>
+option inhibits this behavior, and the
+<samp class="option">--rcfile</samp>
+option makes Bash use a different file instead of
+<samp class="file">~/.bashrc</samp>,
+but neither
+<code class="code">rshd</code> nor <code class="code">sshd</code> generally invoke the shell with those
 options or allow them to be specified.
 </p>
-<span id="Invoked-with-unequal-effective-and-real-UID_002fGIDs"></span><h4 class="subsubheading">Invoked with unequal effective and real <small>UID/GID</small>s</h4>
+<h4 class="subsubheading" id="Invoked-with-unequal-effective-and-real-uid_002fgids"><span>Invoked with unequal effective and real <small class="sc">UID/GID</small>s<a class="copiable-link" href="#Invoked-with-unequal-effective-and-real-uid_002fgids"> &para;</a></span></h4>
 
 <p>If Bash is started with the effective user (group) id not equal to the
-real user (group) id, and the <samp>-p</samp> option is not supplied, no startup
+real user (group) id, and the <samp class="option">-p</samp> option is not supplied, no startup
 files are read, shell functions are not inherited from the environment,
-the <code>SHELLOPTS</code>, <code>BASHOPTS</code>, <code>CDPATH</code>, and <code>GLOBIGNORE</code>
+the <code class="env">SHELLOPTS</code>, <code class="env">BASHOPTS</code>, <code class="env">CDPATH</code>, and <code class="env">GLOBIGNORE</code>
 variables, if they appear in the environment, are ignored, and the effective
 user id is set to the real user id.
-If the <samp>-p</samp> option is supplied at invocation, the startup behavior is
+If the <samp class="option">-p</samp> option is supplied at invocation, the startup behavior is
 the same, but the effective user id is not reset.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Interactive-Shells.html">Interactive Shells</a>, Previous: <a href="Invoking-Bash.html">Invoking Bash</a>, Up: <a href="Bash-Features.html">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

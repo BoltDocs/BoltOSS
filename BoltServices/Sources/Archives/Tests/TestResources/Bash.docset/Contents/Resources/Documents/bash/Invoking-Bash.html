@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,9 @@ A copy of the license is included in the section entitled
 <link href="Bash-Startup-Files.html" rel="next" title="Bash Startup Files">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,198 +45,220 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Invoking-Bash">
-<div class="header">
+<div class="section-level-extent" id="Invoking-Bash">
+<div class="nav-panel">
 <p>
 Next: <a href="Bash-Startup-Files.html" accesskey="n" rel="next">Bash Startup Files</a>, Up: <a href="Bash-Features.html" accesskey="u" rel="up">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Invoking-Bash-1"></span><h3 class="section">6.1 Invoking Bash</h3>
+<h3 class="section" id="Invoking-Bash-1"><span>6.1 Invoking Bash<a class="copiable-link" href="#Invoking-Bash-1"> &para;</a></span></h3>
 
 <div class="example">
-<pre class="example">bash [long-opt] [-ir] [-abefhkmnptuvxdBCDHP] [-o <var>option</var>]
-    [-O <var>shopt_option</var>] [<var>argument</var> &hellip;]
-bash [long-opt] [-abefhkmnptuvxdBCDHP] [-o <var>option</var>]
-    [-O <var>shopt_option</var>] -c <var>string</var> [<var>argument</var> &hellip;]
-bash [long-opt] -s [-abefhkmnptuvxdBCDHP] [-o <var>option</var>]
-    [-O <var>shopt_option</var>] [<var>argument</var> &hellip;]
+<pre class="example-preformatted">bash [long-opt] [-ir] [-abefhkmnptuvxdBCDHP] [-o <var class="var">option</var>]
+    [-O <var class="var">shopt_option</var>] [<var class="var">argument</var> ...]
+bash [long-opt] [-abefhkmnptuvxdBCDHP] [-o <var class="var">option</var>]
+    [-O <var class="var">shopt_option</var>] -c <var class="var">string</var> [<var class="var">argument</var> ...]
+bash [long-opt] -s [-abefhkmnptuvxdBCDHP] [-o <var class="var">option</var>]
+    [-O <var class="var">shopt_option</var>] [<var class="var">argument</var> ...]
 </pre></div>
 
-<p>All of the single-character options used with the <code>set</code> builtin
-(see <a href="The-Set-Builtin.html">The Set Builtin</a>) can be used as options when the shell is invoked.
+<p>All of the single-character options used with the <code class="code">set</code> builtin
+(see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>) can be used as options when the shell is invoked.
 In addition, there are several multi-character
-options that you can use.  These options must appear on the command
+options that you can use.
+These options must appear on the command
 line before the single-character options to be recognized. 
 </p>
-<dl compact="compact">
-<dt><span><code>--debugger</code></span></dt>
-<dd><p>Arrange for the debugger profile to be executed before the shell
-starts.  Turns on extended debugging mode (see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>
-for a description of the <code>extdebug</code> option to the <code>shopt</code>
+<dl class="table">
+<dt><code class="code">--debugger</code></dt>
+<dd><p>Arrange for the debugger profile to be executed before the shell starts.
+Turns on extended debugging mode (see <a class="ref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>
+for a description of the <code class="code">extdebug</code> option to the <code class="code">shopt</code>
 builtin).
 </p>
 </dd>
-<dt><span><code>--dump-po-strings</code></span></dt>
-<dd><p>A list of all double-quoted strings preceded by &lsquo;<samp>$</samp>&rsquo;
-is printed on the standard output
-in the <small>GNU</small> <code>gettext</code> PO (portable object) file format.
-Equivalent to <samp>-D</samp> except for the output format.
+<dt><code class="code">--dump-po-strings</code></dt>
+<dd><p>Print a list of all double-quoted strings preceded by &lsquo;<samp class="samp">$</samp>&rsquo;
+on the standard output
+in the <small class="sc">GNU</small> <code class="code">gettext</code> PO (portable object) file format.
+Equivalent to <samp class="option">-D</samp> except for the output format.
 </p>
 </dd>
-<dt><span><code>--dump-strings</code></span></dt>
-<dd><p>Equivalent to <samp>-D</samp>.
+<dt><code class="code">--dump-strings</code></dt>
+<dd><p>Equivalent to <samp class="option">-D</samp>.
 </p>
 </dd>
-<dt><span><code>--help</code></span></dt>
+<dt><code class="code">--help</code></dt>
 <dd><p>Display a usage message on standard output and exit successfully.
 </p>
 </dd>
-<dt><span><code>--init-file <var>filename</var></code></span></dt>
-<dt><span><code>--rcfile <var>filename</var></code></span></dt>
-<dd><p>Execute commands from <var>filename</var> (instead of <samp>~/.bashrc</samp>)
+<dt><code class="code">--init-file <var class="var">filename</var></code></dt>
+<dt><code class="code">--rcfile <var class="var">filename</var></code></dt>
+<dd><p>Execute commands from <var class="var">filename</var> (instead of <samp class="file">~/.bashrc</samp>)
 in an interactive shell.
 </p>
 </dd>
-<dt><span><code>--login</code></span></dt>
-<dd><p>Equivalent to <samp>-l</samp>.
+<dt><code class="code">--login</code></dt>
+<dd><p>Equivalent to <samp class="option">-l</samp>.
 </p>
 </dd>
-<dt><span><code>--noediting</code></span></dt>
-<dd><p>Do not use the <small>GNU</small> Readline library (see <a href="Command-Line-Editing.html">Command Line Editing</a>)
+<dt><code class="code">--noediting</code></dt>
+<dd><p>Do not use the <small class="sc">GNU</small> Readline library (see <a class="pxref" href="Command-Line-Editing.html">Command Line Editing</a>)
 to read  command lines when the shell is interactive.
 </p>
 </dd>
-<dt><span><code>--noprofile</code></span></dt>
-<dd><p>Don&rsquo;t load the system-wide startup file <samp>/etc/profile</samp>
+<dt><code class="code">--noprofile</code></dt>
+<dd><p>Don&rsquo;t load the system-wide startup file <samp class="file">/etc/profile</samp>
 or any of the personal initialization files
-<samp>~/.bash_profile</samp>, <samp>~/.bash_login</samp>, or <samp>~/.profile</samp>
+<samp class="file">~/.bash_profile</samp>, <samp class="file">~/.bash_login</samp>, or <samp class="file">~/.profile</samp>
 when Bash is invoked as a login shell.
 </p>
 </dd>
-<dt><span><code>--norc</code></span></dt>
-<dd><p>Don&rsquo;t read the <samp>~/.bashrc</samp> initialization file in an
-interactive shell.  This is on by default if the shell is
-invoked as <code>sh</code>.
+<dt><code class="code">--norc</code></dt>
+<dd><p>Don&rsquo;t read the <samp class="file">~/.bashrc</samp> initialization file in an
+interactive shell.
+This is on by default if the shell is invoked as <code class="code">sh</code>.
 </p>
 </dd>
-<dt><span><code>--posix</code></span></dt>
-<dd><p>Change the behavior of Bash where the default operation differs
-from the <small>POSIX</small> standard to match the standard.  This
-is intended to make Bash behave as a strict superset of that
-standard.  See <a href="Bash-POSIX-Mode.html">Bash POSIX Mode</a>, for a description of the Bash
-<small>POSIX</small> mode.
+<dt><code class="code">--posix</code></dt>
+<dd><p>Enable <small class="sc">POSIX</small> mode;
+change the behavior of Bash
+where the default operation differs from the
+<small class="sc">POSIX</small>
+standard to match the standard.
+This is intended to make Bash behave as a strict superset of that
+standard.
+See <a class="xref" href="Bash-POSIX-Mode.html">Bash and POSIX</a>, for a description of the Bash <small class="sc">POSIX</small> mode.
 </p>
 </dd>
-<dt><span><code>--restricted</code></span></dt>
-<dd><p>Make the shell a restricted shell (see <a href="The-Restricted-Shell.html">The Restricted Shell</a>).
+<dt><code class="code">--restricted</code></dt>
+<dd><p>Equivalent to <samp class="option">-r</samp>.
+Make the shell a restricted shell (see <a class="pxref" href="The-Restricted-Shell.html">The Restricted Shell</a>).
 </p>
 </dd>
-<dt><span><code>--verbose</code></span></dt>
-<dd><p>Equivalent to <samp>-v</samp>.  Print shell input lines as they&rsquo;re read.
+<dt><code class="code">--verbose</code></dt>
+<dd><p>Equivalent to <samp class="option">-v</samp>.
+Print shell input lines as they&rsquo;re read.
 </p>
 </dd>
-<dt><span><code>--version</code></span></dt>
+<dt><code class="code">--version</code></dt>
 <dd><p>Show version information for this instance of
 Bash on the standard output and exit successfully.
 </p></dd>
 </dl>
 
 <p>There are several single-character options that may be supplied at
-invocation which are not available with the <code>set</code> builtin.
+invocation which are not available with the <code class="code">set</code> builtin.
 </p>
-<dl compact="compact">
-<dt><span><code>-c</code></span></dt>
+<dl class="table">
+<dt><code class="code">-c</code></dt>
 <dd><p>Read and execute commands from the first non-option argument
-<var>command_string</var>, then exit. 
-If there are arguments after the <var>command_string</var>,
-the first argument is assigned to <code>$0</code>
+<var class="var">command_string</var>, then exit. 
+If there are arguments after the <var class="var">command_string</var>,
+the first argument is assigned to <code class="code">$0</code>
 and any remaining arguments are assigned to the positional parameters.
-The assignment to <code>$0</code> sets the name of the shell, which is used
+The assignment to <code class="code">$0</code> sets the name of the shell, which is used
 in warning and error messages.
 </p>
 </dd>
-<dt><span><code>-i</code></span></dt>
-<dd><p>Force the shell to run interactively.  Interactive shells are
-described in <a href="Interactive-Shells.html">Interactive Shells</a>.
+<dt><code class="code">-i</code></dt>
+<dd><p>Force the shell to run interactively.
+Interactive shells are described in <a class="ref" href="Interactive-Shells.html">Interactive Shells</a>.
 </p>
 </dd>
-<dt><span><code>-l</code></span></dt>
+<dt><code class="code">-l</code></dt>
 <dd><p>Make this shell act as if it had been directly invoked by login.
 When the shell is interactive, this is equivalent to starting a
-login shell with &lsquo;<samp>exec -l bash</samp>&rsquo;.
-When the shell is not interactive, the login shell startup files will
-be executed.
-&lsquo;<samp>exec bash -l</samp>&rsquo; or &lsquo;<samp>exec bash --login</samp>&rsquo;
+login shell with &lsquo;<samp class="samp">exec -l bash</samp>&rsquo;.
+When the shell is not interactive, it will read and execute the login
+shell startup files.
+&lsquo;<samp class="samp">exec bash -l</samp>&rsquo; or &lsquo;<samp class="samp">exec bash --login</samp>&rsquo;
 will replace the current shell with a Bash login shell.
-See <a href="Bash-Startup-Files.html">Bash Startup Files</a>, for a description of the special behavior
+See <a class="xref" href="Bash-Startup-Files.html">Bash Startup Files</a>, for a description of the special behavior
 of a login shell.
 </p>
 </dd>
-<dt><span><code>-r</code></span></dt>
-<dd><p>Make the shell a restricted shell (see <a href="The-Restricted-Shell.html">The Restricted Shell</a>).
+<dt><code class="code">-r</code></dt>
+<dd><p>Make the shell a restricted shell (see <a class="pxref" href="The-Restricted-Shell.html">The Restricted Shell</a>).
 </p>
 </dd>
-<dt><span><code>-s</code></span></dt>
+<dt><code class="code">-s</code></dt>
 <dd><p>If this option is present, or if no arguments remain after option
-processing, then commands are read from the standard input.
+processing, then Bash reads commands from the standard input.
 This option allows the positional parameters to be set
 when invoking an interactive shell or when reading input
 through a pipe.
 </p>
 </dd>
-<dt><span><code>-D</code></span></dt>
-<dd><p>A list of all double-quoted strings preceded by &lsquo;<samp>$</samp>&rsquo;
-is printed on the standard output.
+<dt><code class="code">-D</code></dt>
+<dd><p>Print a list of all double-quoted strings preceded by &lsquo;<samp class="samp">$</samp>&rsquo;
+on the standard output.
 These are the strings that
 are subject to language translation when the current locale
-is not <code>C</code> or <code>POSIX</code> (see <a href="Locale-Translation.html">Locale-Specific Translation</a>).
-This implies the <samp>-n</samp> option; no commands will be executed.
+is not <code class="code">C</code> or <code class="code">POSIX</code> (see <a class="pxref" href="Locale-Translation.html">Locale-Specific Translation</a>).
+This implies the <samp class="option">-n</samp> option; no commands will be executed.
 </p>
 </dd>
-<dt><span><code>[-+]O [<var>shopt_option</var>]</code></span></dt>
-<dd><p><var>shopt_option</var> is one of the shell options accepted by the
-<code>shopt</code> builtin (see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
-If <var>shopt_option</var> is present, <samp>-O</samp> sets the value of that option;
-<samp>+O</samp> unsets it.  
-If <var>shopt_option</var> is not supplied, the names and values of the shell
-options accepted by <code>shopt</code> are printed on the standard output.
-If the invocation option is <samp>+O</samp>, the output is displayed in a format
+<dt><code class="code">[-+]O [<var class="var">shopt_option</var>]</code></dt>
+<dd><p><var class="var">shopt_option</var> is one of the shell options accepted by the
+<code class="code">shopt</code> builtin (see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
+If <var class="var">shopt_option</var> is present, <samp class="option">-O</samp> sets the value of that option;
+<samp class="option">+O</samp> unsets it.  
+If <var class="var">shopt_option</var> is not supplied, Bash
+prints the names and values of the shell
+options accepted by <code class="code">shopt</code> on the standard output.
+If the invocation option is <samp class="option">+O</samp>, the output is displayed in a format
 that may be reused as input.
 </p>
 </dd>
-<dt><span><code>--</code></span></dt>
-<dd><p>A <code>--</code> signals the end of options and disables further option
+<dt><code class="code">--</code></dt>
+<dd><p>A <code class="code">--</code> signals the end of options and disables further option
 processing.
-Any arguments after the <code>--</code> are treated as filenames and arguments.
-</p></dd>
+Any arguments after the <code class="code">--</code>
+are treated as a shell script filename (see <a class="pxref" href="Shell-Scripts.html">Shell Scripts</a>)
+and arguments passed to that script.
+</p>
+</dd>
+<dt><code class="code">-</code></dt>
+<dd><p>Equivalent to <code class="code">--</code>.
+</p>
+</dd>
 </dl>
 
-<span id="index-login-shell"></span>
-<p>A <em>login</em> shell is one whose first character of argument zero is
-&lsquo;<samp>-</samp>&rsquo;, or one invoked with the <samp>--login</samp> option.
+<a class="index-entry-id" id="index-login-shell"></a>
+<p>A <em class="dfn">login shell</em> is one whose first character of argument zero is
+&lsquo;<samp class="samp">-</samp>&rsquo;, or one invoked with the <samp class="option">--login</samp> option.
 </p>
-<span id="index-interactive-shell"></span>
-<p>An <em>interactive</em> shell is one started without non-option arguments,
-unless <samp>-s</samp> is specified,
-without specifying the <samp>-c</samp> option, and whose input and output are both
-connected to terminals (as determined by <code>isatty(3)</code>), or one
-started with the <samp>-i</samp> option.  See <a href="Interactive-Shells.html">Interactive Shells</a>, for more
-information.
+<a class="index-entry-id" id="index-interactive-shell"></a>
+<p>An <em class="dfn">interactive shell</em> is one started without non-option arguments,
+unless <samp class="option">-s</samp> is specified,
+without specifying the <samp class="option">-c</samp> option,
+and whose standard input and standard error are both
+connected to terminals (as determined by
+<i class="i">isatty(3)</i>),
+or one started with the <samp class="option">-i</samp> option.
+See <a class="xref" href="Interactive-Shells.html">Interactive Shells</a>, for more information.
 </p>
 <p>If arguments remain after option processing, and neither the
-<samp>-c</samp> nor the <samp>-s</samp>
-option has been supplied, the first argument is assumed to
-be the name of a file containing shell commands (see <a href="Shell-Scripts.html">Shell Scripts</a>).
-When Bash is invoked in this fashion, <code>$0</code>
+<samp class="option">-c</samp> nor the <samp class="option">-s</samp>
+option has been supplied, the first argument is treated as
+the name of a file containing shell commands (see <a class="pxref" href="Shell-Scripts.html">Shell Scripts</a>).
+When Bash is invoked in this fashion, <code class="code">$0</code>
 is set to the name of the file, and the positional parameters
 are set to the remaining arguments.
 Bash reads and executes commands from this file, then exits.   
 Bash&rsquo;s exit status is the exit status of the last command executed
-in the script.  If no commands are executed, the exit status is 0.
+in the script.
+If no commands are executed, the exit status is 0.
+Bash
+first attempts to open the file in the current directory,
+and, if no file is found, searches the directories in
+<code class="env">PATH</code>
+for the script.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Bash-Startup-Files.html">Bash Startup Files</a>, Up: <a href="Bash-Features.html">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

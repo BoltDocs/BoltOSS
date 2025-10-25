@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -31,21 +31,8 @@ A copy of the license is included in the section entitled
 <link href="Bash-Variables.html" rel="next" title="Bash Variables">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -54,78 +41,86 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Bourne-Shell-Variables">
-<div class="header">
+<div class="section-level-extent" id="Bourne-Shell-Variables">
+<div class="nav-panel">
 <p>
 Next: <a href="Bash-Variables.html" accesskey="n" rel="next">Bash Variables</a>, Up: <a href="Shell-Variables.html" accesskey="u" rel="up">Shell Variables</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Bourne-Shell-Variables-1"></span><h3 class="section">5.1 Bourne Shell Variables</h3>
+<h3 class="section" id="Bourne-Shell-Variables-1"><span>5.1 Bourne Shell Variables<a class="copiable-link" href="#Bourne-Shell-Variables-1"> ¶</a></span></h3>
 
 <p>Bash uses certain shell variables in the same way as the Bourne shell.
 In some cases, Bash assigns a default value to the variable.
 </p>
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Variable/CDPATH"></a><dt id="index-CDPATH"><span><code>CDPATH</code><a href="#index-CDPATH" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dl class="vtable">
+<dt><a class="dashAnchor" name="//apple_ref/Variable/CDPATH"></a><a id="index-CDPATH"></a><span><code class="code">CDPATH</code><a class="copiable-link" href="#index-CDPATH"> ¶</a></span></dt>
 <dd><p>A colon-separated list of directories used as a search path for
-the <code>cd</code> builtin command.
+the <code class="code">cd</code> builtin command.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HOME"></a><dt id="index-HOME"><span><code>HOME</code><a href="#index-HOME" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The current user’s home directory; the default for the <code>cd</code> builtin
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HOME"></a><a id="index-HOME"></a><span><code class="code">HOME</code><a class="copiable-link" href="#index-HOME"> ¶</a></span></dt>
+<dd><p>The current user’s home directory; the default for the <code class="code">cd</code> builtin
 command.
 The value of this variable is also used by tilde expansion
-(see <a href="Tilde-Expansion.html">Tilde Expansion</a>).
+(see <a class="pxref" href="Tilde-Expansion.html">Tilde Expansion</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/IFS"></a><dt id="index-IFS"><span><code>IFS</code><a href="#index-IFS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/IFS"></a><a id="index-IFS"></a><span><code class="code">IFS</code><a class="copiable-link" href="#index-IFS"> ¶</a></span></dt>
 <dd><p>A list of characters that separate fields; used when the shell splits
-words as part of expansion.
+words as part of expansion and by the <code class="code">read</code> builtin to split
+lines into words.
+See <a class="xref" href="Word-Splitting.html">Word Splitting</a>, for a description of word splitting.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/MAIL"></a><dt id="index-MAIL"><span><code>MAIL</code><a href="#index-MAIL" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>If this parameter is set to a filename or directory name
-and the <code>MAILPATH</code> variable
+<dt><a class="dashAnchor" name="//apple_ref/Variable/MAIL"></a><a id="index-MAIL"></a><span><code class="code">MAIL</code><a class="copiable-link" href="#index-MAIL"> ¶</a></span></dt>
+<dd><p>If the value is set to a filename or directory name
+and the <code class="env">MAILPATH</code> variable
 is not set, Bash informs the user of the arrival of mail in
 the specified file or Maildir-format directory.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/MAILPATH"></a><dt id="index-MAILPATH"><span><code>MAILPATH</code><a href="#index-MAILPATH" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/MAILPATH"></a><a id="index-MAILPATH"></a><span><code class="code">MAILPATH</code><a class="copiable-link" href="#index-MAILPATH"> ¶</a></span></dt>
 <dd><p>A colon-separated list of filenames which the shell periodically checks
 for new mail.
 Each list entry can specify the message that is printed when new mail
 arrives in the mail file by separating the filename from the message with
-a ‘<samp>?</samp>’.
-When used in the text of the message, <code>$_</code> expands to the name of
+a ‘<samp class="samp">?</samp>’.
+When used in the text of the message, <code class="code">$_</code> expands to the name of
 the current mail file.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/OPTARG"></a><dt id="index-OPTARG"><span><code>OPTARG</code><a href="#index-OPTARG" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The value of the last option argument processed by the <code>getopts</code> builtin.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/OPTARG"></a><a id="index-OPTARG"></a><span><code class="code">OPTARG</code><a class="copiable-link" href="#index-OPTARG"> ¶</a></span></dt>
+<dd><p>The value of the last option argument processed by the <code class="code">getopts</code> builtin.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/OPTIND"></a><dt id="index-OPTIND"><span><code>OPTIND</code><a href="#index-OPTIND" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The index of the last option argument processed by the <code>getopts</code> builtin.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/OPTIND"></a><a id="index-OPTIND"></a><span><code class="code">OPTIND</code><a class="copiable-link" href="#index-OPTIND"> ¶</a></span></dt>
+<dd><p>The index of the next argument to be processed by the <code class="code">getopts</code> builtin.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PATH"></a><dt id="index-PATH"><span><code>PATH</code><a href="#index-PATH" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PATH"></a><a id="index-PATH"></a><span><code class="code">PATH</code><a class="copiable-link" href="#index-PATH"> ¶</a></span></dt>
 <dd><p>A colon-separated list of directories in which the shell looks for
 commands.
-A zero-length (null) directory name in the value of <code>PATH</code> indicates the
+A zero-length (null) directory name in the value of <code class="code">PATH</code> indicates the
 current directory.
 A null directory name may appear as two adjacent colons, or as an initial
 or trailing colon.
+The default path is system-dependent, and is set by the administrator
+who installs <code class="code">bash</code>.
+A common value is
+"/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin".
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PS1"></a><dt id="index-PS1"><span><code>PS1</code><a href="#index-PS1" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The primary prompt string.  The default value is ‘<samp>\s-\v\$ </samp>’.
-See <a href="Controlling-the-Prompt.html">Controlling the Prompt</a>, for the complete list of escape
-sequences that are expanded before <code>PS1</code> is displayed.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PS1"></a><a id="index-PS1"></a><span><code class="code">PS1</code><a class="copiable-link" href="#index-PS1"> ¶</a></span></dt>
+<dd><p>The primary prompt string.
+The default value is ‘<samp class="samp">\s-\v\$ </samp>’.
+See <a class="xref" href="Controlling-the-Prompt.html">Controlling the Prompt</a>, for the complete list of escape
+sequences that are expanded before <code class="env">PS1</code> is displayed.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PS2"></a><dt id="index-PS2"><span><code>PS2</code><a href="#index-PS2" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The secondary prompt string.  The default value is ‘<samp>&gt; </samp>’.
-<code>PS2</code> is expanded in the same way as <code>PS1</code> before being
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PS2"></a><a id="index-PS2"></a><span><code class="code">PS2</code><a class="copiable-link" href="#index-PS2"> ¶</a></span></dt>
+<dd><p>The secondary prompt string.
+The default value is ‘<samp class="samp">&gt; </samp>’.
+<code class="env">PS2</code> is expanded in the same way as <code class="env">PS1</code> before being
 displayed.
 </p>
 </dd>
@@ -133,7 +128,7 @@ displayed.
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Bash-Variables.html">Bash Variables</a>, Up: <a href="Shell-Variables.html">Shell Variables</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

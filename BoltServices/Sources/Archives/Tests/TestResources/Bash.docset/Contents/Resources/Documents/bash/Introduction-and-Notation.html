@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,10 @@ A copy of the license is included in the section entitled
 <link href="Readline-Interaction.html" rel="next" title="Readline Interaction">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+kbd.kbd {font-style: oblique}
+kbd.key {font-style: normal}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,52 +46,68 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Introduction-and-Notation">
-<div class="header">
+<div class="section-level-extent" id="Introduction-and-Notation">
+<div class="nav-panel">
 <p>
 Next: <a href="Readline-Interaction.html" accesskey="n" rel="next">Readline Interaction</a>, Up: <a href="Command-Line-Editing.html" accesskey="u" rel="up">Command Line Editing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Introduction-to-Line-Editing"></span><h3 class="section">8.1 Introduction to Line Editing</h3>
+<h3 class="section" id="Introduction-to-Line-Editing"><span>8.1 Introduction to Line Editing<a class="copiable-link" href="#Introduction-to-Line-Editing"> &para;</a></span></h3>
 
-<p>The following paragraphs describe the notation used to represent
-keystrokes.
+<p>The following paragraphs use Emacs style to
+describe the notation used to represent keystrokes.
 </p>
-<p>The text <kbd>C-k</kbd> is read as &lsquo;Control-K&rsquo; and describes the character
-produced when the <tt class="key">k</tt> key is pressed while the Control key
+<p>The text <kbd class="kbd">C-k</kbd> is read as &lsquo;Control-K&rsquo; and describes the character
+produced when the <kbd class="key">k</kbd> key is pressed while the Control key
 is depressed.
 </p>
-<p>The text <kbd>M-k</kbd> is read as &lsquo;Meta-K&rsquo; and describes the character
-produced when the Meta key (if you have one) is depressed, and the <tt class="key">k</tt>
-key is pressed.
-The Meta key is labeled <tt class="key">ALT</tt> on many keyboards.
-On keyboards with two keys labeled <tt class="key">ALT</tt> (usually to either side of
-the space bar), the <tt class="key">ALT</tt> on the left side is generally set to
+<p>The text <kbd class="kbd">M-k</kbd> is read as &lsquo;Meta-K&rsquo; and describes the character
+produced when the Meta key (if you have one) is depressed, and the <kbd class="key">k</kbd>
+key is pressed (a <em class="dfn">meta character</em>), then both are released.
+The Meta key is labeled <kbd class="key">ALT</kbd> or <kbd class="key">Option</kbd> on many keyboards.
+On keyboards with two keys labeled <kbd class="key">ALT</kbd> (usually to either side of
+the space bar), the <kbd class="key">ALT</kbd> on the left side is generally set to
 work as a Meta key.
-The <tt class="key">ALT</tt> key on the right may also be configured to work as a
-Meta key or may be configured as some other modifier, such as a
+One of the <kbd class="key">ALT</kbd> keys may also be configured
+as some other modifier, such as a
 Compose key for typing accented characters.
 </p>
-<p>If you do not have a Meta or <tt class="key">ALT</tt> key, or another key working as
-a Meta key, the identical keystroke can be generated by typing <tt class="key">ESC</tt>
-<em>first</em>, and then typing <tt class="key">k</tt>.
-Either process is known as <em>metafying</em> the <tt class="key">k</tt> key.
+<p>On some keyboards, the Meta key modifier produces characters with
+the eighth bit (0200) set.
+You can use the <code class="code">enable-meta-key</code> variable
+to control whether or not it does this, if the keyboard allows it.
+On many others, the terminal or terminal emulator converts the metafied
+key to a key sequence beginning with <kbd class="key">ESC</kbd> as described in the
+next paragraph.
 </p>
-<p>The text <kbd>M-C-k</kbd> is read as &lsquo;Meta-Control-k&rsquo; and describes the
-character produced by <em>metafying</em> <kbd>C-k</kbd>.
+<p>If you do not have a Meta or <kbd class="key">ALT</kbd> key, or another key working as
+a Meta key, you can generally achieve the latter effect by typing <kbd class="key">ESC</kbd>
+<em class="emph">first</em>, and then typing <kbd class="key">k</kbd>.
+The <kbd class="key">ESC</kbd> character is known as the <em class="dfn">meta prefix</em>).
 </p>
-<p>In addition, several keys have their own names.  Specifically,
-<tt class="key">DEL</tt>, <tt class="key">ESC</tt>, <tt class="key">LFD</tt>, <tt class="key">SPC</tt>, <tt class="key">RET</tt>, and <tt class="key">TAB</tt> all
+<p>Either process is known as <em class="dfn">metafying</em> the <kbd class="key">k</kbd> key.
+</p>
+<p>If your Meta key produces a key sequence with the <kbd class="key">ESC</kbd> meta prefix,
+you can make <kbd class="kbd">M-key</kbd> key bindings you specify
+(see <code class="code">Key Bindings</code> in <a class="ref" href="Readline-Init-File-Syntax.html">Readline Init File Syntax</a>)
+do the same thing by setting the <code class="code">force-meta-prefix</code> variable.
+</p>
+<p>The text <kbd class="kbd">M-C-k</kbd> is read as &lsquo;Meta-Control-k&rsquo; and describes the
+character produced by metafying <kbd class="kbd">C-k</kbd>.
+</p>
+<p>In addition, several keys have their own names.
+Specifically,
+<kbd class="key">DEL</kbd>, <kbd class="key">ESC</kbd>, <kbd class="key">LFD</kbd>, <kbd class="key">SPC</kbd>, <kbd class="key">RET</kbd>, and <kbd class="key">TAB</kbd> all
 stand for themselves when seen in this text, or in an init file
-(see <a href="Readline-Init-File.html">Readline Init File</a>).
-If your keyboard lacks a <tt class="key">LFD</tt> key, typing <tt class="key">C-j</tt> will
-produce the desired character.
-The <tt class="key">RET</tt> key may be labeled <tt class="key">Return</tt> or <tt class="key">Enter</tt> on
+(see <a class="pxref" href="Readline-Init-File.html">Readline Init File</a>).
+If your keyboard lacks a <kbd class="key">LFD</kbd> key, typing <kbd class="key">C-j</kbd> will
+output the appropriate character.
+The <kbd class="key">RET</kbd> key may be labeled <kbd class="key">Return</kbd> or <kbd class="key">Enter</kbd> on
 some keyboards.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Readline-Interaction.html">Readline Interaction</a>, Up: <a href="Command-Line-Editing.html">Command Line Editing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

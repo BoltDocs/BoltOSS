@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,8 @@ A copy of the license is included in the section entitled
 <link href="Word-Designators.html" rel="next" title="Word Designators">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,69 +44,79 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Event-Designators">
-<div class="header">
+<div class="subsection-level-extent" id="Event-Designators">
+<div class="nav-panel">
 <p>
 Next: <a href="Word-Designators.html" accesskey="n" rel="next">Word Designators</a>, Up: <a href="History-Interaction.html" accesskey="u" rel="up">History Expansion</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Event-Designators-1"></span><h4 class="subsection">9.3.1 Event Designators</h4>
-<span id="index-event-designators"></span>
+<h4 class="subsection" id="Event-Designators-1"><span>9.3.1 Event Designators<a class="copiable-link" href="#Event-Designators-1"> &para;</a></span></h4>
+<a class="index-entry-id" id="index-event-designators"></a>
 
-<p>An event designator is a reference to a command line entry in the
-history list.
+<p>An event designator is a reference to an entry in the history list.
+The event designator consists of the portion of the word beginning
+with the history expansion character, and ending with the word designator
+if one is present, or the end of the word.
 Unless the reference is absolute, events are relative to the current
 position in the history list.
-<span id="index-history-events"></span>
+<a class="index-entry-id" id="index-history-events"></a>
 </p>
-<dl compact="compact">
-<dt><span><code>!</code></span></dt>
+<dl class="table">
+<dt><code class="code">!</code></dt>
 <dd><p>Start a history substitution, except when followed by a space, tab,
-the end of the line, &lsquo;<samp>=</samp>&rsquo; or &lsquo;<samp>(</samp>&rsquo; (when the
-<code>extglob</code> shell option is enabled using the <code>shopt</code> builtin).
+the end of the line, &lsquo;<samp class="samp">=</samp>&rsquo;,
+or the rest of the shell metacharacters defined above
+(see <a class="pxref" href="Definitions.html">Definitions</a>).
 </p>
 </dd>
-<dt><span><code>!<var>n</var></code></span></dt>
-<dd><p>Refer to command line <var>n</var>.
+<dt><code class="code">!<var class="var">n</var></code></dt>
+<dd><p>Refer to history list entry <var class="var">n</var>.
 </p>
 </dd>
-<dt><span><code>!-<var>n</var></code></span></dt>
-<dd><p>Refer to the command <var>n</var> lines back.
+<dt><code class="code">!-<var class="var">n</var></code></dt>
+<dd><p>Refer to the history entry minus <var class="var">n</var>.
 </p>
 </dd>
-<dt><span><code>!!</code></span></dt>
-<dd><p>Refer to the previous command.  This is a synonym for &lsquo;<samp>!-1</samp>&rsquo;.
+<dt><code class="code">!!</code></dt>
+<dd><p>Refer to the previous entry.
+This is a synonym for &lsquo;<samp class="samp">!-1</samp>&rsquo;.
 </p>
 </dd>
-<dt><span><code>!<var>string</var></code></span></dt>
+<dt><code class="code">!<var class="var">string</var></code></dt>
 <dd><p>Refer to the most recent command
 preceding the current position in the history list
-starting with <var>string</var>.
+starting with <var class="var">string</var>.
 </p>
 </dd>
-<dt><span><code>!?<var>string</var>[?]</code></span></dt>
+<dt><code class="code">!?<var class="var">string</var>[?]</code></dt>
 <dd><p>Refer to the most recent command
 preceding the current position in the history list
-containing <var>string</var>.
+containing <var class="var">string</var>.
 The trailing
-&lsquo;<samp>?</samp>&rsquo; may be omitted if the <var>string</var> is followed immediately by
+&lsquo;<samp class="samp">?</samp>&rsquo; may be omitted if the <var class="var">string</var> is followed immediately by
 a newline.
-If <var>string</var> is missing, the string from the most recent search is used;
+If <var class="var">string</var> is missing, this uses
+the string from the most recent search;
 it is an error if there is no previous search string.
 </p>
 </dd>
-<dt><span><code>^<var>string1</var>^<var>string2</var>^</code></span></dt>
-<dd><p>Quick Substitution.  Repeat the last command, replacing <var>string1</var>
-with <var>string2</var>.  Equivalent to
-<code>!!:s^<var>string1</var>^<var>string2</var>^</code>.
+<dt><code class="code">^<var class="var">string1</var>^<var class="var">string2</var>^</code></dt>
+<dd><p>Quick Substitution.
+Repeat the last command, replacing <var class="var">string1</var> with <var class="var">string2</var>.
+Equivalent to <code class="code">!!:s^<var class="var">string1</var>^<var class="var">string2</var>^</code>.
 </p>
 </dd>
-<dt><span><code>!#</code></span></dt>
+<dt><code class="code">!#</code></dt>
 <dd><p>The entire command line typed so far.
 </p>
 </dd>
 </dl>
 
+</div>
+<hr>
+<div class="nav-panel">
+<p>
+Next: <a href="Word-Designators.html">Word Designators</a>, Up: <a href="History-Interaction.html">History Expansion</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 
 

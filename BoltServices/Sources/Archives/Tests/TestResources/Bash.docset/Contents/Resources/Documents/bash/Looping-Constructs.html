@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -31,21 +31,9 @@ A copy of the license is included in the section entitled
 <link href="Conditional-Constructs.html" rel="next" title="Conditional Constructs">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -54,92 +42,94 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsubsection" id="Looping-Constructs">
-<div class="header">
+<div class="subsubsection-level-extent" id="Looping-Constructs">
+<div class="nav-panel">
 <p>
 Next: <a href="Conditional-Constructs.html" accesskey="n" rel="next">Conditional Constructs</a>, Up: <a href="Compound-Commands.html" accesskey="u" rel="up">Compound Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Looping-Constructs-1"></span><h4 class="subsubsection">3.2.5.1 Looping Constructs</h4>
-<span id="index-commands_002c-looping"></span>
+<h4 class="subsubsection" id="Looping-Constructs-1"><span>3.2.5.1 Looping Constructs<a class="copiable-link" href="#Looping-Constructs-1"> ¶</a></span></h4>
+<a class="index-entry-id" id="index-commands_002c-looping"></a>
 
 <p>Bash supports the following looping constructs.
 </p>
-<p>Note that wherever a ‘<samp>;</samp>’ appears in the description of a
+<p>Note that wherever a ‘<samp class="samp">;</samp>’ appears in the description of a
 command’s syntax, it may be replaced with one or more newlines.
 </p>
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Word/until"></a><dt id="index-until"><span><code>until</code><a href="#index-until" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><a class="dashAnchor" name="//apple_ref/Word/do"></a><span id="index-do"></span>
-<a class="dashAnchor" name="//apple_ref/Word/done"></a><span id="index-done"></span>
-<p>The syntax of the <code>until</code> command is:
+<dl class="table">
+<dt><a class="dashAnchor" name="//apple_ref/Word/do"></a><a class="index-entry-id" id="index-do"></a>
+<a class="dashAnchor" name="//apple_ref/Word/done"></a><a class="index-entry-id" id="index-done"></a>
+<a class="dashAnchor" name="//apple_ref/Word/until"></a><a id="index-until"></a><span><code class="code">until</code><a class="copiable-link" href="#index-until"> ¶</a></span></dt>
+<dd><p>The syntax of the <code class="code">until</code> command is:
 </p>
 <div class="example">
-<pre class="example">until <var>test-commands</var>; do <var>consequent-commands</var>; done
+<pre class="example-preformatted">until <var class="var">test-commands</var>; do <var class="var">consequent-commands</var>; done
 </pre></div>
 
-<p>Execute <var>consequent-commands</var> as long as
-<var>test-commands</var> has an exit status which is not zero.
+<p>Execute <var class="var">consequent-commands</var> as long as
+<var class="var">test-commands</var> has an exit status which is not zero.
 The return status is the exit status of the last command executed
-in <var>consequent-commands</var>, or zero if none was executed.
+in <var class="var">consequent-commands</var>, or zero if none was executed.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Word/while"></a><dt id="index-while"><span><code>while</code><a href="#index-while" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The syntax of the <code>while</code> command is:
+<dt><a class="dashAnchor" name="//apple_ref/Word/while"></a><a id="index-while"></a><span><code class="code">while</code><a class="copiable-link" href="#index-while"> ¶</a></span></dt>
+<dd><p>The syntax of the <code class="code">while</code> command is:
 </p>
 <div class="example">
-<pre class="example">while <var>test-commands</var>; do <var>consequent-commands</var>; done
+<pre class="example-preformatted">while <var class="var">test-commands</var>; do <var class="var">consequent-commands</var>; done
 </pre></div>
 
-<p>Execute <var>consequent-commands</var> as long as
-<var>test-commands</var> has an exit status of zero.
+<p>Execute <var class="var">consequent-commands</var> as long as
+<var class="var">test-commands</var> has an exit status of zero.
 The return status is the exit status of the last command executed
-in <var>consequent-commands</var>, or zero if none was executed.
+in <var class="var">consequent-commands</var>, or zero if none was executed.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Word/for"></a><dt id="index-for"><span><code>for</code><a href="#index-for" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The syntax of the <code>for</code> command is:
+<dt><a class="dashAnchor" name="//apple_ref/Word/for"></a><a id="index-for"></a><span><code class="code">for</code><a class="copiable-link" href="#index-for"> ¶</a></span></dt>
+<dd><p>The syntax of the <code class="code">for</code> command is:
 </p>
 <div class="example">
-<pre class="example">for <var>name</var> [ [in [<var>words</var> …] ] ; ] do <var>commands</var>; done
+<pre class="example-preformatted">for <var class="var">name</var> [ [in <var class="var">words</var> ...] ; ] do <var class="var">commands</var>; done
 </pre></div>
 
-<p>Expand <var>words</var> (see <a href="Shell-Expansions.html">Shell Expansions</a>), and execute <var>commands</var>
-once for each member
-in the resultant list, with <var>name</var> bound to the current member.
-If ‘<samp>in <var>words</var></samp>’ is not present, the <code>for</code> command
-executes the <var>commands</var> once for each positional parameter that is
-set, as if ‘<samp>in "$@"</samp>’ had been specified
-(see <a href="Special-Parameters.html">Special Parameters</a>).
+<p>Expand <var class="var">words</var> (see <a class="pxref" href="Shell-Expansions.html">Shell Expansions</a>), and then
+execute <var class="var">commands</var> once for each word
+in the resultant list, with <var class="var">name</var> bound to the current word.
+If ‘<samp class="samp">in <var class="var">words</var></samp>’ is not present, the <code class="code">for</code> command
+executes the <var class="var">commands</var> once for each positional parameter that is
+set, as if ‘<samp class="samp">in "$@"</samp>’ had been specified
+(see <a class="pxref" href="Special-Parameters.html">Special Parameters</a>).
 </p>
 <p>The return status is the exit status of the last command that executes.
-If there are no items in the expansion of <var>words</var>, no commands are
+If there are no items in the expansion of <var class="var">words</var>, no commands are
 executed, and the return status is zero.
 </p>
-<p>An alternate form of the <code>for</code> command is also supported:
+<p>There is an alternate form of the <code class="code">for</code> command which is similar to the
+C language:
 </p>
 <div class="example">
-<pre class="example">for (( <var>expr1</var> ; <var>expr2</var> ; <var>expr3</var> )) ; do <var>commands</var> ; done
+<pre class="example-preformatted">for (( <var class="var">expr1</var> ; <var class="var">expr2</var> ; <var class="var">expr3</var> )) [;] do <var class="var">commands</var> ; done
 </pre></div>
 
-<p>First, the arithmetic expression <var>expr1</var> is evaluated according
-to the rules described below (see <a href="Shell-Arithmetic.html">Shell Arithmetic</a>).
-The arithmetic expression <var>expr2</var> is then evaluated repeatedly
+<p>First, evaluate the arithmetic expression <var class="var">expr1</var> according
+to the rules described below (see <a class="pxref" href="Shell-Arithmetic.html">Shell Arithmetic</a>).
+Then, repeatedly evaluate the arithmetic expression <var class="var">expr2</var>
 until it evaluates to zero.   
-Each time <var>expr2</var> evaluates to a non-zero value, <var>commands</var> are
-executed and the arithmetic expression <var>expr3</var> is evaluated.       
+Each time <var class="var">expr2</var> evaluates to a non-zero value, execute <var class="var">commands</var>
+and evaluate the arithmetic expression <var class="var">expr3</var>.
 If any expression is omitted, it behaves as if it evaluates to 1.
-The return value is the exit status of the last command in <var>commands</var>
-that is executed, or false if any of the expressions is invalid.
+The return value is the exit status of the last command in <var class="var">commands</var>
+that is executed, or non-zero if any of the expressions is invalid.
 </p></dd>
 </dl>
 
-<p>The <code>break</code> and <code>continue</code> builtins (see <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>)
-may be used to control loop execution.
+<p>Use the <code class="code">break</code> and <code class="code">continue</code> builtins
+(see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>)
+to control loop execution.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Conditional-Constructs.html">Conditional Constructs</a>, Up: <a href="Compound-Commands.html">Compound Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

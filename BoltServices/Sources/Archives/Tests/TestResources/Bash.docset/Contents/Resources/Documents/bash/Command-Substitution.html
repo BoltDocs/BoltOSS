@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,9 @@ A copy of the license is included in the section entitled
 <link href="Shell-Parameter-Expansion.html" rel="prev" title="Shell Parameter Expansion">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,48 +46,114 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Command-Substitution">
-<div class="header">
+<div class="subsection-level-extent" id="Command-Substitution">
+<div class="nav-panel">
 <p>
 Next: <a href="Arithmetic-Expansion.html" accesskey="n" rel="next">Arithmetic Expansion</a>, Previous: <a href="Shell-Parameter-Expansion.html" accesskey="p" rel="prev">Shell Parameter Expansion</a>, Up: <a href="Shell-Expansions.html" accesskey="u" rel="up">Shell Expansions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Command-Substitution-1"></span><h4 class="subsection">3.5.4 Command Substitution</h4>
-<span id="index-command-substitution"></span>
+<h4 class="subsection" id="Command-Substitution-1"><span>3.5.4 Command Substitution<a class="copiable-link" href="#Command-Substitution-1"> &para;</a></span></h4>
+<a class="index-entry-id" id="index-command-substitution"></a>
 
 <p>Command substitution allows the output of a command to replace
 the command itself.
-Command substitution occurs when a command is enclosed as follows:
+The standard form of command substitution occurs when a command is
+enclosed as follows:
 </p><div class="example">
-<pre class="example">$(<var>command</var>)
+<pre class="example-preformatted">$(<var class="var">command</var>)
 </pre></div>
-<p>or
+<p>or (deprecated)
 </p><div class="example">
-<pre class="example">`<var>command</var>`
+<pre class="example-preformatted">`<var class="var">command</var>`.
 </pre></div>
 
-<p>Bash performs the expansion by executing <var>command</var> in a subshell environment
-and replacing the command substitution with the standard output of the
-command, with any trailing newlines deleted.
+<p>Bash performs command substitution by executing <var class="var">command</var> in a subshell
+environment and replacing the command substitution with the standard
+output of the command, with any trailing newlines deleted.
 Embedded newlines are not deleted, but they may be removed during
 word splitting.
-The command substitution <code>$(cat <var>file</var>)</code> can be
-replaced by the equivalent but faster <code>$(&lt; <var>file</var>)</code>.
+The command substitution <code class="code">$(cat <var class="var">file</var>)</code> can be
+replaced by the equivalent but faster <code class="code">$(&lt; <var class="var">file</var>)</code>.
 </p>
-<p>When the old-style backquote form of substitution is used,
+<p>With the old-style backquote form of substitution,
 backslash retains its literal meaning except when followed by
-&lsquo;<samp>$</samp>&rsquo;, &lsquo;<samp>`</samp>&rsquo;, or &lsquo;<samp>\</samp>&rsquo;. 
+&lsquo;<samp class="samp">$</samp>&rsquo;, &lsquo;<samp class="samp">`</samp>&rsquo;, or &lsquo;<samp class="samp">\</samp>&rsquo;. 
 The first backquote not preceded by a backslash terminates the
 command substitution.
-When using the <code>$(<var>command</var>)</code> form, all characters between
+When using the <code class="code">$(<var class="var">command</var>)</code> form, all characters between
 the parentheses make up the command; none are treated specially.
+</p>
+<p>There is an alternate form of command substitution:
+</p>
+<div class="example">
+<pre class="example-preformatted">${<var class="var">c</var> <var class="var">command</var>; }
+</pre></div>
+
+<p>which executes <var class="var">command</var> in the current execution environment
+and captures its output, again with trailing newlines removed.
+</p>
+<p>The character <var class="var">c</var> following the open brace must be a space, tab,
+newline, or &lsquo;<samp class="samp">|</samp>&rsquo;, and the close brace must be in a position
+where a reserved word may appear (i.e., preceded by a command terminator
+such as semicolon).
+Bash allows the close brace to be joined to the remaining characters in
+the word without being followed by a shell metacharacter as a reserved
+word would usually require.
+</p>
+<p>Any side effects of <var class="var">command</var> take effect immediately
+in the current execution environment and persist in the current 
+environment after the command completes (e.g., the <code class="code">exit</code> builtin
+exits the shell).
+</p>
+<p>This type of command substitution superficially resembles executing an
+unnamed shell function: local variables are created as when a shell
+function is executing, and the <code class="code">return</code> builtin forces
+<var class="var">command</var> to complete;
+however, the rest of the execution environment,
+including the positional parameters, is shared with the caller.
+</p>
+<p>If the first character following the open brace
+is a &lsquo;<samp class="samp">|</samp>&rsquo;, the construct expands to the
+value of the <code class="code">REPLY</code> shell variable after <var class="var">command</var> executes,
+without removing any trailing newlines,
+and the standard output of <var class="var">command</var> remains the same as in the
+calling shell.
+Bash creates <code class="code">REPLY</code> as an initially-unset local variable when
+<var class="var">command</var> executes, and restores <code class="code">REPLY</code> to the value it had
+before the command substitution after <var class="var">command</var> completes,
+as with any local variable.
+</p>
+<p>For example, this construct expands to &lsquo;<samp class="samp">12345</samp>&rsquo;, and leaves the
+shell variable <code class="code">X</code> unchanged in the current execution environment:
+</p>
+<div class="example">
+<pre class="example-preformatted">
+
+${ local X=12345 ; echo $X; }
+</pre></div>
+
+<p>(not declaring <code class="code">X</code> as local would modify its value in the current
+environment, as with normal shell function execution),
+while this construct does not require any output to expand to
+&lsquo;<samp class="samp">12345</samp>&rsquo;:
+</p>
+<div class="example">
+<pre class="example-preformatted">${| REPLY=12345; }
+</pre></div>
+
+<p>and restores <code class="code">REPLY</code> to the value it had before the command substitution.
 </p>
 <p>Command substitutions may be nested.  To nest when using the backquoted
 form, escape the inner backquotes with backslashes.
 </p>
-<p>If the substitution appears within double quotes, word splitting and
-filename expansion are not performed on the results.
+<p>If the substitution appears within double quotes, Bash does not perform
+word splitting and filename expansion on the results.
 </p>
+</div>
+<hr>
+<div class="nav-panel">
+<p>
+Next: <a href="Arithmetic-Expansion.html">Arithmetic Expansion</a>, Previous: <a href="Shell-Parameter-Expansion.html">Shell Parameter Expansion</a>, Up: <a href="Shell-Expansions.html">Shell Expansions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 
 

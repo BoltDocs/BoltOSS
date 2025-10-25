@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -31,21 +31,10 @@ A copy of the license is included in the section entitled
 <link href="Keyboard-Macros.html" rel="prev" title="Keyboard Macros">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+kbd.kbd {font-style: oblique}
+kbd.key {font-style: normal}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -54,180 +43,201 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Miscellaneous-Commands">
-<div class="header">
+<div class="subsection-level-extent" id="Miscellaneous-Commands">
+<div class="nav-panel">
 <p>
 Previous: <a href="Keyboard-Macros.html" accesskey="p" rel="prev">Keyboard Macros</a>, Up: <a href="Bindable-Readline-Commands.html" accesskey="u" rel="up">Bindable Readline Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Some-Miscellaneous-Commands"></span><h4 class="subsection">8.4.8 Some Miscellaneous Commands</h4>
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Function/re%2Dread%2Dinit%2Dfile%20%28C%2Dx%20C%2Dr%29"></a><dt id="index-re_002dread_002dinit_002dfile-_0028C_002dx-C_002dr_0029"><span><code>re-read-init-file (C-x C-r)</code><a href="#index-re_002dread_002dinit_002dfile-_0028C_002dx-C_002dr_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Read in the contents of the <var>inputrc</var> file, and incorporate
+<h4 class="subsection" id="Some-Miscellaneous-Commands"><span>8.4.8 Some Miscellaneous Commands<a class="copiable-link" href="#Some-Miscellaneous-Commands"> ¶</a></span></h4>
+<dl class="ftable">
+<dt><a class="dashAnchor" name="//apple_ref/Function/re%2Dread%2Dinit%2Dfile%20%28C%2Dx%20C%2Dr%29"></a><a id="index-re_002dread_002dinit_002dfile-_0028C_002dx-C_002dr_0029"></a><span><code class="code">re-read-init-file (C-x C-r)</code><a class="copiable-link" href="#index-re_002dread_002dinit_002dfile-_0028C_002dx-C_002dr_0029"> ¶</a></span></dt>
+<dd><p>Read in the contents of the <var class="var">inputrc</var> file, and incorporate
 any bindings or variable assignments found there.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/abort%20%28C%2Dg%29"></a><dt id="index-abort-_0028C_002dg_0029"><span><code>abort (C-g)</code><a href="#index-abort-_0028C_002dg_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/abort%20%28C%2Dg%29"></a><a id="index-abort-_0028C_002dg_0029"></a><span><code class="code">abort (C-g)</code><a class="copiable-link" href="#index-abort-_0028C_002dg_0029"> ¶</a></span></dt>
 <dd><p>Abort the current editing command and
 ring the terminal’s bell (subject to the setting of
-<code>bell-style</code>).
+<code class="code">bell-style</code>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/do%2Dlowercase%2Dversion%20%28M%2DA%2C%20M%2DB%2C%20M%2Dx%2C%20%E2%80%A6%29"></a><dt id="index-do_002dlowercase_002dversion-_0028M_002dA_002c-M_002dB_002c-M_002dx_002c-_2026_0029"><span><code>do-lowercase-version (M-A, M-B, M-<var>x</var>, …)</code><a href="#index-do_002dlowercase_002dversion-_0028M_002dA_002c-M_002dB_002c-M_002dx_002c-_2026_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>If the metafied character <var>x</var> is upper case, run the command
+<dt><a class="dashAnchor" name="//apple_ref/Function/do%2Dlowercase%2Dversion%20%28M%2DA%2C%20M%2DB%2C%20M%2Dx%2C%20%E2%80%A6%29"></a><a id="index-do_002dlowercase_002dversion-_0028M_002dA_002c-M_002dB_002c-M_002dx_002c-_002e_002e_002e_0029"></a><span><code class="code">do-lowercase-version (M-A, M-B, M-<var class="var">x</var>, …)</code><a class="copiable-link" href="#index-do_002dlowercase_002dversion-_0028M_002dA_002c-M_002dB_002c-M_002dx_002c-_002e_002e_002e_0029"> ¶</a></span></dt>
+<dd><p>If the metafied character <var class="var">x</var> is upper case, run the command
 that is bound to the corresponding metafied lower case character.
-The behavior is undefined if <var>x</var> is already lower case.
+The behavior is undefined if <var class="var">x</var> is already lower case.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/prefix%2Dmeta%20%28ESC%29"></a><dt id="index-prefix_002dmeta-_0028ESC_0029"><span><code>prefix-meta (<span class="key">ESC</span>)</code><a href="#index-prefix_002dmeta-_0028ESC_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Metafy the next character typed.  This is for keyboards
-without a meta key.  Typing ‘<samp><span class="key">ESC</span> f</samp>’ is equivalent to typing
-<kbd>M-f</kbd>.
+<dt><a class="dashAnchor" name="//apple_ref/Function/prefix%2Dmeta%20%28ESC%29"></a><a id="index-prefix_002dmeta-_0028ESC_0029"></a><span><code class="code">prefix-meta (<kbd class="key">ESC</kbd>)</code><a class="copiable-link" href="#index-prefix_002dmeta-_0028ESC_0029"> ¶</a></span></dt>
+<dd><p>Metafy the next character typed.
+Typing ‘<samp class="samp"><kbd class="key">ESC</kbd> f</samp>’ is equivalent to typing <kbd class="kbd">M-f</kbd>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/undo%20%28C%2D%5F%20or%20C%2Dx%20C%2Du%29"></a><dt id="index-undo-_0028C_002d_005f-or-C_002dx-C_002du_0029"><span><code>undo (C-_ or C-x C-u)</code><a href="#index-undo-_0028C_002d_005f-or-C_002dx-C_002du_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/undo%20%28C%2D%5F%20or%20C%2Dx%20C%2Du%29"></a><a id="index-undo-_0028C_002d_005f-or-C_002dx-C_002du_0029"></a><span><code class="code">undo (C-_ or C-x C-u)</code><a class="copiable-link" href="#index-undo-_0028C_002d_005f-or-C_002dx-C_002du_0029"> ¶</a></span></dt>
 <dd><p>Incremental undo, separately remembered for each line.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/revert%2Dline%20%28M%2Dr%29"></a><dt id="index-revert_002dline-_0028M_002dr_0029"><span><code>revert-line (M-r)</code><a href="#index-revert_002dline-_0028M_002dr_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Undo all changes made to this line.  This is like executing the <code>undo</code>
-command enough times to get back to the beginning.
+<dt><a class="dashAnchor" name="//apple_ref/Function/revert%2Dline%20%28M%2Dr%29"></a><a id="index-revert_002dline-_0028M_002dr_0029"></a><span><code class="code">revert-line (M-r)</code><a class="copiable-link" href="#index-revert_002dline-_0028M_002dr_0029"> ¶</a></span></dt>
+<dd><p>Undo all changes made to this line.
+This is like executing the <code class="code">undo</code>
+command enough times to get back to the initial state.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/tilde%2Dexpand%20%28M%2D%26%29"></a><dt id="index-tilde_002dexpand-_0028M_002d_0026_0029"><span><code>tilde-expand (M-&amp;)</code><a href="#index-tilde_002dexpand-_0028M_002d_0026_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/tilde%2Dexpand%20%28M%2D%26%29"></a><a id="index-tilde_002dexpand-_0028M_002d_0026_0029"></a><span><code class="code">tilde-expand (M-&amp;)</code><a class="copiable-link" href="#index-tilde_002dexpand-_0028M_002d_0026_0029"> ¶</a></span></dt>
 <dd><p>Perform tilde expansion on the current word.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/set%2Dmark%20%28C%2D%40%29"></a><dt id="index-set_002dmark-_0028C_002d_0040_0029"><span><code>set-mark (C-@)</code><a href="#index-set_002dmark-_0028C_002d_0040_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Set the mark to the point.  If a
-numeric argument is supplied, the mark is set to that position.
+<dt><a class="dashAnchor" name="//apple_ref/Function/set%2Dmark%20%28C%2D%40%29"></a><a id="index-set_002dmark-_0028C_002d_0040_0029"></a><span><code class="code">set-mark (C-@)</code><a class="copiable-link" href="#index-set_002dmark-_0028C_002d_0040_0029"> ¶</a></span></dt>
+<dd><p>Set the mark to the point.
+If a numeric argument is supplied, set the mark to that position.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/exchange%2Dpoint%2Dand%2Dmark%20%28C%2Dx%20C%2Dx%29"></a><dt id="index-exchange_002dpoint_002dand_002dmark-_0028C_002dx-C_002dx_0029"><span><code>exchange-point-and-mark (C-x C-x)</code><a href="#index-exchange_002dpoint_002dand_002dmark-_0028C_002dx-C_002dx_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Swap the point with the mark.  The current cursor position is set to
-the saved position, and the old cursor position is saved as the mark.
+<dt><a class="dashAnchor" name="//apple_ref/Function/exchange%2Dpoint%2Dand%2Dmark%20%28C%2Dx%20C%2Dx%29"></a><a id="index-exchange_002dpoint_002dand_002dmark-_0028C_002dx-C_002dx_0029"></a><span><code class="code">exchange-point-and-mark (C-x C-x)</code><a class="copiable-link" href="#index-exchange_002dpoint_002dand_002dmark-_0028C_002dx-C_002dx_0029"> ¶</a></span></dt>
+<dd><p>Swap the point with the mark.
+Set the current cursor position to the saved position,
+then set the mark to the old cursor position.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/character%2Dsearch%20%28C%2D%5D%29"></a><dt id="index-character_002dsearch-_0028C_002d_005d_0029"><span><code>character-search (C-])</code><a href="#index-character_002dsearch-_0028C_002d_005d_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>A character is read and point is moved to the next occurrence of that
-character.  A negative argument searches for previous occurrences.
+<dt><a class="dashAnchor" name="//apple_ref/Function/character%2Dsearch%20%28C%2D%5D%29"></a><a id="index-character_002dsearch-_0028C_002d_005d_0029"></a><span><code class="code">character-search (C-])</code><a class="copiable-link" href="#index-character_002dsearch-_0028C_002d_005d_0029"> ¶</a></span></dt>
+<dd><p>Read a character and move point to the next occurrence of that character.
+A negative argument searches for previous occurrences.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/character%2Dsearch%2Dbackward%20%28M%2DC%2D%5D%29"></a><dt id="index-character_002dsearch_002dbackward-_0028M_002dC_002d_005d_0029"><span><code>character-search-backward (M-C-])</code><a href="#index-character_002dsearch_002dbackward-_0028M_002dC_002d_005d_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>A character is read and point is moved to the previous occurrence
-of that character.  A negative argument searches for subsequent
-occurrences.
+<dt><a class="dashAnchor" name="//apple_ref/Function/character%2Dsearch%2Dbackward%20%28M%2DC%2D%5D%29"></a><a id="index-character_002dsearch_002dbackward-_0028M_002dC_002d_005d_0029"></a><span><code class="code">character-search-backward (M-C-])</code><a class="copiable-link" href="#index-character_002dsearch_002dbackward-_0028M_002dC_002d_005d_0029"> ¶</a></span></dt>
+<dd><p>Read a character and move point to the previous occurrence of that character.
+A negative argument searches for subsequent occurrences.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/skip%2Dcsi%2Dsequence%20%28%29"></a><dt id="index-skip_002dcsi_002dsequence-_0028_0029"><span><code>skip-csi-sequence ()</code><a href="#index-skip_002dcsi_002dsequence-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/skip%2Dcsi%2Dsequence%20%28%29"></a><a id="index-skip_002dcsi_002dsequence-_0028_0029"></a><span><code class="code">skip-csi-sequence ()</code><a class="copiable-link" href="#index-skip_002dcsi_002dsequence-_0028_0029"> ¶</a></span></dt>
 <dd><p>Read enough characters to consume a multi-key sequence such as those
-defined for keys like Home and End.  Such sequences begin with a
-Control Sequence Indicator (CSI), usually ESC-[.  If this sequence is
-bound to "\e[", keys producing such sequences will have no effect
-unless explicitly bound to a Readline command, instead of inserting
-stray characters into the editing buffer.  This is unbound by default,
-but usually bound to ESC-[.
+defined for keys like Home and End.
+CSI sequences begin with a Control Sequence Indicator (CSI), usually
+<kbd class="kbd">ESC [</kbd>.
+If this sequence is bound to "\e[",
+keys producing CSI sequences have no effect
+unless explicitly bound to a Readline command,
+instead of inserting stray characters into the editing buffer.
+This is unbound by default, but usually bound to
+<kbd class="kbd">ESC [</kbd>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/insert%2Dcomment%20%28M%2D%23%29"></a><dt id="index-insert_002dcomment-_0028M_002d_0023_0029"><span><code>insert-comment (M-#)</code><a href="#index-insert_002dcomment-_0028M_002d_0023_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Without a numeric argument, the value of the <code>comment-begin</code>
-variable is inserted at the beginning of the current line.
+<dt><a class="dashAnchor" name="//apple_ref/Function/insert%2Dcomment%20%28M%2D%23%29"></a><a id="index-insert_002dcomment-_0028M_002d_0023_0029"></a><span><code class="code">insert-comment (M-#)</code><a class="copiable-link" href="#index-insert_002dcomment-_0028M_002d_0023_0029"> ¶</a></span></dt>
+<dd><p>Without a numeric argument, insert the value of the <code class="code">comment-begin</code>
+variable at the beginning of the current line.
 If a numeric argument is supplied, this command acts as a toggle:  if
 the characters at the beginning of the line do not match the value
-of <code>comment-begin</code>, the value is inserted, otherwise
-the characters in <code>comment-begin</code> are deleted from the beginning of
-the line.
+of <code class="code">comment-begin</code>, insert the value; otherwise delete
+the characters in <code class="code">comment-begin</code> from the beginning of the line.
 In either case, the line is accepted as if a newline had been typed.
-The default value of <code>comment-begin</code> causes this command
+The default value of <code class="code">comment-begin</code> causes this command
 to make the current line a shell comment.
 If a numeric argument causes the comment character to be removed, the line
 will be executed by the shell.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/dump%2Dfunctions%20%28%29"></a><dt id="index-dump_002dfunctions-_0028_0029"><span><code>dump-functions ()</code><a href="#index-dump_002dfunctions-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Print all of the functions and their key bindings to the
-Readline output stream.  If a numeric argument is supplied,
+<dt><a class="dashAnchor" name="//apple_ref/Function/dump%2Dfunctions%20%28%29"></a><a id="index-dump_002dfunctions-_0028_0029"></a><span><code class="code">dump-functions ()</code><a class="copiable-link" href="#index-dump_002dfunctions-_0028_0029"> ¶</a></span></dt>
+<dd><p>Print all of the functions and their key bindings
+to the Readline output stream.
+If a numeric argument is supplied,
 the output is formatted in such a way that it can be made part
-of an <var>inputrc</var> file.  This command is unbound by default.
+of an <var class="var">inputrc</var> file.
+This command is unbound by default.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/dump%2Dvariables%20%28%29"></a><dt id="index-dump_002dvariables-_0028_0029"><span><code>dump-variables ()</code><a href="#index-dump_002dvariables-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Print all of the settable variables and their values to the
-Readline output stream.  If a numeric argument is supplied,
+<dt><a class="dashAnchor" name="//apple_ref/Function/dump%2Dvariables%20%28%29"></a><a id="index-dump_002dvariables-_0028_0029"></a><span><code class="code">dump-variables ()</code><a class="copiable-link" href="#index-dump_002dvariables-_0028_0029"> ¶</a></span></dt>
+<dd><p>Print all of the settable variables and their values
+to the Readline output stream.
+If a numeric argument is supplied,
 the output is formatted in such a way that it can be made part
-of an <var>inputrc</var> file.  This command is unbound by default.
+of an <var class="var">inputrc</var> file.
+This command is unbound by default.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/dump%2Dmacros%20%28%29"></a><dt id="index-dump_002dmacros-_0028_0029"><span><code>dump-macros ()</code><a href="#index-dump_002dmacros-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/dump%2Dmacros%20%28%29"></a><a id="index-dump_002dmacros-_0028_0029"></a><span><code class="code">dump-macros ()</code><a class="copiable-link" href="#index-dump_002dmacros-_0028_0029"> ¶</a></span></dt>
 <dd><p>Print all of the Readline key sequences bound to macros and the
-strings they output.  If a numeric argument is supplied,
+strings they output
+to the Readline output stream.
+If a numeric argument is supplied,
 the output is formatted in such a way that it can be made part
-of an <var>inputrc</var> file.  This command is unbound by default.
+of an <var class="var">inputrc</var> file.
+This command is unbound by default.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/spell%2Dcorrect%2Dword%20%28C%2Dx%20s%29"></a><dt id="index-spell_002dcorrect_002dword-_0028C_002dx-s_0029"><span><code>spell-correct-word (C-x s)</code><a href="#index-spell_002dcorrect_002dword-_0028C_002dx-s_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/execute%2Dnamed%2Dcommand%20%28M%2Dx%29"></a><a id="index-execute_002dnamed_002dcommand-_0028M_002dx_0029"></a><span><code class="code">execute-named-command (M-x)</code><a class="copiable-link" href="#index-execute_002dnamed_002dcommand-_0028M_002dx_0029"> ¶</a></span></dt>
+<dd><p>Read a bindable Readline command name from the input and execute the
+function to which it’s bound, as if the key sequence to which it was
+bound appeared in the input.
+If this function is supplied with a numeric argument, it passes that
+argument to the function it executes.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Function/spell%2Dcorrect%2Dword%20%28C%2Dx%20s%29"></a><a id="index-spell_002dcorrect_002dword-_0028C_002dx-s_0029"></a><span><code class="code">spell-correct-word (C-x s)</code><a class="copiable-link" href="#index-spell_002dcorrect_002dword-_0028C_002dx-s_0029"> ¶</a></span></dt>
 <dd><p>Perform spelling correction on the current word, treating it as a directory
-or filename, in the same way as the <code>cdspell</code> shell option.
-Word boundaries are the same as those used by <code>shell-forward-word</code>.
+or filename, in the same way as the <code class="code">cdspell</code> shell option.
+Word boundaries are the same as those used by <code class="code">shell-forward-word</code>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/glob%2Dcomplete%2Dword%20%28M%2Dg%29"></a><dt id="index-glob_002dcomplete_002dword-_0028M_002dg_0029"><span><code>glob-complete-word (M-g)</code><a href="#index-glob_002dcomplete_002dword-_0028M_002dg_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The word before point is treated as a pattern for pathname expansion,
-with an asterisk implicitly appended.  This pattern is used to
+<dt><a class="dashAnchor" name="//apple_ref/Function/glob%2Dcomplete%2Dword%20%28M%2Dg%29"></a><a id="index-glob_002dcomplete_002dword-_0028M_002dg_0029"></a><span><code class="code">glob-complete-word (M-g)</code><a class="copiable-link" href="#index-glob_002dcomplete_002dword-_0028M_002dg_0029"> ¶</a></span></dt>
+<dd><p>Treat the word before point as a pattern for pathname expansion,
+with an asterisk implicitly appended, then use the pattern to
 generate a list of matching file names for possible completions.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/glob%2Dexpand%2Dword%20%28C%2Dx%20%2A%29"></a><dt id="index-glob_002dexpand_002dword-_0028C_002dx-_002a_0029"><span><code>glob-expand-word (C-x *)</code><a href="#index-glob_002dexpand_002dword-_0028C_002dx-_002a_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The word before point is treated as a pattern for pathname expansion,
-and the list of matching file names is inserted, replacing the word.
-If a numeric argument is supplied, a ‘<samp>*</samp>’ is appended before
+<dt><a class="dashAnchor" name="//apple_ref/Function/glob%2Dexpand%2Dword%20%28C%2Dx%20%2A%29"></a><a id="index-glob_002dexpand_002dword-_0028C_002dx-_002a_0029"></a><span><code class="code">glob-expand-word (C-x *)</code><a class="copiable-link" href="#index-glob_002dexpand_002dword-_0028C_002dx-_002a_0029"> ¶</a></span></dt>
+<dd><p>Treat the word before point as a pattern for pathname expansion,
+and insert the list of matching file names, replacing the word.
+If a numeric argument is supplied, append a ‘<samp class="samp">*</samp>’ before
 pathname expansion.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/glob%2Dlist%2Dexpansions%20%28C%2Dx%20g%29"></a><dt id="index-glob_002dlist_002dexpansions-_0028C_002dx-g_0029"><span><code>glob-list-expansions (C-x g)</code><a href="#index-glob_002dlist_002dexpansions-_0028C_002dx-g_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The list of expansions that would have been generated by
-<code>glob-expand-word</code> is displayed, and the line is redrawn.
-If a numeric argument is supplied, a ‘<samp>*</samp>’ is appended before
+<dt><a class="dashAnchor" name="//apple_ref/Function/glob%2Dlist%2Dexpansions%20%28C%2Dx%20g%29"></a><a id="index-glob_002dlist_002dexpansions-_0028C_002dx-g_0029"></a><span><code class="code">glob-list-expansions (C-x g)</code><a class="copiable-link" href="#index-glob_002dlist_002dexpansions-_0028C_002dx-g_0029"> ¶</a></span></dt>
+<dd><p>Display the list of expansions that would have been generated by
+<code class="code">glob-expand-word</code>, and redisplay the line.
+If a numeric argument is supplied, append a ‘<samp class="samp">*</samp>’ before
 pathname expansion.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/display%2Dshell%2Dversion%20%28C%2Dx%20C%2Dv%29"></a><dt id="index-display_002dshell_002dversion-_0028C_002dx-C_002dv_0029"><span><code>display-shell-version (C-x C-v)</code><a href="#index-display_002dshell_002dversion-_0028C_002dx-C_002dv_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Display version information about the current instance of Bash.
+<dt><a class="dashAnchor" name="//apple_ref/Function/shell%2Dexpand%2Dline%20%28M%2DC%2De%29"></a><a id="index-shell_002dexpand_002dline-_0028M_002dC_002de_0029"></a><span><code class="code">shell-expand-line (M-C-e)</code><a class="copiable-link" href="#index-shell_002dexpand_002dline-_0028M_002dC_002de_0029"> ¶</a></span></dt>
+<dd><p>Expand the line by performing shell word expansions.  
+This performs alias and history expansion,
+$’<var class="var">string</var>’ and $"<var class="var">string</var>" quoting,
+tilde expansion, parameter and variable expansion, arithmetic expansion,
+command and process substitution,
+word splitting, and quote removal.  
+An explicit argument suppresses command and process substitution.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/shell%2Dexpand%2Dline%20%28M%2DC%2De%29"></a><dt id="index-shell_002dexpand_002dline-_0028M_002dC_002de_0029"><span><code>shell-expand-line (M-C-e)</code><a href="#index-shell_002dexpand_002dline-_0028M_002dC_002de_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Expand the line as the shell does.
-This performs alias and history expansion as well as all of the shell
-word expansions (see <a href="Shell-Expansions.html">Shell Expansions</a>).
-</p>
-</dd>
-<a class="dashAnchor" name="//apple_ref/Function/history%2Dexpand%2Dline%20%28M%2D%5E%29"></a><dt id="index-history_002dexpand_002dline-_0028M_002d_005e_0029"><span><code>history-expand-line (M-^)</code><a href="#index-history_002dexpand_002dline-_0028M_002d_005e_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/history%2Dexpand%2Dline%20%28M%2D%5E%29"></a><a id="index-history_002dexpand_002dline-_0028M_002d_005e_0029"></a><span><code class="code">history-expand-line (M-^)</code><a class="copiable-link" href="#index-history_002dexpand_002dline-_0028M_002d_005e_0029"> ¶</a></span></dt>
 <dd><p>Perform history expansion on the current line.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/magic%2Dspace%20%28%29"></a><dt id="index-magic_002dspace-_0028_0029"><span><code>magic-space ()</code><a href="#index-magic_002dspace-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/magic%2Dspace%20%28%29"></a><a id="index-magic_002dspace-_0028_0029"></a><span><code class="code">magic-space ()</code><a class="copiable-link" href="#index-magic_002dspace-_0028_0029"> ¶</a></span></dt>
 <dd><p>Perform history expansion on the current line and insert a space
-(see <a href="History-Interaction.html">History Expansion</a>).
+(see <a class="pxref" href="History-Interaction.html">History Expansion</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/alias%2Dexpand%2Dline%20%28%29"></a><dt id="index-alias_002dexpand_002dline-_0028_0029"><span><code>alias-expand-line ()</code><a href="#index-alias_002dexpand_002dline-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Perform alias expansion on the current line (see <a href="Aliases.html">Aliases</a>).
+<dt><a class="dashAnchor" name="//apple_ref/Function/alias%2Dexpand%2Dline%20%28%29"></a><a id="index-alias_002dexpand_002dline-_0028_0029"></a><span><code class="code">alias-expand-line ()</code><a class="copiable-link" href="#index-alias_002dexpand_002dline-_0028_0029"> ¶</a></span></dt>
+<dd><p>Perform alias expansion on the current line (see <a class="pxref" href="Aliases.html">Aliases</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/history%2Dand%2Dalias%2Dexpand%2Dline%20%28%29"></a><dt id="index-history_002dand_002dalias_002dexpand_002dline-_0028_0029"><span><code>history-and-alias-expand-line ()</code><a href="#index-history_002dand_002dalias_002dexpand_002dline-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/history%2Dand%2Dalias%2Dexpand%2Dline%20%28%29"></a><a id="index-history_002dand_002dalias_002dexpand_002dline-_0028_0029"></a><span><code class="code">history-and-alias-expand-line ()</code><a class="copiable-link" href="#index-history_002dand_002dalias_002dexpand_002dline-_0028_0029"> ¶</a></span></dt>
 <dd><p>Perform history and alias expansion on the current line.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/insert%2Dlast%2Dargument%20%28M%2D%2E%20or%20M%2D%5F%29"></a><dt id="index-insert_002dlast_002dargument-_0028M_002d_002e-or-M_002d_005f_0029"><span><code>insert-last-argument (M-. or M-_)</code><a href="#index-insert_002dlast_002dargument-_0028M_002d_002e-or-M_002d_005f_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>A synonym for <code>yank-last-arg</code>.
+<dt><a class="dashAnchor" name="//apple_ref/Function/insert%2Dlast%2Dargument%20%28M%2D%2E%20or%20M%2D%5F%29"></a><a id="index-insert_002dlast_002dargument-_0028M_002d_002e-or-M_002d_005f_0029"></a><span><code class="code">insert-last-argument (M-. or M-_)</code><a class="copiable-link" href="#index-insert_002dlast_002dargument-_0028M_002d_002e-or-M_002d_005f_0029"> ¶</a></span></dt>
+<dd><p>A synonym for <code class="code">yank-last-arg</code>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/edit%2Dand%2Dexecute%2Dcommand%20%28C%2Dx%20C%2De%29"></a><dt id="index-edit_002dand_002dexecute_002dcommand-_0028C_002dx-C_002de_0029"><span><code>edit-and-execute-command (C-x C-e)</code><a href="#index-edit_002dand_002dexecute_002dcommand-_0028C_002dx-C_002de_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/edit%2Dand%2Dexecute%2Dcommand%20%28C%2Dx%20C%2De%29"></a><a id="index-edit_002dand_002dexecute_002dcommand-_0028C_002dx-C_002de_0029"></a><span><code class="code">edit-and-execute-command (C-x C-e)</code><a class="copiable-link" href="#index-edit_002dand_002dexecute_002dcommand-_0028C_002dx-C_002de_0029"> ¶</a></span></dt>
 <dd><p>Invoke an editor on the current command line, and execute the result as shell
 commands.
 Bash attempts to invoke
-<code>$VISUAL</code>, <code>$EDITOR</code>, and <code>emacs</code>
+<code class="code">$VISUAL</code>, <code class="code">$EDITOR</code>, and <code class="code">emacs</code>
 as the editor, in that order.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Function/display%2Dshell%2Dversion%20%28C%2Dx%20C%2Dv%29"></a><a id="index-display_002dshell_002dversion-_0028C_002dx-C_002dv_0029"></a><span><code class="code">display-shell-version (C-x C-v)</code><a class="copiable-link" href="#index-display_002dshell_002dversion-_0028C_002dx-C_002dv_0029"> ¶</a></span></dt>
+<dd><p>Display version information about the current instance of Bash.
 </p>
 
 
@@ -236,7 +246,7 @@ as the editor, in that order.
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Previous: <a href="Keyboard-Macros.html">Keyboard Macros</a>, Up: <a href="Bindable-Readline-Commands.html">Bindable Readline Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

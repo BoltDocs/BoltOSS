@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,8 @@ A copy of the license is included in the section entitled
 <link href="Job-Control.html" rel="prev" title="Job Control">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,31 +45,31 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="chapter" id="Command-Line-Editing">
-<div class="header">
+<div class="chapter-level-extent" id="Command-Line-Editing">
+<div class="nav-panel">
 <p>
 Next: <a href="Using-History-Interactively.html" accesskey="n" rel="next">Using History Interactively</a>, Previous: <a href="Job-Control.html" accesskey="p" rel="prev">Job Control</a>, Up: <a href="index.html" accesskey="u" rel="up">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Command-Line-Editing-1"></span><h2 class="chapter">8 Command Line Editing</h2>
+<h2 class="chapter" id="Command-Line-Editing-1"><span>8 Command Line Editing<a class="copiable-link" href="#Command-Line-Editing-1"> &para;</a></span></h2>
 
-<p>This chapter describes the basic features of the <small>GNU</small>
+<p>This chapter describes the basic features of the <small class="sc">GNU</small>
 command line editing interface.
 Command line editing is provided by the Readline library, which is
 used by several different programs, including Bash.
 Command line editing is enabled by default when using an interactive shell,
-unless the <samp>--noediting</samp> option is supplied at shell invocation.
-Line editing is also used when using the <samp>-e</samp> option to the
-<code>read</code> builtin command (see <a href="Bash-Builtins.html">Bash Builtin Commands</a>).
-By default, the line editing commands are similar to those of Emacs.
-A vi-style line editing interface is also available.
-Line editing can be enabled at any time using the <samp>-o emacs</samp> or
-<samp>-o vi</samp> options to the <code>set</code> builtin command
-(see <a href="The-Set-Builtin.html">The Set Builtin</a>), or disabled using the <samp>+o emacs</samp> or 
-<samp>+o vi</samp> options to <code>set</code>.
+unless the <samp class="option">--noediting</samp> option is supplied at shell invocation.
+Line editing is also used when using the <samp class="option">-e</samp> option to the
+<code class="code">read</code> builtin command (see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>).
+By default, the line editing commands are similar to those of Emacs;
+a vi-style line editing interface is also available.
+Line editing can be enabled at any time using the <samp class="option">-o emacs</samp> or
+<samp class="option">-o vi</samp> options to the <code class="code">set</code> builtin command
+(see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>), or disabled using the <samp class="option">+o emacs</samp> or 
+<samp class="option">+o vi</samp> options to <code class="code">set</code>.
 </p>
 
-<ul class="section-toc">
+<ul class="mini-toc">
 <li><a href="Introduction-and-Notation.html" accesskey="1">Introduction to Line Editing</a></li>
 <li><a href="Readline-Interaction.html" accesskey="2">Readline Interaction</a></li>
 <li><a href="Readline-Init-File.html" accesskey="3">Readline Init File</a></li>

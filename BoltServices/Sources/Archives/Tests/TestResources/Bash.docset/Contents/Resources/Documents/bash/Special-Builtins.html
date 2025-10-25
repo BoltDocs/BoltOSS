@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,9 @@ A copy of the license is included in the section entitled
 <link href="Modifying-Shell-Behavior.html" rel="prev" title="Modifying Shell Behavior">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,21 +45,21 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Special-Builtins">
-<div class="header">
+<div class="section-level-extent" id="Special-Builtins">
+<div class="nav-panel">
 <p>
 Previous: <a href="Modifying-Shell-Behavior.html" accesskey="p" rel="prev">Modifying Shell Behavior</a>, Up: <a href="Shell-Builtin-Commands.html" accesskey="u" rel="up">Shell Builtin Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Special-Builtins-1"></span><h3 class="section">4.4 Special Builtins</h3>
-<span id="index-special-builtin-1"></span>
+<h3 class="section" id="Special-Builtins-1"><span>4.4 Special Builtins<a class="copiable-link" href="#Special-Builtins-1"> &para;</a></span></h3>
+<a class="index-entry-id" id="index-special-builtin-1"></a>
 
-<p>For historical reasons, the <small>POSIX</small> standard has classified
-several builtin commands as <em>special</em>.
-When Bash is executing in <small>POSIX</small> mode, the special builtins
+<p>For historical reasons, the <small class="sc">POSIX</small> standard has classified
+several builtin commands as <em class="emph">special</em>.
+When Bash is executing in <small class="sc">POSIX</small> mode, the special builtins
 differ from other builtin commands in three respects:
 </p>
-<ol>
+<ol class="enumerate">
 <li> Special builtins are found before shell functions during command lookup.
 
 </li><li> If a special builtin returns an error status, a non-interactive shell exits.
@@ -80,14 +68,14 @@ differ from other builtin commands in three respects:
 environment after the command completes.
 </li></ol>
 
-<p>When Bash is not executing in <small>POSIX</small> mode, these builtins behave no
+<p>When Bash is not executing in <small class="sc">POSIX</small> mode, these builtins behave no
 differently than the rest of the Bash builtin commands.
-The Bash <small>POSIX</small> mode is described in <a href="Bash-POSIX-Mode.html">Bash POSIX Mode</a>. 
+The Bash <small class="sc">POSIX</small> mode is described in <a class="ref" href="Bash-POSIX-Mode.html">Bash and POSIX</a>. 
 </p>
-<p>These are the <small>POSIX</small> special builtins:
+<p>These are the <small class="sc">POSIX</small> special builtins:
 </p><div class="example">
-<pre class="example">break : . continue eval exec exit export readonly return set<!-- /@w -->
-shift trap unset<!-- /@w -->
+<pre class="example-preformatted">break : . source continue eval exec exit export readonly return set<!-- /@w -->
+shift times trap unset<!-- /@w -->
 </pre></div>
 
 </div>

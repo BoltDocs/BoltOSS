@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,9 @@ A copy of the license is included in the section entitled
 <link href="Compound-Commands.html" rel="prev" title="Compound Commands">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,87 +46,87 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Coprocesses">
-<div class="header">
+<div class="subsection-level-extent" id="Coprocesses">
+<div class="nav-panel">
 <p>
 Next: <a href="GNU-Parallel.html" accesskey="n" rel="next">GNU Parallel</a>, Previous: <a href="Compound-Commands.html" accesskey="p" rel="prev">Compound Commands</a>, Up: <a href="Shell-Commands.html" accesskey="u" rel="up">Shell Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Coprocesses-1"></span><h4 class="subsection">3.2.6 Coprocesses</h4>
-<span id="index-coprocess"></span>
+<h4 class="subsection" id="Coprocesses-1"><span>3.2.6 Coprocesses<a class="copiable-link" href="#Coprocesses-1"> &para;</a></span></h4>
+<a class="index-entry-id" id="index-coprocess"></a>
 
-<p>A <code>coprocess</code> is a shell command preceded by the <code>coproc</code>
+<p>A <code class="code">coprocess</code> is a shell command preceded by the <code class="code">coproc</code>
 reserved word.
 A coprocess is executed asynchronously in a subshell, as if the command
-had been terminated with the &lsquo;<samp>&amp;</samp>&rsquo; control operator, with a two-way pipe
+had been terminated with the &lsquo;<samp class="samp">&amp;</samp>&rsquo; control operator, with a two-way pipe
 established between the executing shell and the coprocess.
 </p>
 <p>The syntax for a coprocess is:
 </p>
 <div class="example">
-<pre class="example">coproc [<var>NAME</var>] <var>command</var> [<var>redirections</var>]
+<pre class="example-preformatted">coproc [<var class="var">NAME</var>] <var class="var">command</var> [<var class="var">redirections</var>]
 </pre></div>
 
-<p>This creates a coprocess named <var>NAME</var>.
-<var>command</var> may be either a simple command (see <a href="Simple-Commands.html">Simple Commands</a>)
-or a compound command (see <a href="Compound-Commands.html">Compound Commands</a>).
-<var>NAME</var> is a shell variable name.
-If <var>NAME</var> is not supplied, the default name is <code>COPROC</code>.
+<p>This creates a coprocess named <var class="var">NAME</var>.
+<var class="var">command</var> may be either a simple command (see <a class="pxref" href="Simple-Commands.html">Simple Commands</a>)
+or a compound command (see <a class="pxref" href="Compound-Commands.html">Compound Commands</a>).
+<var class="var">NAME</var> is a shell variable name.
+If <var class="var">NAME</var> is not supplied, the default name is <code class="code">COPROC</code>.
 </p>
 <p>The recommended form to use for a coprocess is
 </p>
 <div class="example">
-<pre class="example">coproc <var>NAME</var> { <var>command</var>; }
+<pre class="example-preformatted">coproc <var class="var">NAME</var> { <var class="var">command</var>; }
 </pre></div>
 
-<p>This form is recommended because simple commands result in the coprocess
-always being named <code>COPROC</code>, and it is simpler to use and more complete
+<p>This form is preferred because simple commands result in the coprocess
+always being named <code class="code">COPROC</code>, and it is simpler to use and more complete
 than the other compound commands.
 </p>
 <p>There are other forms of coprocesses:
 </p>
 <div class="example">
-<pre class="example">coproc <var>NAME</var> <var>compound-command</var>
-coproc <var>compound-command</var>
-coproc <var>simple-command</var>
+<pre class="example-preformatted">coproc <var class="var">NAME</var> <var class="var">compound-command</var>
+coproc <var class="var">compound-command</var>
+coproc <var class="var">simple-command</var>
 </pre></div>
 
-<p>If <var>command</var> is a compound command, <var>NAME</var> is optional. The
-word following <code>coproc</code> determines whether that word is interpreted
-as a variable name: it is interpreted as <var>NAME</var> if it is not a
+<p>If <var class="var">command</var> is a compound command, <var class="var">NAME</var> is optional. The
+word following <code class="code">coproc</code> determines whether that word is interpreted
+as a variable name: it is interpreted as <var class="var">NAME</var> if it is not a
 reserved word that introduces a compound command.
-If <var>command</var> is a simple command, <var>NAME</var> is not allowed; this
-is to avoid confusion between <var>NAME</var> and the first word of the simple
+If <var class="var">command</var> is a simple command, <var class="var">NAME</var> is not allowed; this
+is to avoid confusion between <var class="var">NAME</var> and the first word of the simple
 command.
 </p>
 <p>When the coprocess is executed, the shell creates an array variable
-(see <a href="Arrays.html">Arrays</a>)
-named <var>NAME</var> in the context of the executing shell.
-The standard output of <var>command</var>
+(see <a class="pxref" href="Arrays.html">Arrays</a>)
+named <var class="var">NAME</var> in the context of the executing shell.
+The standard output of <var class="var">command</var>
 is connected via a pipe to a file descriptor in the executing shell,
-and that file descriptor is assigned to <var>NAME</var>[0].
-The standard input of <var>command</var>
+and that file descriptor is assigned to <var class="var">NAME</var>[0].
+The standard input of <var class="var">command</var>
 is connected via a pipe to a file descriptor in the executing shell,
-and that file descriptor is assigned to <var>NAME</var>[1].
+and that file descriptor is assigned to <var class="var">NAME</var>[1].
 This pipe is established before any redirections specified by the
-command (see <a href="Redirections.html">Redirections</a>).
+command (see <a class="pxref" href="Redirections.html">Redirections</a>).
 The file descriptors can be utilized as arguments to shell commands
 and redirections using standard word expansions.
 Other than those created to execute command and process substitutions,
 the file descriptors are not available in subshells.
 </p>
 <p>The process ID of the shell spawned to execute the coprocess is
-available as the value of the variable <code><var>NAME</var>_PID</code>.
-The <code>wait</code>
-builtin command may be used to wait for the coprocess to terminate.
+available as the value of the variable <code class="env"><var class="var">NAME</var>_PID</code>.
+The <code class="code">wait</code>
+builtin may be used to wait for the coprocess to terminate.
 </p>
 <p>Since the coprocess is created as an asynchronous command,
-the <code>coproc</code> command always returns success.
-The return status of a coprocess is the exit status of <var>command</var>.
+the <code class="code">coproc</code> command always returns success.
+The return status of a coprocess is the exit status of <var class="var">command</var>.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="GNU-Parallel.html">GNU Parallel</a>, Previous: <a href="Compound-Commands.html">Compound Commands</a>, Up: <a href="Shell-Commands.html">Shell Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

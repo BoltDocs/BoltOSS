@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,8 @@ A copy of the license is included in the section entitled
 <link href="Process-Substitution.html" rel="prev" title="Process Substitution">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,58 +45,69 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Word-Splitting">
-<div class="header">
+<div class="subsection-level-extent" id="Word-Splitting">
+<div class="nav-panel">
 <p>
 Next: <a href="Filename-Expansion.html" accesskey="n" rel="next">Filename Expansion</a>, Previous: <a href="Process-Substitution.html" accesskey="p" rel="prev">Process Substitution</a>, Up: <a href="Shell-Expansions.html" accesskey="u" rel="up">Shell Expansions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Word-Splitting-1"></span><h4 class="subsection">3.5.7 Word Splitting</h4>
-<span id="index-word-splitting"></span>
+<h4 class="subsection" id="Word-Splitting-1"><span>3.5.7 Word Splitting<a class="copiable-link" href="#Word-Splitting-1"> &para;</a></span></h4>
+<a class="index-entry-id" id="index-word-splitting"></a>
 
 <p>The shell scans the results of parameter expansion, command substitution,
 and arithmetic expansion that did not occur within double quotes for
 word splitting.
+Words that were not expanded are not split.
 </p>
-<p>The shell treats each character of <code>$IFS</code> as a delimiter, and splits
-the results of the other expansions into words using these characters
-as field terminators.
-If <code>IFS</code> is unset, or its value is exactly <code>&lt;space&gt;&lt;tab&gt;&lt;newline&gt;</code>,
-the default, then sequences of
-<code> &lt;space&gt;</code>, <code>&lt;tab&gt;</code>, and <code>&lt;newline&gt;</code>
-at the beginning and end of the results of the previous
-expansions are ignored, and any sequence of <code>IFS</code>
-characters not at the beginning or end serves to delimit words.
-If <code>IFS</code> has a value other than the default, then sequences of
-the whitespace characters <code>space</code>, <code>tab</code>, and <code>newline</code>
-are ignored at the beginning and end of the
-word, as long as the whitespace character is in the
-value of <code>IFS</code> (an <code>IFS</code> whitespace character).
-Any character in <code>IFS</code> that is not <code>IFS</code>
-whitespace, along with any adjacent <code>IFS</code>
-whitespace characters, delimits a field.  A sequence of <code>IFS</code>
-whitespace characters is also treated as a delimiter.
-If the value of <code>IFS</code> is null, no word splitting occurs.
+<p>The shell treats each character of <code class="env">$IFS</code> as a delimiter,
+and splits the results of the other expansions into fields
+using these characters as field terminators.
 </p>
-<p>Explicit null arguments (<code>&quot;&quot;</code> or <code>''</code>) are retained
+<p>An <em class="dfn">IFS whitespace</em> character is whitespace as defined above
+(see <a class="pxref" href="Definitions.html">Definitions</a>) that appears in the value of <code class="env">IFS</code>.
+Space, tab, and newline are always considered IFS whitespace, even
+if they don&rsquo;t appear in the locale&rsquo;s <code class="code">space</code> category.
+</p>
+<p>If <code class="env">IFS</code> is unset, word splitting behaves as if its value were
+<code class="code">&lt;space&gt;&lt;tab&gt;&lt;newline&gt;</code>,
+and treats these characters as IFS whitespace.
+If the value of <code class="env">IFS</code> is null, no word splitting occurs,
+but implicit null arguments (see below) are still removed.
+</p>
+<p>Word splitting begins by removing sequences of IFS whitespace characters
+from the beginning and end of the results of the previous expansions,
+then splits the remaining words.
+</p>
+<p>If the value of <code class="env">IFS</code> consists solely of IFS whitespace,
+any sequence of IFS whitespace characters delimits a field,
+so a field consists of characters that are not unquoted IFS
+whitespace, and null fields result only from quoting.
+</p>
+<p>If <code class="env">IFS</code> contains a non-whitespace character, then any
+character in the value of <code class="env">IFS</code> that is not IFS whitespace,
+along with any adjacent IFS whitespace characters, delimits a field.
+This means that adjacent non-IFS-whitespace delimiters produce a
+null field.
+A sequence of IFS whitespace characters also delimits a field.
+</p>
+<p>Explicit null arguments (<code class="code">&quot;&quot;</code> or <code class="code">''</code>) are retained
 and passed to commands as empty strings.
 Unquoted implicit null arguments, resulting from the expansion of
 parameters that have no values, are removed.
-If a parameter with no value is expanded within double quotes, a
-null argument results and is retained
-and passed to a command as an empty string.
-When a quoted null argument appears as part of a word whose expansion is
-non-null, the null argument is removed.
-That is, the word
-<code>-d''</code> becomes <code>-d</code> after word splitting and
-null argument removal.
+Expanding a parameter with no value within double quotes
+produces a null field,
+which is retained and passed to a command as an empty string.
 </p>
-<p>Note that if no expansion occurs, no splitting
-is performed.
+<p>When a quoted null argument appears as part of a word whose expansion
+is non-null, word splitting removes the null argument portion,
+leaving the non-null expansion.
+That is, the word
+<code class="code">-d''</code> becomes <code class="code">-d</code> after word splitting and
+null argument removal.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Filename-Expansion.html">Filename Expansion</a>, Previous: <a href="Process-Substitution.html">Process Substitution</a>, Up: <a href="Shell-Expansions.html">Shell Expansions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,8 @@ A copy of the license is included in the section entitled
 <link href="Bash-History-Builtins.html" rel="next" title="Bash History Builtins">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,80 +44,95 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Bash-History-Facilities">
-<div class="header">
+<div class="section-level-extent" id="Bash-History-Facilities">
+<div class="nav-panel">
 <p>
 Next: <a href="Bash-History-Builtins.html" accesskey="n" rel="next">Bash History Builtins</a>, Up: <a href="Using-History-Interactively.html" accesskey="u" rel="up">Using History Interactively</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Bash-History-Facilities-1"></span><h3 class="section">9.1 Bash History Facilities</h3>
-<span id="index-command-history"></span>
-<span id="index-history-list"></span>
+<h3 class="section" id="Bash-History-Facilities-1"><span>9.1 Bash History Facilities<a class="copiable-link" href="#Bash-History-Facilities-1"> &para;</a></span></h3>
+<a class="index-entry-id" id="index-command-history"></a>
+<a class="index-entry-id" id="index-history-list"></a>
 
-<p>When the <samp>-o history</samp> option to the <code>set</code> builtin
-is enabled (see <a href="The-Set-Builtin.html">The Set Builtin</a>),
-the shell provides access to the <em>command history</em>,
+<p>When the <samp class="option">-o history</samp> option to the <code class="code">set</code> builtin
+is enabled (see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>),
+the shell provides access to the <em class="dfn">command history</em>,
 the list of commands previously typed.
-The value of the <code>HISTSIZE</code> shell variable is used as the
-number of commands to save in a history list.
-The text of the last <code>$HISTSIZE</code>
-commands (default 500) is saved.
+The value of the <code class="env">HISTSIZE</code> shell variable is used as the
+number of commands to save in a history list:
+the shell saves the text of the last <code class="env">$HISTSIZE</code>
+commands (default 500).
 The shell stores each command in the history list prior to
 parameter and variable expansion
 but after history expansion is performed, subject to the
 values of the shell variables
-<code>HISTIGNORE</code> and <code>HISTCONTROL</code>.
+<code class="env">HISTIGNORE</code> and <code class="env">HISTCONTROL</code>.
 </p>
-<p>When the shell starts up, the history is initialized from the
-file named by the <code>HISTFILE</code> variable (default <samp>~/.bash_history</samp>).
-The file named by the value of <code>HISTFILE</code> is truncated, if
-necessary, to contain no more than the number of lines specified by
-the value of the <code>HISTFILESIZE</code> variable.
-When a shell with history enabled exits, the last
-<code>$HISTSIZE</code> lines are copied from the history list to the file
-named by <code>$HISTFILE</code>.
-If the <code>histappend</code> shell option is set (see <a href="Bash-Builtins.html">Bash Builtin Commands</a>),
-the lines are appended to the history file,
-otherwise the history file is overwritten.
-If <code>HISTFILE</code>
-is unset, or if the history file is unwritable, the history is not saved.
-After saving the history, the history file is truncated
-to contain no more than <code>$HISTFILESIZE</code> lines.
-If <code>HISTFILESIZE</code> is unset, or set to null, a non-numeric value, or
-a numeric value less than zero, the history file is not truncated.
+<p>When the shell starts up, Bash initializes the history list
+by reading history entries from the
+file named by the <code class="env">HISTFILE</code> variable (default <samp class="file">~/.bash_history</samp>).
+This is referred to as the <em class="dfn">history file</em>.
+The history file is truncated, if necessary,
+to contain no more than the number of history entries
+specified by the value of the <code class="env">HISTFILESIZE</code> variable.
+If <code class="env">HISTFILESIZE</code> is unset, or set to null, a non-numeric value,
+or a numeric value less than zero, the history file is not truncated.
 </p>
-<p>If the <code>HISTTIMEFORMAT</code> is set, the time stamp information
-associated with each history entry is written to the history file,
-marked with the history comment character.
-When the history file is read, lines beginning with the history
-comment character followed immediately by a digit are interpreted
-as timestamps for the following history entry.
+<p>When the history file is read,
+lines beginning with the history comment character followed immediately
+by a digit are interpreted as timestamps for the following history entry.
+These timestamps are optionally displayed depending on the value of the
+<code class="env">HISTTIMEFORMAT</code> variable (see <a class="pxref" href="Bash-Variables.html">Bash Variables</a>).
+When present, history timestamps delimit history entries, making
+multi-line entries possible.
 </p>
-<p>The builtin command <code>fc</code> may be used to list or edit and re-execute
-a portion of the history list.
-The <code>history</code> builtin may be used to display or modify the history
-list and manipulate the history file.
+<p>When a shell with history enabled exits, Bash copies the last
+<code class="env">$HISTSIZE</code> entries from the history list to the file
+named by <code class="env">$HISTFILE</code>.
+If the <code class="code">histappend</code> shell option is set (see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>),
+Bash appends the entries to the history file,
+otherwise it overwrites the history file.
+If <code class="env">HISTFILE</code> is unset or null,
+or if the history file is unwritable, the history is not saved.
+After saving the history, Bash truncates the history file
+to contain no more than <code class="env">$HISTFILESIZE</code>
+lines as described above.
+</p>
+<p>If the <code class="env">HISTTIMEFORMAT</code>
+variable is set, the shell writes the timestamp information
+associated with each history entry to the history file,
+marked with the history comment character,
+so timestamps are preserved across shell sessions.
+When the history file is read, lines beginning with
+the history comment character followed immediately by a digit are
+interpreted as timestamps for the following history entry.
+As above, when using <code class="env">HISTTIMEFORMAT</code>,
+the timestamps delimit multi-line history entries.
+</p>
+<p>The <code class="code">fc</code> builtin command will list or edit and re-execute a
+portion of the history list.
+The <code class="code">history</code> builtin can display or
+modify the history list and manipulate the history file.
 When using command-line editing, search commands
 are available in each editing mode that provide access to the
-history list (see <a href="Commands-For-History.html">Commands For Manipulating The History</a>).
+history list (see <a class="pxref" href="Commands-For-History.html">Commands For Manipulating The History</a>). 
 </p>
-<p>The shell allows control over which commands are saved on the history
-list.  The <code>HISTCONTROL</code> and <code>HISTIGNORE</code>
-variables may be set to cause the shell to save only a subset of the
-commands entered.
-The <code>cmdhist</code>
-shell option, if enabled, causes the shell to attempt to save each
+<p>The shell allows control over which commands are saved on the history list. 
+The <code class="env">HISTCONTROL</code> and <code class="env">HISTIGNORE</code>
+variables are used to save only a subset of the commands entered.
+If the <code class="code">cmdhist</code> shell option is
+enabled, the shell attempts to save each
 line of a multi-line command in the same history entry, adding
 semicolons where necessary to preserve syntactic correctness.
-The <code>lithist</code>
-shell option causes the shell to save the command with embedded newlines
-instead of semicolons.
-The <code>shopt</code> builtin is used to set these options.
-See <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>, for a description of <code>shopt</code>.
+The <code class="code">lithist</code>
+shell option modifies <code class="code">cmdhist</code> by saving
+the command with embedded newlines instead of semicolons.
+The <code class="code">shopt</code> builtin is used to set these options.
+See <a class="xref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>, for a description of <code class="code">shopt</code>.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Bash-History-Builtins.html">Bash History Builtins</a>, Up: <a href="Using-History-Interactively.html">Using History Interactively</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

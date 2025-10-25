@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,8 @@ A copy of the license is included in the section entitled
 <link href="Command-Execution-Environment.html" rel="prev" title="Command Execution Environment">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,49 +45,60 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Environment">
-<div class="header">
+<div class="subsection-level-extent" id="Environment">
+<div class="nav-panel">
 <p>
 Next: <a href="Exit-Status.html" accesskey="n" rel="next">Exit Status</a>, Previous: <a href="Command-Execution-Environment.html" accesskey="p" rel="prev">Command Execution Environment</a>, Up: <a href="Executing-Commands.html" accesskey="u" rel="up">Executing Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Environment-1"></span><h4 class="subsection">3.7.4 Environment</h4>
-<span id="index-environment"></span>
+<h4 class="subsection" id="Environment-1"><span>3.7.4 Environment<a class="copiable-link" href="#Environment-1"> &para;</a></span></h4>
+<a class="index-entry-id" id="index-environment"></a>
 
 <p>When a program is invoked it is given an array of strings
-called the <em>environment</em>.
-This is a list of name-value pairs, of the form <code>name=value</code>.
+called the <em class="dfn">environment</em>.
+This is a list of name-value pairs, of the form <code class="code">name=value</code>.
 </p>
 <p>Bash provides several ways to manipulate the environment.
 On invocation, the shell scans its own environment and
 creates a parameter for each name found, automatically marking
-it for <code>export</code>
-to child processes.  Executed commands inherit the environment.
-The <code>export</code> and &lsquo;<samp>declare -x</samp>&rsquo;
-commands allow parameters and functions to be added to and
-deleted from the environment.  If the value of a parameter
-in the environment is modified, the new value becomes part
-of the environment, replacing the old.  The environment
+it for <code class="code">export</code> to child processes.
+Executed commands inherit the environment.
+The <code class="code">export</code>, &lsquo;<samp class="samp">declare -x</samp>&rsquo;, and <code class="code">unset</code>
+commands modify the environment by
+adding and deleting parameters and functions.
+If the value of a parameter in the environment is modified,
+the new value automatically becomes part
+of the environment, replacing the old.
+The environment
 inherited by any executed command consists of the shell&rsquo;s
 initial environment, whose values may be modified in the shell,
-less any pairs removed by the <code>unset</code> and &lsquo;<samp>export -n</samp>&rsquo;
-commands, plus any additions via the <code>export</code> and
-&lsquo;<samp>declare -x</samp>&rsquo; commands.
+less any pairs removed by the <code class="code">unset</code> and &lsquo;<samp class="samp">export -n</samp>&rsquo;
+commands, plus any additions via the <code class="code">export</code> and
+&lsquo;<samp class="samp">declare -x</samp>&rsquo; commands.
 </p>
-<p>The environment for any simple command
-or function may be augmented temporarily by prefixing it with
-parameter assignments, as described in <a href="Shell-Parameters.html">Shell Parameters</a>.
+<p>If any parameter assignment statements,
+as described in <a class="ref" href="Shell-Parameters.html">Shell Parameters</a>,
+appear before a simple command,
+the variable assignments are part of that command&rsquo;s environment
+for as long as it executes.
 These assignment statements affect only the environment seen
 by that command.
+If these assignments precede a call to a shell function, the variables
+are local to the function and exported to that function&rsquo;s children.
 </p>
-<p>If the <samp>-k</samp> option is set (see <a href="The-Set-Builtin.html">The Set Builtin</a>), then all
+<p>If the <samp class="option">-k</samp> option is set (see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>), then all
 parameter assignments are placed in the environment for a command,
 not just those that precede the command name.
 </p>
-<p>When Bash invokes an external command, the variable &lsquo;<samp>$_</samp>&rsquo;
+<p>When Bash invokes an external command, the variable &lsquo;<samp class="samp">$_</samp>&rsquo;
 is set to the full pathname of the command and passed to that
 command in its environment.
 </p>
+</div>
+<hr>
+<div class="nav-panel">
+<p>
+Next: <a href="Exit-Status.html">Exit Status</a>, Previous: <a href="Command-Execution-Environment.html">Command Execution Environment</a>, Up: <a href="Executing-Commands.html">Executing Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 
 

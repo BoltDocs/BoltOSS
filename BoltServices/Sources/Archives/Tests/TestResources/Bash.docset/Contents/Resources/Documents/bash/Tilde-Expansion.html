@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,8 @@ A copy of the license is included in the section entitled
 <link href="Brace-Expansion.html" rel="prev" title="Brace Expansion">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,98 +45,103 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Tilde-Expansion">
-<div class="header">
+<div class="subsection-level-extent" id="Tilde-Expansion">
+<div class="nav-panel">
 <p>
 Next: <a href="Shell-Parameter-Expansion.html" accesskey="n" rel="next">Shell Parameter Expansion</a>, Previous: <a href="Brace-Expansion.html" accesskey="p" rel="prev">Brace Expansion</a>, Up: <a href="Shell-Expansions.html" accesskey="u" rel="up">Shell Expansions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Tilde-Expansion-1"></span><h4 class="subsection">3.5.2 Tilde Expansion</h4>
-<span id="index-tilde-expansion"></span>
-<span id="index-expansion_002c-tilde"></span>
+<h4 class="subsection" id="Tilde-Expansion-1"><span>3.5.2 Tilde Expansion<a class="copiable-link" href="#Tilde-Expansion-1"> &para;</a></span></h4>
+<a class="index-entry-id" id="index-tilde-expansion"></a>
+<a class="index-entry-id" id="index-expansion_002c-tilde"></a>
 
-<p>If a word begins with an unquoted tilde character (&lsquo;<samp>~</samp>&rsquo;), all of the
+<p>If a word begins with an unquoted tilde character (&lsquo;<samp class="samp">~</samp>&rsquo;), all of the
 characters up to the first unquoted slash (or all characters,
-if there is no unquoted slash) are considered a <em>tilde-prefix</em>.
+if there is no unquoted slash) are considered a <em class="dfn">tilde-prefix</em>.
 If none of the characters in the tilde-prefix are quoted, the
 characters in the tilde-prefix following the tilde are treated as a
-possible <em>login name</em>.
+possible <em class="dfn">login name</em>.
 If this login name is the null string, the tilde is replaced with the
-value of the <code>HOME</code> shell variable.
-If <code>HOME</code> is unset, the home directory of the user executing the
-shell is substituted instead.
+value of the <code class="env">HOME</code> shell variable.
+If <code class="env">HOME</code> is unset, the tilde expands to
+the home directory of the user executing the shell instead.
 Otherwise, the tilde-prefix is replaced with the home directory
 associated with the specified login name.
 </p>
-<p>If the tilde-prefix is &lsquo;<samp>~+</samp>&rsquo;, the value of
-the shell variable <code>PWD</code> replaces the tilde-prefix.
-If the tilde-prefix is &lsquo;<samp>~-</samp>&rsquo;, the value of the shell variable
-<code>OLDPWD</code>, if it is set, is substituted.
+<p>If the tilde-prefix is &lsquo;<samp class="samp">~+</samp>&rsquo;, the value of
+the shell variable <code class="env">PWD</code> replaces the tilde-prefix.
+If the tilde-prefix is &lsquo;<samp class="samp">~-</samp>&rsquo;, the shell substitutes
+the value of the shell variable
+<code class="env">OLDPWD</code>, if it is set.
 </p>
 <p>If the characters following the tilde in the tilde-prefix consist of a
-number <var>N</var>, optionally prefixed by a &lsquo;<samp>+</samp>&rsquo; or a &lsquo;<samp>-</samp>&rsquo;,
+number <var class="var">N</var>, optionally prefixed by a &lsquo;<samp class="samp">+</samp>&rsquo; or a &lsquo;<samp class="samp">-</samp>&rsquo;,
 the tilde-prefix is replaced with the
 corresponding element from the directory stack, as it would be displayed
-by the <code>dirs</code> builtin invoked with the characters following tilde
-in the tilde-prefix as an argument (see <a href="The-Directory-Stack.html">The Directory Stack</a>).
+by the <code class="code">dirs</code> builtin invoked with the characters following tilde
+in the tilde-prefix as an argument (see <a class="pxref" href="The-Directory-Stack.html">The Directory Stack</a>).
 If the tilde-prefix, sans the tilde, consists of a number without a
-leading &lsquo;<samp>+</samp>&rsquo; or &lsquo;<samp>-</samp>&rsquo;, &lsquo;<samp>+</samp>&rsquo; is assumed.
+leading &lsquo;<samp class="samp">+</samp>&rsquo; or &lsquo;<samp class="samp">-</samp>&rsquo;, tilde expansion assumes &lsquo;<samp class="samp">+</samp>&rsquo;.
 </p>
-<p>If the login name is invalid, or the tilde expansion fails, the word is
-left unchanged.
+<p>The results of tilde expansion are treated as if they were quoted, so
+the replacement is not subject to word splitting and filename expansion.
 </p>
-<p>Each variable assignment is checked for unquoted tilde-prefixes immediately
-following a &lsquo;<samp>:</samp>&rsquo; or the first &lsquo;<samp>=</samp>&rsquo;.
-In these cases, tilde expansion is also performed.
+<p>If the login name is invalid, or the tilde expansion fails, the
+tilde-prefix is left unchanged.
+</p>
+<p>Bash checks each variable assignment
+for unquoted tilde-prefixes immediately
+following a &lsquo;<samp class="samp">:</samp>&rsquo; or the first &lsquo;<samp class="samp">=</samp>&rsquo;,
+and performs tilde expansion in these cases.
 Consequently, one may use filenames with tildes in assignments to
-<code>PATH</code>, <code>MAILPATH</code>, and <code>CDPATH</code>,
+<code class="env">PATH</code>, <code class="env">MAILPATH</code>, and <code class="env">CDPATH</code>,
 and the shell assigns the expanded value.
 </p>
 <p>The following table shows how Bash treats unquoted tilde-prefixes:
 </p>
-<dl compact="compact">
-<dt><span><code>~</code></span></dt>
-<dd><p>The value of <code>$HOME</code>
+<dl class="table">
+<dt><code class="code">~</code></dt>
+<dd><p>The value of <code class="code">$HOME</code>.
 </p></dd>
-<dt><span><code>~/foo</code></span></dt>
-<dd><p><samp>$HOME/foo</samp>
+<dt><code class="code">~/foo</code></dt>
+<dd><p><samp class="file">$HOME/foo</samp>
 </p>
 </dd>
-<dt><span><code>~fred/foo</code></span></dt>
-<dd><p>The subdirectory <code>foo</code> of the home directory of the user
-<code>fred</code>
+<dt><code class="code">~fred/foo</code></dt>
+<dd><p>The directory or file <code class="code">foo</code> in the home directory of the user
+<code class="code">fred</code>.
 </p>
 </dd>
-<dt><span><code>~+/foo</code></span></dt>
-<dd><p><samp>$PWD/foo</samp>
+<dt><code class="code">~+/foo</code></dt>
+<dd><p><samp class="file">$PWD/foo</samp>
 </p>
 </dd>
-<dt><span><code>~-/foo</code></span></dt>
-<dd><p><samp>${OLDPWD-'~-'}/foo</samp>
+<dt><code class="code">~-/foo</code></dt>
+<dd><p><samp class="file">${OLDPWD-'~-'}/foo</samp>
 </p>
 </dd>
-<dt><span><code>~<var>N</var></code></span></dt>
-<dd><p>The string that would be displayed by &lsquo;<samp>dirs +<var>N</var></samp>&rsquo;
+<dt><code class="code">~<var class="var">N</var></code></dt>
+<dd><p>The string that would be displayed by &lsquo;<samp class="samp">dirs +<var class="var">N</var></samp>&rsquo;.
 </p>
 </dd>
-<dt><span><code>~+<var>N</var></code></span></dt>
-<dd><p>The string that would be displayed by &lsquo;<samp>dirs +<var>N</var></samp>&rsquo;
+<dt><code class="code">~+<var class="var">N</var></code></dt>
+<dd><p>The string that would be displayed by &lsquo;<samp class="samp">dirs +<var class="var">N</var></samp>&rsquo;.
 </p>
 </dd>
-<dt><span><code>~-<var>N</var></code></span></dt>
-<dd><p>The string that would be displayed by &lsquo;<samp>dirs -<var>N</var></samp>&rsquo;
+<dt><code class="code">~-<var class="var">N</var></code></dt>
+<dd><p>The string that would be displayed by &lsquo;<samp class="samp">dirs -<var class="var">N</var></samp>&rsquo;.
 </p></dd>
 </dl>
 
 <p>Bash also performs tilde expansion on words satisfying the conditions of
-variable assignments (see <a href="Shell-Parameters.html">Shell Parameters</a>)
+variable assignments (see <a class="pxref" href="Shell-Parameters.html">Shell Parameters</a>)
 when they appear as arguments to simple commands.
 Bash does not do this, except for the declaration commands listed
-above, when in <small>POSIX</small> mode.
+above, when in <small class="sc">POSIX</small> mode.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Shell-Parameter-Expansion.html">Shell Parameter Expansion</a>, Previous: <a href="Brace-Expansion.html">Brace Expansion</a>, Up: <a href="Shell-Expansions.html">Shell Expansions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

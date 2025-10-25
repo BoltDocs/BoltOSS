@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,8 @@ A copy of the license is included in the section entitled
 <link href="Bash-History-Builtins.html" rel="prev" title="Bash History Builtins">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,18 +44,27 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="History-Interaction">
-<div class="header">
+<div class="section-level-extent" id="History-Interaction">
+<div class="nav-panel">
 <p>
 Previous: <a href="Bash-History-Builtins.html" accesskey="p" rel="prev">Bash History Builtins</a>, Up: <a href="Using-History-Interactively.html" accesskey="u" rel="up">Using History Interactively</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="History-Expansion"></span><h3 class="section">9.3 History Expansion</h3>
-<span id="index-history-expansion"></span>
+<h3 class="section" id="History-Expansion"><span>9.3 History Expansion<a class="copiable-link" href="#History-Expansion"> &para;</a></span></h3>
+<a class="index-entry-id" id="index-history-expansion"></a>
 
-<p>The History library provides a history expansion feature that is similar
-to the history expansion provided by <code>csh</code>.  This section
-describes the syntax used to manipulate the history information.
+<p>The shell
+provides a history expansion feature that is similar
+to the history expansion provided by <code class="code">csh</code>
+(also referred to as history substitution where appropriate).
+This section describes the syntax used to manipulate the
+history information.
+</p>
+<p>History expansion is enabled by default for interactive shells,
+and can be disabled using the <samp class="option">+H</samp> option to the <code class="code">set</code>
+builtin command (see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>).
+Non-interactive shells do not perform history expansion by default,
+but it can be enabled with <code class="code">set -H</code>.
 </p>
 <p>History expansions introduce words from the history list into
 the input stream, making it easy to repeat commands, insert the
@@ -77,20 +73,30 @@ fix errors in previous commands quickly.
 </p>
 <p>History expansion is performed immediately after a complete line
 is read, before the shell breaks it into words, and is performed
-on each line individually.  Bash attempts to inform the history
+on each line individually.
+Bash attempts to inform the history
 expansion functions about quoting still in effect from previous lines.
 </p>
-<p>History expansion takes place in two parts.  The first is to determine
-which line from the history list should be used during substitution.
-The second is to select portions of that line for inclusion into the
-current one.  The line selected from the history is called the
-<em>event</em>, and the portions of that line that are acted upon are
-called <em>words</em>.  Various <em>modifiers</em> are available to manipulate
-the selected words.  The line is broken into words in the same fashion
-that Bash does, so that several words
-surrounded by quotes are considered one word.
-History expansions are introduced by the appearance of the
-history expansion character, which is &lsquo;<samp>!</samp>&rsquo; by default.
+<p>History expansion takes place in two parts.
+The first is to determine
+which entry from the history list should be used during substitution.
+The second is to select portions of that entry to include into the
+current one.
+</p>
+<p>The entry selected from the history is called the <em class="dfn">event</em>,
+and the portions of that entry that are acted upon are <em class="dfn">words</em>.
+Various <em class="dfn">modifiers</em> are available to manipulate the selected words.
+The entry is split into words in the same fashion that Bash
+does when reading input,
+so that several words surrounded by quotes are considered one word.
+The <em class="dfn">event designator</em> selects the event, the optional
+<em class="dfn">word designator</em> selects words from the event, and
+various optional <em class="dfn">modifiers</em> are available to manipulate the
+selected words.
+</p>
+<p>History expansions are introduced by the appearance of the
+history expansion character, which is &lsquo;<samp class="samp">!</samp>&rsquo; by default.
+History expansions may appear anywhere in the input, but do not nest.
 </p>
 <p>History expansion implements shell-like quoting conventions:
 a backslash can be used to remove the special handling for the next character;
@@ -101,44 +107,61 @@ expansion, since backslash can escape the history expansion character,
 but single quotes may not, since they are not treated specially within
 double quotes.
 </p>
-<p>When using the shell, only &lsquo;<samp>\</samp>&rsquo; and &lsquo;<samp>'</samp>&rsquo; may be used to escape the
+<p>When using the shell, only &lsquo;<samp class="samp">\</samp>&rsquo; and &lsquo;<samp class="samp">'</samp>&rsquo; may be used to escape the
 history expansion character, but the history expansion character is
 also treated as quoted if it immediately precedes the closing double quote
 in a double-quoted string. 
 </p>
-<p>Several shell options settable with the <code>shopt</code>
-builtin (see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>) may be used to tailor
-the behavior of history expansion.  If the
-<code>histverify</code> shell option is enabled, and Readline
+<p>Several characters inhibit history expansion if found immediately
+following the history expansion character, even if it is unquoted:
+space, tab, newline, carriage return, &lsquo;<samp class="samp">=</samp>&rsquo;,
+and the other shell metacharacters.
+</p>
+<p>There is a special abbreviation for substitution, active when the
+<var class="var">quick substitution</var> character
+(described above under <code class="code">histchars</code>)
+is the first character on the line.
+It selects the previous history list entry, using an event designator
+equivalent to <code class="code">!!</code>,
+and substitutes one string for another in that entry.
+It is described below (see <a class="pxref" href="Event-Designators.html">Event Designators</a>).
+This is the only history expansion that does not begin with the history
+expansion character.
+</p>
+<p>Several shell options settable with the <code class="code">shopt</code>
+builtin (see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>)
+modify history expansion behavior
+If the <code class="code">histverify</code> shell option is enabled, and Readline
 is being used, history substitutions are not immediately passed to
 the shell parser.
 Instead, the expanded line is reloaded into the Readline
 editing buffer for further modification.
-If Readline is being used, and the <code>histreedit</code>
-shell option is enabled, a failed history expansion will be
+If Readline is being used, and the <code class="code">histreedit</code>
+shell option is enabled, a failed history expansion is
 reloaded into the Readline editing buffer for correction.
-The <samp>-p</samp> option to the <code>history</code> builtin command
-may be used to see what a history expansion will do before using it.
-The <samp>-s</samp> option to the <code>history</code> builtin may be used to
+</p>
+<p>The <samp class="option">-p</samp> option to the <code class="code">history</code> builtin command
+shows what a history expansion will do before using it.
+The <samp class="option">-s</samp> option to the <code class="code">history</code> builtin may be used to
 add commands to the end of the history list without actually executing
 them, so that they are available for subsequent recall.
 This is most useful in conjunction with Readline.
 </p>
 <p>The shell allows control of the various characters used by the
-history expansion mechanism with the <code>histchars</code> variable,
-as explained above (see <a href="Bash-Variables.html">Bash Variables</a>).  The shell uses
-the history comment character to mark history timestamps when
-writing the history file.
+history expansion mechanism with the <code class="code">histchars</code> variable,
+as explained above (see <a class="pxref" href="Bash-Variables.html">Bash Variables</a>).
+The shell uses the history comment character to mark history
+timestamps when writing the history file.
 </p>
 
-<ul class="section-toc">
+<ul class="mini-toc">
 <li><a href="Event-Designators.html" accesskey="1">Event Designators</a></li>
 <li><a href="Word-Designators.html" accesskey="2">Word Designators</a></li>
 <li><a href="Modifiers.html" accesskey="3">Modifiers</a></li>
 </ul>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Previous: <a href="Bash-History-Builtins.html">Bash History Builtins</a>, Up: <a href="Using-History-Interactively.html">Using History Interactively</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

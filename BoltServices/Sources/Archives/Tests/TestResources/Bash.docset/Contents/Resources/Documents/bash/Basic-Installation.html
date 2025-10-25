@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,9 @@ A copy of the license is included in the section entitled
 <link href="Compilers-and-Options.html" rel="next" title="Compilers and Options">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,112 +45,115 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Basic-Installation">
-<div class="header">
+<div class="section-level-extent" id="Basic-Installation">
+<div class="nav-panel">
 <p>
 Next: <a href="Compilers-and-Options.html" accesskey="n" rel="next">Compilers and Options</a>, Up: <a href="Installing-Bash.html" accesskey="u" rel="up">Installing Bash</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Basic-Installation-1"></span><h3 class="section">10.1 Basic Installation</h3>
-<span id="index-installation"></span>
-<span id="index-configuration"></span>
-<span id="index-Bash-installation"></span>
-<span id="index-Bash-configuration"></span>
+<h3 class="section" id="Basic-Installation-1"><span>10.1 Basic Installation<a class="copiable-link" href="#Basic-Installation-1"> &para;</a></span></h3>
+<a class="index-entry-id" id="index-installation"></a>
+<a class="index-entry-id" id="index-configuration"></a>
+<a class="index-entry-id" id="index-Bash-installation"></a>
+<a class="index-entry-id" id="index-Bash-configuration"></a>
 
 <p>These are installation instructions for Bash.
 </p>
 <p>The simplest way to compile Bash is:
 </p>
-<ol>
-<li> <code>cd</code> to the directory containing the source code and type
-&lsquo;<samp>./configure</samp>&rsquo; to configure Bash for your system.  If you&rsquo;re
-using <code>csh</code> on an old version of System V, you might need to
-type &lsquo;<samp>sh ./configure</samp>&rsquo; instead to prevent <code>csh</code> from trying
-to execute <code>configure</code> itself.
+<ol class="enumerate">
+<li> <code class="code">cd</code> to the directory containing the source code and type
+&lsquo;<samp class="samp">./configure</samp>&rsquo; to configure Bash for your system.
+If you&rsquo;re using <code class="code">csh</code> on an old version of System V, you might
+need to type &lsquo;<samp class="samp">sh ./configure</samp>&rsquo; instead to prevent <code class="code">csh</code>
+from trying to execute <code class="code">configure</code> itself.
 
-<p>Running <code>configure</code> takes some time.
+<p>Running <code class="code">configure</code> takes some time.
 While running, it prints messages telling which features it is
 checking for.
 </p>
-</li><li> Type &lsquo;<samp>make</samp>&rsquo; to compile Bash and build the <code>bashbug</code> bug
+</li><li> Type &lsquo;<samp class="samp">make</samp>&rsquo; to compile Bash and build the <code class="code">bashbug</code> bug
 reporting script.
 
-</li><li> Optionally, type &lsquo;<samp>make tests</samp>&rsquo; to run the Bash test suite.
+</li><li> Optionally, type &lsquo;<samp class="samp">make tests</samp>&rsquo; to run the Bash test suite.
 
-</li><li> Type &lsquo;<samp>make install</samp>&rsquo; to install <code>bash</code> and <code>bashbug</code>.
+</li><li> Type &lsquo;<samp class="samp">make install</samp>&rsquo; to install <code class="code">bash</code> and <code class="code">bashbug</code>.
 This will also install the manual pages and Info file, message translation
 files, some supplemental documentation, a number of example loadable
 builtin commands, and a set of header files for developing loadable
 builtins.
-You may need additional privileges to install <code>bash</code> to your
-desired destination, so &lsquo;<samp>sudo make install</samp>&rsquo; might be required.
-More information about controlling the locations where <code>bash</code> and
-other files are installed is below (see <a href="Installation-Names.html">Installation Names</a>).
+You may need additional privileges to install <code class="code">bash</code> to your
+desired destination, which may require &lsquo;<samp class="samp">sudo make install</samp>&rsquo;.
+More information about controlling the locations where <code class="code">bash</code> and
+other files are installed is below (see <a class="pxref" href="Installation-Names.html">Installation Names</a>).
 
 </li></ol>
 
-<p>The <code>configure</code> shell script attempts to guess correct
-values for various system-dependent variables used during
-compilation.  It uses those values to create a <samp>Makefile</samp> in
+<p>The <code class="code">configure</code> shell script attempts to guess correct
+values for various system-dependent variables used during compilation.
+It uses those values to create a <samp class="file">Makefile</samp> in
 each directory of the package (the top directory, the
-<samp>builtins</samp>, <samp>doc</samp>, <samp>po</samp>, and <samp>support</samp> directories,
-each directory under <samp>lib</samp>, and several others).  It also creates a
-<samp>config.h</samp> file containing system-dependent definitions. 
-Finally, it creates a shell script named <code>config.status</code> that you
+<samp class="file">builtins</samp>, <samp class="file">doc</samp>, <samp class="file">po</samp>, and <samp class="file">support</samp> directories,
+each directory under <samp class="file">lib</samp>, and several others).
+It also creates a
+<samp class="file">config.h</samp> file containing system-dependent definitions. 
+Finally, it creates a shell script named <code class="code">config.status</code> that you
 can run in the future to recreate the current configuration, a
-file <samp>config.cache</samp> that saves the results of its tests to
-speed up reconfiguring, and a file <samp>config.log</samp> containing
-compiler output (useful mainly for debugging <code>configure</code>). 
+file <samp class="file">config.cache</samp> that saves the results of its tests to
+speed up reconfiguring, and a file <samp class="file">config.log</samp> containing
+compiler output (useful mainly for debugging <code class="code">configure</code>). 
 If at some point
-<samp>config.cache</samp> contains results you don&rsquo;t want to keep, you
+<samp class="file">config.cache</samp> contains results you don&rsquo;t want to keep, you
 may remove or edit it. 
 </p>
 <p>To find out more about the options and arguments that the
-<code>configure</code> script understands, type 
+<code class="code">configure</code> script understands, type 
 </p>
 <div class="example">
-<pre class="example">bash-4.2$ ./configure --help
+<pre class="example-preformatted">bash-4.2$ ./configure --help
 </pre></div>
 
 <p>at the Bash prompt in your Bash source directory.
 </p>
 <p>If you want to build Bash in a directory separate from the source
 directory &ndash; to build for multiple architectures, for example &ndash;
-just use the full path to the configure script. The following commands
-will build bash in a directory under <samp>/usr/local/build</samp> from
-the source code in <samp>/usr/local/src/bash-4.4</samp>:
+just use the full path to the configure script.
+The following commands
+will build Bash in a directory under <samp class="file">/usr/local/build</samp> from
+the source code in <samp class="file">/usr/local/src/bash-4.4</samp>:
 </p>
 <div class="example">
-<pre class="example">mkdir /usr/local/build/bash-4.4
+<pre class="example-preformatted">mkdir /usr/local/build/bash-4.4
 cd /usr/local/build/bash-4.4
 bash /usr/local/src/bash-4.4/configure
 make
 </pre></div>
 
-<p>See <a href="Compiling-For-Multiple-Architectures.html">Compiling For Multiple Architectures</a> for more information
+<p>See <a class="ref" href="Compiling-For-Multiple-Architectures.html">Compiling For Multiple Architectures</a> for more information
 about building in a directory separate from the source.
 </p>
 <p>If you need to do unusual things to compile Bash, please
-try to figure out how <code>configure</code> could check whether or not
+try to figure out how <code class="code">configure</code> could check whether or not
 to do them, and mail diffs or instructions to
-<a href="mailto:bash-maintainers@gnu.org">bash-maintainers@gnu.org</a> so they can be
+<a class="email" href="mailto:bash-maintainers@gnu.org">bash-maintainers@gnu.org</a> so they can be
 considered for the next release.
 </p>
-<p>The file <samp>configure.ac</samp> is used to create <code>configure</code>
+<p>The file <samp class="file">configure.ac</samp> is used to create <code class="code">configure</code>
 by a program called Autoconf.
-You only need <samp>configure.ac</samp> if you want to change it or regenerate
-<code>configure</code> using a newer version of Autoconf.
+You only need <samp class="file">configure.ac</samp> if you want to change it or regenerate
+<code class="code">configure</code> using a newer version of Autoconf.
 If you do this, make sure you are using Autoconf version 2.69 or
 newer.
 </p>
 <p>You can remove the program binaries and object files from the
-source code directory by typing &lsquo;<samp>make clean</samp>&rsquo;.  To also remove the
-files that <code>configure</code> created (so you can compile Bash for
-a different kind of computer), type &lsquo;<samp>make distclean</samp>&rsquo;.
+source code directory by typing &lsquo;<samp class="samp">make clean</samp>&rsquo;.
+To also remove the
+files that <code class="code">configure</code> created (so you can compile Bash for
+a different kind of computer), type &lsquo;<samp class="samp">make distclean</samp>&rsquo;.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Compilers-and-Options.html">Compilers and Options</a>, Up: <a href="Installing-Bash.html">Installing Bash</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

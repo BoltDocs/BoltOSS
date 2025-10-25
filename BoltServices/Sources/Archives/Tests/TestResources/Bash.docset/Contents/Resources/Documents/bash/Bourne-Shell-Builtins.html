@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -31,21 +31,10 @@ A copy of the license is included in the section entitled
 <link href="Bash-Builtins.html" rel="next" title="Bash Builtins">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span.r {font-family: initial; font-weight: normal; font-style: normal}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -54,592 +43,725 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Bourne-Shell-Builtins">
-<div class="header">
+<div class="section-level-extent" id="Bourne-Shell-Builtins">
+<div class="nav-panel">
 <p>
 Next: <a href="Bash-Builtins.html" accesskey="n" rel="next">Bash Builtin Commands</a>, Up: <a href="Shell-Builtin-Commands.html" accesskey="u" rel="up">Shell Builtin Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Bourne-Shell-Builtins-1"></span><h3 class="section">4.1 Bourne Shell Builtins</h3>
+<h3 class="section" id="Bourne-Shell-Builtins-1"><span>4.1 Bourne Shell Builtins<a class="copiable-link" href="#Bourne-Shell-Builtins-1"> ¶</a></span></h3>
 
 <p>The following shell builtin commands are inherited from the Bourne Shell.
-These commands are implemented as specified by the <small>POSIX</small> standard.
+These commands are implemented as specified by the <small class="sc">POSIX</small> standard.
 </p>
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Builtin/%3A"></a><dt id="index-_003a"><span><code>:    <span class="roman">(a colon)</span></code><a href="#index-_003a" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dl class="table">
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/%3A"></a><a id="index-_003a"></a><span><code class="code">:    <span class="r">(a colon)</span></code><a class="copiable-link" href="#index-_003a"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">: [<var>arguments</var>]
+<pre class="example-preformatted">: [<var class="var">arguments</var>]
 </pre></div>
 
-<p>Do nothing beyond expanding <var>arguments</var> and performing redirections.
+<p>Do nothing beyond expanding <var class="var">arguments</var> and performing redirections.
 The return status is zero.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/%2E"></a><dt id="index-_002e"><span><code>.    <span class="roman">(a period)</span></code><a href="#index-_002e" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/%2E"></a><a id="index-_002e"></a><span><code class="code">.    <span class="r">(a period)</span></code><a class="copiable-link" href="#index-_002e"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">. <var>filename</var> [<var>arguments</var>]
+<pre class="example-preformatted">. [-p <var class="var">path</var>] <var class="var">filename</var> [<var class="var">arguments</var>]
 </pre></div>
 
-<p>Read and execute commands from the <var>filename</var> argument in the
-current shell context.  If <var>filename</var> does not contain a slash,
-the <code>PATH</code> variable is used to find <var>filename</var>,
-but <var>filename</var> does not need to be executable.
-When Bash is not in <small>POSIX</small> mode, it searches the current directory
-if <var>filename</var> is not found in <code>$PATH</code>.
-If any <var>arguments</var> are supplied, they become the positional
-parameters when <var>filename</var> is executed.  Otherwise the positional
-parameters are unchanged.
-If the <samp>-T</samp> option is enabled, <code>.</code> inherits any trap on
-<code>DEBUG</code>; if it is not, any <code>DEBUG</code> trap string is saved and
-restored around the call to <code>.</code>, and <code>.</code> unsets the
-<code>DEBUG</code> trap while it executes.
-If <samp>-T</samp> is not set, and the sourced file changes
-the <code>DEBUG</code> trap, the new value is retained when <code>.</code> completes.
-The return status is the exit status of the last command executed, or
-zero if no commands are executed.  If <var>filename</var> is not found, or
-cannot be read, the return status is non-zero.
-This builtin is equivalent to <code>source</code>.
+<p>The <code class="code">.</code> command reads and execute commands from the <var class="var">filename</var>
+argument in the current shell context.
+</p>
+<p>If <var class="var">filename</var> does not contain a slash, <code class="code">.</code> searches for it.
+If <samp class="option">-p</samp> is supplied, <code class="code">.</code> treats <var class="var">path</var>
+as a colon-separated list of directories in which to find <var class="var">filename</var>;
+otherwise, <code class="code">.</code> uses the directories in <code class="env">PATH</code> to find <var class="var">filename</var>.
+<var class="var">filename</var> does not need to be executable.
+When Bash is not in <small class="sc">POSIX</small> mode, it searches the current directory
+if <var class="var">filename</var> is not found in <code class="env">$PATH</code>,
+but does not search the current directory if <samp class="option">-p</samp> is supplied.
+If the <code class="code">sourcepath</code> option (see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>) is turned off,
+<code class="code">.</code> does not search <code class="env">PATH</code>.
+</p>
+<p>If any <var class="var">arguments</var> are supplied, they become the positional
+parameters when <var class="var">filename</var> is executed.
+Otherwise the positional parameters are unchanged.
+</p>
+<p>If the <samp class="option">-T</samp> option is enabled, <code class="code">.</code> inherits any trap on
+<code class="code">DEBUG</code>; if it is not, any <code class="code">DEBUG</code> trap string is saved and
+restored around the call to <code class="code">.</code>, and <code class="code">.</code> unsets the
+<code class="code">DEBUG</code> trap while it executes.
+If <samp class="option">-T</samp> is not set, and the sourced file changes
+the <code class="code">DEBUG</code> trap, the new value persists after <code class="code">.</code> completes.
+The return status is the exit status of the last command executed
+from <var class="var">filename</var>, or
+zero if no commands are executed.
+If <var class="var">filename</var> is not found, or cannot be read,
+the return status is non-zero.
+This builtin is equivalent to <code class="code">source</code>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/break"></a><dt id="index-break"><span><code>break</code><a href="#index-break" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/break"></a><a id="index-break"></a><span><code class="code">break</code><a class="copiable-link" href="#index-break"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">break [<var>n</var>]
+<pre class="example-preformatted">break [<var class="var">n</var>]
 </pre></div>
 
-<p>Exit from a <code>for</code>, <code>while</code>, <code>until</code>, or <code>select</code> loop.
-If <var>n</var> is supplied, the <var>n</var>th enclosing loop is exited.
-<var>n</var> must be greater than or equal to 1.
-The return status is zero unless <var>n</var> is not greater than or equal to 1.
+<p>Exit from a <code class="code">for</code>, <code class="code">while</code>, <code class="code">until</code>, or <code class="code">select</code> loop.
+If <var class="var">n</var> is supplied, <code class="code">break</code> exits the <var class="var">n</var>th enclosing loop.
+<var class="var">n</var> must be greater than or equal to 1.
+The return status is zero unless <var class="var">n</var> is not greater than or equal to 1.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/cd"></a><dt id="index-cd"><span><code>cd</code><a href="#index-cd" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/cd"></a><a id="index-cd"></a><span><code class="code">cd</code><a class="copiable-link" href="#index-cd"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">cd [-L|[-P [-e]] [-@] [<var>directory</var>]
+<pre class="example-preformatted">cd [-L] [-@] [<var class="var">directory</var>]
+cd -P [-e] [-@] [<var class="var">directory</var>]
 </pre></div>
 
-<p>Change the current working directory to <var>directory</var>.
-If <var>directory</var> is not supplied, the value of the <code>HOME</code>
-shell variable is used.
+<p>Change the current working directory to <var class="var">directory</var>.
+If <var class="var">directory</var> is not supplied, the value of the <code class="env">HOME</code>
+shell variable is used as <var class="var">directory</var>.
 If the shell variable
-<code>CDPATH</code> exists, it is used as a search path:
-each directory name in <code>CDPATH</code> is searched for
-<var>directory</var>, with alternative directory names in <code>CDPATH</code>
-separated by a colon (‘<samp>:</samp>’).
-If <var>directory</var> begins with a slash, <code>CDPATH</code> is not used.
+<code class="env">CDPATH</code> exists,
+and <var class="var">directory</var> does not begin with a slash,
+<code class="code">cd</code> uses it as a search path:
+<code class="code">cd</code> searches each directory name in <code class="env">CDPATH</code> for
+<var class="var">directory</var>, with alternative directory names in <code class="env">CDPATH</code>
+separated by a colon (‘<samp class="samp">:</samp>’).
+A null directory name in <code class="env">CDPATH</code> means the same thing as the
+current directory.
 </p>
-<p>The <samp>-P</samp> option means to not follow symbolic links: symbolic links
-are resolved while <code>cd</code> is traversing <var>directory</var> and before
-processing an instance of ‘<samp>..</samp>’ in <var>directory</var>.
+<p>The <samp class="option">-P</samp> option means not to follow symbolic links: symbolic links
+are resolved while <code class="code">cd</code> is traversing <var class="var">directory</var> and before
+processing an instance of <samp class="file">..</samp> in <var class="var">directory</var>.
 </p>
-<p>By default, or when the <samp>-L</samp> option is supplied, symbolic links
-in <var>directory</var> are resolved after <code>cd</code> processes an instance
-of ‘<samp>..</samp>’ in <var>directory</var>.
+<p>By default, or when the <samp class="option">-L</samp> option is supplied, symbolic links
+in <var class="var">directory</var> are resolved after <code class="code">cd</code> processes an instance
+of <samp class="file">..</samp> in <var class="var">directory</var>.
 </p>
-<p>If ‘<samp>..</samp>’ appears in <var>directory</var>, it is processed by removing the
+<p>If <samp class="file">..</samp> appears in <var class="var">directory</var>, <code class="code">cd</code> processes it by removing the
 immediately preceding pathname component, back to a slash or the beginning
-of <var>directory</var>.
+of <var class="var">directory</var>,
+and verifying that the portion of <var class="var">directory</var>
+it has processed to
+that point is still a valid directory name after removing the pathname
+component.
+If it is not a valid directory name, <code class="code">cd</code> returns a non-zero status.
 </p>
-<p>If the <samp>-e</samp> option is supplied with <samp>-P</samp>
-and the current working directory cannot be successfully determined
-after a successful directory change, <code>cd</code> will return an unsuccessful
-status.
+<p>If the <samp class="option">-e</samp> option is supplied with <samp class="option">-P</samp>
+and <code class="code">cd</code> cannot successfully determine the current working directory 
+after a successful directory change, it returns a non-zero status.
 </p>
-<p>On systems that support it, the <samp>-@</samp> option presents the extended
+<p>On systems that support it, the <samp class="option">-@</samp> option presents the extended
 attributes associated with a file as a directory.              
 </p>
-<p>If <var>directory</var> is ‘<samp>-</samp>’, it is converted to <code>$OLDPWD</code>
-before the directory change is attempted.
+<p>If <var class="var">directory</var> is ‘<samp class="samp">-</samp>’, it is converted to <code class="env">$OLDPWD</code>
+before attempting the directory change.
 </p>
-<p>If a non-empty directory name from <code>CDPATH</code> is used, or if
-‘<samp>-</samp>’ is the first argument, and the directory change is
-successful, the absolute pathname of the new working directory is
-written to the standard output.
+<p>If <code class="code">cd</code> uses a non-empty directory name from <code class="env">CDPATH</code>, or if
+‘<samp class="samp">-</samp>’ is the first argument, and the directory change is
+successful, <code class="code">cd</code> writes the absolute pathname of the new
+working directory to the standard output.
 </p>
-<p>If the directory change is successful, <code>cd</code> sets the value of the
-<code>PWD</code> environment variable to the new directory name, and sets the
-<code>OLDPWD</code> environment variable to the value of the current working
+<p>If the directory change is successful, <code class="code">cd</code> sets the value of the
+<code class="env">PWD</code> environment variable to the new directory name, and sets the
+<code class="env">OLDPWD</code> environment variable to the value of the current working
 directory before the change.
 </p>
 <p>The return status is zero if the directory is successfully changed,
 non-zero otherwise.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/continue"></a><dt id="index-continue"><span><code>continue</code><a href="#index-continue" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/continue"></a><a id="index-continue"></a><span><code class="code">continue</code><a class="copiable-link" href="#index-continue"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">continue [<var>n</var>]
+<pre class="example-preformatted">continue [<var class="var">n</var>]
 </pre></div>
 
-<p>Resume the next iteration of an enclosing <code>for</code>, <code>while</code>,
-<code>until</code>, or <code>select</code> loop.
-If <var>n</var> is supplied, the execution of the <var>n</var>th enclosing loop
-is resumed.
-<var>n</var> must be greater than or equal to 1.
-The return status is zero unless <var>n</var> is not greater than or equal to 1.
+<p><code class="code">continue</code> resumes the next iteration of an enclosing <code class="code">for</code>,
+<code class="code">while</code>, <code class="code">until</code>, or <code class="code">select</code> loop.
+If <var class="var">n</var> is supplied, Bash resumes the execution of the <var class="var">n</var>th
+enclosing loop.
+<var class="var">n</var> must be greater than or equal to 1.
+The return status is zero unless <var class="var">n</var> is not greater than or equal to 1.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/eval"></a><dt id="index-eval"><span><code>eval</code><a href="#index-eval" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/eval"></a><a id="index-eval"></a><span><code class="code">eval</code><a class="copiable-link" href="#index-eval"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">eval [<var>arguments</var>]
+<pre class="example-preformatted">eval [<var class="var">arguments</var>]
 </pre></div>
 
-<p>The arguments are concatenated together into a single command, which is
-then read and executed, and its exit status returned as the exit status
-of <code>eval</code>.
+<p>The <var class="var">arguments</var> are concatenated together into a single command,
+separated by spaces.
+Bash then reads and executes this command and returns its exit status
+as the exit status of <code class="code">eval</code>.
 If there are no arguments or only empty arguments, the return status is
 zero.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/exec"></a><dt id="index-exec"><span><code>exec</code><a href="#index-exec" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/exec"></a><a id="index-exec"></a><span><code class="code">exec</code><a class="copiable-link" href="#index-exec"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">exec [-cl] [-a <var>name</var>] [<var>command</var> [<var>arguments</var>]]
+<pre class="example-preformatted">exec [-cl] [-a <var class="var">name</var>] [<var class="var">command</var> [<var class="var">arguments</var>]]
 </pre></div>
 
-<p>If <var>command</var>
+<p>If <var class="var">command</var>
 is supplied, it replaces the shell without creating a new process.
-If the <samp>-l</samp> option is supplied, the shell places a dash at the
-beginning of the zeroth argument passed to <var>command</var>.
-This is what the <code>login</code> program does.
-The <samp>-c</samp> option causes <var>command</var> to be executed with an empty
+<var class="var">command</var> cannot be a shell builtin or function.
+The <var class="var">arguments</var> become the arguments to <var class="var">command</var>
+If the <samp class="option">-l</samp> option is supplied, the shell places a dash at the
+beginning of the zeroth argument passed to <var class="var">command</var>.
+This is what the <code class="code">login</code> program does.
+The <samp class="option">-c</samp> option causes <var class="var">command</var> to be executed with an empty
 environment.
-If <samp>-a</samp> is supplied, the shell passes <var>name</var> as the zeroth
-argument to <var>command</var>.
-If <var>command</var>
+If <samp class="option">-a</samp> is supplied, the shell passes <var class="var">name</var> as the zeroth
+argument to <var class="var">command</var>.
+</p>
+<p>If <var class="var">command</var>
 cannot be executed for some reason, a non-interactive shell exits,
-unless the <code>execfail</code> shell option
-is enabled.  In that case, it returns failure.
-An interactive shell returns failure if the file cannot be executed.
-A subshell exits unconditionally if <code>exec</code> fails.
-If no <var>command</var> is specified, redirections may be used to affect
-the current shell environment.  If there are no redirection errors, the
-return status is zero; otherwise the return status is non-zero.
+unless the <code class="code">execfail</code> shell option is enabled.
+In that case, it returns a non-zero status.
+An interactive shell returns a non-zero status if the file cannot be executed.
+A subshell exits unconditionally if <code class="code">exec</code> fails.
+</p>
+<p>If <var class="var">command</var> is not specified, redirections may be used to affect
+the current shell environment.
+If there are no redirection errors, the return status is zero;
+otherwise the return status is non-zero.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/exit"></a><dt id="index-exit"><span><code>exit</code><a href="#index-exit" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/exit"></a><a id="index-exit"></a><span><code class="code">exit</code><a class="copiable-link" href="#index-exit"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">exit [<var>n</var>]
+<pre class="example-preformatted">exit [<var class="var">n</var>]
 </pre></div>
 
-<p>Exit the shell, returning a status of <var>n</var> to the shell’s parent.
-If <var>n</var> is omitted, the exit status is that of the last command executed.
-Any trap on <code>EXIT</code> is executed before the shell terminates.
+<p>Exit the shell, returning a status of <var class="var">n</var> to the shell’s parent.
+If <var class="var">n</var> is omitted, the exit status is that of the last command executed.
+Any trap on <code class="code">EXIT</code> is executed before the shell terminates.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/export"></a><dt id="index-export"><span><code>export</code><a href="#index-export" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/export"></a><a id="index-export"></a><span><code class="code">export</code><a class="copiable-link" href="#index-export"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">export [-fn] [-p] [<var>name</var>[=<var>value</var>]]
+<pre class="example-preformatted">export [-fn] [-p] [<var class="var">name</var>[=<var class="var">value</var>]]
 </pre></div>
 
-<p>Mark each <var>name</var> to be passed to child processes
-in the environment.  If the <samp>-f</samp> option is supplied, the <var>name</var>s
+<p>Mark each <var class="var">name</var> to be passed to subsequently executed commands in the
+environment.
+If the <samp class="option">-f</samp> option is supplied, the <var class="var">name</var>s
 refer to shell functions; otherwise the names refer to shell variables.
-The <samp>-n</samp> option means to no longer mark each <var>name</var> for export.
-If no <var>name</var>s are supplied, or if the <samp>-p</samp> option is given, a
-list of names of all exported variables is displayed.
-The <samp>-p</samp> option displays output in a form that may be reused as input.
-If a variable name is followed by =<var>value</var>, the value of
-the variable is set to <var>value</var>.
+</p>
+<p>The <samp class="option">-n</samp> option means to unexport each name: no longer mark
+it for export.
+If no <var class="var">name</var>s are supplied, or if only
+the <samp class="option">-p</samp> option is given,
+<code class="code">export</code> displays a list of names of all exported
+variables on the standard output.
+Using <samp class="option">-p</samp> and <samp class="option">-f</samp> together displays exported functions.
+The <samp class="option">-p</samp> option displays output in a form that may be reused as input.
+</p>
+<p><code class="code">export</code> allows the value of a variable to be set at the same time
+it is exported or unexported by following the variable name with
+=<var class="var">value</var>.
+This sets the value of the variable is to <var class="var">value</var> while modifying
+the export attribute.
 </p>
 <p>The return status is zero unless an invalid option is supplied, one of
-the names is not a valid shell variable name, or <samp>-f</samp> is supplied
+the names is not a valid shell variable name, or <samp class="option">-f</samp> is supplied
 with a name that is not a shell function.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/getopts"></a><dt id="index-getopts"><span><code>getopts</code><a href="#index-getopts" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/false"></a><a id="index-false"></a><span><code class="code">false</code><a class="copiable-link" href="#index-false"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">getopts <var>optstring</var> <var>name</var> [<var>arg</var> …]
+<pre class="example-preformatted">false
 </pre></div>
 
-<p><code>getopts</code> is used by shell scripts to parse positional parameters.
-<var>optstring</var> contains the option characters to be recognized; if a
-character is followed by a colon, the option is expected to have an
-argument, which should be separated from it by whitespace.
-The colon (‘<samp>:</samp>’) and question mark (‘<samp>?</samp>’) may not be
-used as option characters.
-Each time it is invoked, <code>getopts</code>
-places the next option in the shell variable <var>name</var>, initializing
-<var>name</var> if it does not exist,
-and the index of the next argument to be processed into the
-variable <code>OPTIND</code>.
-<code>OPTIND</code> is initialized to 1 each time the shell or a shell script
-is invoked.
-When an option requires an argument,
-<code>getopts</code> places that argument into the variable <code>OPTARG</code>.
-The shell does not reset <code>OPTIND</code> automatically; it must be manually
-reset between multiple calls to <code>getopts</code> within the same shell
-invocation if a new set of parameters is to be used.
-</p>
-<p>When the end of options is encountered, <code>getopts</code> exits with a
-return value greater than zero.
-<code>OPTIND</code> is set to the index of the first non-option argument,
-and <var>name</var> is set to ‘<samp>?</samp>’.
-</p>
-<p><code>getopts</code>
-normally parses the positional parameters, but if more arguments are
-supplied as <var>arg</var> values, <code>getopts</code> parses those instead.
-</p>
-<p><code>getopts</code> can report errors in two ways.  If the first character of
-<var>optstring</var> is a colon, <var>silent</var>
-error reporting is used.  In normal operation, diagnostic messages
-are printed when invalid options or missing option arguments are
-encountered.
-If the variable <code>OPTERR</code>
-is set to 0, no error messages will be displayed, even if the first
-character of <code>optstring</code> is not a colon.
-</p>
-<p>If an invalid option is seen,
-<code>getopts</code> places ‘<samp>?</samp>’ into <var>name</var> and, if not silent,
-prints an error message and unsets <code>OPTARG</code>.
-If <code>getopts</code> is silent, the option character found is placed in
-<code>OPTARG</code> and no diagnostic message is printed.
-</p>
-<p>If a required argument is not found, and <code>getopts</code>
-is not silent, a question mark (‘<samp>?</samp>’) is placed in <var>name</var>,
-<code>OPTARG</code> is unset, and a diagnostic message is printed.
-If <code>getopts</code> is silent, then a colon (‘<samp>:</samp>’) is placed in
-<var>name</var> and <code>OPTARG</code> is set to the option character found.
+<p>Does nothing; returns a non-zero status.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/hash"></a><dt id="index-hash"><span><code>hash</code><a href="#index-hash" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/getopts"></a><a id="index-getopts"></a><span><code class="code">getopts</code><a class="copiable-link" href="#index-getopts"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">hash [-r] [-p <var>filename</var>] [-dt] [<var>name</var>]
+<pre class="example-preformatted">getopts <var class="var">optstring</var> <var class="var">name</var> [<var class="var">arg</var> ...]
 </pre></div>
 
-<p>Each time <code>hash</code> is invoked, it remembers the full pathnames of the
-commands specified as <var>name</var> arguments,
+<p><code class="code">getopts</code> is used by shell scripts or functions to parse positional
+parameters and obtain options and their arguments.
+<var class="var">optstring</var> contains the option characters to be recognized; if a
+character is followed by a colon, the option is expected to have an
+argument, which should be separated from it by whitespace.
+The colon (‘<samp class="samp">:</samp>’) and question mark (‘<samp class="samp">?</samp>’) may not be
+used as option characters.
+</p>
+<p>Each time it is invoked, <code class="code">getopts</code>
+places the next option in the shell variable <var class="var">name</var>, initializing
+<var class="var">name</var> if it does not exist,
+and the index of the next argument to be processed into the
+variable <code class="env">OPTIND</code>.
+<code class="env">OPTIND</code> is initialized to 1 each time the shell or a shell script
+is invoked.
+When an option requires an argument,
+<code class="code">getopts</code> places that argument into the variable <code class="env">OPTARG</code>.
+</p>
+<p>The shell does not reset <code class="env">OPTIND</code> automatically; it must be manually
+reset between multiple calls to <code class="code">getopts</code> within the same shell
+invocation to use a new set of parameters.
+</p>
+<p>When it reaches the end of options, <code class="code">getopts</code> exits with a
+return value greater than zero.
+<code class="env">OPTIND</code> is set to the index of the first non-option argument,
+and <var class="var">name</var> is set to ‘<samp class="samp">?</samp>’.
+</p>
+<p><code class="code">getopts</code>
+normally parses the positional parameters, but if more arguments are
+supplied as <var class="var">arg</var> values, <code class="code">getopts</code> parses those instead.
+</p>
+<p><code class="code">getopts</code> can report errors in two ways.
+If the first character of
+<var class="var">optstring</var> is a colon, <code class="code">getopts</code> uses <em class="emph">silent</em>
+error reporting.
+In normal operation, <code class="code">getopts</code> prints diagnostic messages
+when it encounters invalid options or missing option arguments.
+If the variable <code class="env">OPTERR</code>
+is set to 0, <code class="code">getopts</code> does not display any error messages,
+even if the first character of <code class="code">optstring</code> is not a colon.
+</p>
+<p>If <code class="code">getopts</code> detects an invalid option, it
+places ‘<samp class="samp">?</samp>’ into <var class="var">name</var> and, if not silent,
+prints an error message and unsets <code class="env">OPTARG</code>.
+If <code class="code">getopts</code> is silent, it assigns the option character found
+to <code class="env">OPTARG</code> and does not print a diagnostic message.
+</p>
+<p>If a required argument is not found,
+and <code class="code">getopts</code> is not silent,
+it sets the value of <var class="var">name</var> to a question mark (‘<samp class="samp">?</samp>’),
+unsets <code class="code">OPTARG</code>, and prints a diagnostic message.
+If <code class="code">getopts</code> is silent,
+it sets the value of <var class="var">name</var> to a colon (‘<samp class="samp">:</samp>’),
+and sets <code class="env">OPTARG</code> to the option character found.
+</p>
+<p><code class="code">getopts</code> returns true if an option, specified or unspecified,
+is found.
+It returns false when it encounters the end of options or if an error occurs.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/hash"></a><a id="index-hash"></a><span><code class="code">hash</code><a class="copiable-link" href="#index-hash"> ¶</a></span></dt>
+<dd><div class="example">
+<pre class="example-preformatted">hash [-r] [-p <var class="var">filename</var>] [-dt] [<var class="var">name</var>]
+</pre></div>
+
+<p>Each time <code class="code">hash</code> is invoked, it remembers the full filenames of the
+commands specified as <var class="var">name</var> arguments,
 so they need not be searched for on subsequent invocations.
 The commands are found by searching through the directories listed in
-<code>$PATH</code>.
-Any previously-remembered pathname is discarded.
-The <samp>-p</samp> option inhibits the path search, and <var>filename</var> is
-used as the location of <var>name</var>.
-The <samp>-r</samp> option causes the shell to forget all remembered locations.
-The <samp>-d</samp> option causes the shell to forget the remembered location
-of each <var>name</var>.
-If the <samp>-t</samp> option is supplied, the full pathname to which each
-<var>name</var> corresponds is printed.  If multiple <var>name</var> arguments are
-supplied with <samp>-t</samp>, the <var>name</var> is printed before the hashed
-full pathname.
-The <samp>-l</samp> option causes output to be displayed in a format
-that may be reused as input.
-If no arguments are given, or if only <samp>-l</samp> is supplied,
-information about remembered commands is printed.
-The return status is zero unless a <var>name</var> is not found or an invalid
+<code class="env">$PATH</code>.
+Any previously-remembered filename associated with <var class="var">name</var> is discarded.
+The <samp class="option">-p</samp> option inhibits the path search, and <code class="code">hash</code> uses
+<var class="var">filename</var> as the location of <var class="var">name</var>.
+</p>
+<p>The <samp class="option">-r</samp> option causes the shell to forget all remembered locations.
+Assigning to the <code class="env">PATH</code> variable also clears all hashed filenames.
+The <samp class="option">-d</samp> option causes the shell to forget the remembered location
+of each <var class="var">name</var>.
+</p>
+<p>If the <samp class="option">-t</samp> option is supplied, <code class="code">hash</code> prints the full pathname
+corresponding to each <var class="var">name</var>.
+If multiple <var class="var">name</var> arguments are
+supplied with <samp class="option">-t</samp>, <code class="code">hash</code> prints each <var class="var">name</var>
+before the corresponding hashed full path.
+The <samp class="option">-l</samp> option displays output in a format that may be reused as input.
+</p>
+<p>If no arguments are given, or if only <samp class="option">-l</samp> is supplied,
+<code class="code">hash</code> prints information about remembered commands.
+The <samp class="option">-t</samp>, <samp class="option">-d</samp>, and <samp class="option">-p</samp> options (the options that
+act on the <var class="var">name</var> arguments) are mutually exclusive.
+Only one will be active.
+If more than one is supplied, <samp class="option">-t</samp> has higher priority than
+<samp class="option">-p</samp>, and both have higher priority than <samp class="option">-d</samp>.
+</p>
+<p>The return status is zero unless a <var class="var">name</var> is not found or an invalid
 option is supplied.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/pwd"></a><dt id="index-pwd"><span><code>pwd</code><a href="#index-pwd" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/pwd"></a><a id="index-pwd"></a><span><code class="code">pwd</code><a class="copiable-link" href="#index-pwd"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">pwd [-LP]
+<pre class="example-preformatted">pwd [-LP]
 </pre></div>
 
 <p>Print the absolute pathname of the current working directory.
-If the <samp>-P</samp> option is supplied, the pathname printed will not
+If the <samp class="option">-P</samp> option is supplied,
+or the <samp class="option">-o physical</samp> option to the <code class="code">set</code> builtin
+(see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>) is enabled,
+the pathname printed will not
 contain symbolic links.
-If the <samp>-L</samp> option is supplied, the pathname printed may contain
+If the <samp class="option">-L</samp> option is supplied, the pathname printed may contain
 symbolic links.
 The return status is zero unless an error is encountered while
 determining the name of the current directory or an invalid option
 is supplied.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/readonly"></a><dt id="index-readonly"><span><code>readonly</code><a href="#index-readonly" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/readonly"></a><a id="index-readonly"></a><span><code class="code">readonly</code><a class="copiable-link" href="#index-readonly"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">readonly [-aAf] [-p] [<var>name</var>[=<var>value</var>]] …
+<pre class="example-preformatted">readonly [-aAf] [-p] [<var class="var">name</var>[=<var class="var">value</var>]] ...
 </pre></div>
 
-<p>Mark each <var>name</var> as readonly.
-The values of these names may not be changed by subsequent assignment.
-If the <samp>-f</samp> option is supplied, each <var>name</var> refers to a shell
+<p>Mark each <var class="var">name</var> as readonly.
+The values of these names may not be changed by subsequent assignment
+or unset.
+If the <samp class="option">-f</samp> option is supplied, each <var class="var">name</var> refers to a shell
 function.
-The <samp>-a</samp> option means each <var>name</var> refers to an indexed
-array variable; the <samp>-A</samp> option means each <var>name</var> refers
+The <samp class="option">-a</samp> option means each <var class="var">name</var> refers to an indexed
+array variable; the <samp class="option">-A</samp> option means each <var class="var">name</var> refers
 to an associative array variable.
-If both options are supplied, <samp>-A</samp> takes precedence.
-If no <var>name</var> arguments are given, or if the <samp>-p</samp>
-option is supplied, a list of all readonly names is printed.
+If both options are supplied, <samp class="option">-A</samp> takes precedence.
+If no <var class="var">name</var> arguments are supplied, or if the <samp class="option">-p</samp>
+option is supplied, print a list of all readonly names.
 The other options may be used to restrict the output to a subset of
 the set of readonly names.
-The <samp>-p</samp> option causes output to be displayed in a format that
-may be reused as input.
-If a variable name is followed by =<var>value</var>, the value of
-the variable is set to <var>value</var>.
-The return status is zero unless an invalid option is supplied, one of
-the <var>name</var> arguments is not a valid shell variable or function name,
-or the <samp>-f</samp> option is supplied with a name that is not a shell function.
+The <samp class="option">-p</samp>
+option displays output in a format that may be reused as input.
+</p>
+<p><code class="code">readonly</code> allows the value of a variable to be set at the same time
+the readonly attribute is changed by following the variable name with
+=<var class="var">value</var>.
+This sets the value of the variable is to <var class="var">value</var> while modifying
+the readonly attribute.
+</p>
+<p>The return status is zero unless an invalid option is supplied, one of
+the <var class="var">name</var> arguments is not a valid shell variable or function name,
+or the <samp class="option">-f</samp> option is supplied with a name that is not a shell function.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/return"></a><dt id="index-return"><span><code>return</code><a href="#index-return" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/return"></a><a id="index-return"></a><span><code class="code">return</code><a class="copiable-link" href="#index-return"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">return [<var>n</var>]
+<pre class="example-preformatted">return [<var class="var">n</var>]
 </pre></div>
 
-<p>Cause a shell function to stop executing and return the value <var>n</var>
+<p>Stop executing a shell function or sourced file and return the value <var class="var">n</var>
 to its caller.
-If <var>n</var> is not supplied, the return value is the exit status of the
-last command executed in the function.
-If <code>return</code> is executed by a trap handler, the last command used to
+If <var class="var">n</var> is not supplied, the return value is the exit status of the
+last command executed.
+If <code class="code">return</code> is executed by a trap handler, the last command used to
 determine the status is the last command executed before the trap handler.
-If <code>return</code> is executed during a <code>DEBUG</code> trap, the last command
+If <code class="code">return</code> is executed during a <code class="code">DEBUG</code> trap, the last command
 used to determine the status is the last command executed by the trap
-handler before <code>return</code> was invoked.
-<code>return</code> may also be used to terminate execution of a script
-being executed with the <code>.</code> (<code>source</code>) builtin,
-returning either <var>n</var> or
+handler before <code class="code">return</code> was invoked.
+</p>
+<p>When <code class="code">return</code> is used to terminate execution of a script
+being executed with the <code class="code">.</code> (<code class="code">source</code>) builtin, it
+returns either <var class="var">n</var> or
 the exit status of the last command executed within the script as the exit
 status of the script.
-If <var>n</var> is supplied, the return value is its least significant
+If <var class="var">n</var> is supplied, the return value is its least significant
 8 bits.
-Any command associated with the <code>RETURN</code> trap is executed
+</p>
+<p>Any command associated with the <code class="code">RETURN</code> trap is executed
 before execution resumes after the function or script.
-The return status is non-zero if <code>return</code> is supplied a non-numeric
+</p>
+<p>The return status is non-zero if <code class="code">return</code> is supplied a non-numeric
 argument or is used outside a function
-and not during the execution of a script by <code>.</code> or <code>source</code>.
+and not during the execution of a script by <code class="code">.</code> or <code class="code">source</code>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/shift"></a><dt id="index-shift"><span><code>shift</code><a href="#index-shift" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/shift"></a><a id="index-shift"></a><span><code class="code">shift</code><a class="copiable-link" href="#index-shift"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">shift [<var>n</var>]
+<pre class="example-preformatted">shift [<var class="var">n</var>]
 </pre></div>
 
-<p>Shift the positional parameters to the left by <var>n</var>.
-The positional parameters from <var>n</var>+1 … <code>$#</code> are
-renamed to <code>$1</code> … <code>$#</code>-<var>n</var>.
-Parameters represented by the numbers <code>$#</code> down to <code>$#</code>-<var>n</var>+1
+<p>Shift the positional parameters to the left by <var class="var">n</var>:
+the positional parameters from <var class="var">n</var>+1 … <code class="code">$#</code> are
+renamed to <code class="code">$1</code> … <code class="code">$#</code>-<var class="var">n</var>.
+Parameters represented by the numbers <code class="code">$#</code> down to <code class="code">$#</code>-<var class="var">n</var>+1
 are unset.
-<var>n</var> must be a non-negative number less than or equal to <code>$#</code>.
-If <var>n</var> is zero or greater than <code>$#</code>, the positional parameters
+<var class="var">n</var> must be a non-negative number less than or equal to <code class="code">$#</code>.
+If <var class="var">n</var> is not supplied, it is assumed to be 1.
+If <var class="var">n</var> is zero or greater than <code class="code">$#</code>, the positional parameters
 are not changed.
-If <var>n</var> is not supplied, it is assumed to be 1.
-The return status is zero unless <var>n</var> is greater than <code>$#</code> or
+The return status is zero unless <var class="var">n</var> is greater than <code class="code">$#</code> or
 less than zero, non-zero otherwise.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/test"></a><dt id="index-test"><span><code>test</code><a href="#index-test" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dt><span><code>[</code></span></dt>
-<dd><a class="dashAnchor" name="//apple_ref/Builtin/%5B"></a><span id="index-_005b"></span>
-<div class="example">
-<pre class="example">test <var>expr</var>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/%5B"></a><a class="index-entry-id" id="index-_005b"></a>
+<a class="dashAnchor" name="//apple_ref/Builtin/test"></a><a id="index-test"></a><span><code class="code">test</code><a class="copiable-link" href="#index-test"> ¶</a></span></dt>
+<dt><code class="code">[</code></dt>
+<dd><div class="example">
+<pre class="example-preformatted">test <var class="var">expr</var>
 </pre></div>
 
-<p>Evaluate a conditional expression <var>expr</var> and return a status of 0
-(true) or 1 (false).
+<p>Evaluate a conditional expression <var class="var">expr</var> and return a status of
+0 (true) or 1 (false).
 Each operator and operand must be a separate argument.
 Expressions are composed of the primaries described below in
-<a href="Bash-Conditional-Expressions.html">Bash Conditional Expressions</a>.
-<code>test</code> does not accept any options, nor does it accept and ignore
-an argument of <samp>--</samp> as signifying the end of options.
-</p>
-<p>When the <code>[</code> form is used, the last argument to the command must
-be a <code>]</code>.
+<a class="ref" href="Bash-Conditional-Expressions.html">Bash Conditional Expressions</a>.
+<code class="code">test</code> does not accept any options, nor does it accept and
+ignore an argument of <samp class="option">--</samp> as signifying the end of options.
+When using the <code class="code">[</code> form, the last argument to the command must
+be a <code class="code">]</code>.
 </p>
 <p>Expressions may be combined using the following operators, listed in
 decreasing order of precedence.
 The evaluation depends on the number of arguments; see below.
-Operator precedence is used when there are five or more arguments.
+<code class="code">test</code> uses operator precedence when there are five or more arguments.
 </p>
-<dl compact="compact">
-<dt><span><code>! <var>expr</var></code></span></dt>
-<dd><p>True if <var>expr</var> is false.
-</p>
-</dd>
-<dt><span><code>( <var>expr</var> )</code></span></dt>
-<dd><p>Returns the value of <var>expr</var>.
-This may be used to override the normal precedence of operators.
+<dl class="table">
+<dt><code class="code">! <var class="var">expr</var></code></dt>
+<dd><p>True if <var class="var">expr</var> is false.
 </p>
 </dd>
-<dt><span><code><var>expr1</var> -a <var>expr2</var></code></span></dt>
-<dd><p>True if both <var>expr1</var> and <var>expr2</var> are true.
+<dt><code class="code">( <var class="var">expr</var> )</code></dt>
+<dd><p>Returns the value of <var class="var">expr</var>.
+This may be used to override normal operator precedence.
 </p>
 </dd>
-<dt><span><code><var>expr1</var> -o <var>expr2</var></code></span></dt>
-<dd><p>True if either <var>expr1</var> or <var>expr2</var> is true.
+<dt><code class="code"><var class="var">expr1</var> -a <var class="var">expr2</var></code></dt>
+<dd><p>True if both <var class="var">expr1</var> and <var class="var">expr2</var> are true.
+</p>
+</dd>
+<dt><code class="code"><var class="var">expr1</var> -o <var class="var">expr2</var></code></dt>
+<dd><p>True if either <var class="var">expr1</var> or <var class="var">expr2</var> is true.
 </p></dd>
 </dl>
 
-<p>The <code>test</code> and <code>[</code> builtins evaluate conditional
+<p>The <code class="code">test</code> and <code class="code">[</code> builtins evaluate conditional
 expressions using a set of rules based on the number of arguments.
 </p>
-<dl compact="compact">
-<dt><span>0 arguments</span></dt>
+<dl class="table">
+<dt>0 arguments</dt>
 <dd><p>The expression is false.
 </p>
 </dd>
-<dt><span>1 argument</span></dt>
+<dt>1 argument</dt>
 <dd><p>The expression is true if, and only if, the argument is not null.
 </p>
 </dd>
-<dt><span>2 arguments</span></dt>
-<dd><p>If the first argument is ‘<samp>!</samp>’, the expression is true if and
+<dt>2 arguments</dt>
+<dd><p>If the first argument is ‘<samp class="samp">!</samp>’, the expression is true if and
 only if the second argument is null.
 If the first argument is one of the unary conditional operators
-(see <a href="Bash-Conditional-Expressions.html">Bash Conditional Expressions</a>), the expression
+(see <a class="pxref" href="Bash-Conditional-Expressions.html">Bash Conditional Expressions</a>), the expression
 is true if the unary test is true.
 If the first argument is not a valid unary operator, the expression is
 false.
 </p>
 </dd>
-<dt><span>3 arguments</span></dt>
+<dt>3 arguments</dt>
 <dd><p>The following conditions are applied in the order listed.
 </p>
-<ol>
+<ol class="enumerate">
 <li> If the second argument is one of the binary conditional
-operators (see <a href="Bash-Conditional-Expressions.html">Bash Conditional Expressions</a>), the
+operators (see <a class="pxref" href="Bash-Conditional-Expressions.html">Bash Conditional Expressions</a>), the
 result of the expression is the result of the binary test using the
 first and third arguments as operands.
-The ‘<samp>-a</samp>’ and ‘<samp>-o</samp>’ operators are considered binary operators
+The ‘<samp class="samp">-a</samp>’ and ‘<samp class="samp">-o</samp>’ operators are considered binary operators
 when there are three arguments.
-</li><li> If the first argument is ‘<samp>!</samp>’, the value is the negation of
+</li><li> If the first argument is ‘<samp class="samp">!</samp>’, the value is the negation of
 the two-argument test using the second and third arguments.
-</li><li> If the first argument is exactly ‘<samp>(</samp>’ and the third argument is
-exactly ‘<samp>)</samp>’, the result is the one-argument test of the second
+</li><li> If the first argument is exactly ‘<samp class="samp">(</samp>’ and the third argument is
+exactly ‘<samp class="samp">)</samp>’, the result is the one-argument test of the second
 argument.
 </li><li> Otherwise, the expression is false.
 </li></ol>
 
 </dd>
-<dt><span>4 arguments</span></dt>
+<dt>4 arguments</dt>
 <dd><p>The following conditions are applied in the order listed.
 </p>
-<ol>
-<li> If the first argument is ‘<samp>!</samp>’, the result is the negation of
+<ol class="enumerate">
+<li> If the first argument is ‘<samp class="samp">!</samp>’, the result is the negation of
 the three-argument expression composed of the remaining arguments.
-</li><li> If the first argument is exactly ‘<samp>(</samp>’ and the fourth argument is
-exactly ‘<samp>)</samp>’, the result is the two-argument test of the second
+</li><li> If the first argument is exactly ‘<samp class="samp">(</samp>’ and the fourth argument is
+exactly ‘<samp class="samp">)</samp>’, the result is the two-argument test of the second
 and third arguments.
 </li><li> Otherwise, the expression is parsed and evaluated according to
 precedence using the rules listed above.
 </li></ol>
 
 </dd>
-<dt><span>5 or more arguments</span></dt>
+<dt>5 or more arguments</dt>
 <dd><p>The expression is parsed and evaluated according to precedence
 using the rules listed above.
 </p></dd>
 </dl>
 
-<p>When used with <code>test</code> or ‘<samp>[</samp>’, the ‘<samp>&lt;</samp>’ and ‘<samp>&gt;</samp>’
-operators sort lexicographically using ASCII ordering.
+<p>If the shell is in <small class="sc">POSIX</small> mode, or if the expression is part
+of the <code class="code">[[</code> command,
+the ‘<samp class="samp">&lt;</samp>’ and ‘<samp class="samp">&gt;</samp>’ operators sort using the current locale.
+If the shell is not in <small class="sc">POSIX</small> mode, the <code class="code">test</code> and ‘<samp class="samp">[</samp>’
+commands sort lexicographically using ASCII ordering.
 </p>
+<p>The historical operator-precedence parsing with 4 or more arguments can
+lead to ambiguities when it encounters strings that look like primaries.
+The
+<small class="sc">POSIX</small>
+standard has deprecated the <samp class="option">-a</samp> and <samp class="option">-o</samp>
+primaries and enclosing expressions within parentheses.
+Scripts should no longer use them.
+It’s much more reliable to restrict test invocations to a single primary,
+and to replace uses of <samp class="option">-a</samp> and <samp class="option">-o</samp> with the shell’s
+<code class="code">&amp;&amp;</code> and <code class="code">||</code> list operators. For example, use
+</p>
+<div class="example">
+<pre class="example-preformatted">test -n string1 &amp;&amp; test -n string2
+</pre></div>
+
+<p>instead of
+</p>
+<div class="example">
+<pre class="example-preformatted">test -n string1 -a -n string2
+</pre></div>
+
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/times"></a><dt id="index-times"><span><code>times</code><a href="#index-times" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/times"></a><a id="index-times"></a><span><code class="code">times</code><a class="copiable-link" href="#index-times"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">times
+<pre class="example-preformatted">times
 </pre></div>
 
 <p>Print out the user and system times used by the shell and its children.
 The return status is zero.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/trap"></a><dt id="index-trap"><span><code>trap</code><a href="#index-trap" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/trap"></a><a id="index-trap"></a><span><code class="code">trap</code><a class="copiable-link" href="#index-trap"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">trap [-lp] [<var>arg</var>] [<var>sigspec</var> …]
+<pre class="example-preformatted">trap [-lpP] [<var class="var">action</var>] [<var class="var">sigspec</var> ...]
 </pre></div>
 
-<p>The commands in <var>arg</var> are to be read and executed when the
-shell receives signal <var>sigspec</var>.  If <var>arg</var> is absent (and
-there is a single <var>sigspec</var>) or
-equal to ‘<samp>-</samp>’, each specified signal’s disposition is reset
+<p>The <var class="var">action</var> is a command that is read and executed when the
+shell receives any of the signals <var class="var">sigspec</var>.
+If <var class="var">action</var> is absent (and
+there is a single <var class="var">sigspec</var>) or
+equal to ‘<samp class="samp">-</samp>’, each specified <var class="var">sigspec</var>’s disposition is reset
 to the value it had when the shell was started.
-If <var>arg</var> is the null string, then the signal specified by
-each <var>sigspec</var> is ignored by the shell and commands it invokes.
-If <var>arg</var> is not present and <samp>-p</samp> has been supplied,
-the shell displays the trap commands associated with each <var>sigspec</var>.
-If no arguments are supplied, or
-only <samp>-p</samp> is given, <code>trap</code> prints the list of commands
-associated with each signal number in a form that may be reused as
-shell input.
-The <samp>-l</samp> option causes the shell to print a list of signal names
+If <var class="var">action</var> is the null string, then the signal specified by
+each <var class="var">sigspec</var> is ignored by the shell and commands it invokes.
+</p>
+<p>If no arguments are supplied, <code class="code">trap</code> prints the actions
+associated with each trapped signal
+as a set of <code class="code">trap</code> commands that can be reused as shell input to
+restore the current signal dispositions.
+</p>
+<p>If <var class="var">action</var> is not present and <samp class="option">-p</samp> has been supplied,
+<code class="code">trap</code> displays the trap commands associated with each <var class="var">sigspec</var>,
+or, if no <var class="var">sigspec</var>s are supplied, for all trapped signals,
+as a set of <code class="code">trap</code> commands that can be reused as shell input to
+restore the current signal dispositions.
+The <samp class="option">-P</samp> option behaves similarly, but displays only the actions
+associated with each <var class="var">sigspec</var> argument.
+<samp class="option">-P</samp> requires at least one <var class="var">sigspec</var> argument.
+The <samp class="option">-P</samp> or <samp class="option">-p</samp> options may be
+used in a subshell environment (e.g., command substitution) and,
+as long as they are used before <code class="code">trap</code> is used to change a
+signal’s handling, will display the state of its parent’s traps.
+</p>
+<p>The <samp class="option">-l</samp> option prints a list of signal names
 and their corresponding numbers.
-Each <var>sigspec</var> is either a signal name or a signal number.
-Signal names are case insensitive and the <code>SIG</code> prefix is optional.
+Each <var class="var">sigspec</var> is either a signal name or a signal number.
+Signal names are case insensitive and the <code class="code">SIG</code> prefix is optional.
+If <samp class="option">-l</samp> is supplied with no <var class="var">sigspec</var> arguments, it prints a
+list of valid signal names.
 </p>
-<p>If a <var>sigspec</var>
-is <code>0</code> or <code>EXIT</code>, <var>arg</var> is executed when the shell exits.
-If a <var>sigspec</var> is <code>DEBUG</code>, the command <var>arg</var> is executed
-before every simple command, <code>for</code> command, <code>case</code> command,
-<code>select</code> command, every arithmetic <code>for</code> command, and before
-the first command executes in a shell function.
-Refer to the description of the <code>extdebug</code> option to the
-<code>shopt</code> builtin (see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>) for details of its
-effect on the <code>DEBUG</code> trap.
-If a <var>sigspec</var> is <code>RETURN</code>, the command <var>arg</var> is executed
-each time a shell function or a script executed with the <code>.</code> or
-<code>source</code> builtins finishes executing.
+<p>If a <var class="var">sigspec</var>
+is <code class="code">0</code> or <code class="code">EXIT</code>, <var class="var">action</var> is executed when the shell exits.
+If a <var class="var">sigspec</var> is <code class="code">DEBUG</code>, <var class="var">action</var> is executed
+before every simple command, <code class="code">for</code> command, <code class="code">case</code> command,
+<code class="code">select</code> command, (( arithmetic command, [[ conditional command,
+arithmetic <code class="code">for</code> command,
+and before the first command executes in a shell function.
+Refer to the description of the <code class="code">extdebug</code> shell option
+(see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>) for details of its
+effect on the <code class="code">DEBUG</code> trap.
+If a <var class="var">sigspec</var> is <code class="code">RETURN</code>, <var class="var">action</var> is executed
+each time a shell function or a script executed with the <code class="code">.</code> or
+<code class="code">source</code> builtins finishes executing.
 </p>
-<p>If a <var>sigspec</var> is <code>ERR</code>, the command <var>arg</var> 
+<p>If a <var class="var">sigspec</var> is <code class="code">ERR</code>, <var class="var">action</var> 
 is executed whenever
 a pipeline (which may consist of a single simple
 command), a list, or a compound command returns a
 non-zero exit status,
 subject to the following conditions.
-The <code>ERR</code> trap is not executed if the failed command is part of the
-command list immediately following an <code>until</code> or <code>while</code> keyword,
-part of the test following the <code>if</code> or <code>elif</code> reserved words,
-part of a command executed in a <code>&amp;&amp;</code> or <code>||</code> list
-except the command following the final <code>&amp;&amp;</code> or <code>||</code>,
+The <code class="code">ERR</code> trap is not executed if the failed command is part of the
+command list immediately following an
+<code class="code">until</code> or <code class="code">while</code> reserved word,
+part of the test following the <code class="code">if</code> or <code class="code">elif</code> reserved words,
+part of a command executed in a <code class="code">&amp;&amp;</code> or <code class="code">||</code> list
+except the command following the final <code class="code">&amp;&amp;</code> or <code class="code">||</code>,
 any command in a pipeline but the last,
+(subject to the state of the <code class="code">pipefail</code> shell option),
 or if the command’s return
-status is being inverted using <code>!</code>.
-These are the same conditions obeyed by the <code>errexit</code> (<samp>-e</samp>)
+status is being inverted using <code class="code">!</code>.
+These are the same conditions obeyed by the <code class="code">errexit</code> (<samp class="option">-e</samp>)
 option.
 </p>
-<p>Signals ignored upon entry to the shell cannot be trapped or reset.
+<p>When the shell is not interactive,
+signals ignored upon entry to a non-interactive shell cannot be trapped or
+reset.
+Interactive shells permit trapping signals ignored on entry.
 Trapped signals that are not being ignored are reset to their original
 values in a subshell or subshell environment when one is created.
 </p>
-<p>The return status is zero unless a <var>sigspec</var> does not specify a
-valid signal.
+<p>The return status is zero unless a <var class="var">sigspec</var> does not specify a
+valid signal; non-zero otherwise.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/umask"></a><dt id="index-umask"><span><code>umask</code><a href="#index-umask" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/true"></a><a id="index-true"></a><span><code class="code">true</code><a class="copiable-link" href="#index-true"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">umask [-p] [-S] [<var>mode</var>]
+<pre class="example-preformatted">true
 </pre></div>
 
-<p>Set the shell process’s file creation mask to <var>mode</var>.  If
-<var>mode</var> begins with a digit, it is interpreted as an octal number;
+<p>Does nothing, returns a 0 status.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/umask"></a><a id="index-umask"></a><span><code class="code">umask</code><a class="copiable-link" href="#index-umask"> ¶</a></span></dt>
+<dd><div class="example">
+<pre class="example-preformatted">umask [-p] [-S] [<var class="var">mode</var>]
+</pre></div>
+
+<p>Set the shell process’s file creation mask to <var class="var">mode</var>.
+If <var class="var">mode</var> begins with a digit, it is interpreted as an octal number;
 if not, it is interpreted as a symbolic mode mask similar
-to that accepted by the <code>chmod</code> command.  If <var>mode</var> is
-omitted, the current value of the mask is printed.  If the <samp>-S</samp>
-option is supplied without a <var>mode</var> argument, the mask is printed
-in a symbolic format.
-If the  <samp>-p</samp> option is supplied, and <var>mode</var>
+to that accepted by the <code class="code">chmod</code> command.
+If <var class="var">mode</var> is omitted, <code class="code">umask</code> prints the current value of the mask. 
+If the <samp class="option">-S</samp>
+option is supplied without a <var class="var">mode</var> argument, <code class="code">umask</code>
+prints the mask in a symbolic format;
+the default output is an octal number.
+If the  <samp class="option">-p</samp> option is supplied, and <var class="var">mode</var>
 is omitted, the output is in a form that may be reused as input.
 The return status is zero if the mode is successfully changed or if
-no <var>mode</var> argument is supplied, and non-zero otherwise.
+no <var class="var">mode</var> argument is supplied, and non-zero otherwise.
 </p>
 <p>Note that when the mode is interpreted as an octal number, each number
-of the umask is subtracted from <code>7</code>.  Thus, a umask of <code>022</code>
-results in permissions of <code>755</code>.
+of the umask is subtracted from <code class="code">7</code>.  Thus, a umask of <code class="code">022</code>
+results in permissions of <code class="code">755</code>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/unset"></a><dt id="index-unset"><span><code>unset</code><a href="#index-unset" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/unset"></a><a id="index-unset"></a><span><code class="code">unset</code><a class="copiable-link" href="#index-unset"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">unset [-fnv] [<var>name</var>]
+<pre class="example-preformatted">unset [-fnv] [<var class="var">name</var>]
 </pre></div>
 
-<p>Remove each variable or function <var>name</var>.
-If the <samp>-v</samp> option is given, each
-<var>name</var> refers to a shell variable and that variable is removed.
-If the <samp>-f</samp> option is given, the <var>name</var>s refer to shell
+<p>Remove each variable or function <var class="var">name</var>.
+If the <samp class="option">-v</samp> option is given, each
+<var class="var">name</var> refers to a shell variable and that variable is removed.
+If the <samp class="option">-f</samp> option is given, the <var class="var">name</var>s refer to shell
 functions, and the function definition is removed.
-If the <samp>-n</samp> option is supplied, and <var>name</var> is a variable with
-the <code>nameref</code> attribute, <var>name</var> will be unset rather than the
+If the <samp class="option">-n</samp> option is supplied, and <var class="var">name</var> is a variable with
+the <code class="code">nameref</code> attribute, <var class="var">name</var> will be unset rather than the
 variable it references.
-<samp>-n</samp> has no effect if the <samp>-f</samp> option is supplied.
-If no options are supplied, each <var>name</var> refers to a variable; if
+<samp class="option">-n</samp> has no effect if the <samp class="option">-f</samp> option is supplied.
+If no options are supplied, each <var class="var">name</var> refers to a variable; if
 there is no variable by that name, a function with that name, if any, is
 unset.
 Readonly variables and functions may not be unset.
+When variables or functions are removed, they are also removed
+from the environment passed to subsequent commands.
+Some shell variables may not be unset.
 Some shell variables lose their special behavior if they are unset; such
 behavior is noted in the description of the individual variables.
-The return status is zero unless a <var>name</var> is readonly or may not be unset.
+The return status is zero unless a <var class="var">name</var> is readonly or may not be unset.
 </p></dd>
 </dl>
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Bash-Builtins.html">Bash Builtin Commands</a>, Up: <a href="Shell-Builtin-Commands.html">Shell Builtin Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,9 @@ A copy of the license is included in the section entitled
 <link href="Command-Search-and-Execution.html" rel="prev" title="Command Search and Execution">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
+ul.mark-bullet {list-style-type: disc}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,97 +46,104 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Command-Execution-Environment">
-<div class="header">
+<div class="subsection-level-extent" id="Command-Execution-Environment">
+<div class="nav-panel">
 <p>
 Next: <a href="Environment.html" accesskey="n" rel="next">Environment</a>, Previous: <a href="Command-Search-and-Execution.html" accesskey="p" rel="prev">Command Search and Execution</a>, Up: <a href="Executing-Commands.html" accesskey="u" rel="up">Executing Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Command-Execution-Environment-1"></span><h4 class="subsection">3.7.3 Command Execution Environment</h4>
-<span id="index-execution-environment"></span>
+<h4 class="subsection" id="Command-Execution-Environment-1"><span>3.7.3 Command Execution Environment<a class="copiable-link" href="#Command-Execution-Environment-1"> &para;</a></span></h4>
+<a class="index-entry-id" id="index-execution-environment"></a>
 
-<p>The shell has an <em>execution environment</em>, which consists of the
+<p>The shell has an <em class="dfn">execution environment</em>, which consists of the
 following:
 </p>
-<ul>
-<li> open files inherited by the shell at invocation, as modified by
-redirections supplied to the <code>exec</code> builtin
+<ul class="itemize mark-bullet">
+<li>Open files inherited by the shell at invocation, as modified by
+redirections supplied to the <code class="code">exec</code> builtin.
 
-</li><li> the current working directory as set by <code>cd</code>, <code>pushd</code>, or
-<code>popd</code>, or inherited by the shell at invocation
+</li><li>The current working directory as set by <code class="code">cd</code>, <code class="code">pushd</code>, or
+<code class="code">popd</code>, or inherited by the shell at invocation.
 
-</li><li> the file creation mode mask as set by <code>umask</code> or inherited from
-the shell&rsquo;s parent
+</li><li>The file creation mode mask as set by <code class="code">umask</code> or inherited from
+the shell&rsquo;s parent.
 
-</li><li> current traps set by <code>trap</code>
+</li><li>Current traps set by <code class="code">trap</code>.
 
-</li><li> shell parameters that are set by variable assignment or with <code>set</code>
-or inherited from the shell&rsquo;s parent in the environment
+</li><li>Shell parameters that are set by variable assignment or with <code class="code">set</code>
+or inherited from the shell&rsquo;s parent in the environment.
 
-</li><li> shell functions defined during execution or inherited from the shell&rsquo;s
-parent in the environment
+</li><li>Shell functions defined during execution or inherited from the shell&rsquo;s
+parent in the environment.
 
-</li><li> options enabled at invocation (either by default or with command-line
-arguments) or by <code>set</code>
+</li><li>Options enabled at invocation (either by default or with command-line
+arguments) or by <code class="code">set</code>.
 
-</li><li> options enabled by <code>shopt</code> (see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>)
+</li><li>Options enabled by <code class="code">shopt</code> (see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
 
-</li><li> shell aliases defined with <code>alias</code> (see <a href="Aliases.html">Aliases</a>)
+</li><li>Shell aliases defined with <code class="code">alias</code> (see <a class="pxref" href="Aliases.html">Aliases</a>).
 
-</li><li> various process <small>ID</small>s, including those of background jobs
-(see <a href="Lists.html">Lists of Commands</a>), the value of <code>$$</code>, and the value of
-<code>$PPID</code>
+</li><li>Various process <small class="sc">ID</small>s, including those of background jobs
+(see <a class="pxref" href="Lists.html">Lists of Commands</a>), the value of <code class="code">$$</code>, and the value of <code class="env">$PPID</code>.
 
 </li></ul>
 
 <p>When a simple command other than a builtin or shell function
 is to be executed, it
 is invoked in a separate execution environment that consists of
-the following.  Unless otherwise noted, the values are inherited
-from the shell.
+the following.
+Unless otherwise noted, the values are inherited from the shell.
 </p>
-<ul>
-<li> the shell&rsquo;s open files, plus any modifications and additions specified
-by redirections to the command
+<ul class="itemize mark-bullet">
+<li>The shell&rsquo;s open files, plus any modifications and additions specified
+by redirections to the command.
 
-</li><li> the current working directory
+</li><li>The current working directory.
 
-</li><li> the file creation mode mask
+</li><li>The file creation mode mask.
 
-</li><li> shell variables and functions marked for export, along with variables
-exported for the command, passed in the environment (see <a href="Environment.html">Environment</a>)
+</li><li>Shell variables and functions marked for export, along with variables
+exported for the command, passed in the environment (see <a class="pxref" href="Environment.html">Environment</a>).
 
-</li><li> traps caught by the shell are reset to the values inherited from the
-shell&rsquo;s parent, and traps ignored by the shell are ignored
+</li><li>Traps caught by the shell are reset to the values inherited from the
+shell&rsquo;s parent, and traps ignored by the shell are ignored.
 
 </li></ul>
 
 <p>A command invoked in this separate environment cannot affect the
 shell&rsquo;s execution environment.
 </p>
-<p>A <em>subshell</em> is a copy of the shell process.
+<p>A <em class="dfn">subshell</em> is a copy of the shell process.
 </p>
 <p>Command substitution, commands grouped with parentheses,
 and asynchronous commands are invoked in a
 subshell environment that is a duplicate of the shell environment,
 except that traps caught by the shell are reset to the values
-that the shell inherited from its parent at invocation.  Builtin
-commands that are invoked as part of a pipeline are also executed
-in a subshell environment.  Changes made to the subshell environment
+that the shell inherited from its parent at invocation.
+Builtin commands that are invoked as part of a pipeline,
+except possibly in the last element depending on the value of the
+<code class="code">lastpipe</code> shell option (see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>),
+are also executed in a subshell environment.
+Changes made to the subshell environment
 cannot affect the shell&rsquo;s execution environment.
 </p>
-<p>Subshells spawned to execute command substitutions inherit the value of
-the <samp>-e</samp> option from the parent shell.  When not in <small>POSIX</small> mode,
-Bash clears the <samp>-e</samp> option in such subshells.
+<p>When the shell is in <small class="sc">POSIX</small> mode,
+subshells spawned to execute command substitutions inherit the value of
+the <samp class="option">-e</samp> option from the parent shell.
+When not in <small class="sc">POSIX</small> mode,
+Bash clears the <samp class="option">-e</samp> option in such subshells
+See the description of the <code class="code">inherit_errexit</code> shell option
+(see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>) for how to control this behavior when not
+in <small class="sc">POSIX</small> mode.
 </p>
-<p>If a command is followed by a &lsquo;<samp>&amp;</samp>&rsquo; and job control is not active, the
-default standard input for the command is the empty file <samp>/dev/null</samp>.
+<p>If a command is followed by a &lsquo;<samp class="samp">&amp;</samp>&rsquo; and job control is not active, the
+default standard input for the command is the empty file <samp class="file">/dev/null</samp>.
 Otherwise, the invoked command inherits the file descriptors of the calling
 shell as modified by redirections.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Environment.html">Environment</a>, Previous: <a href="Command-Search-and-Execution.html">Command Search and Execution</a>, Up: <a href="Executing-Commands.html">Executing Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

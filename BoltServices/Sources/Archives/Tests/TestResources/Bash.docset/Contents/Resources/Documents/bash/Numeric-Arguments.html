@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -32,21 +32,9 @@ A copy of the license is included in the section entitled
 <link href="Commands-For-Killing.html" rel="prev" title="Commands For Killing">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+kbd.kbd {font-style: oblique}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -55,24 +43,25 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Numeric-Arguments">
-<div class="header">
+<div class="subsection-level-extent" id="Numeric-Arguments">
+<div class="nav-panel">
 <p>
 Next: <a href="Commands-For-Completion.html" accesskey="n" rel="next">Letting Readline Type For You</a>, Previous: <a href="Commands-For-Killing.html" accesskey="p" rel="prev">Killing And Yanking</a>, Up: <a href="Bindable-Readline-Commands.html" accesskey="u" rel="up">Bindable Readline Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Specifying-Numeric-Arguments"></span><h4 class="subsection">8.4.5 Specifying Numeric Arguments</h4>
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Function/digit%2Dargument%20%28M%2D0%2C%20M%2D1%2C%20%E2%80%A6%20M%2D%2D%29"></a><dt id="index-digit_002dargument-_0028M_002d0_002c-M_002d1_002c-_2026-M_002d_002d_0029"><span><code>digit-argument (<kbd>M-0</kbd>, <kbd>M-1</kbd>, … <kbd>M--</kbd>)</code><a href="#index-digit_002dargument-_0028M_002d0_002c-M_002d1_002c-_2026-M_002d_002d_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<h4 class="subsection" id="Specifying-Numeric-Arguments"><span>8.4.5 Specifying Numeric Arguments<a class="copiable-link" href="#Specifying-Numeric-Arguments"> ¶</a></span></h4>
+<dl class="ftable">
+<dt><a class="dashAnchor" name="//apple_ref/Function/digit%2Dargument%20%28M%2D0%2C%20M%2D1%2C%20%E2%80%A6%20M%2D%2D%29"></a><a id="index-digit_002dargument-_0028M_002d0_002c-M_002d1_002c-_002e_002e_002e-M_002d_002d_0029"></a><span><code class="code">digit-argument (<kbd class="kbd">M-0</kbd>, <kbd class="kbd">M-1</kbd>, … <kbd class="kbd">M--</kbd>)</code><a class="copiable-link" href="#index-digit_002dargument-_0028M_002d0_002c-M_002d1_002c-_002e_002e_002e-M_002d_002d_0029"> ¶</a></span></dt>
 <dd><p>Add this digit to the argument already accumulating, or start a new
-argument.  <kbd>M--</kbd> starts a negative argument.
+argument.
+<kbd class="kbd">M--</kbd> starts a negative argument.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/universal%2Dargument%20%28%29"></a><dt id="index-universal_002dargument-_0028_0029"><span><code>universal-argument ()</code><a href="#index-universal_002dargument-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/universal%2Dargument%20%28%29"></a><a id="index-universal_002dargument-_0028_0029"></a><span><code class="code">universal-argument ()</code><a class="copiable-link" href="#index-universal_002dargument-_0028_0029"> ¶</a></span></dt>
 <dd><p>This is another way to specify an argument.
 If this command is followed by one or more digits, optionally with a
 leading minus sign, those digits define the argument.
-If the command is followed by digits, executing <code>universal-argument</code>
+If the command is followed by digits, executing <code class="code">universal-argument</code>
 again ends the numeric argument, but is otherwise ignored.
 As a special case, if this command is immediately followed by a
 character that is neither a digit nor minus sign, the argument count

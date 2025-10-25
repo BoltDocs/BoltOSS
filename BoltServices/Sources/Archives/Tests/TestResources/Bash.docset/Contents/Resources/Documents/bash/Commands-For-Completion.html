@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -32,21 +32,10 @@ A copy of the license is included in the section entitled
 <link href="Numeric-Arguments.html" rel="prev" title="Numeric Arguments">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+kbd.key {font-style: normal}
+span:hover a.copiable-link {visibility: visible}
+ul.mark-bullet {list-style-type: disc}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -55,141 +44,175 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Commands-For-Completion">
-<div class="header">
+<div class="subsection-level-extent" id="Commands-For-Completion">
+<div class="nav-panel">
 <p>
 Next: <a href="Keyboard-Macros.html" accesskey="n" rel="next">Keyboard Macros</a>, Previous: <a href="Numeric-Arguments.html" accesskey="p" rel="prev">Specifying Numeric Arguments</a>, Up: <a href="Bindable-Readline-Commands.html" accesskey="u" rel="up">Bindable Readline Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Letting-Readline-Type-For-You"></span><h4 class="subsection">8.4.6 Letting Readline Type For You</h4>
+<h4 class="subsection" id="Letting-Readline-Type-For-You"><span>8.4.6 Letting Readline Type For You<a class="copiable-link" href="#Letting-Readline-Type-For-You"> ¶</a></span></h4>
 
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Function/complete%20%28TAB%29"></a><dt id="index-complete-_0028TAB_0029"><span><code>complete (<span class="key">TAB</span>)</code><a href="#index-complete-_0028TAB_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dl class="ftable">
+<dt><a class="dashAnchor" name="//apple_ref/Function/complete%20%28TAB%29"></a><a id="index-complete-_0028TAB_0029"></a><span><code class="code">complete (<kbd class="key">TAB</kbd>)</code><a class="copiable-link" href="#index-complete-_0028TAB_0029"> ¶</a></span></dt>
 <dd><p>Attempt to perform completion on the text before point.
 The actual completion performed is application-specific.
-Bash attempts completion treating the text as a variable (if the
-text begins with ‘<samp>$</samp>’), username (if the text begins with
-‘<samp>~</samp>’), hostname (if the text begins with ‘<samp>@</samp>’), or
-command (including aliases and functions) in turn.  If none 
-of these produces a match, filename completion is attempted.
+Bash attempts completion by first checking for any programmable
+completions for the command word (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>),
+otherwise treating the text as a
+variable (if the text begins with ‘<samp class="samp">$</samp>’),
+username (if the text begins with ‘<samp class="samp">~</samp>’),
+hostname (if the text begins with ‘<samp class="samp">@</samp>’), or
+command (including aliases, functions, and builtins) in turn.
+If none  of these produces a match, it falls back to filename completion.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/possible%2Dcompletions%20%28M%2D%3F%29"></a><dt id="index-possible_002dcompletions-_0028M_002d_003f_0029"><span><code>possible-completions (M-?)</code><a href="#index-possible_002dcompletions-_0028M_002d_003f_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/possible%2Dcompletions%20%28M%2D%3F%29"></a><a id="index-possible_002dcompletions-_0028M_002d_003f_0029"></a><span><code class="code">possible-completions (M-?)</code><a class="copiable-link" href="#index-possible_002dcompletions-_0028M_002d_003f_0029"> ¶</a></span></dt>
 <dd><p>List the possible completions of the text before point.
 When displaying completions, Readline sets the number of columns used
-for display to the value of <code>completion-display-width</code>, the value of
-the environment variable <code>COLUMNS</code>, or the screen width, in that order.
+for display to the value of <code class="code">completion-display-width</code>, the value of
+the environment variable <code class="env">COLUMNS</code>, or the screen width, in that order.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/insert%2Dcompletions%20%28M%2D%2A%29"></a><dt id="index-insert_002dcompletions-_0028M_002d_002a_0029"><span><code>insert-completions (M-*)</code><a href="#index-insert_002dcompletions-_0028M_002d_002a_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/insert%2Dcompletions%20%28M%2D%2A%29"></a><a id="index-insert_002dcompletions-_0028M_002d_002a_0029"></a><span><code class="code">insert-completions (M-*)</code><a class="copiable-link" href="#index-insert_002dcompletions-_0028M_002d_002a_0029"> ¶</a></span></dt>
 <dd><p>Insert all completions of the text before point that would have
-been generated by <code>possible-completions</code>.
+been generated by <code class="code">possible-completions</code>,
+separated by a space.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/menu%2Dcomplete%20%28%29"></a><dt id="index-menu_002dcomplete-_0028_0029"><span><code>menu-complete ()</code><a href="#index-menu_002dcomplete-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Similar to <code>complete</code>, but replaces the word to be completed
+<dt><a class="dashAnchor" name="//apple_ref/Function/menu%2Dcomplete%20%28%29"></a><a id="index-menu_002dcomplete-_0028_0029"></a><span><code class="code">menu-complete ()</code><a class="copiable-link" href="#index-menu_002dcomplete-_0028_0029"> ¶</a></span></dt>
+<dd><p>Similar to <code class="code">complete</code>, but replaces the word to be completed
 with a single match from the list of possible completions.
-Repeated execution of <code>menu-complete</code> steps through the list
+Repeatedly executing <code class="code">menu-complete</code> steps through the list
 of possible completions, inserting each match in turn.
-At the end of the list of completions, the bell is rung
-(subject to the setting of <code>bell-style</code>)
-and the original text is restored.
-An argument of <var>n</var> moves <var>n</var> positions forward in the list
-of matches; a negative argument may be used to move backward
-through the list.
-This command is intended to be bound to <tt class="key">TAB</tt>, but is unbound
+At the end of the list of completions,
+<code class="code">menu-complete</code> rings the bell
+(subject to the setting of <code class="code">bell-style</code>)
+and restores the original text.
+An argument of <var class="var">n</var> moves <var class="var">n</var> positions forward in the list
+of matches; a negative argument moves backward through the list.
+This command is intended to be bound to <kbd class="key">TAB</kbd>, but is unbound
 by default.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/menu%2Dcomplete%2Dbackward%20%28%29"></a><dt id="index-menu_002dcomplete_002dbackward-_0028_0029"><span><code>menu-complete-backward ()</code><a href="#index-menu_002dcomplete_002dbackward-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Identical to <code>menu-complete</code>, but moves backward through the list
-of possible completions, as if <code>menu-complete</code> had been given a
+<dt><a class="dashAnchor" name="//apple_ref/Function/menu%2Dcomplete%2Dbackward%20%28%29"></a><a id="index-menu_002dcomplete_002dbackward-_0028_0029"></a><span><code class="code">menu-complete-backward ()</code><a class="copiable-link" href="#index-menu_002dcomplete_002dbackward-_0028_0029"> ¶</a></span></dt>
+<dd><p>Identical to <code class="code">menu-complete</code>, but moves backward through the list
+of possible completions, as if <code class="code">menu-complete</code> had been given a
 negative argument.
-</p>
-</dd>
-<a class="dashAnchor" name="//apple_ref/Function/delete%2Dchar%2Dor%2Dlist%20%28%29"></a><dt id="index-delete_002dchar_002dor_002dlist-_0028_0029"><span><code>delete-char-or-list ()</code><a href="#index-delete_002dchar_002dor_002dlist-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Deletes the character under the cursor if not at the beginning or
-end of the line (like <code>delete-char</code>).
-If at the end of the line, behaves identically to
-<code>possible-completions</code>.
 This command is unbound by default.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/complete%2Dfilename%20%28M%2D%2F%29"></a><dt id="index-complete_002dfilename-_0028M_002d_002f_0029"><span><code>complete-filename (M-/)</code><a href="#index-complete_002dfilename-_0028M_002d_002f_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/export%2Dcompletions%20%28%29"></a><a id="index-export_002dcompletions-_0028_0029"></a><span><code class="code">export-completions ()</code><a class="copiable-link" href="#index-export_002dcompletions-_0028_0029"> ¶</a></span></dt>
+<dd><p>Perform completion on the word before point as described above
+and write the list of possible completions to Readline’s output stream
+using the following format, writing information on separate lines:
+</p>
+<ul class="itemize mark-bullet">
+<li>the number of matches <var class="var">N</var>;
+</li><li>the word being completed;
+</li><li><var class="var">S</var>:<var class="var">E</var>,
+where <var class="var">S</var> and <var class="var">E</var> are the start and end offsets of the word
+in the Readline line buffer; then
+</li><li>each match, one per line
+</li></ul>
+
+<p>If there are no matches, the first line will be “0”,
+and this command does not print any output after the <var class="var">S</var>:<var class="var">E</var>.
+If there is only a single match, this prints a single line containing it.
+If there is more than one match, this prints the common prefix of the
+matches, which may be empty, on the first line after the <var class="var">S</var>:<var class="var">E</var>,
+then the matches on subsequent lines.
+In this case, <var class="var">N</var> will include the first line with the common prefix.
+</p>
+<p>The user or application
+should be able to accommodate the possibility of a blank line.
+The intent is that the user or application reads <var class="var">N</var> lines after
+the line containing <var class="var">S</var>:<var class="var">E</var> to obtain the match list.
+This command is unbound by default.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Function/delete%2Dchar%2Dor%2Dlist%20%28%29"></a><a id="index-delete_002dchar_002dor_002dlist-_0028_0029"></a><span><code class="code">delete-char-or-list ()</code><a class="copiable-link" href="#index-delete_002dchar_002dor_002dlist-_0028_0029"> ¶</a></span></dt>
+<dd><p>Deletes the character under the cursor if not at the beginning or
+end of the line (like <code class="code">delete-char</code>).
+At the end of the line, it behaves identically to <code class="code">possible-completions</code>.
+This command is unbound by default.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Function/complete%2Dfilename%20%28M%2D%2F%29"></a><a id="index-complete_002dfilename-_0028M_002d_002f_0029"></a><span><code class="code">complete-filename (M-/)</code><a class="copiable-link" href="#index-complete_002dfilename-_0028M_002d_002f_0029"> ¶</a></span></dt>
 <dd><p>Attempt filename completion on the text before point.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/possible%2Dfilename%2Dcompletions%20%28C%2Dx%20%2F%29"></a><dt id="index-possible_002dfilename_002dcompletions-_0028C_002dx-_002f_0029"><span><code>possible-filename-completions (C-x /)</code><a href="#index-possible_002dfilename_002dcompletions-_0028C_002dx-_002f_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/possible%2Dfilename%2Dcompletions%20%28C%2Dx%20%2F%29"></a><a id="index-possible_002dfilename_002dcompletions-_0028C_002dx-_002f_0029"></a><span><code class="code">possible-filename-completions (C-x /)</code><a class="copiable-link" href="#index-possible_002dfilename_002dcompletions-_0028C_002dx-_002f_0029"> ¶</a></span></dt>
 <dd><p>List the possible completions of the text before point,
 treating it as a filename.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/complete%2Dusername%20%28M%2D%7E%29"></a><dt id="index-complete_002dusername-_0028M_002d_007e_0029"><span><code>complete-username (M-~)</code><a href="#index-complete_002dusername-_0028M_002d_007e_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/complete%2Dusername%20%28M%2D%7E%29"></a><a id="index-complete_002dusername-_0028M_002d_007e_0029"></a><span><code class="code">complete-username (M-~)</code><a class="copiable-link" href="#index-complete_002dusername-_0028M_002d_007e_0029"> ¶</a></span></dt>
 <dd><p>Attempt completion on the text before point, treating
 it as a username.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/possible%2Dusername%2Dcompletions%20%28C%2Dx%20%7E%29"></a><dt id="index-possible_002dusername_002dcompletions-_0028C_002dx-_007e_0029"><span><code>possible-username-completions (C-x ~)</code><a href="#index-possible_002dusername_002dcompletions-_0028C_002dx-_007e_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/possible%2Dusername%2Dcompletions%20%28C%2Dx%20%7E%29"></a><a id="index-possible_002dusername_002dcompletions-_0028C_002dx-_007e_0029"></a><span><code class="code">possible-username-completions (C-x ~)</code><a class="copiable-link" href="#index-possible_002dusername_002dcompletions-_0028C_002dx-_007e_0029"> ¶</a></span></dt>
 <dd><p>List the possible completions of the text before point,
 treating it as a username.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/complete%2Dvariable%20%28M%2D%24%29"></a><dt id="index-complete_002dvariable-_0028M_002d_0024_0029"><span><code>complete-variable (M-$)</code><a href="#index-complete_002dvariable-_0028M_002d_0024_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/complete%2Dvariable%20%28M%2D%24%29"></a><a id="index-complete_002dvariable-_0028M_002d_0024_0029"></a><span><code class="code">complete-variable (M-$)</code><a class="copiable-link" href="#index-complete_002dvariable-_0028M_002d_0024_0029"> ¶</a></span></dt>
 <dd><p>Attempt completion on the text before point, treating
 it as a shell variable.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/possible%2Dvariable%2Dcompletions%20%28C%2Dx%20%24%29"></a><dt id="index-possible_002dvariable_002dcompletions-_0028C_002dx-_0024_0029"><span><code>possible-variable-completions (C-x $)</code><a href="#index-possible_002dvariable_002dcompletions-_0028C_002dx-_0024_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/possible%2Dvariable%2Dcompletions%20%28C%2Dx%20%24%29"></a><a id="index-possible_002dvariable_002dcompletions-_0028C_002dx-_0024_0029"></a><span><code class="code">possible-variable-completions (C-x $)</code><a class="copiable-link" href="#index-possible_002dvariable_002dcompletions-_0028C_002dx-_0024_0029"> ¶</a></span></dt>
 <dd><p>List the possible completions of the text before point,
 treating it as a shell variable.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/complete%2Dhostname%20%28M%2D%40%29"></a><dt id="index-complete_002dhostname-_0028M_002d_0040_0029"><span><code>complete-hostname (M-@)</code><a href="#index-complete_002dhostname-_0028M_002d_0040_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/complete%2Dhostname%20%28M%2D%40%29"></a><a id="index-complete_002dhostname-_0028M_002d_0040_0029"></a><span><code class="code">complete-hostname (M-@)</code><a class="copiable-link" href="#index-complete_002dhostname-_0028M_002d_0040_0029"> ¶</a></span></dt>
 <dd><p>Attempt completion on the text before point, treating
 it as a hostname.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/possible%2Dhostname%2Dcompletions%20%28C%2Dx%20%40%29"></a><dt id="index-possible_002dhostname_002dcompletions-_0028C_002dx-_0040_0029"><span><code>possible-hostname-completions (C-x @)</code><a href="#index-possible_002dhostname_002dcompletions-_0028C_002dx-_0040_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/possible%2Dhostname%2Dcompletions%20%28C%2Dx%20%40%29"></a><a id="index-possible_002dhostname_002dcompletions-_0028C_002dx-_0040_0029"></a><span><code class="code">possible-hostname-completions (C-x @)</code><a class="copiable-link" href="#index-possible_002dhostname_002dcompletions-_0028C_002dx-_0040_0029"> ¶</a></span></dt>
 <dd><p>List the possible completions of the text before point,
 treating it as a hostname.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/complete%2Dcommand%20%28M%2D%21%29"></a><dt id="index-complete_002dcommand-_0028M_002d_0021_0029"><span><code>complete-command (M-!)</code><a href="#index-complete_002dcommand-_0028M_002d_0021_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/complete%2Dcommand%20%28M%2D%21%29"></a><a id="index-complete_002dcommand-_0028M_002d_0021_0029"></a><span><code class="code">complete-command (M-!)</code><a class="copiable-link" href="#index-complete_002dcommand-_0028M_002d_0021_0029"> ¶</a></span></dt>
 <dd><p>Attempt completion on the text before point, treating
-it as a command name.  Command completion attempts to
+it as a command name.
+Command completion attempts to
 match the text against aliases, reserved words, shell
 functions, shell builtins, and finally executable filenames,
 in that order.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/possible%2Dcommand%2Dcompletions%20%28C%2Dx%20%21%29"></a><dt id="index-possible_002dcommand_002dcompletions-_0028C_002dx-_0021_0029"><span><code>possible-command-completions (C-x !)</code><a href="#index-possible_002dcommand_002dcompletions-_0028C_002dx-_0021_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/possible%2Dcommand%2Dcompletions%20%28C%2Dx%20%21%29"></a><a id="index-possible_002dcommand_002dcompletions-_0028C_002dx-_0021_0029"></a><span><code class="code">possible-command-completions (C-x !)</code><a class="copiable-link" href="#index-possible_002dcommand_002dcompletions-_0028C_002dx-_0021_0029"> ¶</a></span></dt>
 <dd><p>List the possible completions of the text before point,
 treating it as a command name.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/dynamic%2Dcomplete%2Dhistory%20%28M%2DTAB%29"></a><dt id="index-dynamic_002dcomplete_002dhistory-_0028M_002dTAB_0029"><span><code>dynamic-complete-history (M-<span class="key">TAB</span>)</code><a href="#index-dynamic_002dcomplete_002dhistory-_0028M_002dTAB_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/dynamic%2Dcomplete%2Dhistory%20%28M%2DTAB%29"></a><a id="index-dynamic_002dcomplete_002dhistory-_0028M_002dTAB_0029"></a><span><code class="code">dynamic-complete-history (M-<kbd class="key">TAB</kbd>)</code><a class="copiable-link" href="#index-dynamic_002dcomplete_002dhistory-_0028M_002dTAB_0029"> ¶</a></span></dt>
 <dd><p>Attempt completion on the text before point, comparing
-the text against lines from the history list for possible
+the text against history list entries for possible
 completion matches.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/dabbrev%2Dexpand%20%28%29"></a><dt id="index-dabbrev_002dexpand-_0028_0029"><span><code>dabbrev-expand ()</code><a href="#index-dabbrev_002dexpand-_0028_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/dabbrev%2Dexpand%20%28%29"></a><a id="index-dabbrev_002dexpand-_0028_0029"></a><span><code class="code">dabbrev-expand ()</code><a class="copiable-link" href="#index-dabbrev_002dexpand-_0028_0029"> ¶</a></span></dt>
 <dd><p>Attempt menu completion on the text before point, comparing
 the text against lines from the history list for possible
 completion matches.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Function/complete%2Dinto%2Dbraces%20%28M%2D%7B%29"></a><dt id="index-complete_002dinto_002dbraces-_0028M_002d_007b_0029"><span><code>complete-into-braces (M-{)</code><a href="#index-complete_002dinto_002dbraces-_0028M_002d_007b_0029" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Function/complete%2Dinto%2Dbraces%20%28M%2D%7B%29"></a><a id="index-complete_002dinto_002dbraces-_0028M_002d_007b_0029"></a><span><code class="code">complete-into-braces (M-{)</code><a class="copiable-link" href="#index-complete_002dinto_002dbraces-_0028M_002d_007b_0029"> ¶</a></span></dt>
 <dd><p>Perform filename completion and insert the list of possible completions
 enclosed within braces so the list is available to the shell
-(see <a href="Brace-Expansion.html">Brace Expansion</a>).
+(see <a class="pxref" href="Brace-Expansion.html">Brace Expansion</a>).
 </p>
 </dd>
 </dl>
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Keyboard-Macros.html">Keyboard Macros</a>, Previous: <a href="Numeric-Arguments.html">Specifying Numeric Arguments</a>, Up: <a href="Bindable-Readline-Commands.html">Bindable Readline Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

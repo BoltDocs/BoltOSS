@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,9 @@ A copy of the license is included in the section entitled
 <link href="Programmable-Completion-Builtins.html" rel="prev" title="Programmable Completion Builtins">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,43 +45,46 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="A-Programmable-Completion-Example">
-<div class="header">
+<div class="section-level-extent" id="A-Programmable-Completion-Example">
+<div class="nav-panel">
 <p>
 Previous: <a href="Programmable-Completion-Builtins.html" accesskey="p" rel="prev">Programmable Completion Builtins</a>, Up: <a href="Command-Line-Editing.html" accesskey="u" rel="up">Command Line Editing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="A-Programmable-Completion-Example-1"></span><h3 class="section">8.8 A Programmable Completion Example</h3>
+<h3 class="section" id="A-Programmable-Completion-Example-1"><span>8.8 A Programmable Completion Example<a class="copiable-link" href="#A-Programmable-Completion-Example-1"> &para;</a></span></h3>
 
 <p>The most common way to obtain additional completion functionality beyond
-the default actions <code>complete</code> and <code>compgen</code> provide is to use
-a shell function and bind it to a particular command using <code>complete -F</code>.
+the default actions <code class="code">complete</code> and <code class="code">compgen</code> provide is to use
+a shell function and bind it to a particular command using <code class="code">complete -F</code>.
 </p>
-<p>The following function provides completions for the <code>cd</code> builtin.
+<p>The following function provides completions for the <code class="code">cd</code> builtin.
 It is a reasonably good example of what shell functions must do when
-used for completion.  This function uses the word passed as <code>$2</code>
-to determine the directory name to complete.  You can also use the
-<code>COMP_WORDS</code> array variable; the current word is indexed by the
-<code>COMP_CWORD</code> variable.
+used for completion.
+This function uses the word passed as <code class="code">$2</code> to determine the
+directory name to complete.
+You can also use the
+<code class="code">COMP_WORDS</code> array variable; the current word is indexed by the
+<code class="code">COMP_CWORD</code> variable.
 </p>
-<p>The function relies on the <code>complete</code> and <code>compgen</code> builtins
-to do much of the work, adding only the things that the Bash <code>cd</code>
+<p>The function relies on the <code class="code">complete</code> and <code class="code">compgen</code> builtins
+to do much of the work, adding only the things that the Bash <code class="code">cd</code>
 does beyond accepting basic directory names:
-tilde expansion (see <a href="Tilde-Expansion.html">Tilde Expansion</a>),
-searching directories in <var>$CDPATH</var>, which is described above
-(see <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>),
-and basic support for the <code>cdable_vars</code> shell option
-(see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
-<code>_comp_cd</code> modifies the value of <var>IFS</var> so that it contains only
+tilde expansion (see <a class="pxref" href="Tilde-Expansion.html">Tilde Expansion</a>),
+searching directories in <var class="var">$CDPATH</var>, which is described above
+(see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>),
+and basic support for the <code class="code">cdable_vars</code> shell option
+(see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
+<code class="code">_comp_cd</code> modifies the value of <var class="var">IFS</var> so that it contains only
 a newline to accommodate file names containing spaces and tabs &ndash;
-<code>compgen</code> prints the possible completions it generates one per line.
+<code class="code">compgen</code> prints the possible completions it generates one per line.
 </p>
-<p>Possible completions go into the <var>COMPREPLY</var> array variable, one
-completion per array element.  The programmable completion system retrieves
+<p>Possible completions go into the <var class="var">COMPREPLY</var> array variable, one
+completion per array element.
+The programmable completion system retrieves
 the completions from there when the function returns.
 </p>
 <div class="example">
-<pre class="example"># A completion function for the cd builtin
+<pre class="example-preformatted"># A completion function for the cd builtin
 # based on the cd completion function from the bash_completion package
 _comp_cd()
 {
@@ -141,49 +132,52 @@ _comp_cd()
 }
 </pre></div>
 
-<p>We install the completion function using the <samp>-F</samp> option to
-<code>complete</code>:
+<p>We install the completion function using the <samp class="option">-F</samp> option to
+<code class="code">complete</code>:
 </p>
 <div class="example">
-<pre class="example"># Tell readline to quote appropriate and append slashes to directories;
+<pre class="example-preformatted"># Tell readline to quote appropriate and append slashes to directories;
 # use the bash default completion for other arguments
 complete -o filenames -o nospace -o bashdefault -F _comp_cd cd
 </pre></div>
 
 <p>Since we&rsquo;d like Bash and Readline to take care of some
 of the other details for us, we use several other options to tell Bash
-and Readline what to do.  The <samp>-o filenames</samp> option tells Readline
+and Readline what to do.
+The <samp class="option">-o filenames</samp> option tells Readline
 that the possible completions should be treated as filenames, and quoted
-appropriately.  That option will also cause Readline to append a slash to
+appropriately.
+That option will also cause Readline to append a slash to
 filenames it can determine are directories (which is why we might want to
-extend <code>_comp_cd</code> to append a slash if we&rsquo;re using directories found
-via <var>CDPATH</var>: Readline can&rsquo;t tell those completions are directories).
-The <samp>-o nospace</samp> option tells Readline to not append a space
+extend <code class="code">_comp_cd</code> to append a slash if we&rsquo;re using directories found
+via <var class="var">CDPATH</var>: Readline can&rsquo;t tell those completions are directories).
+The <samp class="option">-o nospace</samp> option tells Readline to not append a space
 character to the directory name, in case we want to append to it.
-The <samp>-o bashdefault</samp> option brings in the rest of the &quot;Bash default&quot;
+The <samp class="option">-o bashdefault</samp> option brings in the rest of the &ldquo;Bash default&rdquo;
 completions &ndash; possible completions that Bash adds to the default Readline
-set.  These include things like command name completion, variable completion
-for words beginning with &lsquo;<samp>$</samp>&rsquo; or &lsquo;<samp>${</samp>&rsquo;, completions containing pathname
-expansion patterns (see <a href="Filename-Expansion.html">Filename Expansion</a>), and so on.
+set.
+These include things like command name completion, variable completion
+for words beginning with &lsquo;<samp class="samp">$</samp>&rsquo; or &lsquo;<samp class="samp">${</samp>&rsquo;, completions containing
+pathname expansion patterns (see <a class="pxref" href="Filename-Expansion.html">Filename Expansion</a>), and so on.
 </p>
-<p>Once installed using <code>complete</code>, <code>_comp_cd</code> will be called every
-time we attempt word completion for a <code>cd</code> command.
+<p>Once installed using <code class="code">complete</code>, <code class="code">_comp_cd</code> will be called every
+time we attempt word completion for a <code class="code">cd</code> command.
 </p>
 <p>Many more examples &ndash; an extensive collection of completions for most of
 the common GNU, Unix, and Linux commands &ndash; are available as part of the
 bash_completion project.  This is installed by default on many GNU/Linux
 distributions.  Originally written by Ian Macdonald, the project now lives
-at <a href="https://github.com/scop/bash-completion/">https://github.com/scop/bash-completion/</a>.  There are ports for
-other systems such as Solaris and Mac OS X.
+at <a class="url" href="https://github.com/scop/bash-completion/">https://github.com/scop/bash-completion/</a>.
+There are ports for other systems such as Solaris and Mac OS X.
 </p>
 <p>An older version of the bash_completion package is distributed with bash
-in the <samp>examples/complete</samp> subdirectory.
+in the <samp class="file">examples/complete</samp> subdirectory.
 </p>
-<span id="index-History_002c-how-to-use"></span>
+<a class="index-entry-id" id="index-History_002c-how-to-use"></a>
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Previous: <a href="Programmable-Completion-Builtins.html">Programmable Completion Builtins</a>, Up: <a href="Command-Line-Editing.html">Command Line Editing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

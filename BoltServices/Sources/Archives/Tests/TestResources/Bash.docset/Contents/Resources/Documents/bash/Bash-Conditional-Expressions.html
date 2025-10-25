@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,8 @@ A copy of the license is included in the section entitled
 <link href="Interactive-Shells.html" rel="prev" title="Interactive Shells">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,206 +45,223 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Bash-Conditional-Expressions">
-<div class="header">
+<div class="section-level-extent" id="Bash-Conditional-Expressions">
+<div class="nav-panel">
 <p>
 Next: <a href="Shell-Arithmetic.html" accesskey="n" rel="next">Shell Arithmetic</a>, Previous: <a href="Interactive-Shells.html" accesskey="p" rel="prev">Interactive Shells</a>, Up: <a href="Bash-Features.html" accesskey="u" rel="up">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Bash-Conditional-Expressions-1"></span><h3 class="section">6.4 Bash Conditional Expressions</h3>
-<span id="index-expressions_002c-conditional"></span>
+<h3 class="section" id="Bash-Conditional-Expressions-1"><span>6.4 Bash Conditional Expressions<a class="copiable-link" href="#Bash-Conditional-Expressions-1"> &para;</a></span></h3>
+<a class="index-entry-id" id="index-expressions_002c-conditional"></a>
 
-<p>Conditional expressions are used by the <code>[[</code> compound command
-(see <a href="Conditional-Constructs.html">Conditional Constructs</a>)
-and the <code>test</code> and <code>[</code> builtin commands
-(see <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
-The <code>test</code>
-and <code>[</code> commands determine their behavior based on the number
+<p>Conditional expressions are used by the <code class="code">[[</code> compound command
+(see <a class="pxref" href="Conditional-Constructs.html">Conditional Constructs</a>)
+and the <code class="code">test</code> and <code class="code">[</code> builtin commands
+(see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
+The <code class="code">test</code>
+and <code class="code">[</code> commands determine their behavior based on the number
 of arguments; see the descriptions of those commands for any other
 command-specific actions.
 </p>
 <p>Expressions may be unary or binary,
-and are formed from the following primaries.
-Unary expressions are often used to examine the status of a file.
-There are string operators and numeric comparison operators as well.
-Bash handles several filenames specially when they are used in
+and are formed from the primaries listed below.
+Unary expressions are often used to examine the status of a file
+or shell variable.
+Binary operators are used for string, numeric, and file attribute
+comparisons.
+</p>
+<p>Bash handles several filenames specially when they are used in
 expressions.
 If the operating system on which Bash is running provides these
-special files, Bash will use them; otherwise it will emulate them
+special files, Bash uses them; otherwise it emulates them
 internally with this behavior:
-If the <var>file</var> argument to one of the primaries is of the form
-<samp>/dev/fd/<var>N</var></samp>, then file descriptor <var>N</var> is checked.
-If the <var>file</var> argument to one of the primaries is one of
-<samp>/dev/stdin</samp>, <samp>/dev/stdout</samp>, or <samp>/dev/stderr</samp>, file
-descriptor 0, 1, or 2, respectively, is checked.
+If the <var class="var">file</var> argument to one of the primaries is of the form
+<samp class="file">/dev/fd/<var class="var">N</var></samp>, then Bash checks file descriptor <var class="var">N</var>.
+If the <var class="var">file</var> argument to one of the primaries is one of
+<samp class="file">/dev/stdin</samp>, <samp class="file">/dev/stdout</samp>, or <samp class="file">/dev/stderr</samp>,
+Bash checks file descriptor 0, 1, or 2, respectively.
 </p>
-<p>When used with <code>[[</code>, the &lsquo;<samp>&lt;</samp>&rsquo; and &lsquo;<samp>&gt;</samp>&rsquo; operators sort
+<p>When used with <code class="code">[[</code>, the &lsquo;<samp class="samp">&lt;</samp>&rsquo; and &lsquo;<samp class="samp">&gt;</samp>&rsquo; operators sort
 lexicographically using the current locale.
-The <code>test</code> command uses ASCII ordering.
+The <code class="code">test</code> command uses ASCII ordering.
 </p>
 <p>Unless otherwise specified, primaries that operate on files follow symbolic
 links and operate on the target of the link, rather than the link itself.
 </p>
-<dl compact="compact">
-<dt><span><code>-a <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists.
+<dl class="table">
+<dt><code class="code">-a <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists.
 </p>
 </dd>
-<dt><span><code>-b <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is a block special file.
+<dt><code class="code">-b <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is a block special file.
 </p>
 </dd>
-<dt><span><code>-c <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is a character special file.
+<dt><code class="code">-c <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is a character special file.
 </p>
 </dd>
-<dt><span><code>-d <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is a directory.
+<dt><code class="code">-d <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is a directory.
 </p>
 </dd>
-<dt><span><code>-e <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists.
+<dt><code class="code">-e <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists.
 </p>
 </dd>
-<dt><span><code>-f <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is a regular file.
+<dt><code class="code">-f <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is a regular file.
 </p>
 </dd>
-<dt><span><code>-g <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and its set-group-id bit is set.
+<dt><code class="code">-g <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and its set-group-id bit is set.
 </p>
 </dd>
-<dt><span><code>-h <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is a symbolic link.
+<dt><code class="code">-h <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is a symbolic link.
 </p>
 </dd>
-<dt><span><code>-k <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and its &quot;sticky&quot; bit is set.
+<dt><code class="code">-k <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and its &quot;sticky&quot; bit is set.
 </p>
 </dd>
-<dt><span><code>-p <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is a named pipe (FIFO).
+<dt><code class="code">-p <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is a named pipe (FIFO).
 </p>
 </dd>
-<dt><span><code>-r <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is readable.
+<dt><code class="code">-r <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is readable.
 </p>
 </dd>
-<dt><span><code>-s <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and has a size greater than zero.
+<dt><code class="code">-s <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and has a size greater than zero.
 </p>
 </dd>
-<dt><span><code>-t <var>fd</var></code></span></dt>
-<dd><p>True if file descriptor <var>fd</var> is open and refers to a terminal.
+<dt><code class="code">-t <var class="var">fd</var></code></dt>
+<dd><p>True if file descriptor <var class="var">fd</var> is open and refers to a terminal.
 </p>
 </dd>
-<dt><span><code>-u <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and its set-user-id bit is set.
+<dt><code class="code">-u <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and its set-user-id bit is set.
 </p>
 </dd>
-<dt><span><code>-w <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is writable.
+<dt><code class="code">-w <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is writable.
 </p>
 </dd>
-<dt><span><code>-x <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is executable.
+<dt><code class="code">-x <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is executable.
 </p>
 </dd>
-<dt><span><code>-G <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is owned by the effective group id.
+<dt><code class="code">-G <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is owned by the effective group id.
 </p>
 </dd>
-<dt><span><code>-L <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is a symbolic link.
+<dt><code class="code">-L <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is a symbolic link.
 </p>
 </dd>
-<dt><span><code>-N <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and has been modified since it was last read.
+<dt><code class="code">-N <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and has been modified since it was last
+accessed.
 </p>
 </dd>
-<dt><span><code>-O <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is owned by the effective user id.
+<dt><code class="code">-O <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is owned by the effective user id.
 </p>
 </dd>
-<dt><span><code>-S <var>file</var></code></span></dt>
-<dd><p>True if <var>file</var> exists and is a socket.
+<dt><code class="code">-S <var class="var">file</var></code></dt>
+<dd><p>True if <var class="var">file</var> exists and is a socket.
 </p>
 </dd>
-<dt><span><code><var>file1</var> -ef <var>file2</var></code></span></dt>
-<dd><p>True if <var>file1</var> and <var>file2</var> refer to the same device and
+<dt><code class="code"><var class="var">file1</var> -ef <var class="var">file2</var></code></dt>
+<dd><p>True if <var class="var">file1</var> and <var class="var">file2</var> refer to the same device and
 inode numbers.
 </p>
 </dd>
-<dt><span><code><var>file1</var> -nt <var>file2</var></code></span></dt>
-<dd><p>True if <var>file1</var> is newer (according to modification date)
-than <var>file2</var>, or if <var>file1</var> exists and <var>file2</var> does not.
+<dt><code class="code"><var class="var">file1</var> -nt <var class="var">file2</var></code></dt>
+<dd><p>True if <var class="var">file1</var> is newer (according to modification date)
+than <var class="var">file2</var>, or if <var class="var">file1</var> exists and <var class="var">file2</var> does not.
 </p>
 </dd>
-<dt><span><code><var>file1</var> -ot <var>file2</var></code></span></dt>
-<dd><p>True if <var>file1</var> is older than <var>file2</var>,
-or if <var>file2</var> exists and <var>file1</var> does not.
+<dt><code class="code"><var class="var">file1</var> -ot <var class="var">file2</var></code></dt>
+<dd><p>True if <var class="var">file1</var> is older than <var class="var">file2</var>,
+or if <var class="var">file2</var> exists and <var class="var">file1</var> does not.
 </p>
 </dd>
-<dt><span><code>-o <var>optname</var></code></span></dt>
-<dd><p>True if the shell option <var>optname</var> is enabled.
-The list of options appears in the description of the <samp>-o</samp>
-option to the <code>set</code> builtin (see <a href="The-Set-Builtin.html">The Set Builtin</a>).
+<dt><code class="code">-o <var class="var">optname</var></code></dt>
+<dd><p>True if the shell option <var class="var">optname</var> is enabled.
+The list of options appears in the description of the <samp class="option">-o</samp>
+option to the <code class="code">set</code> builtin (see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>).
 </p>
 </dd>
-<dt><span><code>-v <var>varname</var></code></span></dt>
-<dd><p>True if the shell variable <var>varname</var> is set (has been assigned a value).
+<dt><code class="code">-v <var class="var">varname</var></code></dt>
+<dd><p>True if the shell variable <var class="var">varname</var> is set (has been assigned a value).
+If <var class="var">varname</var> is an indexed
+array variable name subscripted by &lsquo;<samp class="samp">@</samp>&rsquo; or &lsquo;<samp class="samp">*</samp>&rsquo;,
+this returns true if the array has any set elements.
+If <var class="var">varname</var> is an associative
+array variable name subscripted by &lsquo;<samp class="samp">@</samp>&rsquo; or &lsquo;<samp class="samp">*</samp>&rsquo;,
+this returns true if an element with that key is set.
 </p>
 </dd>
-<dt><span><code>-R <var>varname</var></code></span></dt>
-<dd><p>True if the shell variable <var>varname</var> is set and is a name reference.
+<dt><code class="code">-R <var class="var">varname</var></code></dt>
+<dd><p>True if the shell variable <var class="var">varname</var> is set and is a name reference.
 </p>
 </dd>
-<dt><span><code>-z <var>string</var></code></span></dt>
-<dd><p>True if the length of <var>string</var> is zero.
+<dt><code class="code">-z <var class="var">string</var></code></dt>
+<dd><p>True if the length of <var class="var">string</var> is zero.
 </p>
 </dd>
-<dt><span><code>-n <var>string</var></code></span></dt>
-<dt><span><code><var>string</var></code></span></dt>
-<dd><p>True if the length of <var>string</var> is non-zero.
+<dt><code class="code">-n <var class="var">string</var></code></dt>
+<dt><code class="code"><var class="var">string</var></code></dt>
+<dd><p>True if the length of <var class="var">string</var> is non-zero.
 </p>
 </dd>
-<dt><span><code><var>string1</var> == <var>string2</var></code></span></dt>
-<dt><span><code><var>string1</var> = <var>string2</var></code></span></dt>
+<dt><code class="code"><var class="var">string1</var> == <var class="var">string2</var></code></dt>
+<dt><code class="code"><var class="var">string1</var> = <var class="var">string2</var></code></dt>
 <dd><p>True if the strings are equal.
-When used with the <code>[[</code> command, this performs pattern matching as
-described above (see <a href="Conditional-Constructs.html">Conditional Constructs</a>).
+When used with the <code class="code">[[</code> command, this performs pattern matching as
+described above (see <a class="pxref" href="Conditional-Constructs.html">Conditional Constructs</a>).
 </p>
-<p>&lsquo;<samp>=</samp>&rsquo; should be used with the <code>test</code> command for <small>POSIX</small> conformance.
+<p>&lsquo;<samp class="samp">=</samp>&rsquo; should be used with the <code class="code">test</code> command for
+<small class="sc">POSIX</small>
+conformance.
 </p>
 </dd>
-<dt><span><code><var>string1</var> != <var>string2</var></code></span></dt>
+<dt><code class="code"><var class="var">string1</var> != <var class="var">string2</var></code></dt>
 <dd><p>True if the strings are not equal.
 </p>
 </dd>
-<dt><span><code><var>string1</var> &lt; <var>string2</var></code></span></dt>
-<dd><p>True if <var>string1</var> sorts before <var>string2</var> lexicographically.
+<dt><code class="code"><var class="var">string1</var> &lt; <var class="var">string2</var></code></dt>
+<dd><p>True if <var class="var">string1</var> sorts before <var class="var">string2</var> lexicographically.
 </p>
 </dd>
-<dt><span><code><var>string1</var> &gt; <var>string2</var></code></span></dt>
-<dd><p>True if <var>string1</var> sorts after <var>string2</var> lexicographically.
+<dt><code class="code"><var class="var">string1</var> &gt; <var class="var">string2</var></code></dt>
+<dd><p>True if <var class="var">string1</var> sorts after <var class="var">string2</var> lexicographically.
 </p>
 </dd>
-<dt><span><code><var>arg1</var> OP <var>arg2</var></code></span></dt>
-<dd><p><code>OP</code> is one of 
-&lsquo;<samp>-eq</samp>&rsquo;, &lsquo;<samp>-ne</samp>&rsquo;, &lsquo;<samp>-lt</samp>&rsquo;, &lsquo;<samp>-le</samp>&rsquo;, &lsquo;<samp>-gt</samp>&rsquo;, or &lsquo;<samp>-ge</samp>&rsquo;.
-These arithmetic binary operators return true if <var>arg1</var>
+<dt><code class="code"><var class="var">arg1</var> OP <var class="var">arg2</var></code></dt>
+<dd><p><code class="code">OP</code> is one of 
+&lsquo;<samp class="samp">-eq</samp>&rsquo;, &lsquo;<samp class="samp">-ne</samp>&rsquo;, &lsquo;<samp class="samp">-lt</samp>&rsquo;, &lsquo;<samp class="samp">-le</samp>&rsquo;, &lsquo;<samp class="samp">-gt</samp>&rsquo;, or &lsquo;<samp class="samp">-ge</samp>&rsquo;.
+These arithmetic binary operators return true if <var class="var">arg1</var>
 is equal to, not equal to, less than, less than or equal to,
-greater than, or greater than or equal to <var>arg2</var>,
-respectively.  <var>Arg1</var> and <var>arg2</var>
+greater than, or greater than or equal to <var class="var">arg2</var>,
+respectively.  <var class="var">Arg1</var> and <var class="var">arg2</var>
 may be positive or negative integers.
-When used with the <code>[[</code> command, <var>Arg1</var> and <var>Arg2</var>
-are evaluated as arithmetic expressions (see <a href="Shell-Arithmetic.html">Shell Arithmetic</a>).
+When used with the <code class="code">[[</code> command, <var class="var">arg1</var> and <var class="var">arg2</var>
+are evaluated as arithmetic expressions (see <a class="pxref" href="Shell-Arithmetic.html">Shell Arithmetic</a>).
+Since the expansions the <code class="code">[[</code> command performs on
+<var class="var">arg1</var> and <var class="var">arg2</var>
+can potentially result in empty strings,
+arithmetic expression evaluation treats
+those as expressions that evaluate to 0.
 </p></dd>
 </dl>
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Shell-Arithmetic.html">Shell Arithmetic</a>, Previous: <a href="Interactive-Shells.html">Interactive Shells</a>, Up: <a href="Bash-Features.html">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

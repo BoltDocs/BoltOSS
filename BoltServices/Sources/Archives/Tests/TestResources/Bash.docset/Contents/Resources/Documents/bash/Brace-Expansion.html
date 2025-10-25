@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,9 @@ A copy of the license is included in the section entitled
 <link href="Tilde-Expansion.html" rel="next" title="Tilde Expansion">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,86 +45,123 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Brace-Expansion">
-<div class="header">
+<div class="subsection-level-extent" id="Brace-Expansion">
+<div class="nav-panel">
 <p>
 Next: <a href="Tilde-Expansion.html" accesskey="n" rel="next">Tilde Expansion</a>, Up: <a href="Shell-Expansions.html" accesskey="u" rel="up">Shell Expansions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Brace-Expansion-1"></span><h4 class="subsection">3.5.1 Brace Expansion</h4>
-<span id="index-brace-expansion"></span>
-<span id="index-expansion_002c-brace"></span>
+<h4 class="subsection" id="Brace-Expansion-1"><span>3.5.1 Brace Expansion<a class="copiable-link" href="#Brace-Expansion-1"> &para;</a></span></h4>
+<a class="index-entry-id" id="index-brace-expansion"></a>
+<a class="index-entry-id" id="index-expansion_002c-brace"></a>
 
-<p>Brace expansion is a mechanism by which arbitrary strings may be generated.
+<p>Brace expansion is a mechanism to generate arbitrary strings
+sharing a common prefix and suffix, either of which can be empty.
 This mechanism is similar to
-<em>filename expansion</em> (see <a href="Filename-Expansion.html">Filename Expansion</a>),
+<em class="dfn">filename expansion</em> (see <a class="pxref" href="Filename-Expansion.html">Filename Expansion</a>),
 but the filenames generated need not exist.
-Patterns to be brace expanded take the form of an optional <var>preamble</var>,
-followed by either a series of comma-separated strings or a sequence expression
-between a pair of braces,
-followed by an optional <var>postscript</var>.
-The preamble is prefixed to each string contained within the braces, and
-the postscript is then appended to each resulting string, expanding left
-to right.
+Patterns to be brace expanded are formed from an optional <var class="var">preamble</var>,
+followed by either a series of comma-separated strings or
+a sequence expression between a pair of braces,
+followed by an optional
+<var class="var">postscript</var>.
+The preamble is prefixed to each string contained within the braces,
+and the postscript is then appended to each resulting string,
+expanding left to right.
 </p>
 <p>Brace expansions may be nested.
-The results of each expanded string are not sorted; left to right order
-is preserved.
+The results of each expanded string are not sorted;
+brace expansion preserves left to right order.
 For example,
 </p><div class="example">
-<pre class="example">bash$ echo a{d,c,b}e
+<pre class="example-preformatted">bash$ echo a{d,c,b}e
 ade ace abe
 </pre></div>
 
-<p>A sequence expression takes the form <code>{<var>x</var>..<var>y</var>[..<var>incr</var>]}</code>,
-where <var>x</var> and <var>y</var> are either integers or letters,
-and <var>incr</var>, an optional increment, is an integer.
+<p>A sequence expression takes the form
+<code class="code"><var class="var">x</var>..<var class="var">y</var>[..<var class="var">incr</var>]</code>,
+where <var class="var">x</var> and <var class="var">y</var> are either integers or letters,
+and <var class="var">incr</var>, an optional increment, is an integer.
 When integers are supplied, the expression expands to each number between
-<var>x</var> and <var>y</var>, inclusive.
-Supplied integers may be prefixed with &lsquo;<samp>0</samp>&rsquo; to force each term to have the
-same width.
-When either <var>x</var> or <var>y</var> begins with a zero, the shell
-attempts to force all generated terms to contain the same number of digits,
+<var class="var">x</var> and <var class="var">y</var>, inclusive.
+If either <var class="var">x</var> or <var class="var">y</var> begins with a zero,
+each generated term will contain the same number of digits,
 zero-padding where necessary.
 When letters are supplied, the expression expands to each character
-lexicographically between <var>x</var> and <var>y</var>, inclusive,
-using the default C locale.
-Note that both <var>x</var> and <var>y</var> must be of the same type
+lexicographically between <var class="var">x</var> and <var class="var">y</var>, inclusive,
+using the C locale.
+Note that both <var class="var">x</var> and <var class="var">y</var> must be of the same type
 (integer or letter).
 When the increment is supplied, it is used as the difference between
-each term.  The default increment is 1 or -1 as appropriate.
+each term.
+The default increment is 1 or -1 as appropriate.
 </p>
 <p>Brace expansion is performed before any other expansions,
 and any characters special to other expansions are preserved
-in the result.  It is strictly textual.  Bash
-does not apply any syntactic interpretation to the context of the
-expansion or the text between the braces.
+in the result.
+It is strictly textual.
+Bash does not apply any syntactic interpretation to the context
+of the expansion or the text between the braces.
 </p>
 <p>A correctly-formed brace expansion must contain unquoted opening
 and closing braces, and at least one unquoted comma or a valid
 sequence expression.
 Any incorrectly formed brace expansion is left unchanged.
 </p>
-<p>A { or &lsquo;<samp>,</samp>&rsquo; may be quoted with a backslash to prevent its
+<p>A &lsquo;<samp class="samp">{</samp>&rsquo; or &lsquo;<samp class="samp">,</samp>&rsquo;
+may be quoted with a backslash to prevent its
 being considered part of a brace expression.
-To avoid conflicts with parameter expansion, the string &lsquo;<samp>${</samp>&rsquo;
+To avoid conflicts with parameter expansion, the string &lsquo;<samp class="samp">${</samp>&rsquo;
 is not considered eligible for brace expansion,
-and inhibits brace expansion until the closing &lsquo;<samp>}</samp>&rsquo;.
+and inhibits brace expansion until the closing
+&lsquo;<samp class="samp">}</samp>&rsquo;.
 </p>
 <p>This construct is typically used as shorthand when the common
 prefix of the strings to be generated is longer than in the
 above example:
 </p><div class="example">
-<pre class="example">mkdir /usr/local/src/bash/{old,new,dist,bugs}
+<pre class="example-preformatted">mkdir /usr/local/src/bash/{old,new,dist,bugs}
 </pre></div>
 <p>or
 </p><div class="example">
-<pre class="example">chown root /usr/{ucb/{ex,edit},lib/{ex?.?*,how_ex}}
+<pre class="example-preformatted">chown root /usr/{ucb/{ex,edit},lib/{ex?.?*,how_ex}}
 </pre></div>
 
+<p>Brace expansion introduces a slight incompatibility with
+historical versions of
+<code class="command">sh</code>.
+<code class="command">sh</code>
+does not treat opening or closing braces specially when they
+appear as part of a word, and preserves them in the output.
+Bash
+removes braces from words as a consequence of brace
+expansion.
+For example, a word entered to
+<code class="command">sh</code>
+as
+&lsquo;<samp class="samp">file{1,2}</samp>&rsquo;
+appears identically in the output.
+Bash
+outputs that word as
+&lsquo;<samp class="samp">file1 file2</samp>&rsquo;
+after brace expansion.
+Start
+Bash
+with the
+<samp class="option">+B</samp>
+option or disable brace expansion with the
+<samp class="option">+B</samp>
+option to the
+<code class="code">set</code>
+command
+(see <a class="pxref" href="Shell-Builtin-Commands.html">Shell Builtin Commands</a>)
+for strict
+<code class="command">sh</code>
+compatibility.
+</p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Tilde-Expansion.html">Tilde Expansion</a>, Up: <a href="Shell-Expansions.html">Shell Expansions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

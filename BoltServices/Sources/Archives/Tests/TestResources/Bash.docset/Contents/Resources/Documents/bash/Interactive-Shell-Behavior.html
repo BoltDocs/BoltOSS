@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,8 @@ A copy of the license is included in the section entitled
 <link href="Is-this-Shell-Interactive_003f.html" rel="prev" title="Is this Shell Interactive?">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,102 +44,103 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Interactive-Shell-Behavior">
-<div class="header">
+<div class="subsection-level-extent" id="Interactive-Shell-Behavior">
+<div class="nav-panel">
 <p>
 Previous: <a href="Is-this-Shell-Interactive_003f.html" accesskey="p" rel="prev">Is this Shell Interactive?</a>, Up: <a href="Interactive-Shells.html" accesskey="u" rel="up">Interactive Shells</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Interactive-Shell-Behavior-1"></span><h4 class="subsection">6.3.3 Interactive Shell Behavior</h4>
+<h4 class="subsection" id="Interactive-Shell-Behavior-1"><span>6.3.3 Interactive Shell Behavior<a class="copiable-link" href="#Interactive-Shell-Behavior-1"> &para;</a></span></h4>
 
 <p>When the shell is running interactively, it changes its behavior in
 several ways.
 </p>
-<ol>
-<li> Startup files are read and executed as described in <a href="Bash-Startup-Files.html">Bash Startup Files</a>.
+<ol class="enumerate">
+<li> Bash reads and executes startup files as described in <a class="ref" href="Bash-Startup-Files.html">Bash Startup Files</a>.
 
-</li><li> Job Control (see <a href="Job-Control.html">Job Control</a>) is enabled by default.  When job
-control is in effect, Bash ignores the keyboard-generated job control
-signals <code>SIGTTIN</code>, <code>SIGTTOU</code>, and <code>SIGTSTP</code>.
+</li><li> Job Control (see <a class="pxref" href="Job-Control.html">Job Control</a>) is enabled by default.
+When job control is in effect, Bash ignores the keyboard-generated
+job control signals <code class="code">SIGTTIN</code>, <code class="code">SIGTTOU</code>, and <code class="code">SIGTSTP</code>.
 
-</li><li> Bash expands and displays <code>PS1</code> before reading the first line
-of a command, and expands and displays <code>PS2</code> before reading the
+</li><li> Bash executes the values of the set elements of the <code class="env">PROMPT_COMMAND</code>
+array variable as commands before printing the primary prompt, <code class="env">$PS1</code>
+(see <a class="pxref" href="Bash-Variables.html">Bash Variables</a>).
+
+</li><li> Bash expands and displays <code class="env">PS1</code> before reading the first line
+of a command, and expands and displays <code class="env">PS2</code> before reading the
 second and subsequent lines of a multi-line command.
-Bash expands and displays <code>PS0</code> after it reads a command but before
+Bash expands and displays <code class="env">PS0</code> after it reads a command but before
 executing it.
-See <a href="Controlling-the-Prompt.html">Controlling the Prompt</a>, for a complete list of prompt
+See <a class="ref" href="Controlling-the-Prompt.html">Controlling the Prompt</a>, for a complete list of prompt
 string escape sequences.
 
-</li><li> Bash executes the values of the set elements of the <code>PROMPT_COMMAND</code>
-array variable as commands before printing the primary prompt, <code>$PS1</code>
-(see <a href="Bash-Variables.html">Bash Variables</a>).
-
-</li><li> Readline (see <a href="Command-Line-Editing.html">Command Line Editing</a>) is used to read commands from
+</li><li> Bash uses Readline (see <a class="pxref" href="Command-Line-Editing.html">Command Line Editing</a>) to read commands from
 the user&rsquo;s terminal.
 
-</li><li> Bash inspects the value of the <code>ignoreeof</code> option to <code>set -o</code>
-instead of exiting immediately when it receives an <code>EOF</code> on its
-standard input when reading a command (see <a href="The-Set-Builtin.html">The Set Builtin</a>).
+</li><li> Bash inspects the value of the <code class="code">ignoreeof</code> option to <code class="code">set -o</code>
+instead of exiting immediately when it receives an <code class="code">EOF</code> on its
+standard input when reading a command (see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>).
 
-</li><li> Command history (see <a href="Bash-History-Facilities.html">Bash History Facilities</a>)
-and history expansion (see <a href="History-Interaction.html">History Expansion</a>)
-are enabled by default.
-Bash will save the command history to the file named by <code>$HISTFILE</code>
-when a shell with history enabled exits.
+</li><li> Bash enables Command history (see <a class="pxref" href="Bash-History-Facilities.html">Bash History Facilities</a>)
+and history expansion (see <a class="pxref" href="History-Interaction.html">History Expansion</a>)
+by default.
+When a shell with history enabled exits,
+Bash saves the command history to the file named by <code class="env">$HISTFILE</code>.
 
-</li><li> Alias expansion (see <a href="Aliases.html">Aliases</a>) is performed by default.
+</li><li> Alias expansion (see <a class="pxref" href="Aliases.html">Aliases</a>) is performed by default.
 
-</li><li> In the absence of any traps, Bash ignores <code>SIGTERM</code>
-(see <a href="Signals.html">Signals</a>).
+</li><li> In the absence of any traps, Bash ignores <code class="code">SIGTERM</code>
+(see <a class="pxref" href="Signals.html">Signals</a>).
 
-</li><li> In the absence of any traps, <code>SIGINT</code> is caught and handled
-(see <a href="Signals.html">Signals</a>).
-<code>SIGINT</code> will interrupt some shell builtins.
+</li><li> In the absence of any traps, <code class="code">SIGINT</code> is caught and handled
+(see <a class="pxref" href="Signals.html">Signals</a>).
+<code class="code">SIGINT</code> will interrupt some shell builtins.
 
-</li><li> An interactive login shell sends a <code>SIGHUP</code> to all jobs on exit
-if the <code>huponexit</code> shell option has been enabled (see <a href="Signals.html">Signals</a>).
+</li><li> An interactive login shell sends a <code class="code">SIGHUP</code> to all jobs on exit
+if the <code class="code">huponexit</code> shell option has been enabled (see <a class="pxref" href="Signals.html">Signals</a>).
 
-</li><li> The <samp>-n</samp> invocation option is ignored, and &lsquo;<samp>set -n</samp>&rsquo; has
-no effect (see <a href="The-Set-Builtin.html">The Set Builtin</a>).
+</li><li> The <samp class="option">-n</samp> option has no effect, whether at invocation or when
+using &lsquo;<samp class="samp">set -n</samp>&rsquo; (see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>).
 
 </li><li> Bash will check for mail periodically, depending on the values of the
-<code>MAIL</code>, <code>MAILPATH</code>, and <code>MAILCHECK</code> shell variables
-(see <a href="Bash-Variables.html">Bash Variables</a>).
+<code class="env">MAIL</code>, <code class="env">MAILPATH</code>, and <code class="env">MAILCHECK</code> shell variables
+(see <a class="pxref" href="Bash-Variables.html">Bash Variables</a>).
 
-</li><li> Expansion errors due to references to unbound shell variables after
-&lsquo;<samp>set -u</samp>&rsquo; has been enabled will not cause the shell to exit
-(see <a href="The-Set-Builtin.html">The Set Builtin</a>).
+</li><li> The shell will not exit on
+expansion errors due to references to unbound shell variables after
+&lsquo;<samp class="samp">set -u</samp>&rsquo; has been enabled (see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>).
 
-</li><li> The shell will not exit on expansion errors caused by <var>var</var> being unset
-or null in <code>${<var>var</var>:?<var>word</var>}</code> expansions
-(see <a href="Shell-Parameter-Expansion.html">Shell Parameter Expansion</a>).
+</li><li> The shell will not exit on
+expansion errors caused by <var class="var">var</var> being unset or null in
+<code class="code">${<var class="var">var</var>:?<var class="var">word</var>}</code> expansions
+(see <a class="pxref" href="Shell-Parameter-Expansion.html">Shell Parameter Expansion</a>).
 
 </li><li> Redirection errors encountered by shell builtins will not cause the
 shell to exit.
 
-</li><li> When running in <small>POSIX</small> mode, a special builtin returning an error
-status will not cause the shell to exit (see <a href="Bash-POSIX-Mode.html">Bash POSIX Mode</a>).
+</li><li> When running in <small class="sc">POSIX</small> mode, a special builtin returning an error
+status will not cause the shell to exit (see <a class="pxref" href="Bash-POSIX-Mode.html">Bash and POSIX</a>).
 
-</li><li> A failed <code>exec</code> will not cause the shell to exit
-(see <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
+</li><li> A failed <code class="code">exec</code> will not cause the shell to exit
+(see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
 
 </li><li> Parser syntax errors will not cause the shell to exit.
 
-</li><li> If the <code>cdspell</code> shell option is enabled, the shell will attempt
-simple spelling correction for directory arguments to the <code>cd</code>
-builtin (see the description of the <code>cdspell</code>
-option to the <code>shopt</code> builtin in <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
-The <code>cdspell</code> option is only effective in interactive shells.
+</li><li> If the <code class="code">cdspell</code> shell option is enabled, the shell will attempt
+simple spelling correction for directory arguments to the <code class="code">cd</code>
+builtin (see the description of the <code class="code">cdspell</code>
+option to the <code class="code">shopt</code> builtin in <a class="ref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
+The <code class="code">cdspell</code> option is only effective in interactive shells.
 
-</li><li> The shell will check the value of the <code>TMOUT</code> variable and exit
+</li><li> The shell will check the value of the <code class="env">TMOUT</code> variable and exit
 if a command is not read within the specified number of seconds after
-printing <code>$PS1</code> (see <a href="Bash-Variables.html">Bash Variables</a>).
+printing <code class="env">$PS1</code> (see <a class="pxref" href="Bash-Variables.html">Bash Variables</a>).
 
 </li></ol>
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Previous: <a href="Is-this-Shell-Interactive_003f.html">Is this Shell Interactive?</a>, Up: <a href="Interactive-Shells.html">Interactive Shells</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

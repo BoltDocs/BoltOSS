@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -32,21 +32,9 @@ A copy of the license is included in the section entitled
 <link href="Shell-Commands.html" rel="prev" title="Shell Commands">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -55,58 +43,58 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Shell-Functions">
-<div class="header">
+<div class="section-level-extent" id="Shell-Functions">
+<div class="nav-panel">
 <p>
 Next: <a href="Shell-Parameters.html" accesskey="n" rel="next">Shell Parameters</a>, Previous: <a href="Shell-Commands.html" accesskey="p" rel="prev">Shell Commands</a>, Up: <a href="Basic-Shell-Features.html" accesskey="u" rel="up">Basic Shell Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Shell-Functions-1"></span><h3 class="section">3.3 Shell Functions</h3>
-<span id="index-shell-function"></span>
-<span id="index-functions_002c-shell"></span>
+<h3 class="section" id="Shell-Functions-1"><span>3.3 Shell Functions<a class="copiable-link" href="#Shell-Functions-1"> ¶</a></span></h3>
+<a class="index-entry-id" id="index-shell-function"></a>
+<a class="index-entry-id" id="index-functions_002c-shell"></a>
 
 <p>Shell functions are a way to group commands for later execution
-using a single name for the group.  They are executed just like
-a "regular" command.
+using a single name for the group.
+They are executed just like a "regular" simple command.
 When the name of a shell function is used as a simple command name,
-the list of commands associated with that function name is executed.
+the shell executes
+the list of commands associated with that function name.
 Shell functions are executed in the current
-shell context; no new process is created to interpret them.
+shell context; there is no new process created to interpret them.
 </p>
 <p>Functions are declared using this syntax:
-<a class="dashAnchor" name="//apple_ref/Word/function"></a><span id="index-function"></span>
+<a class="dashAnchor" name="//apple_ref/Word/function"></a><a class="index-entry-id" id="index-function"></a>
 </p><div class="example">
-<pre class="example"><var>fname</var> () <var>compound-command</var> [ <var>redirections</var> ]
+<pre class="example-preformatted"><var class="var">fname</var> () <var class="var">compound-command</var> [ <var class="var">redirections</var> ]
 </pre></div>
 
 <p>or
 </p>
 <div class="example">
-<pre class="example">function <var>fname</var> [()] <var>compound-command</var> [ <var>redirections</var> ]
+<pre class="example-preformatted">function <var class="var">fname</var> [()] <var class="var">compound-command</var> [ <var class="var">redirections</var> ]
 </pre></div>
 
-<p>This defines a shell function named <var>fname</var>.  The reserved
-word <code>function</code> is optional.
-If the <code>function</code> reserved
-word is supplied, the parentheses are optional.
-The <em>body</em> of the function is the compound command
-<var>compound-command</var> (see <a href="Compound-Commands.html">Compound Commands</a>).
-That command is usually a <var>list</var> enclosed between { and }, but
+<p>This defines a shell function named <var class="var">fname</var>.
+The reserved word <code class="code">function</code> is optional.
+If the <code class="code">function</code> reserved word is supplied, the parentheses are optional.
+The <em class="dfn">body</em> of the function is the compound command
+<var class="var">compound-command</var> (see <a class="pxref" href="Compound-Commands.html">Compound Commands</a>).
+That command is usually a <var class="var">list</var> enclosed between { and }, but
 may be any compound command listed above.
-If the <code>function</code> reserved word is used, but the
+If the <code class="code">function</code> reserved word is used, but the
 parentheses are not supplied, the braces are recommended.
-<var>compound-command</var> is executed whenever <var>fname</var> is specified as the
-name of a simple command.
-When the shell is in <small>POSIX</small> mode (see <a href="Bash-POSIX-Mode.html">Bash POSIX Mode</a>),
-<var>fname</var> must be a valid shell name and
+When the shell is in <small class="sc">POSIX</small> mode (see <a class="pxref" href="Bash-POSIX-Mode.html">Bash and POSIX</a>),
+<var class="var">fname</var> must be a valid shell name and
 may not be the same as one of the special builtins
-(see <a href="Special-Builtins.html">Special Builtins</a>).
-In default mode, a function name can be any unquoted shell word that does
-not contain ‘<samp>$</samp>’.
-Any redirections (see <a href="Redirections.html">Redirections</a>) associated with the shell function
+(see <a class="pxref" href="Special-Builtins.html">Special Builtins</a>).
+When not in <small class="sc">POSIX</small>  mode,
+a function name can be any unquoted shell word that does
+not contain ‘<samp class="samp">$</samp>’.
+</p>
+<p>Any redirections (see <a class="pxref" href="Redirections.html">Redirections</a>) associated with the shell function
 are performed when the function is executed.
-A function definition may be deleted using the <samp>-f</samp> option to the
-<code>unset</code> builtin (see <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
+Function definitions are deleted using the <samp class="option">-f</samp> option to the
+<code class="code">unset</code> builtin (see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
 </p>
 <p>The exit status of a function definition is zero unless a syntax error
 occurs or a readonly function with the same name already exists.
@@ -115,105 +103,117 @@ last command executed in the body.
 </p>
 <p>Note that for historical reasons, in the most common usage the curly braces
 that surround the body of the function must be separated from the body by
-<code>blank</code>s or newlines.
+<code class="code">blank</code>s or newlines.
 This is because the braces are reserved words and are only recognized
 as such when they are separated from the command list
 by whitespace or another shell metacharacter.
-Also, when using the braces, the <var>list</var> must be terminated by a semicolon,
-a ‘<samp>&amp;</samp>’, or a newline.
+When using the braces, the <var class="var">list</var> must be terminated by a semicolon,
+a ‘<samp class="samp">&amp;</samp>’, or a newline.
+</p>
+<p><var class="var">compound-command</var> is executed whenever <var class="var">fname</var> is specified
+as the name of a simple command.
+Functions are executed in the context of the
+calling shell; there is no new process created to interpret
+them (contrast this with the execution of a shell script).
 </p>
 <p>When a function is executed, the arguments to the
 function become the positional parameters
-during its execution (see <a href="Positional-Parameters.html">Positional Parameters</a>).
-The special parameter ‘<samp>#</samp>’ that expands to the number of
-positional parameters is updated to reflect the change.
-Special parameter <code>0</code> is unchanged.
-The first element of the <code>FUNCNAME</code> variable is set to the
+during its execution (see <a class="pxref" href="Positional-Parameters.html">Positional Parameters</a>).
+The special parameter ‘<samp class="samp">#</samp>’ that expands to the number of
+positional parameters
+is updated to reflect the new set of positional parameters.
+Special parameter <code class="code">0</code> is unchanged.
+The first element of the <code class="env">FUNCNAME</code> variable is set to the
 name of the function while the function is executing.
 </p>
 <p>All other aspects of the shell execution
 environment are identical between a function and its caller
 with these exceptions:
-the <code>DEBUG</code> and <code>RETURN</code> traps
+the <code class="env">DEBUG</code> and <code class="env">RETURN</code> traps
 are not inherited unless the function has been given the
-<code>trace</code> attribute using the <code>declare</code> builtin or
-the <code>-o functrace</code> option has been enabled with
-the <code>set</code> builtin,
-(in which case all functions inherit the <code>DEBUG</code> and <code>RETURN</code> traps),
-and the <code>ERR</code> trap is not inherited unless the <code>-o errtrace</code>
+<code class="code">trace</code> attribute using the <code class="code">declare</code> builtin or
+the <code class="code">-o functrace</code> option has been enabled with
+the <code class="code">set</code> builtin,
+(in which case all functions inherit the <code class="env">DEBUG</code> and <code class="env">RETURN</code> traps),
+and the <code class="env">ERR</code> trap is not inherited unless the <code class="code">-o errtrace</code>
 shell option has been enabled.
-See <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>, for the description of the
-<code>trap</code> builtin.
+See <a class="xref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>, for the description of the
+<code class="code">trap</code> builtin.
 </p>
-<p>The <code>FUNCNEST</code> variable, if set to a numeric value greater
+<p>The <code class="env">FUNCNEST</code> variable, if set to a numeric value greater
 than 0, defines a maximum function nesting level.  Function
 invocations that exceed the limit cause the entire command to
 abort.
 </p>
-<p>If the builtin command <code>return</code>
+<p>If the builtin command <code class="code">return</code>
 is executed in a function, the function completes and
 execution resumes with the next command after the function
 call.
-Any command associated with the <code>RETURN</code> trap is executed
+Any command associated with the <code class="code">RETURN</code> trap is executed
 before execution resumes.
 When a function completes, the values of the
-positional parameters and the special parameter ‘<samp>#</samp>’
+positional parameters and the special parameter ‘<samp class="samp">#</samp>’
 are restored to the values they had prior to the function’s
-execution.  If a numeric argument is given to <code>return</code>,
+execution.
+If <code class="code">return</code> is supplied a numeric argument,
 that is the function’s return status; otherwise the function’s
 return status is the exit status of the last command executed
-before the <code>return</code>.
+before the <code class="code">return</code>.
 </p>
-<p>Variables local to the function may be declared with the
-<code>local</code> builtin (<em>local variables</em>).
+<p>Variables local to the function are declared with the
+<code class="code">local</code> builtin (<em class="dfn">local variables</em>).
 Ordinarily, variables and their values
 are shared between a function and its caller.
 These variables are visible only to
-the function and the commands it invokes.  This is particularly
+the function and the commands it invokes.
+This is particularly
 important when a shell function calls other functions.
 </p>
-<p>In the following description, the <em>current scope</em> is a currently-
+<p>In the following description, the <em class="dfn">current scope</em> is a currently-
 executing function.
 Previous scopes consist of that function’s caller and so on,
 back to the "global" scope, where the shell is not executing
 any shell function.
-Consequently, a local variable at the current local scope is a variable
-declared using the <code>local</code> or <code>declare</code> builtins in the
+A local variable at the current local scope is a variable
+declared using the <code class="code">local</code> or <code class="code">declare</code> builtins in the
 function that is currently executing.
 </p>
-<p>Local variables "shadow" variables with the same name declared at
-previous scopes.  For instance, a local variable declared in a function
-hides a global variable of the same name: references and assignments
-refer to the local variable, leaving the global variable unmodified.
+<p>Local variables "shadow"
+variables with the same name declared at previous scopes.
+For instance, a local variable declared in a function
+hides variables with the same name declared at previous scopes,
+including global variables: references and assignments
+refer to the local variable, leaving the variables
+at previous scopes  unmodified.
 When the function returns, the global variable is once again visible.
 </p>
-<p>The shell uses <em>dynamic scoping</em> to control a variable’s visibility
+<p>The shell uses <em class="dfn">dynamic scoping</em> to control a variable’s visibility
 within functions.
 With dynamic scoping, visible variables and their values
 are a result of the sequence of function calls that caused execution
 to reach the current function.
 The value of a variable that a function sees depends
 on its value within its caller, if any, whether that caller is
-the "global" scope or another shell function.
+the global scope or another shell function.
 This is also the value that a local variable
-declaration "shadows", and the value that is restored when the function
+declaration shadows, and the value that is restored when the function
 returns.
 </p>
-<p>For example, if a variable <code>var</code> is declared as local in function
-<code>func1</code>, and <code>func1</code> calls another function <code>func2</code>,
-references to <code>var</code> made from within <code>func2</code> will resolve to the
-local variable <code>var</code> from <code>func1</code>, shadowing any global variable
-named <code>var</code>.
+<p>For example, if a variable <code class="env">var</code> is declared as local in function
+<code class="code">func1</code>, and <code class="code">func1</code> calls another function <code class="code">func2</code>,
+references to <code class="env">var</code> made from within <code class="code">func2</code> resolve to the
+local variable <code class="env">var</code> from <code class="code">func1</code>, shadowing any global variable
+named <code class="env">var</code>.
 </p>
 <p>The following script demonstrates this behavior.
 When executed, the script displays
 </p>
 <div class="example">
-<pre class="example">In func2, var = func1 local
+<pre class="example-preformatted">In func2, var = func1 local
 </pre></div>
 
 <div class="example">
-<pre class="example">func1()
+<pre class="example-preformatted">func1()
 {
     local var='func1 local'
     func2
@@ -228,40 +228,44 @@ var=global
 func1
 </pre></div>
 
-<p>The <code>unset</code> builtin also acts using the same dynamic scope: if a  
-variable is local to the current scope, <code>unset</code> will unset it;         
-otherwise the unset will refer to the variable found in any calling scope 
+<p>The <code class="code">unset</code> builtin also acts using the same dynamic scope: if a
+variable is local to the current scope, <code class="code">unset</code> unsets it;       
+otherwise the unset will refer to the variable found in any calling scope
 as described above.
-If a variable at the current local scope is unset, it will remain so
+If a variable at the current local scope is unset, it remains so
 (appearing as unset)
 until it is reset in that scope or until the function returns.
 Once the function returns, any instance of the variable at a previous
-scope will become visible.
-If the unset acts on a variable at a previous scope, any instance of a   
-variable with that name that had been shadowed will become visible
-(see below how <code>localvar_unset</code>shell option changes this behavior).
+scope becomes visible.
+If the unset acts on a variable at a previous scope, any instance of a
+variable with that name that had been shadowed becomes visible
+(see below how the <code class="code">localvar_unset</code> shell option changes this behavior).
 </p>
-<p>Function names and definitions may be listed with the
-<samp>-f</samp> option to the <code>declare</code> (<code>typeset</code>)
-builtin command (see <a href="Bash-Builtins.html">Bash Builtin Commands</a>).
-The <samp>-F</samp> option to <code>declare</code> or <code>typeset</code>
-will list the function names only
-(and optionally the source file and line number, if the <code>extdebug</code>
+<p>The <samp class="option">-f</samp> option to the <code class="code">declare</code> (<code class="code">typeset</code>)
+builtin command (see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>)
+lists function names and definitions.
+The <samp class="option">-F</samp> option to <code class="code">declare</code> or <code class="code">typeset</code>
+lists the function names only
+(and optionally the source file and line number, if the <code class="code">extdebug</code>
 shell option is enabled).
 Functions may be exported so that child shell processes
 (those created when executing a separate shell invocation)
 automatically have them defined with the
-<samp>-f</samp> option to the <code>export</code> builtin
-(see <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
+<samp class="option">-f</samp> option to the <code class="code">export</code> builtin
+(see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
+The <samp class="option">-f</samp> option to
+the <code class="code">unset</code> builtin
+(see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>)
+deletes a function definition.
 </p>
 <p>Functions may be recursive.
-The <code>FUNCNEST</code> variable may be used to limit the depth of the
+The <code class="code">FUNCNEST</code> variable may be used to limit the depth of the
 function call stack and restrict the number of function invocations.
-By default, no limit is placed on the number of recursive  calls.
+By default, Bash places no limit on the number of recursive  calls.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Shell-Parameters.html">Shell Parameters</a>, Previous: <a href="Shell-Commands.html">Shell Commands</a>, Up: <a href="Basic-Shell-Features.html">Basic Shell Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

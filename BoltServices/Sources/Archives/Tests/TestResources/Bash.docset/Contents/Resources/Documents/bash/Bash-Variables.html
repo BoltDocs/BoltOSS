@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -31,21 +31,10 @@ A copy of the license is included in the section entitled
 <link href="Bourne-Shell-Variables.html" rel="prev" title="Bourne Shell Variables">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+kbd.key {font-style: normal}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -54,562 +43,690 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Bash-Variables">
-<div class="header">
+<div class="section-level-extent" id="Bash-Variables">
+<div class="nav-panel">
 <p>
 Previous: <a href="Bourne-Shell-Variables.html" accesskey="p" rel="prev">Bourne Shell Variables</a>, Up: <a href="Shell-Variables.html" accesskey="u" rel="up">Shell Variables</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Bash-Variables-1"></span><h3 class="section">5.2 Bash Variables</h3>
+<h3 class="section" id="Bash-Variables-1"><span>5.2 Bash Variables<a class="copiable-link" href="#Bash-Variables-1"> ¶</a></span></h3>
 
 <p>These variables are set or used by Bash, but other shells
 do not normally treat them specially.
 </p>
 <p>A few variables used by Bash are described in different chapters:
 variables for controlling the job control facilities
-(see <a href="Job-Control-Variables.html">Job Control Variables</a>).
+(see <a class="pxref" href="Job-Control-Variables.html">Job Control Variables</a>).
 </p>
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Variable/%5F"></a><dt id="index-_005f"><span><code>_</code><a href="#index-_005f" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><a class="dashAnchor" name="//apple_ref/Variable/%24%5F"></a><span id="index-_0024_005f"></span>
+<dl class="vtable">
+<dt><a class="dashAnchor" name="//apple_ref/Variable/%5F"></a><a id="index-_005f"></a><span><code class="code">_</code><a class="copiable-link" href="#index-_005f"> ¶</a></span></dt>
+<dd><a class="dashAnchor" name="//apple_ref/Variable/%24%5F"></a><a class="index-entry-id" id="index-_0024_005f"></a>
 <p>($_, an underscore.)
-At shell startup, set to the pathname used to invoke the
+This has a number of meanings depending on context.
+At shell startup, $_ set to the pathname used to invoke the
 shell or shell script being executed as passed in the environment
 or argument list.
-Subsequently, expands to the last argument to the previous simple
+Subsequently, it expands to the last argument to the previous simple
 command executed in the foreground, after expansion. 
-Also set to the full pathname used to invoke each command executed
+It is also set to the full pathname used to invoke each command executed
 and placed in the environment exported to that command.
-When checking mail, this parameter holds the name of the mail file.
+When checking mail, $_ expands to the name of the mail file.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH"></a><dt id="index-BASH"><span><code>BASH</code><a href="#index-BASH" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH"></a><a id="index-BASH"></a><span><code class="code">BASH</code><a class="copiable-link" href="#index-BASH"> ¶</a></span></dt>
 <dd><p>The full pathname used to execute the current instance of Bash.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASHOPTS"></a><dt id="index-BASHOPTS"><span><code>BASHOPTS</code><a href="#index-BASHOPTS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>A colon-separated list of enabled shell options.  Each word in
-the list is a valid argument for the <samp>-s</samp> option to the
-<code>shopt</code> builtin command (see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
-The options appearing in <code>BASHOPTS</code> are those reported
-as ‘<samp>on</samp>’ by ‘<samp>shopt</samp>’.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASHOPTS"></a><a id="index-BASHOPTS"></a><span><code class="code">BASHOPTS</code><a class="copiable-link" href="#index-BASHOPTS"> ¶</a></span></dt>
+<dd><p>A colon-separated list of enabled shell options.
+Each word in the list is a valid argument for the <samp class="option">-s</samp> option
+to the <code class="code">shopt</code> builtin command (see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>).
+The options appearing in <code class="env">BASHOPTS</code> are those reported
+as ‘<samp class="samp">on</samp>’ by ‘<samp class="samp">shopt</samp>’.
 If this variable is in the environment when Bash
-starts up, each shell option in the list will be enabled before
-reading any startup files.  This variable is readonly.
+starts up, the shell enables each option in the list before
+reading any startup files.
+If this variable is exported, child shells will enable each option
+in the list.
+This variable is readonly.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASHPID"></a><dt id="index-BASHPID"><span><code>BASHPID</code><a href="#index-BASHPID" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Expands to the process ID of the current Bash process.
-This differs from <code>$$</code> under certain circumstances, such as subshells
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASHPID"></a><a id="index-BASHPID"></a><span><code class="code">BASHPID</code><a class="copiable-link" href="#index-BASHPID"> ¶</a></span></dt>
+<dd><p>Expands to the process <small class="sc">ID</small> of the current Bash process.
+This differs from <code class="code">$$</code> under certain circumstances, such as subshells
 that do not require Bash to be re-initialized.
-Assignments to <code>BASHPID</code> have no effect.
-If <code>BASHPID</code>
+Assignments to <code class="env">BASHPID</code> have no effect.
+If <code class="env">BASHPID</code>
 is unset, it loses its special properties, even if it is
 subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FALIASES"></a><dt id="index-BASH_005fALIASES"><span><code>BASH_ALIASES</code><a href="#index-BASH_005fALIASES" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FALIASES"></a><a id="index-BASH_005fALIASES"></a><span><code class="code">BASH_ALIASES</code><a class="copiable-link" href="#index-BASH_005fALIASES"> ¶</a></span></dt>
 <dd><p>An associative array variable whose members correspond to the internal
-list of aliases as maintained by the <code>alias</code> builtin.
-(see <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
+list of aliases as maintained by the <code class="code">alias</code> builtin.
+(see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
 Elements added to this array appear in the alias list; however,
 unsetting array elements currently does not cause aliases to be removed
 from the alias list.
-If <code>BASH_ALIASES</code>
+If <code class="env">BASH_ALIASES</code>
 is unset, it loses its special properties, even if it is
 subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FARGC"></a><dt id="index-BASH_005fARGC"><span><code>BASH_ARGC</code><a href="#index-BASH_005fARGC" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FARGC"></a><a id="index-BASH_005fARGC"></a><span><code class="code">BASH_ARGC</code><a class="copiable-link" href="#index-BASH_005fARGC"> ¶</a></span></dt>
 <dd><p>An array variable whose values are the number of parameters in each
-frame of the current bash execution call stack.  The number of
-parameters to the current subroutine (shell function or script executed
-with <code>.</code> or <code>source</code>) is at the top of the stack.  When a
+frame of the current Bash execution call stack.
+The number of parameters to the current subroutine (shell function or
+script executed with <code class="code">.</code> or <code class="code">source</code>) is at the top of the stack.
+When a
 subroutine is executed, the number of parameters passed is pushed onto
-<code>BASH_ARGC</code>.
-The shell sets <code>BASH_ARGC</code> only when in extended debugging mode
-(see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>
-for a description of the <code>extdebug</code> option to the <code>shopt</code>
+<code class="code">BASH_ARGC</code>.
+The shell sets <code class="code">BASH_ARGC</code> only when in extended debugging mode
+(see <a class="ref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>
+for a description of the <code class="code">extdebug</code> option to the <code class="code">shopt</code>
 builtin).
-Setting <code>extdebug</code> after the shell has started to execute a script,
-or referencing this variable when <code>extdebug</code> is not set,
+Setting <code class="code">extdebug</code> after the shell has started to execute a subroutine,
+or referencing this variable when <code class="code">extdebug</code> is not set,
 may result in inconsistent values.
+Assignments to <code class="env">BASH_ARGC</code> have no effect, and it may not be unset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FARGV"></a><dt id="index-BASH_005fARGV"><span><code>BASH_ARGV</code><a href="#index-BASH_005fARGV" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>An array variable containing all of the parameters in the current bash
-execution call stack.  The final parameter of the last subroutine call
-is at the top of the stack; the first parameter of the initial call is
-at the bottom.  When a subroutine is executed, the parameters supplied
-are pushed onto <code>BASH_ARGV</code>.
-The shell sets <code>BASH_ARGV</code> only when in extended debugging mode
-(see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>
-for a description of the <code>extdebug</code> option to the <code>shopt</code>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FARGV"></a><a id="index-BASH_005fARGV"></a><span><code class="code">BASH_ARGV</code><a class="copiable-link" href="#index-BASH_005fARGV"> ¶</a></span></dt>
+<dd><p>An array variable containing all of the parameters in the current Bash
+execution call stack.
+The final parameter of the last subroutine call is at the top of the stack;
+the first parameter of the initial call is at the bottom.
+When a subroutine is executed, the shell pushes the supplied parameters
+onto <code class="code">BASH_ARGV</code>.
+The shell sets <code class="code">BASH_ARGV</code> only when in extended debugging mode
+(see <a class="ref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>
+for a description of the <code class="code">extdebug</code> option to the <code class="code">shopt</code>
 builtin).
-Setting <code>extdebug</code> after the shell has started to execute a script,
-or referencing this variable when <code>extdebug</code> is not set,
+Setting <code class="code">extdebug</code> after the shell has started to execute a script,
+or referencing this variable when <code class="code">extdebug</code> is not set,
 may result in inconsistent values.
+Assignments to <code class="env">BASH_ARGV</code> have no effect, and it may not be unset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FARGV0"></a><dt id="index-BASH_005fARGV0"><span><code>BASH_ARGV0</code><a href="#index-BASH_005fARGV0" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FARGV0"></a><a id="index-BASH_005fARGV0"></a><span><code class="code">BASH_ARGV0</code><a class="copiable-link" href="#index-BASH_005fARGV0"> ¶</a></span></dt>
 <dd><p>When referenced, this variable expands to the name of the shell or shell
-script (identical to <code>$0</code>; See <a href="Special-Parameters.html">Special Parameters</a>,
+script (identical to <code class="code">$0</code>; See <a class="xref" href="Special-Parameters.html">Special Parameters</a>,
 for the description of special parameter 0).
-Assignment to <code>BASH_ARGV0</code>
-causes the value assigned to also be assigned to <code>$0</code>.
-If <code>BASH_ARGV0</code>
+Assigning a value to
+<code class="code">BASH_ARGV0</code>
+sets <code class="code">$0</code> to the same value.
+If
+<code class="env">BASH_ARGV0</code>
 is unset, it loses its special properties, even if it is
 subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FCMDS"></a><dt id="index-BASH_005fCMDS"><span><code>BASH_CMDS</code><a href="#index-BASH_005fCMDS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FCMDS"></a><a id="index-BASH_005fCMDS"></a><span><code class="code">BASH_CMDS</code><a class="copiable-link" href="#index-BASH_005fCMDS"> ¶</a></span></dt>
 <dd><p>An associative array variable whose members correspond to the internal
-hash table of commands as maintained by the <code>hash</code> builtin
-(see <a href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
-Elements added to this array appear in the hash table; however,
-unsetting array elements currently does not cause command names to be removed
+hash table of commands as maintained by the <code class="code">hash</code> builtin
+(see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>).
+Adding elements to this array makes them appear in the hash table; however,
+unsetting array elements currently does not remove command names
 from the hash table.
-If <code>BASH_CMDS</code>
+If <code class="env">BASH_CMDS</code>
 is unset, it loses its special properties, even if it is
 subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FCOMMAND"></a><dt id="index-BASH_005fCOMMAND"><span><code>BASH_COMMAND</code><a href="#index-BASH_005fCOMMAND" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The command currently being executed or about to be executed, unless the
-shell is executing a command as the result of a trap,
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FCOMMAND"></a><a id="index-BASH_005fCOMMAND"></a><span><code class="code">BASH_COMMAND</code><a class="copiable-link" href="#index-BASH_005fCOMMAND"> ¶</a></span></dt>
+<dd><p>Expands to the command currently being executed or about to be executed,
+unless the shell is executing a command as the result of a trap,
 in which case it is the command executing at the time of the trap.
-If <code>BASH_COMMAND</code>
+If <code class="env">BASH_COMMAND</code>
 is unset, it loses its special properties, even if it is
 subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FCOMPAT"></a><dt id="index-BASH_005fCOMPAT"><span><code>BASH_COMPAT</code><a href="#index-BASH_005fCOMPAT" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FCOMPAT"></a><a id="index-BASH_005fCOMPAT"></a><span><code class="code">BASH_COMPAT</code><a class="copiable-link" href="#index-BASH_005fCOMPAT"> ¶</a></span></dt>
 <dd><p>The value is used to set the shell’s compatibility level.
-See <a href="Shell-Compatibility-Mode.html">Shell Compatibility Mode</a>, for a description of the various
+See <a class="xref" href="Shell-Compatibility-Mode.html">Shell Compatibility Mode</a>, for a description of the various
 compatibility levels and their effects.
 The value may be a decimal number (e.g., 4.2) or an integer (e.g., 42)
 corresponding to the desired compatibility level.
-If <code>BASH_COMPAT</code> is unset or set to the empty string, the compatibility
+If <code class="env">BASH_COMPAT</code> is unset or set to the empty string, the compatibility
 level is set to the default for the current version.
-If <code>BASH_COMPAT</code> is set to a value that is not one of the valid
+If <code class="env">BASH_COMPAT</code> is set to a value that is not one of the valid
 compatibility levels, the shell prints an error message and sets the
 compatibility level to the default for the current version.
-The valid values correspond to the compatibility levels
-described below (see <a href="Shell-Compatibility-Mode.html">Shell Compatibility Mode</a>).
+A subset of the valid values correspond to the compatibility levels
+described below (see <a class="pxref" href="Shell-Compatibility-Mode.html">Shell Compatibility Mode</a>).
 For example, 4.2 and 42 are valid values that correspond
-to the <code>compat42</code> <code>shopt</code> option
+to the <code class="code">compat42</code> <code class="code">shopt</code> option
 and set the compatibility level to 42.
 The current version is also a valid value.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FENV"></a><dt id="index-BASH_005fENV"><span><code>BASH_ENV</code><a href="#index-BASH_005fENV" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FENV"></a><a id="index-BASH_005fENV"></a><span><code class="code">BASH_ENV</code><a class="copiable-link" href="#index-BASH_005fENV"> ¶</a></span></dt>
 <dd><p>If this variable is set when Bash is invoked to execute a shell
 script, its value is expanded and used as the name of a startup file
-to read before executing the script.  See <a href="Bash-Startup-Files.html">Bash Startup Files</a>.
+to read before executing the script.
+Bash does not use <code class="env">PATH</code> to search for the resultant filename.
+See <a class="xref" href="Bash-Startup-Files.html">Bash Startup Files</a>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FEXECUTION%5FSTRING"></a><dt id="index-BASH_005fEXECUTION_005fSTRING"><span><code>BASH_EXECUTION_STRING</code><a href="#index-BASH_005fEXECUTION_005fSTRING" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The command argument to the <samp>-c</samp> invocation option.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FEXECUTION%5FSTRING"></a><a id="index-BASH_005fEXECUTION_005fSTRING"></a><span><code class="code">BASH_EXECUTION_STRING</code><a class="copiable-link" href="#index-BASH_005fEXECUTION_005fSTRING"> ¶</a></span></dt>
+<dd><p>The command argument to the <samp class="option">-c</samp> invocation option.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FLINENO"></a><dt id="index-BASH_005fLINENO"><span><code>BASH_LINENO</code><a href="#index-BASH_005fLINENO" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FLINENO"></a><a id="index-BASH_005fLINENO"></a><span><code class="code">BASH_LINENO</code><a class="copiable-link" href="#index-BASH_005fLINENO"> ¶</a></span></dt>
 <dd><p>An array variable whose members are the line numbers in source files
-where each corresponding member of <code>FUNCNAME</code> was invoked.
-<code>${BASH_LINENO[$i]}</code> is the line number in the source file
-(<code>${BASH_SOURCE[$i+1]}</code>) where
-<code>${FUNCNAME[$i]}</code> was called (or <code>${BASH_LINENO[$i-1]}</code> if
+where each corresponding member of <code class="env">FUNCNAME</code> was invoked.
+<code class="code">${BASH_LINENO[$i]}</code> is the line number in the source file
+(<code class="code">${BASH_SOURCE[$i+1]}</code>) where
+<code class="code">${FUNCNAME[$i]}</code> was called (or <code class="code">${BASH_LINENO[$i-1]}</code> if
 referenced within another shell function). 
-Use <code>LINENO</code> to obtain the current line number.
+Use <code class="code">LINENO</code> to obtain the current line number.
+Assignments to <code class="env">BASH_LINENO</code> have no effect, and it may not be unset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FLOADABLES%5FPATH"></a><dt id="index-BASH_005fLOADABLES_005fPATH"><span><code>BASH_LOADABLES_PATH</code><a href="#index-BASH_005fLOADABLES_005fPATH" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>A colon-separated list of directories in which the shell looks for
-dynamically loadable builtins specified by the
-<code>enable</code> command.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FLOADABLES%5FPATH"></a><a id="index-BASH_005fLOADABLES_005fPATH"></a><span><code class="code">BASH_LOADABLES_PATH</code><a class="copiable-link" href="#index-BASH_005fLOADABLES_005fPATH"> ¶</a></span></dt>
+<dd><p>A colon-separated list of directories in which the <code class="code">enable</code>
+command looks for dynamically loadable builtins.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FREMATCH"></a><dt id="index-BASH_005fREMATCH"><span><code>BASH_REMATCH</code><a href="#index-BASH_005fREMATCH" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>An array variable whose members are assigned by the ‘<samp>=~</samp>’ binary
-operator to the <code>[[</code> conditional command
-(see <a href="Conditional-Constructs.html">Conditional Constructs</a>).
-The element with index 0 is the portion of the string
-matching the entire regular expression.
-The element with index <var>n</var> is the portion of the
-string matching the <var>n</var>th parenthesized subexpression.
-</p>
-</dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FSOURCE"></a><dt id="index-BASH_005fSOURCE"><span><code>BASH_SOURCE</code><a href="#index-BASH_005fSOURCE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>An array variable whose members are the source filenames where the
-corresponding shell function names in the <code>FUNCNAME</code> array
-variable are defined.
-The shell function <code>${FUNCNAME[$i]}</code> is defined in the file
-<code>${BASH_SOURCE[$i]}</code> and called from <code>${BASH_SOURCE[$i+1]}</code>
-</p>
-</dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FSUBSHELL"></a><dt id="index-BASH_005fSUBSHELL"><span><code>BASH_SUBSHELL</code><a href="#index-BASH_005fSUBSHELL" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Incremented by one within each subshell or subshell environment when
-the shell begins executing in that environment.
-The initial value is 0.
-If <code>BASH_SUBSHELL</code>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FMONOSECONDS"></a><a id="index-BASH_005fMONOSECONDS"></a><span><code class="code">BASH_MONOSECONDS</code><a class="copiable-link" href="#index-BASH_005fMONOSECONDS"> ¶</a></span></dt>
+<dd><p>Each time this variable is referenced, it expands to the value returned
+by the system’s monotonic clock, if one is available.
+If there is no monotonic clock, this is equivalent to <code class="env">EPOCHSECONDS</code>.
+If <code class="env">BASH_MONOSECONDS</code>
 is unset, it loses its special properties, even if it is
 subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FVERSINFO"></a><dt id="index-BASH_005fVERSINFO"><span><code>BASH_VERSINFO</code><a href="#index-BASH_005fVERSINFO" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>A readonly array variable (see <a href="Arrays.html">Arrays</a>)
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FREMATCH"></a><a id="index-BASH_005fREMATCH"></a><span><code class="code">BASH_REMATCH</code><a class="copiable-link" href="#index-BASH_005fREMATCH"> ¶</a></span></dt>
+<dd><p>An array variable whose members are assigned by the ‘<samp class="samp">=~</samp>’ binary
+operator to the <code class="code">[[</code> conditional command
+(see <a class="pxref" href="Conditional-Constructs.html">Conditional Constructs</a>).
+The element with index 0 is the portion of the string
+matching the entire regular expression.
+The element with index <var class="var">n</var> is the portion of the
+string matching the <var class="var">n</var>th parenthesized subexpression.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FSOURCE"></a><a id="index-BASH_005fSOURCE"></a><span><code class="code">BASH_SOURCE</code><a class="copiable-link" href="#index-BASH_005fSOURCE"> ¶</a></span></dt>
+<dd><p>An array variable whose members are the source filenames where the
+corresponding shell function names in the <code class="code">FUNCNAME</code> array
+variable are defined.
+The shell function <code class="code">${FUNCNAME[$i]}</code> is defined in the file
+<code class="code">${BASH_SOURCE[$i]}</code> and called from <code class="code">${BASH_SOURCE[$i+1]}</code>
+Assignments to <code class="env">BASH_SOURCE</code> have no effect, and it may not be unset.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FSUBSHELL"></a><a id="index-BASH_005fSUBSHELL"></a><span><code class="code">BASH_SUBSHELL</code><a class="copiable-link" href="#index-BASH_005fSUBSHELL"> ¶</a></span></dt>
+<dd><p>Incremented by one within each subshell or subshell environment when
+the shell begins executing in that environment.
+The initial value is 0.
+If <code class="env">BASH_SUBSHELL</code>
+is unset, it loses its special properties, even if it is
+subsequently reset.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FTRAPSIG"></a><a id="index-BASH_005fTRAPSIG"></a><span><code class="code">BASH_TRAPSIG</code><a class="copiable-link" href="#index-BASH_005fTRAPSIG"> ¶</a></span></dt>
+<dd><p>Set to the signal number corresponding to the trap action being executed
+during its execution.
+See the description of <code class="code">trap</code>
+(see <a class="pxref" href="Bourne-Shell-Builtins.html">Bourne Shell Builtins</a>)
+for information about signal numbers and trap execution.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FVERSINFO"></a><a id="index-BASH_005fVERSINFO"></a><span><code class="code">BASH_VERSINFO</code><a class="copiable-link" href="#index-BASH_005fVERSINFO"> ¶</a></span></dt>
+<dd><p>A readonly array variable (see <a class="pxref" href="Arrays.html">Arrays</a>)
 whose members hold version information for this instance of Bash.
 The values assigned to the array members are as follows:
 </p>
-<dl compact="compact">
-<dt><span><code>BASH_VERSINFO[0]</code></span></dt>
-<dd><p>The major version number (the <em>release</em>).
+<dl class="table">
+<dt><code class="code">BASH_VERSINFO[0]</code></dt>
+<dd><p>The major version number (the <em class="dfn">release</em>).
 </p>
 </dd>
-<dt><span><code>BASH_VERSINFO[1]</code></span></dt>
-<dd><p>The minor version number (the <em>version</em>).
+<dt><code class="code">BASH_VERSINFO[1]</code></dt>
+<dd><p>The minor version number (the <em class="dfn">version</em>).
 </p>
 </dd>
-<dt><span><code>BASH_VERSINFO[2]</code></span></dt>
+<dt><code class="code">BASH_VERSINFO[2]</code></dt>
 <dd><p>The patch level.
 </p>
 </dd>
-<dt><span><code>BASH_VERSINFO[3]</code></span></dt>
+<dt><code class="code">BASH_VERSINFO[3]</code></dt>
 <dd><p>The build version.
 </p>
 </dd>
-<dt><span><code>BASH_VERSINFO[4]</code></span></dt>
-<dd><p>The release status (e.g., <code>beta1</code>).
+<dt><code class="code">BASH_VERSINFO[4]</code></dt>
+<dd><p>The release status (e.g., <code class="code">beta</code>).
 </p>
 </dd>
-<dt><span><code>BASH_VERSINFO[5]</code></span></dt>
-<dd><p>The value of <code>MACHTYPE</code>.
+<dt><code class="code">BASH_VERSINFO[5]</code></dt>
+<dd><p>The value of <code class="env">MACHTYPE</code>.
 </p></dd>
 </dl>
 
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FVERSION"></a><dt id="index-BASH_005fVERSION"><span><code>BASH_VERSION</code><a href="#index-BASH_005fVERSION" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The version number of the current instance of Bash.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FVERSION"></a><a id="index-BASH_005fVERSION"></a><span><code class="code">BASH_VERSION</code><a class="copiable-link" href="#index-BASH_005fVERSION"> ¶</a></span></dt>
+<dd><p>Expands to a string describing the version of this  instance  of
+Bash (e.g., 5.2.37(3)-release).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/BASH%5FXTRACEFD"></a><dt id="index-BASH_005fXTRACEFD"><span><code>BASH_XTRACEFD</code><a href="#index-BASH_005fXTRACEFD" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>If set to an integer corresponding to a valid file descriptor, Bash
-will write the trace output generated when ‘<samp>set -x</samp>’
-is enabled to that file descriptor.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/BASH%5FXTRACEFD"></a><a id="index-BASH_005fXTRACEFD"></a><span><code class="code">BASH_XTRACEFD</code><a class="copiable-link" href="#index-BASH_005fXTRACEFD"> ¶</a></span></dt>
+<dd><p>If set to an integer corresponding to a valid file descriptor,
+Bash writes the trace output generated when
+‘<samp class="samp">set -x</samp>’
+is enabled to that file descriptor,
+instead of the standard error.
 This allows tracing output to be separated from diagnostic and error
 messages.
-The file descriptor is closed when <code>BASH_XTRACEFD</code> is unset or assigned
-a new value.
-Unsetting <code>BASH_XTRACEFD</code> or assigning it the empty string causes the
+The file descriptor is closed when
+<code class="code">BASH_XTRACEFD</code>
+is unset or assigned a new value.
+Unsetting
+<code class="code">BASH_XTRACEFD</code>
+or assigning it the empty string causes the
 trace output to be sent to the standard error.
-Note that setting <code>BASH_XTRACEFD</code> to 2 (the standard error file
+Note that setting
+<code class="code">BASH_XTRACEFD</code>
+to 2 (the standard error file
 descriptor) and then unsetting it will result in the standard error
 being closed.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/CHILD%5FMAX"></a><dt id="index-CHILD_005fMAX"><span><code>CHILD_MAX</code><a href="#index-CHILD_005fMAX" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/CHILD%5FMAX"></a><a id="index-CHILD_005fMAX"></a><span><code class="code">CHILD_MAX</code><a class="copiable-link" href="#index-CHILD_005fMAX"> ¶</a></span></dt>
 <dd><p>Set the number of exited child status values for the shell to remember.
-Bash will not allow this value to be decreased below a <small>POSIX</small>-mandated
-minimum, and there is a maximum value (currently 8192) that this may
-not exceed.
+Bash will not allow this value to be decreased below a
+<small class="sc">POSIX</small>-mandated minimum,
+and there is a maximum value (currently 8192) that this may not exceed.
 The minimum value is system-dependent.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COLUMNS"></a><dt id="index-COLUMNS"><span><code>COLUMNS</code><a href="#index-COLUMNS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Used by the <code>select</code> command to determine the terminal width
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COLUMNS"></a><a id="index-COLUMNS"></a><span><code class="code">COLUMNS</code><a class="copiable-link" href="#index-COLUMNS"> ¶</a></span></dt>
+<dd><p>Used by the <code class="code">select</code> command to determine the terminal width
 when printing selection lists.
-Automatically set if the <code>checkwinsize</code> option is enabled
-(see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>), or in an interactive shell upon receipt of a
-<code>SIGWINCH</code>.
+Automatically set if the <code class="code">checkwinsize</code> option is enabled
+(see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>), or in an interactive shell upon receipt of a
+<code class="code">SIGWINCH</code>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COMP%5FCWORD"></a><dt id="index-COMP_005fCWORD"><span><code>COMP_CWORD</code><a href="#index-COMP_005fCWORD" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>An index into <code>${COMP_WORDS}</code> of the word containing the current
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COMP%5FCWORD"></a><a id="index-COMP_005fCWORD"></a><span><code class="code">COMP_CWORD</code><a class="copiable-link" href="#index-COMP_005fCWORD"> ¶</a></span></dt>
+<dd><p>An index into <code class="env">${COMP_WORDS}</code> of the word containing the current
 cursor position.
 This variable is available only in shell functions invoked by the
-programmable completion facilities (see <a href="Programmable-Completion.html">Programmable Completion</a>).
+programmable completion facilities (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COMP%5FLINE"></a><dt id="index-COMP_005fLINE"><span><code>COMP_LINE</code><a href="#index-COMP_005fLINE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COMP%5FKEY"></a><a id="index-COMP_005fKEY"></a><span><code class="code">COMP_KEY</code><a class="copiable-link" href="#index-COMP_005fKEY"> ¶</a></span></dt>
+<dd><p>The key (or final key of a key sequence) used to invoke the current
+completion function.
+This variable is available only in shell functions and external
+commands invoked by the
+programmable completion facilities (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>).
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COMP%5FLINE"></a><a id="index-COMP_005fLINE"></a><span><code class="code">COMP_LINE</code><a class="copiable-link" href="#index-COMP_005fLINE"> ¶</a></span></dt>
 <dd><p>The current command line.
 This variable is available only in shell functions and external
 commands invoked by the
-programmable completion facilities (see <a href="Programmable-Completion.html">Programmable Completion</a>).
+programmable completion facilities (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COMP%5FPOINT"></a><dt id="index-COMP_005fPOINT"><span><code>COMP_POINT</code><a href="#index-COMP_005fPOINT" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COMP%5FPOINT"></a><a id="index-COMP_005fPOINT"></a><span><code class="code">COMP_POINT</code><a class="copiable-link" href="#index-COMP_005fPOINT"> ¶</a></span></dt>
 <dd><p>The index of the current cursor position relative to the beginning of
 the current command.
 If the current cursor position is at the end of the current command,
-the value of this variable is equal to <code>${#COMP_LINE}</code>.
+the value of this variable is equal to <code class="code">${#COMP_LINE}</code>.
 This variable is available only in shell functions and external
 commands invoked by the
-programmable completion facilities (see <a href="Programmable-Completion.html">Programmable Completion</a>).
+programmable completion facilities (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COMP%5FTYPE"></a><dt id="index-COMP_005fTYPE"><span><code>COMP_TYPE</code><a href="#index-COMP_005fTYPE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Set to an integer value corresponding to the type of completion attempted
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COMP%5FTYPE"></a><a id="index-COMP_005fTYPE"></a><span><code class="code">COMP_TYPE</code><a class="copiable-link" href="#index-COMP_005fTYPE"> ¶</a></span></dt>
+<dd><p>Set to an integer value corresponding to the type of attempted completion
 that caused a completion function to be called:
-<tt class="key">TAB</tt>, for normal completion,
-‘<samp>?</samp>’, for listing completions after successive tabs,
-‘<samp>!</samp>’, for listing alternatives on partial word completion,
-‘<samp>@</samp>’, to list completions if the word is not unmodified,
+<kbd class="key">TAB</kbd>, for normal completion,
+‘<samp class="samp">?</samp>’, for listing completions after successive tabs,
+‘<samp class="samp">!</samp>’, for listing alternatives on partial word completion,
+‘<samp class="samp">@</samp>’, to list completions if the word is not unmodified,
 or
-‘<samp>%</samp>’, for menu completion.
+‘<samp class="samp">%</samp>’, for menu completion.
 This variable is available only in shell functions and external
 commands invoked by the
-programmable completion facilities (see <a href="Programmable-Completion.html">Programmable Completion</a>).
+programmable completion facilities (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COMP%5FKEY"></a><dt id="index-COMP_005fKEY"><span><code>COMP_KEY</code><a href="#index-COMP_005fKEY" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The key (or final key of a key sequence) used to invoke the current
-completion function.
-</p>
-</dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COMP%5FWORDBREAKS"></a><dt id="index-COMP_005fWORDBREAKS"><span><code>COMP_WORDBREAKS</code><a href="#index-COMP_005fWORDBREAKS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COMP%5FWORDBREAKS"></a><a id="index-COMP_005fWORDBREAKS"></a><span><code class="code">COMP_WORDBREAKS</code><a class="copiable-link" href="#index-COMP_005fWORDBREAKS"> ¶</a></span></dt>
 <dd><p>The set of characters that the Readline library treats as word
 separators when performing word completion.
-If <code>COMP_WORDBREAKS</code>
+If <code class="env">COMP_WORDBREAKS</code>
 is unset, it loses its special properties,
 even if it is subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COMP%5FWORDS"></a><dt id="index-COMP_005fWORDS"><span><code>COMP_WORDS</code><a href="#index-COMP_005fWORDS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COMP%5FWORDS"></a><a id="index-COMP_005fWORDS"></a><span><code class="code">COMP_WORDS</code><a class="copiable-link" href="#index-COMP_005fWORDS"> ¶</a></span></dt>
 <dd><p>An array variable consisting of the individual
 words in the current command line.
 The line is split into words as Readline would split it, using
-<code>COMP_WORDBREAKS</code> as described above.
+<code class="code">COMP_WORDBREAKS</code> as described above.
 This variable is available only in shell functions invoked by the
-programmable completion facilities (see <a href="Programmable-Completion.html">Programmable Completion</a>).
+programmable completion facilities (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COMPREPLY"></a><dt id="index-COMPREPLY"><span><code>COMPREPLY</code><a href="#index-COMPREPLY" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COMPREPLY"></a><a id="index-COMPREPLY"></a><span><code class="code">COMPREPLY</code><a class="copiable-link" href="#index-COMPREPLY"> ¶</a></span></dt>
 <dd><p>An array variable from which Bash reads the possible completions
 generated by a shell function invoked by the programmable completion
-facility (see <a href="Programmable-Completion.html">Programmable Completion</a>).
+facility (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>).
 Each array element contains one possible completion.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/COPROC"></a><dt id="index-COPROC"><span><code>COPROC</code><a href="#index-COPROC" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/COPROC"></a><a id="index-COPROC"></a><span><code class="code">COPROC</code><a class="copiable-link" href="#index-COPROC"> ¶</a></span></dt>
 <dd><p>An array variable created to hold the file descriptors
-for output from and input to an unnamed coprocess (see <a href="Coprocesses.html">Coprocesses</a>).
+for output from and input to an unnamed coprocess (see <a class="pxref" href="Coprocesses.html">Coprocesses</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/DIRSTACK"></a><dt id="index-DIRSTACK"><span><code>DIRSTACK</code><a href="#index-DIRSTACK" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/DIRSTACK"></a><a id="index-DIRSTACK"></a><span><code class="code">DIRSTACK</code><a class="copiable-link" href="#index-DIRSTACK"> ¶</a></span></dt>
 <dd><p>An array variable containing the current contents of the directory stack.
 Directories appear in the stack in the order they are displayed by the
-<code>dirs</code> builtin.
+<code class="code">dirs</code> builtin.
 Assigning to members of this array variable may be used to modify
-directories already in the stack, but the <code>pushd</code> and <code>popd</code>
+directories already in the stack, but the <code class="code">pushd</code> and <code class="code">popd</code>
 builtins must be used to add and remove directories.
-Assignment to this variable will not change the current directory.
-If <code>DIRSTACK</code>
+Assigning to this variable does not change the current directory.
+If <code class="env">DIRSTACK</code>
 is unset, it loses its special properties, even if
 it is subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/EMACS"></a><dt id="index-EMACS"><span><code>EMACS</code><a href="#index-EMACS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/EMACS"></a><a id="index-EMACS"></a><span><code class="code">EMACS</code><a class="copiable-link" href="#index-EMACS"> ¶</a></span></dt>
 <dd><p>If Bash finds this variable in the environment when the shell
-starts with value ‘<samp>t</samp>’, it assumes that the shell is running in an
-Emacs shell buffer and disables line editing.
+starts, and its value is ‘<samp class="samp">t</samp>’, Bash assumes that the shell is
+running in an Emacs shell buffer and disables line editing.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/ENV"></a><dt id="index-ENV"><span><code>ENV</code><a href="#index-ENV" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Expanded and executed similarly to <code>BASH_ENV</code>
-(see <a href="Bash-Startup-Files.html">Bash Startup Files</a>)
+<dt><a class="dashAnchor" name="//apple_ref/Variable/ENV"></a><a id="index-ENV"></a><span><code class="code">ENV</code><a class="copiable-link" href="#index-ENV"> ¶</a></span></dt>
+<dd><p>Expanded and executed similarly to <code class="code">BASH_ENV</code>
+(see <a class="pxref" href="Bash-Startup-Files.html">Bash Startup Files</a>)
 when an interactive shell is invoked in
-<small>POSIX</small> Mode (see <a href="Bash-POSIX-Mode.html">Bash POSIX Mode</a>).
+<small class="sc">POSIX</small> mode (see <a class="pxref" href="Bash-POSIX-Mode.html">Bash and POSIX</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/EPOCHREALTIME"></a><dt id="index-EPOCHREALTIME"><span><code>EPOCHREALTIME</code><a href="#index-EPOCHREALTIME" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/EPOCHREALTIME"></a><a id="index-EPOCHREALTIME"></a><span><code class="code">EPOCHREALTIME</code><a class="copiable-link" href="#index-EPOCHREALTIME"> ¶</a></span></dt>
 <dd><p>Each time this parameter is referenced, it expands to the number of seconds
-since the Unix Epoch as a floating point value with micro-second granularity
-(see the documentation for the C library function <code>time</code> for the
+since the Unix Epoch as a floating-point value with micro-second granularity
+(see the documentation for the C library function <code class="code">time</code> for the
 definition of Epoch).
-Assignments to <code>EPOCHREALTIME</code> are ignored.
-If <code>EPOCHREALTIME</code>
+Assignments to <code class="env">EPOCHREALTIME</code> are ignored.
+If <code class="env">EPOCHREALTIME</code>
 is unset, it loses its special properties, even if
 it is subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/EPOCHSECONDS"></a><dt id="index-EPOCHSECONDS"><span><code>EPOCHSECONDS</code><a href="#index-EPOCHSECONDS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/EPOCHSECONDS"></a><a id="index-EPOCHSECONDS"></a><span><code class="code">EPOCHSECONDS</code><a class="copiable-link" href="#index-EPOCHSECONDS"> ¶</a></span></dt>
 <dd><p>Each time this parameter is referenced, it expands to the number of seconds
 since the Unix Epoch (see the documentation for the C library function
-<code>time</code> for the definition of Epoch).
-Assignments to <code>EPOCHSECONDS</code> are ignored.
-If <code>EPOCHSECONDS</code>
+<code class="code">time</code> for the definition of Epoch).
+Assignments to <code class="env">EPOCHSECONDS</code> are ignored.
+If <code class="env">EPOCHSECONDS</code>
 is unset, it loses its special properties, even if
 it is subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/EUID"></a><dt id="index-EUID"><span><code>EUID</code><a href="#index-EUID" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The numeric effective user id of the current user.  This variable
-is readonly.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/EUID"></a><a id="index-EUID"></a><span><code class="code">EUID</code><a class="copiable-link" href="#index-EUID"> ¶</a></span></dt>
+<dd><p>The numeric effective user id of the current user.
+This variable is readonly.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/EXECIGNORE"></a><dt id="index-EXECIGNORE"><span><code>EXECIGNORE</code><a href="#index-EXECIGNORE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>A colon-separated list of shell patterns (see <a href="Pattern-Matching.html">Pattern Matching</a>)
-defining the list of filenames to be ignored by command search using
-<code>PATH</code>.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/EXECIGNORE"></a><a id="index-EXECIGNORE"></a><span><code class="code">EXECIGNORE</code><a class="copiable-link" href="#index-EXECIGNORE"> ¶</a></span></dt>
+<dd><p>A colon-separated list of shell patterns (see <a class="pxref" href="Pattern-Matching.html">Pattern Matching</a>)
+defining the set of filenames to be ignored by command search using
+<code class="code">PATH</code>.
 Files whose full pathnames match one of these patterns are not considered
 executable files for the purposes of completion and command execution
-via <code>PATH</code> lookup.
-This does not affect the behavior of the <code>[</code>, <code>test</code>, and <code>[[</code>
+via <code class="code">PATH</code> lookup.
+This does not affect the behavior of the <code class="code">[</code>, <code class="code">test</code>, and <code class="code">[[</code>
 commands.
-Full pathnames in the command hash table are not subject to <code>EXECIGNORE</code>.
+Full pathnames in the command hash table are not subject to <code class="code">EXECIGNORE</code>.
 Use this variable to ignore shared library files that have the executable
 bit set, but are not executable files.
-The pattern matching honors the setting of the <code>extglob</code> shell 
+The pattern matching honors the setting of the <code class="code">extglob</code> shell 
 option.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/FCEDIT"></a><dt id="index-FCEDIT"><span><code>FCEDIT</code><a href="#index-FCEDIT" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The editor used as a default by the <samp>-e</samp> option to the <code>fc</code>
-builtin command.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/FCEDIT"></a><a id="index-FCEDIT"></a><span><code class="code">FCEDIT</code><a class="copiable-link" href="#index-FCEDIT"> ¶</a></span></dt>
+<dd><p>The editor used as a default by the <code class="code">fc</code> builtin command.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/FIGNORE"></a><dt id="index-FIGNORE"><span><code>FIGNORE</code><a href="#index-FIGNORE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/FIGNORE"></a><a id="index-FIGNORE"></a><span><code class="code">FIGNORE</code><a class="copiable-link" href="#index-FIGNORE"> ¶</a></span></dt>
 <dd><p>A colon-separated list of suffixes to ignore when performing
 filename completion.
 A filename whose suffix matches one of the entries in 
-<code>FIGNORE</code>
+<code class="env">FIGNORE</code>
 is excluded from the list of matched filenames.  A sample
-value is ‘<samp>.o:~</samp>’
+value is ‘<samp class="samp">.o:~</samp>’
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/FUNCNAME"></a><dt id="index-FUNCNAME"><span><code>FUNCNAME</code><a href="#index-FUNCNAME" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/FUNCNAME"></a><a id="index-FUNCNAME"></a><span><code class="code">FUNCNAME</code><a class="copiable-link" href="#index-FUNCNAME"> ¶</a></span></dt>
 <dd><p>An array variable containing the names of all shell functions
 currently in the execution call stack.
 The element with index 0 is the name of any currently-executing
 shell function.
 The bottom-most element (the one with the highest index)
-is <code>"main"</code>.
+is <code class="code">"main"</code>.
 This variable exists only when a shell function is executing.
-Assignments to <code>FUNCNAME</code> have no effect.
-If <code>FUNCNAME</code>
+Assignments to <code class="env">FUNCNAME</code> have no effect.
+If <code class="env">FUNCNAME</code>
 is unset, it loses its special properties, even if
 it is subsequently reset.
 </p>
-<p>This variable can be used with <code>BASH_LINENO</code> and <code>BASH_SOURCE</code>.
-Each element of <code>FUNCNAME</code> has corresponding elements in
-<code>BASH_LINENO</code> and <code>BASH_SOURCE</code> to describe the call stack.
-For instance, <code>${FUNCNAME[$i]}</code> was called from the file
-<code>${BASH_SOURCE[$i+1]}</code> at line number <code>${BASH_LINENO[$i]}</code>.
-The <code>caller</code> builtin displays the current call stack using this
+<p>This variable can be used with <code class="code">BASH_LINENO</code> and <code class="code">BASH_SOURCE</code>.
+Each element of <code class="code">FUNCNAME</code> has corresponding elements in
+<code class="code">BASH_LINENO</code> and <code class="code">BASH_SOURCE</code> to describe the call stack.
+For instance,
+<code class="code">${FUNCNAME[$i]}</code>
+was called from the file
+<code class="code">${BASH_SOURCE[$i+1]}</code>
+at line number
+<code class="code">${BASH_LINENO[$i]}</code>.
+The <code class="code">caller</code> builtin displays the current call stack using this
 information.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/FUNCNEST"></a><dt id="index-FUNCNEST"><span><code>FUNCNEST</code><a href="#index-FUNCNEST" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>If set to a numeric value greater than 0, defines a maximum function
-nesting level.  Function invocations that exceed this nesting level
-will cause the current command to abort.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/FUNCNEST"></a><a id="index-FUNCNEST"></a><span><code class="code">FUNCNEST</code><a class="copiable-link" href="#index-FUNCNEST"> ¶</a></span></dt>
+<dd><p>A numeric value greater than 0 defines a maximum function nesting level.
+Function invocations that exceed this nesting level
+cause the current command to abort.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/GLOBIGNORE"></a><dt id="index-GLOBIGNORE"><span><code>GLOBIGNORE</code><a href="#index-GLOBIGNORE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/GLOBIGNORE"></a><a id="index-GLOBIGNORE"></a><span><code class="code">GLOBIGNORE</code><a class="copiable-link" href="#index-GLOBIGNORE"> ¶</a></span></dt>
 <dd><p>A colon-separated list of patterns defining the set of file names to
 be ignored by filename expansion.
 If a file name matched by a filename expansion pattern also matches one
-of the patterns in <code>GLOBIGNORE</code>, it is removed from the list
+of the patterns in <code class="env">GLOBIGNORE</code>, it is removed from the list
 of matches.
-The pattern matching honors the setting of the <code>extglob</code> shell
+The pattern matching honors the setting of the <code class="code">extglob</code> shell
 option.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/GROUPS"></a><dt id="index-GROUPS"><span><code>GROUPS</code><a href="#index-GROUPS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/GLOBSORT"></a><a id="index-GLOBSORT"></a><span><code class="code">GLOBSORT</code><a class="copiable-link" href="#index-GLOBSORT"> ¶</a></span></dt>
+<dd><p>Controls how the results of filename expansion are sorted.
+The value of this variable specifies the sort criteria and sort order for
+the results of filename expansion.
+If this variable is unset or set to the null string, filename expansion
+uses the historical behavior of sorting by name,
+in ascending lexicographic order as determined by the
+<code class="code">LC_COLLATE</code> shell variable.
+</p>
+<p>If set, a valid value begins with an optional ‘<samp class="samp">+</samp>’, which is ignored,
+or ‘<samp class="samp">-</samp>’, which reverses the sort order from ascending to descending,
+followed by a sort specifier.
+The valid sort specifiers are
+‘<samp class="samp">name</samp>’,
+‘<samp class="samp">numeric</samp>’,
+‘<samp class="samp">size</samp>’,
+‘<samp class="samp">mtime</samp>’,
+‘<samp class="samp">atime</samp>’,
+‘<samp class="samp">ctime</samp>’,
+and
+‘<samp class="samp">blocks</samp>’,
+which sort the files on name,
+names in numeric rather than lexicographic order,
+file size, modification time, access time,
+inode change time, and number of blocks, respectively.
+If any of the non-name keys compare as equal (e.g., if two files are
+the same size), sorting uses the name as a secondary sort key.
+</p>
+<p>For example, a value of <code class="code">-mtime</code> sorts the results in descending
+order by modification time (newest first).
+</p>
+<p>The ‘<samp class="samp">numeric</samp>’ specifier treats names consisting solely of digits as
+numbers and sorts them using their numeric value
+(so “2” sorts before “10”, for example).
+When using ‘<samp class="samp">numeric</samp>’, names containing non-digits sort after all
+the all-digit names and are sorted by name using the traditional behavior.
+</p>
+<p>A sort specifier of ‘<samp class="samp">nosort</samp>’ disables sorting completely;
+Bash returns the results
+in the order they are read from the file system,
+ignoring any leading ‘<samp class="samp">-</samp>’.
+</p>
+<p>If the sort specifier is missing, it defaults to <var class="var">name</var>,
+so a value of ‘<samp class="samp">+</samp>’ is equivalent to the null string,
+and a value of ‘<samp class="samp">-</samp>’ sorts by name in descending order.
+</p>
+<p>Any invalid value restores the historical sorting behavior.
+</p>
+</dd>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/GROUPS"></a><a id="index-GROUPS"></a><span><code class="code">GROUPS</code><a class="copiable-link" href="#index-GROUPS"> ¶</a></span></dt>
 <dd><p>An array variable containing the list of groups of which the current    
 user is a member.
-Assignments to <code>GROUPS</code> have no effect.
-If <code>GROUPS</code>
+Assignments to <code class="env">GROUPS</code> have no effect.
+If <code class="env">GROUPS</code>
 is unset, it loses its special properties, even if it is
 subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/histchars"></a><dt id="index-histchars"><span><code>histchars</code><a href="#index-histchars" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Up to three characters which control history expansion, quick
-substitution, and tokenization (see <a href="History-Interaction.html">History Expansion</a>).
-The first character is the
-<em>history expansion</em> character, that is, the character which signifies the
-start of a history expansion, normally ‘<samp>!</samp>’.  The second character is the
-character which signifies ‘quick substitution’ when seen as the first
-character on a line, normally ‘<samp>^</samp>’.  The optional third character is the
-character which indicates that the remainder of the line is a comment when
-found as the first character of a word, usually ‘<samp>#</samp>’.  The history
-comment character causes history substitution to be skipped for the
-remaining words on the line.  It does not necessarily cause the shell
-parser to treat the rest of the line as a comment.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/histchars"></a><a id="index-histchars"></a><span><code class="code">histchars</code><a class="copiable-link" href="#index-histchars"> ¶</a></span></dt>
+<dd><p>The two or three characters which control history expansion,
+quick substitution, and tokenization
+(see <a class="pxref" href="History-Interaction.html">History Expansion</a>).
+The first character is the <em class="dfn">history expansion</em> character,
+the character which begins a history expansion, normally
+‘<samp class="samp">!</samp>’.
+The second character is the
+<em class="dfn">quick substitution</em>
+character, normally
+‘<samp class="samp">^</samp>’.
+When it appears as the first character on the line,
+history substitution repeats the previous command,
+replacing one string with another.
+The optional third character is the
+<em class="dfn">history comment</em>
+character, normally ‘<samp class="samp">#</samp>’,
+which indicates
+that the remainder of the line is a comment
+when it appears as the first character of a word.
+The history comment character disables history substitution
+for the remaining words on the line.
+It does not necessarily cause the shell parser to treat the rest of the
+line as a comment.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HISTCMD"></a><dt id="index-HISTCMD"><span><code>HISTCMD</code><a href="#index-HISTCMD" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HISTCMD"></a><a id="index-HISTCMD"></a><span><code class="code">HISTCMD</code><a class="copiable-link" href="#index-HISTCMD"> ¶</a></span></dt>
 <dd><p>The history number, or index in the history list, of the current
 command.
-Assignments to <code>HISTCMD</code> are ignored.
-If <code>HISTCMD</code>
+Assignments to <code class="env">HISTCMD</code>
+have no effect.
+If <code class="env">HISTCMD</code>
 is unset, it loses its special properties,
 even if it is subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HISTCONTROL"></a><dt id="index-HISTCONTROL"><span><code>HISTCONTROL</code><a href="#index-HISTCONTROL" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HISTCONTROL"></a><a id="index-HISTCONTROL"></a><span><code class="code">HISTCONTROL</code><a class="copiable-link" href="#index-HISTCONTROL"> ¶</a></span></dt>
 <dd><p>A colon-separated list of values controlling how commands are saved on
 the history list.
-If the list of values includes ‘<samp>ignorespace</samp>’, lines which begin
+If the list of values includes ‘<samp class="samp">ignorespace</samp>’, lines which begin
 with a space character are not saved in the history list.
-A value of ‘<samp>ignoredups</samp>’ causes lines which match the previous
-history entry to not be saved.
-A value of ‘<samp>ignoreboth</samp>’ is shorthand for
-‘<samp>ignorespace</samp>’ and ‘<samp>ignoredups</samp>’.
-A value of ‘<samp>erasedups</samp>’ causes all previous lines matching the
+A value of ‘<samp class="samp">ignoredups</samp>’ causes lines which match the previous
+history entry not to be saved.
+A value of ‘<samp class="samp">ignoreboth</samp>’ is shorthand for
+‘<samp class="samp">ignorespace</samp>’ and ‘<samp class="samp">ignoredups</samp>’.
+A value of ‘<samp class="samp">erasedups</samp>’ causes all previous lines matching the
 current line to be removed from the history list before that line
 is saved.
 Any value not in the above list is ignored.
-If <code>HISTCONTROL</code> is unset, or does not include a valid value, 
-all lines read by the shell parser are saved on the history list, 
-subject to the value of <code>HISTIGNORE</code>.
-The second and subsequent lines of a multi-line compound command are
-not tested, and are added to the history regardless of the value of
-<code>HISTCONTROL</code>.
+If <code class="env">HISTCONTROL</code> is unset, or does not include a valid value,
+Bash saves all lines read by the shell parser on the history list, 
+subject to the value of <code class="env">HISTIGNORE</code>.
+If the first line of a multi-line compound command was saved,
+the second and subsequent lines are not tested,
+and are added to the history regardless of the value of
+<code class="env">HISTCONTROL</code>.
+If the first line was not saved, the second and subsequent lines of
+the command are not saved either.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HISTFILE"></a><dt id="index-HISTFILE"><span><code>HISTFILE</code><a href="#index-HISTFILE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The name of the file to which the command history is saved.  The
-default value is <samp>~/.bash_history</samp>.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HISTFILE"></a><a id="index-HISTFILE"></a><span><code class="code">HISTFILE</code><a class="copiable-link" href="#index-HISTFILE"> ¶</a></span></dt>
+<dd><p>The name of the file to which the command history is saved.
+Bash assigns a default value of <samp class="file">~/.bash_history</samp>.
+If <code class="env">HISTFILE</code> is unset or null,
+the shell does not save the command history when it exits.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HISTFILESIZE"></a><dt id="index-HISTFILESIZE"><span><code>HISTFILESIZE</code><a href="#index-HISTFILESIZE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HISTFILESIZE"></a><a id="index-HISTFILESIZE"></a><span><code class="code">HISTFILESIZE</code><a class="copiable-link" href="#index-HISTFILESIZE"> ¶</a></span></dt>
 <dd><p>The maximum number of lines contained in the history file.
 When this variable is assigned a value, the history file is truncated,
-if necessary, to contain no more than that number of lines
+if necessary, to contain no more than
+the number of history entries
+that total no more than that number of lines
 by removing the oldest entries.
+If the history list contains multi-line entries,
+the history file may contain more lines than this maximum
+to avoid leaving partial history entries.
 The history file is also truncated to this size after
-writing it when a shell exits.
+writing it when a shell exits or by the <code class="code">history</code> builtin.
 If the value is 0, the history file is truncated to zero size.
 Non-numeric values and numeric values less than zero inhibit truncation.
-The shell sets the default value to the value of <code>HISTSIZE</code>
+The shell sets the default value to the value of <code class="env">HISTSIZE</code>
 after reading any startup files.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HISTIGNORE"></a><dt id="index-HISTIGNORE"><span><code>HISTIGNORE</code><a href="#index-HISTIGNORE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HISTIGNORE"></a><a id="index-HISTIGNORE"></a><span><code class="code">HISTIGNORE</code><a class="copiable-link" href="#index-HISTIGNORE"> ¶</a></span></dt>
 <dd><p>A colon-separated list of patterns used to decide which command
-lines should be saved on the history list.  Each pattern is
-anchored at the beginning of the line and must match the complete
-line (no implicit ‘<samp>*</samp>’ is appended).  Each pattern is tested
-against the line after the checks specified by <code>HISTCONTROL</code>
-are applied.  In addition to the normal shell pattern matching
-characters, ‘<samp>&amp;</samp>’ matches the previous history line.  ‘<samp>&amp;</samp>’
-may be escaped using a backslash; the backslash is removed
-before attempting a match. 
-The second and subsequent lines of a multi-line compound command are
-not tested, and are added to the history regardless of the value of
-<code>HISTIGNORE</code>.
-The pattern matching honors the setting of the <code>extglob</code> shell
+lines should be saved on the history list.
+If a command line matches one of the patterns in the value of
+<code class="code">HISTIGNORE</code>,
+it is not saved on the history list.
+Each pattern is anchored at the
+beginning of the line and must match the complete line
+(Bash does not implicitly append a
+‘<samp class="samp">*</samp>’).
+Each pattern is tested against the line
+after the checks specified by
+<code class="env">HISTCONTROL</code>
+are applied.
+In addition to the normal shell pattern matching characters,
+‘<samp class="samp">&amp;</samp>’
+matches the previous history line.
+A backslash escapes the
+‘<samp class="samp">&amp;</samp>’;
+the backslash is removed before attempting a match.
+If the first line of a multi-line compound command was saved,
+the second and subsequent lines are not tested,
+and are added to the history regardless of the value of
+<code class="env">HISTIGNORE</code>.
+If the first line was not saved, the second and subsequent lines of
+the command are not saved either.
+The pattern matching honors the setting of the <code class="code">extglob</code> shell
 option.
 </p>
-<p><code>HISTIGNORE</code> subsumes the function of <code>HISTCONTROL</code>.  A
-pattern of ‘<samp>&amp;</samp>’ is identical to <code>ignoredups</code>, and a
-pattern of ‘<samp>[ ]*</samp>’ is identical to <code>ignorespace</code>. 
+<p><code class="env">HISTIGNORE</code> subsumes some of the function of <code class="env">HISTCONTROL</code>.
+A pattern of ‘<samp class="samp">&amp;</samp>’ is identical to <code class="code">ignoredups</code>, and a
+pattern of ‘<samp class="samp">[ ]*</samp>’ is identical to <code class="code">ignorespace</code>. 
 Combining these two patterns, separating them with a colon,
-provides the functionality of <code>ignoreboth</code>. 
+provides the functionality of <code class="code">ignoreboth</code>. 
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HISTSIZE"></a><dt id="index-HISTSIZE"><span><code>HISTSIZE</code><a href="#index-HISTSIZE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HISTSIZE"></a><a id="index-HISTSIZE"></a><span><code class="code">HISTSIZE</code><a class="copiable-link" href="#index-HISTSIZE"> ¶</a></span></dt>
 <dd><p>The maximum number of commands to remember on the history list.
 If the value is 0, commands are not saved in the history list.
 Numeric values less than zero result in every command being saved
@@ -617,366 +734,404 @@ on the history list (there is no limit).
 The shell sets the default value to 500 after reading any startup files.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HISTTIMEFORMAT"></a><dt id="index-HISTTIMEFORMAT"><span><code>HISTTIMEFORMAT</code><a href="#index-HISTTIMEFORMAT" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HISTTIMEFORMAT"></a><a id="index-HISTTIMEFORMAT"></a><span><code class="code">HISTTIMEFORMAT</code><a class="copiable-link" href="#index-HISTTIMEFORMAT"> ¶</a></span></dt>
 <dd><p>If this variable is set and not null, its value is used as a format string
-for <code>strftime</code> to print the time stamp associated with each history
-entry displayed by the <code>history</code> builtin.
-If this variable is set, time stamps are written to the history file so
+for <code class="code">strftime</code>(3) to print the time stamp associated with each history
+entry displayed by the <code class="code">history</code> builtin.
+If this variable is set, the shell writes time stamps to the history file so
 they may be preserved across shell sessions.
 This uses the history comment character to distinguish timestamps from
 other history lines.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HOSTFILE"></a><dt id="index-HOSTFILE"><span><code>HOSTFILE</code><a href="#index-HOSTFILE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Contains the name of a file in the same format as <samp>/etc/hosts</samp> that
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HOSTFILE"></a><a id="index-HOSTFILE"></a><span><code class="code">HOSTFILE</code><a class="copiable-link" href="#index-HOSTFILE"> ¶</a></span></dt>
+<dd><p>Contains the name of a file in the same format as <samp class="file">/etc/hosts</samp> that
 should be read when the shell needs to complete a hostname.
 The list of possible hostname completions may be changed while the shell
 is running;
 the next time hostname completion is attempted after the
 value is changed, Bash adds the contents of the new file to the
 existing list.
-If <code>HOSTFILE</code> is set, but has no value, or does not name a readable file,
+If <code class="env">HOSTFILE</code>
+is set, but has no value, or does not name a readable file,
 Bash attempts to read 
-<samp>/etc/hosts</samp> to obtain the list of possible hostname completions.
-When <code>HOSTFILE</code> is unset, the hostname list is cleared.
+<samp class="file">/etc/hosts</samp>
+to obtain the list of possible hostname completions.
+When <code class="env">HOSTFILE</code> is unset,
+Bash clears the hostname list.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HOSTNAME"></a><dt id="index-HOSTNAME"><span><code>HOSTNAME</code><a href="#index-HOSTNAME" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HOSTNAME"></a><a id="index-HOSTNAME"></a><span><code class="code">HOSTNAME</code><a class="copiable-link" href="#index-HOSTNAME"> ¶</a></span></dt>
 <dd><p>The name of the current host.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/HOSTTYPE"></a><dt id="index-HOSTTYPE"><span><code>HOSTTYPE</code><a href="#index-HOSTTYPE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/HOSTTYPE"></a><a id="index-HOSTTYPE"></a><span><code class="code">HOSTTYPE</code><a class="copiable-link" href="#index-HOSTTYPE"> ¶</a></span></dt>
 <dd><p>A string describing the machine Bash is running on.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/IGNOREEOF"></a><dt id="index-IGNOREEOF"><span><code>IGNOREEOF</code><a href="#index-IGNOREEOF" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Controls the action of the shell on receipt of an <code>EOF</code> character
-as the sole input.  If set, the value denotes the number
-of consecutive <code>EOF</code> characters that can be read as the
-first character on an input line
-before the shell will exit.  If the variable exists but does not
-have a numeric value, or has no value, then the default is 10.
-If the variable does not exist, then <code>EOF</code> signifies the end of 
-input to the shell.  This is only in effect for interactive shells.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/IGNOREEOF"></a><a id="index-IGNOREEOF"></a><span><code class="code">IGNOREEOF</code><a class="copiable-link" href="#index-IGNOREEOF"> ¶</a></span></dt>
+<dd><p>Controls the action of the shell on receipt of an <code class="code">EOF</code> character
+as the sole input.
+If set, the value is the number
+of consecutive <code class="code">EOF</code> characters that can be read as the
+first character on an input line before Bash exits.
+If the variable is set but does not have a numeric value,
+or the value is null, then the default is 10.
+If the variable is unset, then <code class="code">EOF</code> signifies the end of 
+input to the shell.
+This is only in effect for interactive shells.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/INPUTRC"></a><dt id="index-INPUTRC"><span><code>INPUTRC</code><a href="#index-INPUTRC" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/INPUTRC"></a><a id="index-INPUTRC"></a><span><code class="code">INPUTRC</code><a class="copiable-link" href="#index-INPUTRC"> ¶</a></span></dt>
 <dd><p>The name of the Readline initialization file, overriding the default
-of <samp>~/.inputrc</samp>.
+of <samp class="file">~/.inputrc</samp>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/INSIDE%5FEMACS"></a><dt id="index-INSIDE_005fEMACS"><span><code>INSIDE_EMACS</code><a href="#index-INSIDE_005fEMACS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/INSIDE%5FEMACS"></a><a id="index-INSIDE_005fEMACS"></a><span><code class="code">INSIDE_EMACS</code><a class="copiable-link" href="#index-INSIDE_005fEMACS"> ¶</a></span></dt>
 <dd><p>If Bash finds this variable in the environment when the shell
 starts, it assumes that the shell is running in an Emacs shell buffer
-and may disable line editing depending on the value of <code>TERM</code>.
+and may disable line editing depending on the value of <code class="env">TERM</code>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/LANG"></a><dt id="index-LANG-1"><span><code>LANG</code><a href="#index-LANG-1" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/LANG"></a><a id="index-LANG-1"></a><span><code class="code">LANG</code><a class="copiable-link" href="#index-LANG-1"> ¶</a></span></dt>
 <dd><p>Used to determine the locale category for any category not specifically
-selected with a variable starting with <code>LC_</code>.
+selected with a variable starting with <code class="code">LC_</code>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/LC%5FALL"></a><dt id="index-LC_005fALL"><span><code>LC_ALL</code><a href="#index-LC_005fALL" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>This variable overrides the value of <code>LANG</code> and any other
-<code>LC_</code> variable specifying a locale category.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/LC%5FALL"></a><a id="index-LC_005fALL"></a><span><code class="code">LC_ALL</code><a class="copiable-link" href="#index-LC_005fALL"> ¶</a></span></dt>
+<dd><p>This variable overrides the value of <code class="env">LANG</code> and any other
+<code class="code">LC_</code> variable specifying a locale category.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/LC%5FCOLLATE"></a><dt id="index-LC_005fCOLLATE"><span><code>LC_COLLATE</code><a href="#index-LC_005fCOLLATE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/LC%5FCOLLATE"></a><a id="index-LC_005fCOLLATE"></a><span><code class="code">LC_COLLATE</code><a class="copiable-link" href="#index-LC_005fCOLLATE"> ¶</a></span></dt>
 <dd><p>This variable determines the collation order used when sorting the
 results of filename expansion, and
 determines the behavior of range expressions, equivalence classes,
 and collating sequences within filename expansion and pattern matching
-(see <a href="Filename-Expansion.html">Filename Expansion</a>).
+(see <a class="pxref" href="Filename-Expansion.html">Filename Expansion</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/LC%5FCTYPE"></a><dt id="index-LC_005fCTYPE"><span><code>LC_CTYPE</code><a href="#index-LC_005fCTYPE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/LC%5FCTYPE"></a><a id="index-LC_005fCTYPE"></a><span><code class="code">LC_CTYPE</code><a class="copiable-link" href="#index-LC_005fCTYPE"> ¶</a></span></dt>
 <dd><p>This variable determines the interpretation of characters and the
 behavior of character classes within filename expansion and pattern
-matching (see <a href="Filename-Expansion.html">Filename Expansion</a>).
+matching (see <a class="pxref" href="Filename-Expansion.html">Filename Expansion</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/LC%5FMESSAGES"></a><dt id="index-LC_005fMESSAGES-1"><span><code>LC_MESSAGES</code><a href="#index-LC_005fMESSAGES-1" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/LC%5FMESSAGES"></a><a id="index-LC_005fMESSAGES-1"></a><span><code class="code">LC_MESSAGES</code><a class="copiable-link" href="#index-LC_005fMESSAGES-1"> ¶</a></span></dt>
 <dd><p>This variable determines the locale used to translate double-quoted
-strings preceded by a ‘<samp>$</samp>’ (see <a href="Locale-Translation.html">Locale-Specific Translation</a>).
+strings preceded by a ‘<samp class="samp">$</samp>’ (see <a class="pxref" href="Locale-Translation.html">Locale-Specific Translation</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/LC%5FNUMERIC"></a><dt id="index-LC_005fNUMERIC"><span><code>LC_NUMERIC</code><a href="#index-LC_005fNUMERIC" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/LC%5FNUMERIC"></a><a id="index-LC_005fNUMERIC"></a><span><code class="code">LC_NUMERIC</code><a class="copiable-link" href="#index-LC_005fNUMERIC"> ¶</a></span></dt>
 <dd><p>This variable determines the locale category used for number formatting.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/LC%5FTIME"></a><dt id="index-LC_005fTIME"><span><code>LC_TIME</code><a href="#index-LC_005fTIME" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/LC%5FTIME"></a><a id="index-LC_005fTIME"></a><span><code class="code">LC_TIME</code><a class="copiable-link" href="#index-LC_005fTIME"> ¶</a></span></dt>
 <dd><p>This variable determines the locale category used for data and time
 formatting.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/LINENO"></a><dt id="index-LINENO"><span><code>LINENO</code><a href="#index-LINENO" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/LINENO"></a><a id="index-LINENO"></a><span><code class="code">LINENO</code><a class="copiable-link" href="#index-LINENO"> ¶</a></span></dt>
 <dd><p>The line number in the script or shell function currently executing.
-If <code>LINENO</code>
+Line numbers start with 1.
+When not in a script or function, the value is not
+guaranteed to be meaningful.
+If <code class="env">LINENO</code>
 is unset, it loses its special properties, even if it is
 subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/LINES"></a><dt id="index-LINES"><span><code>LINES</code><a href="#index-LINES" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Used by the <code>select</code> command to determine the column length
+<dt><a class="dashAnchor" name="//apple_ref/Variable/LINES"></a><a id="index-LINES"></a><span><code class="code">LINES</code><a class="copiable-link" href="#index-LINES"> ¶</a></span></dt>
+<dd><p>Used by the <code class="code">select</code> command to determine the column length
 for printing selection lists.
-Automatically set if the <code>checkwinsize</code> option is enabled
-(see <a href="The-Shopt-Builtin.html">The Shopt Builtin</a>), or in an interactive shell upon receipt of a
-<code>SIGWINCH</code>.
+Automatically set if the <code class="code">checkwinsize</code> option is enabled
+(see <a class="pxref" href="The-Shopt-Builtin.html">The Shopt Builtin</a>), or in an interactive shell upon receipt of a
+<code class="code">SIGWINCH</code>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/MACHTYPE"></a><dt id="index-MACHTYPE"><span><code>MACHTYPE</code><a href="#index-MACHTYPE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/MACHTYPE"></a><a id="index-MACHTYPE"></a><span><code class="code">MACHTYPE</code><a class="copiable-link" href="#index-MACHTYPE"> ¶</a></span></dt>
 <dd><p>A string that fully describes the system type on which Bash
-is executing, in the standard <small>GNU</small> <var>cpu-company-system</var> format.
+is executing, in the standard <small class="sc">GNU</small> <var class="var">cpu-company-system</var> format.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/MAILCHECK"></a><dt id="index-MAILCHECK"><span><code>MAILCHECK</code><a href="#index-MAILCHECK" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/MAILCHECK"></a><a id="index-MAILCHECK"></a><span><code class="code">MAILCHECK</code><a class="copiable-link" href="#index-MAILCHECK"> ¶</a></span></dt>
 <dd><p>How often (in seconds) that the shell should check for mail in the
-files specified in the <code>MAILPATH</code> or <code>MAIL</code> variables.
+files specified in the <code class="env">MAILPATH</code> or <code class="env">MAIL</code> variables.
 The default is 60 seconds.  When it is time to check
 for mail, the shell does so before displaying the primary prompt.
 If this variable is unset, or set to a value that is not a number
 greater than or equal to zero, the shell disables mail checking.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/MAPFILE"></a><dt id="index-MAPFILE"><span><code>MAPFILE</code><a href="#index-MAPFILE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/MAPFILE"></a><a id="index-MAPFILE"></a><span><code class="code">MAPFILE</code><a class="copiable-link" href="#index-MAPFILE"> ¶</a></span></dt>
 <dd><p>An array variable created to hold the text read by the
-<code>mapfile</code> builtin when no variable name is supplied.
+<code class="code">mapfile</code> builtin when no variable name is supplied.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/OLDPWD"></a><dt id="index-OLDPWD"><span><code>OLDPWD</code><a href="#index-OLDPWD" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The previous working directory as set by the <code>cd</code> builtin.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/OLDPWD"></a><a id="index-OLDPWD"></a><span><code class="code">OLDPWD</code><a class="copiable-link" href="#index-OLDPWD"> ¶</a></span></dt>
+<dd><p>The previous working directory as set by the <code class="code">cd</code> builtin.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/OPTERR"></a><dt id="index-OPTERR"><span><code>OPTERR</code><a href="#index-OPTERR" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/OPTERR"></a><a id="index-OPTERR"></a><span><code class="code">OPTERR</code><a class="copiable-link" href="#index-OPTERR"> ¶</a></span></dt>
 <dd><p>If set to the value 1, Bash displays error messages
-generated by the <code>getopts</code> builtin command.
+generated by the <code class="code">getopts</code> builtin command.
+<code class="env">OPTERR</code>
+is initialized to 1 each time the shell is invoked.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/OSTYPE"></a><dt id="index-OSTYPE"><span><code>OSTYPE</code><a href="#index-OSTYPE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/OSTYPE"></a><a id="index-OSTYPE"></a><span><code class="code">OSTYPE</code><a class="copiable-link" href="#index-OSTYPE"> ¶</a></span></dt>
 <dd><p>A string describing the operating system Bash is running on.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PIPESTATUS"></a><dt id="index-PIPESTATUS"><span><code>PIPESTATUS</code><a href="#index-PIPESTATUS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>An array variable (see <a href="Arrays.html">Arrays</a>)
-containing a list of exit status values from the processes
-in the most-recently-executed foreground pipeline (which may
-contain only a single command).
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PIPESTATUS"></a><a id="index-PIPESTATUS"></a><span><code class="code">PIPESTATUS</code><a class="copiable-link" href="#index-PIPESTATUS"> ¶</a></span></dt>
+<dd><p>An array variable (see <a class="pxref" href="Arrays.html">Arrays</a>)
+containing a list of exit status values from the commands
+in the most-recently-executed foreground pipeline, which may
+consist of only a simple command
+(see <a class="pxref" href="Shell-Commands.html">Shell Commands</a>).
+Bash sets
+<code class="code">PIPESTATUS</code>
+after executing multi-element pipelines,
+timed and negated pipelines,
+simple commands,
+subshells created with the ‘<samp class="samp">(</samp>’ operator,
+the
+<code class="code">[[</code>
+and
+<code class="code">((</code>
+compound commands, and
+after error conditions that result in the
+shell aborting command execution.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/POSIXLY%5FCORRECT"></a><dt id="index-POSIXLY_005fCORRECT"><span><code>POSIXLY_CORRECT</code><a href="#index-POSIXLY_005fCORRECT" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/POSIXLY%5FCORRECT"></a><a id="index-POSIXLY_005fCORRECT"></a><span><code class="code">POSIXLY_CORRECT</code><a class="copiable-link" href="#index-POSIXLY_005fCORRECT"> ¶</a></span></dt>
 <dd><p>If this variable is in the environment when Bash starts, the shell
-enters <small>POSIX</small> mode (see <a href="Bash-POSIX-Mode.html">Bash POSIX Mode</a>) before reading the
-startup files, as if the <samp>--posix</samp> invocation option had been supplied.
-If it is set while the shell is running, Bash enables <small>POSIX</small> mode,
+enters <small class="sc">POSIX</small> mode (see <a class="pxref" href="Bash-POSIX-Mode.html">Bash and POSIX</a>) before reading the
+startup files, as if the <samp class="option">--posix</samp> invocation option had been supplied.
+If it is set while the shell is running, Bash enables <small class="sc">POSIX</small> mode,
 as if the command
 </p><div class="example">
-<pre class="example"><code>set -o posix</code>
+<pre class="example-preformatted"><code class="code">set -o posix</code>
 </pre></div>
 <p>had been executed.
-When the shell enters <small>POSIX</small> mode, it sets this variable if it was
+When the shell enters <small class="sc">POSIX</small> mode, it sets this variable if it was
 not already set.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PPID"></a><dt id="index-PPID"><span><code>PPID</code><a href="#index-PPID" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The process <small>ID</small> of the shell’s parent process.  This variable
-is readonly.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PPID"></a><a id="index-PPID"></a><span><code class="code">PPID</code><a class="copiable-link" href="#index-PPID"> ¶</a></span></dt>
+<dd><p>The process <small class="sc">ID</small> of the shell’s parent process.
+This variable is readonly.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PROMPT%5FCOMMAND"></a><dt id="index-PROMPT_005fCOMMAND"><span><code>PROMPT_COMMAND</code><a href="#index-PROMPT_005fCOMMAND" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PROMPT%5FCOMMAND"></a><a id="index-PROMPT_005fCOMMAND"></a><span><code class="code">PROMPT_COMMAND</code><a class="copiable-link" href="#index-PROMPT_005fCOMMAND"> ¶</a></span></dt>
 <dd><p>If this variable is set, and is an array,
 the value of each set element is interpreted as a command to execute
-before printing the primary prompt (<code>$PS1</code>).
+before printing the primary prompt (<code class="env">$PS1</code>).
 If this is set but not an array variable,
 its value is used as a command to execute instead.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PROMPT%5FDIRTRIM"></a><dt id="index-PROMPT_005fDIRTRIM"><span><code>PROMPT_DIRTRIM</code><a href="#index-PROMPT_005fDIRTRIM" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PROMPT%5FDIRTRIM"></a><a id="index-PROMPT_005fDIRTRIM"></a><span><code class="code">PROMPT_DIRTRIM</code><a class="copiable-link" href="#index-PROMPT_005fDIRTRIM"> ¶</a></span></dt>
 <dd><p>If set to a number greater than zero, the value is used as the number of
-trailing directory components to retain when expanding the <code>\w</code> and
-<code>\W</code> prompt string escapes (see <a href="Controlling-the-Prompt.html">Controlling the Prompt</a>).
+trailing directory components to retain when expanding the <code class="code">\w</code> and
+<code class="code">\W</code> prompt string escapes (see <a class="pxref" href="Controlling-the-Prompt.html">Controlling the Prompt</a>).
 Characters removed are replaced with an ellipsis.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PS0"></a><dt id="index-PS0"><span><code>PS0</code><a href="#index-PS0" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The value of this parameter is expanded like <code>PS1</code>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PS0"></a><a id="index-PS0"></a><span><code class="code">PS0</code><a class="copiable-link" href="#index-PS0"> ¶</a></span></dt>
+<dd><p>The value of this parameter is expanded like <code class="env">PS1</code>
 and displayed by interactive shells after reading a command
 and before the command is executed.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PS3"></a><dt id="index-PS3"><span><code>PS3</code><a href="#index-PS3" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PS3"></a><a id="index-PS3"></a><span><code class="code">PS3</code><a class="copiable-link" href="#index-PS3"> ¶</a></span></dt>
 <dd><p>The value of this variable is used as the prompt for the
-<code>select</code> command.  If this variable is not set, the
-<code>select</code> command prompts with ‘<samp>#? </samp>’
+<code class="code">select</code> command.  If this variable is not set, the
+<code class="code">select</code> command prompts with ‘<samp class="samp">#? </samp>’
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PS4"></a><dt id="index-PS4"><span><code>PS4</code><a href="#index-PS4" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The value of this parameter is expanded like <code>PS1</code>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PS4"></a><a id="index-PS4"></a><span><code class="code">PS4</code><a class="copiable-link" href="#index-PS4"> ¶</a></span></dt>
+<dd><p>The value of this parameter is expanded like <code class="env">PS1</code>
 and the expanded value is the prompt printed before the command line
-is echoed when the <samp>-x</samp> option is set (see <a href="The-Set-Builtin.html">The Set Builtin</a>).
+is echoed when the <samp class="option">-x</samp> option is set (see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>).
 The first character of the expanded value is replicated multiple times,
 as necessary, to indicate multiple levels of indirection.
-The default is ‘<samp>+ </samp>’.
+The default is ‘<samp class="samp">+ </samp>’.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/PWD"></a><dt id="index-PWD"><span><code>PWD</code><a href="#index-PWD" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The current working directory as set by the <code>cd</code> builtin.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/PWD"></a><a id="index-PWD"></a><span><code class="code">PWD</code><a class="copiable-link" href="#index-PWD"> ¶</a></span></dt>
+<dd><p>The current working directory as set by the <code class="code">cd</code> builtin.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/RANDOM"></a><dt id="index-RANDOM"><span><code>RANDOM</code><a href="#index-RANDOM" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/RANDOM"></a><a id="index-RANDOM"></a><span><code class="code">RANDOM</code><a class="copiable-link" href="#index-RANDOM"> ¶</a></span></dt>
 <dd><p>Each time this parameter is referenced, it expands to a random integer
-between 0 and 32767. Assigning a value to this
-variable seeds the random number generator.
-If <code>RANDOM</code>
+between 0 and 32767.
+Assigning a value to
+<code class="env">RANDOM</code>
+initializes (seeds) the sequence of random numbers.
+Seeding the random number generator with the same constant value
+produces the same sequence of values.
+If <code class="env">RANDOM</code>
 is unset, it loses its special properties, even if it is
 subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/READLINE%5FARGUMENT"></a><dt id="index-READLINE_005fARGUMENT"><span><code>READLINE_ARGUMENT</code><a href="#index-READLINE_005fARGUMENT" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Any numeric argument given to a Readline command that was defined using
-‘<samp>bind -x</samp>’ (see <a href="Bash-Builtins.html">Bash Builtin Commands</a>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/READLINE%5FARGUMENT"></a><a id="index-READLINE_005fARGUMENT"></a><span><code class="code">READLINE_ARGUMENT</code><a class="copiable-link" href="#index-READLINE_005fARGUMENT"> ¶</a></span></dt>
+<dd><p>Any numeric argument given to a Readline
+command that was defined using
+‘<samp class="samp">bind -x</samp>’ (see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>
 when it was invoked.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/READLINE%5FLINE"></a><dt id="index-READLINE_005fLINE"><span><code>READLINE_LINE</code><a href="#index-READLINE_005fLINE" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The contents of the Readline line buffer, for use
-with ‘<samp>bind -x</samp>’ (see <a href="Bash-Builtins.html">Bash Builtin Commands</a>).
+<dt><a class="dashAnchor" name="//apple_ref/Variable/READLINE%5FLINE"></a><a id="index-READLINE_005fLINE"></a><span><code class="code">READLINE_LINE</code><a class="copiable-link" href="#index-READLINE_005fLINE"> ¶</a></span></dt>
+<dd><p>The contents of the Readline
+line buffer, for use with
+‘<samp class="samp">bind -x</samp>’ (see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/READLINE%5FMARK"></a><dt id="index-READLINE_005fMARK"><span><code>READLINE_MARK</code><a href="#index-READLINE_005fMARK" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The position of the <em>mark</em> (saved insertion point) in the
-Readline line buffer, for use
-with ‘<samp>bind -x</samp>’ (see <a href="Bash-Builtins.html">Bash Builtin Commands</a>).
+<dt><a class="dashAnchor" name="//apple_ref/Variable/READLINE%5FMARK"></a><a id="index-READLINE_005fMARK"></a><span><code class="code">READLINE_MARK</code><a class="copiable-link" href="#index-READLINE_005fMARK"> ¶</a></span></dt>
+<dd><p>The position of the <em class="dfn">mark</em> (saved insertion point) in the Readline
+line buffer, for use
+with ‘<samp class="samp">bind -x</samp>’ (see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>).
 The characters between the insertion point and the mark are often
-called the <em>region</em>.
+called the <em class="dfn">region</em>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/READLINE%5FPOINT"></a><dt id="index-READLINE_005fPOINT"><span><code>READLINE_POINT</code><a href="#index-READLINE_005fPOINT" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The position of the insertion point in the Readline line buffer, for use
-with ‘<samp>bind -x</samp>’ (see <a href="Bash-Builtins.html">Bash Builtin Commands</a>).
+<dt><a class="dashAnchor" name="//apple_ref/Variable/READLINE%5FPOINT"></a><a id="index-READLINE_005fPOINT"></a><span><code class="code">READLINE_POINT</code><a class="copiable-link" href="#index-READLINE_005fPOINT"> ¶</a></span></dt>
+<dd><p>The position of the insertion point in the Readline
+line buffer, for use with
+‘<samp class="samp">bind -x</samp>’ (see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>).
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/REPLY"></a><dt id="index-REPLY"><span><code>REPLY</code><a href="#index-REPLY" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>The default variable for the <code>read</code> builtin.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/REPLY"></a><a id="index-REPLY"></a><span><code class="code">REPLY</code><a class="copiable-link" href="#index-REPLY"> ¶</a></span></dt>
+<dd><p>The default variable for the <code class="code">read</code> builtin;
+set to the line read when <code class="code">read</code> is not supplied a variable name
+argument.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/SECONDS"></a><dt id="index-SECONDS"><span><code>SECONDS</code><a href="#index-SECONDS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/SECONDS"></a><a id="index-SECONDS"></a><span><code class="code">SECONDS</code><a class="copiable-link" href="#index-SECONDS"> ¶</a></span></dt>
 <dd><p>This variable expands to the number of seconds since the shell was started. 
 Assignment to this variable resets the count to the value assigned, and the
 expanded value becomes the value assigned plus the number of seconds
 since the assignment.
 The number of seconds at shell invocation and the current time are always
-determined by querying the system clock.
-If <code>SECONDS</code>
+determined by querying the system clock at one-second resolution.
+If <code class="env">SECONDS</code>
 is unset, it loses its special properties,
 even if it is subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/SHELL"></a><dt id="index-SHELL"><span><code>SHELL</code><a href="#index-SHELL" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/SHELL"></a><a id="index-SHELL"></a><span><code class="code">SHELL</code><a class="copiable-link" href="#index-SHELL"> ¶</a></span></dt>
 <dd><p>This environment variable expands to the full pathname to the shell.
 If it is not set when the shell starts,
 Bash assigns to it the full pathname of the current user’s login shell.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/SHELLOPTS"></a><dt id="index-SHELLOPTS"><span><code>SHELLOPTS</code><a href="#index-SHELLOPTS" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>A colon-separated list of enabled shell options.  Each word in
-the list is a valid argument for the <samp>-o</samp> option to the
-<code>set</code> builtin command (see <a href="The-Set-Builtin.html">The Set Builtin</a>).
-The options appearing in <code>SHELLOPTS</code> are those reported
-as ‘<samp>on</samp>’ by ‘<samp>set -o</samp>’.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/SHELLOPTS"></a><a id="index-SHELLOPTS"></a><span><code class="code">SHELLOPTS</code><a class="copiable-link" href="#index-SHELLOPTS"> ¶</a></span></dt>
+<dd><p>A colon-separated list of enabled shell options.
+Each word in the list is a valid argument for the <samp class="option">-o</samp> option
+to the <code class="code">set</code> builtin command (see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>).
+The options appearing in <code class="env">SHELLOPTS</code> are those reported
+as ‘<samp class="samp">on</samp>’ by ‘<samp class="samp">set -o</samp>’.
 If this variable is in the environment when Bash
-starts up, each shell option in the list will be enabled before
-reading any startup files.  This variable is readonly.
+starts up, the shell enables each option in the list before
+reading any startup files.
+If this variable is exported, child shells will enable each option
+in the list.
+This variable is readonly.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/SHLVL"></a><dt id="index-SHLVL"><span><code>SHLVL</code><a href="#index-SHLVL" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>Incremented by one each time a new instance of Bash is started.  This is
-intended to be a count of how deeply your Bash shells are nested.
+<dt><a class="dashAnchor" name="//apple_ref/Variable/SHLVL"></a><a id="index-SHLVL"></a><span><code class="code">SHLVL</code><a class="copiable-link" href="#index-SHLVL"> ¶</a></span></dt>
+<dd><p>Incremented by one each time a new instance of Bash is started.
+This is intended to be a count of how deeply your Bash shells are nested.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/SRANDOM"></a><dt id="index-SRANDOM"><span><code>SRANDOM</code><a href="#index-SRANDOM" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/SRANDOM"></a><a id="index-SRANDOM"></a><span><code class="code">SRANDOM</code><a class="copiable-link" href="#index-SRANDOM"> ¶</a></span></dt>
 <dd><p>This variable expands to a 32-bit pseudo-random number each time it is
-referenced. The random number generator is not linear on systems that
-support <samp>/dev/urandom</samp> or <code>arc4random</code>, so each returned number
+referenced.
+The random number generator is not linear on systems that
+support <samp class="file">/dev/urandom</samp> or <code class="code">arc4random</code>, so each returned number
 has no relationship to the numbers preceding it.
 The random number generator cannot be seeded, so assignments to this
 variable have no effect.
-If <code>SRANDOM</code>
+If <code class="env">SRANDOM</code>
 is unset, it loses its special properties,
 even if it is subsequently reset.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/TIMEFORMAT"></a><dt id="index-TIMEFORMAT"><span><code>TIMEFORMAT</code><a href="#index-TIMEFORMAT" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/TIMEFORMAT"></a><a id="index-TIMEFORMAT"></a><span><code class="code">TIMEFORMAT</code><a class="copiable-link" href="#index-TIMEFORMAT"> ¶</a></span></dt>
 <dd><p>The value of this parameter is used as a format string specifying
-how the timing information for pipelines prefixed with the <code>time</code>
+how the timing information for pipelines prefixed with the <code class="code">time</code>
 reserved word should be displayed.
-The ‘<samp>%</samp>’ character introduces an
+The ‘<samp class="samp">%</samp>’ character introduces an
 escape sequence that is expanded to a time value or other
 information.
 The escape sequences and their meanings are as
-follows; the braces denote optional portions. 
+follows; the brackets denote optional portions. 
 </p>
-<dl compact="compact">
-<dt><span><code>%%</code></span></dt>
-<dd><p>A literal ‘<samp>%</samp>’.
+<dl class="table">
+<dt><code class="code">%%</code></dt>
+<dd><p>A literal ‘<samp class="samp">%</samp>’.
 </p>
 </dd>
-<dt><span><code>%[<var>p</var>][l]R</code></span></dt>
+<dt><code class="code">%[<var class="var">p</var>][l]R</code></dt>
 <dd><p>The elapsed time in seconds. 
 </p>
 </dd>
-<dt><span><code>%[<var>p</var>][l]U</code></span></dt>
+<dt><code class="code">%[<var class="var">p</var>][l]U</code></dt>
 <dd><p>The number of CPU seconds spent in user mode. 
 </p>
 </dd>
-<dt><span><code>%[<var>p</var>][l]S</code></span></dt>
+<dt><code class="code">%[<var class="var">p</var>][l]S</code></dt>
 <dd><p>The number of CPU seconds spent in system mode. 
 </p>
 </dd>
-<dt><span><code>%P</code></span></dt>
+<dt><code class="code">%P</code></dt>
 <dd><p>The CPU percentage, computed as (%U + %S) / %R. 
 </p></dd>
 </dl>
 
-<p>The optional <var>p</var> is a digit specifying the precision, the number of
+<p>The optional <var class="var">p</var> is a digit specifying the precision, the number of
 fractional digits after a decimal point.
 A value of 0 causes no decimal point or fraction to be output.
-At most three places after the decimal point may be specified; values
-of <var>p</var> greater than 3 are changed to 3.
-If <var>p</var> is not specified, the value 3 is used. 
+<code class="code">time</code> prints at most six digits after the decimal point;
+values of <var class="var">p</var> greater than 6 are changed to 6.
+If <var class="var">p</var> is not specified,
+<code class="code">time</code> prints three digits after the decimal point.
 </p>
-<p>The optional <code>l</code> specifies a longer format, including minutes, of
-the form <var>MM</var>m<var>SS</var>.<var>FF</var>s.
-The value of <var>p</var> determines whether or not the fraction is included. 
+<p>The optional <code class="code">l</code> specifies a longer format, including minutes, of
+the form <var class="var">MM</var>m<var class="var">SS</var>.<var class="var">FF</var>s.
+The value of <var class="var">p</var> determines whether or not the fraction is included. 
 </p>
 <p>If this variable is not set, Bash acts as if it had the value
 </p><div class="example">
-<pre class="example"><code>$'\nreal\t%3lR\nuser\t%3lU\nsys\t%3lS'</code>
+<pre class="example-preformatted"><code class="code">$'\nreal\t%3lR\nuser\t%3lU\nsys\t%3lS'</code>
 </pre></div>
-<p>If the value is null, no timing information is displayed.
+<p>If the value is null, Bash does not display any timing information.
 A trailing newline is added when the format string is displayed.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/TMOUT"></a><dt id="index-TMOUT"><span><code>TMOUT</code><a href="#index-TMOUT" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
-<dd><p>If set to a value greater than zero, <code>TMOUT</code> is treated as the
-default timeout for the <code>read</code> builtin (see <a href="Bash-Builtins.html">Bash Builtin Commands</a>).
-The <code>select</code> command (see <a href="Conditional-Constructs.html">Conditional Constructs</a>) terminates
-if input does not arrive after <code>TMOUT</code> seconds when input is coming
+<dt><a class="dashAnchor" name="//apple_ref/Variable/TMOUT"></a><a id="index-TMOUT"></a><span><code class="code">TMOUT</code><a class="copiable-link" href="#index-TMOUT"> ¶</a></span></dt>
+<dd><p>If set to a value greater than zero, the <code class="code">read</code> builtin uses the
+value as its
+default timeout (see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>).
+The <code class="code">select</code> command (see <a class="pxref" href="Conditional-Constructs.html">Conditional Constructs</a>) terminates
+if input does not arrive after <code class="code">TMOUT</code> seconds when input is coming
 from a terminal.
 </p>
 <p>In an interactive shell, the value is interpreted as
 the number of seconds to wait for a line of input after issuing
 the primary prompt.
-Bash
-terminates after waiting for that number of seconds if a complete
-line of input does not arrive.
+Bash terminates after waiting for that number of seconds if a
+complete line of input does not arrive.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/TMPDIR"></a><dt id="index-TMPDIR"><span><code>TMPDIR</code><a href="#index-TMPDIR" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/TMPDIR"></a><a id="index-TMPDIR"></a><span><code class="code">TMPDIR</code><a class="copiable-link" href="#index-TMPDIR"> ¶</a></span></dt>
 <dd><p>If set, Bash uses its value as the name of a directory in which
 Bash creates temporary files for the shell’s use.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Variable/UID"></a><dt id="index-UID"><span><code>UID</code><a href="#index-UID" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Variable/UID"></a><a id="index-UID"></a><span><code class="code">UID</code><a class="copiable-link" href="#index-UID"> ¶</a></span></dt>
 <dd><p>The numeric real user id of the current user.  This variable is readonly.
 </p>
 </dd>
@@ -984,7 +1139,7 @@ Bash creates temporary files for the shell’s use.
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Previous: <a href="Bourne-Shell-Variables.html">Bourne Shell Variables</a>, Up: <a href="Shell-Variables.html">Shell Variables</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

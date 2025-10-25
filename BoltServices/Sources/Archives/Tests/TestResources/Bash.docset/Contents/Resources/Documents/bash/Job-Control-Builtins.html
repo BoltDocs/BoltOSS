@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -32,21 +32,9 @@ A copy of the license is included in the section entitled
 <link href="Job-Control-Basics.html" rel="prev" title="Job Control Basics">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -55,190 +43,224 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Job-Control-Builtins">
-<div class="header">
+<div class="section-level-extent" id="Job-Control-Builtins">
+<div class="nav-panel">
 <p>
 Next: <a href="Job-Control-Variables.html" accesskey="n" rel="next">Job Control Variables</a>, Previous: <a href="Job-Control-Basics.html" accesskey="p" rel="prev">Job Control Basics</a>, Up: <a href="Job-Control.html" accesskey="u" rel="up">Job Control</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Job-Control-Builtins-1"></span><h3 class="section">7.2 Job Control Builtins</h3>
+<h3 class="section" id="Job-Control-Builtins-1"><span>7.2 Job Control Builtins<a class="copiable-link" href="#Job-Control-Builtins-1"> ¶</a></span></h3>
 
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Builtin/bg"></a><dt id="index-bg"><span><code>bg</code><a href="#index-bg" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dl class="table">
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/bg"></a><a id="index-bg"></a><span><code class="code">bg</code><a class="copiable-link" href="#index-bg"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">bg [<var>jobspec</var> …]
+<pre class="example-preformatted">bg [<var class="var">jobspec</var> ...]
 </pre></div>
 
-<p>Resume each suspended job <var>jobspec</var> in the background, as if it
-had been started with ‘<samp>&amp;</samp>’.
-If <var>jobspec</var> is not supplied, the current job is used.
-The return status is zero unless it is run when job control is not
+<p>Resume each suspended job <var class="var">jobspec</var> in the background, as if it
+had been started with ‘<samp class="samp">&amp;</samp>’.
+If <var class="var">jobspec</var> is not supplied, the shell uses its
+notion of the current job.
+<code class="code">bg</code> returns  zero unless it is run when job control is not
 enabled, or, when run with job control enabled, any
-<var>jobspec</var> was not found or specifies a job
+<var class="var">jobspec</var> was not found or specifies a job
 that was started without job control.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/fg"></a><dt id="index-fg"><span><code>fg</code><a href="#index-fg" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/fg"></a><a id="index-fg"></a><span><code class="code">fg</code><a class="copiable-link" href="#index-fg"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">fg [<var>jobspec</var>]
+<pre class="example-preformatted">fg [<var class="var">jobspec</var>]
 </pre></div>
 
-<p>Resume the job <var>jobspec</var> in the foreground and make it the current job.
-If <var>jobspec</var> is not supplied, the current job is used.
+<p>Resume the job <var class="var">jobspec</var> in the foreground and make it the current job.
+If <var class="var">jobspec</var> is not supplied, <code class="code">fg</code> resumes the current job.
 The return status is that of the command placed into the foreground,
 or non-zero if run when job control is disabled or, when run with
-job control enabled, <var>jobspec</var> does not specify a valid job or
-<var>jobspec</var> specifies a job that was started without job control.
+job control enabled, <var class="var">jobspec</var> does not specify a valid job or
+<var class="var">jobspec</var> specifies a job that was started without job control.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/jobs"></a><dt id="index-jobs"><span><code>jobs</code><a href="#index-jobs" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/jobs"></a><a id="index-jobs"></a><span><code class="code">jobs</code><a class="copiable-link" href="#index-jobs"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">jobs [-lnprs] [<var>jobspec</var>]
-jobs -x <var>command</var> [<var>arguments</var>]
+<pre class="example-preformatted">jobs [-lnprs] [<var class="var">jobspec</var>]
+jobs -x <var class="var">command</var> [<var class="var">arguments</var>]
 </pre></div>
 
-<p>The first form lists the active jobs.  The options have the
-following meanings:
+<p>The first form lists the active jobs.
+The options have the following meanings:
 </p>
-<dl compact="compact">
-<dt><span><code>-l</code></span></dt>
-<dd><p>List process <small>ID</small>s in addition to the normal information.
+<dl class="table">
+<dt><code class="code">-l</code></dt>
+<dd><p>List process <small class="sc">ID</small>s in addition to the normal information.
 </p>
 </dd>
-<dt><span><code>-n</code></span></dt>
+<dt><code class="code">-n</code></dt>
 <dd><p>Display information only about jobs that have changed status since
 the user was last notified of their status.
 </p>
 </dd>
-<dt><span><code>-p</code></span></dt>
-<dd><p>List only the process <small>ID</small> of the job’s process group leader.
+<dt><code class="code">-p</code></dt>
+<dd><p>List only the process <small class="sc">ID</small> of the job’s process group leader.
 </p>
 </dd>
-<dt><span><code>-r</code></span></dt>
+<dt><code class="code">-r</code></dt>
 <dd><p>Display only running jobs.
 </p>
 </dd>
-<dt><span><code>-s</code></span></dt>
+<dt><code class="code">-s</code></dt>
 <dd><p>Display only stopped jobs.
 </p></dd>
 </dl>
 
-<p>If <var>jobspec</var> is given,
-output is restricted to information about that job. 
-If <var>jobspec</var> is not supplied, the status of all jobs is
-listed.
+<p>If <var class="var">jobspec</var> is supplied,
+<code class="code">jobs</code> restricts output to information about that job. 
+If <var class="var">jobspec</var> is not supplied, <code class="code">jobs</code> lists the status of all jobs.
+The return status is zero unless an invalid option is encountered
+or an invalid
+<var class="var">jobspec</var>
+is supplied.
 </p>
-<p>If the <samp>-x</samp> option is supplied, <code>jobs</code> replaces any
-<var>jobspec</var> found in <var>command</var> or <var>arguments</var> with the
-corresponding process group <small>ID</small>, and executes <var>command</var>,
-passing it <var>argument</var>s, returning its exit status. 
+<p>If the <samp class="option">-x</samp> option is supplied, <code class="code">jobs</code> replaces any
+<var class="var">jobspec</var> found in <var class="var">command</var> or <var class="var">arguments</var> with the
+corresponding process group <small class="sc">ID</small>, and executes <var class="var">command</var>,
+passing it <var class="var">argument</var>s, returning its exit status. 
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/kill"></a><dt id="index-kill"><span><code>kill</code><a href="#index-kill" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/kill"></a><a id="index-kill"></a><span><code class="code">kill</code><a class="copiable-link" href="#index-kill"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">kill [-s <var>sigspec</var>] [-n <var>signum</var>] [-<var>sigspec</var>] <var>jobspec</var> or <var>pid</var>
-kill -l|-L [<var>exit_status</var>]
+<pre class="example-preformatted">kill [-s <var class="var">sigspec</var>] [-n <var class="var">signum</var>] [-<var class="var">sigspec</var>] <var class="var">id</var> [...]
+kill -l|-L [<var class="var">exit_status</var>]
 </pre></div>
 
-<p>Send a signal specified by <var>sigspec</var> or <var>signum</var> to the process
-named by job specification <var>jobspec</var> or process <small>ID</small> <var>pid</var>.
-<var>sigspec</var> is either a case-insensitive signal name such as
-<code>SIGINT</code> (with or without the <code>SIG</code> prefix)
-or a signal number; <var>signum</var> is a signal number.
-If <var>sigspec</var> and <var>signum</var> are not present, <code>SIGTERM</code> is used.
-The <samp>-l</samp> option lists the signal names.
-If any arguments are supplied when <samp>-l</samp> is given, the names of the
-signals corresponding to the arguments are listed, and the return status
-is zero.
-<var>exit_status</var> is a number specifying a signal number or the exit
-status of a process terminated by a signal.
-The <samp>-L</samp> option is equivalent to <samp>-l</samp>.
-The return status is zero if at least one signal was successfully sent,
+<p>Send a signal specified by <var class="var">sigspec</var> or <var class="var">signum</var> to the processes
+named by each <var class="var">id</var>.
+Each <var class="var">id</var> may be a
+job specification <var class="var">jobspec</var> or process <small class="sc">ID</small> <var class="var">pid</var>.
+<var class="var">sigspec</var> is either a case-insensitive signal name such as
+<code class="code">SIGINT</code> (with or without the <code class="code">SIG</code> prefix)
+or a signal number; <var class="var">signum</var> is a signal number.
+If <var class="var">sigspec</var> and <var class="var">signum</var> are not present, <code class="code">kill</code>
+sends <code class="code">SIGTERM</code>.
+</p>
+<p>The <samp class="option">-l</samp> option lists the signal names.
+If any arguments are supplied when <samp class="option">-l</samp> is supplied,
+<code class="code">kill</code> lists the names of the signals corresponding to the arguments,
+and the return status is zero.
+<var class="var">exit_status</var> is a number specifying a signal number or the exit
+status of a process terminated by a signal;
+if it is supplied, <code class="code">kill</code> prints the name of the signal that caused
+the process to terminate.
+<code class="code">kill</code> assumes that process exit statuses are greater than 128;
+anything less than that is a signal number.
+The <samp class="option">-L</samp> option is equivalent to <samp class="option">-l</samp>.
+</p>
+<p>The return status is zero if at least one signal was successfully sent,
 or non-zero if an error occurs or an invalid option is encountered.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/wait"></a><dt id="index-wait"><span><code>wait</code><a href="#index-wait" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/wait"></a><a id="index-wait"></a><span><code class="code">wait</code><a class="copiable-link" href="#index-wait"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">wait [-fn] [-p <var>varname</var>] [<var>jobspec</var> or <var>pid</var> …]
+<pre class="example-preformatted">wait [-fn] [-p <var class="var">varname</var>] [<var class="var">id</var> ...]
 </pre></div>
 
-<p>Wait until the child process specified by each process <small>ID</small> <var>pid</var>
-or job specification <var>jobspec</var> exits and return the exit status of the
-last command waited for.
-If a job spec is given, all processes in the job are waited for.
-If no arguments are given,
-<code>wait</code> waits for all running background jobs and
-the last-executed process substitution, if its process id is the same as
-<var>$!</var>,
+<p>Wait until the child process specified by each <var class="var">id</var> exits and
+return the exit status of the last <var class="var">id</var>.
+Each <var class="var">id</var> may be a process <small class="sc">ID</small> <var class="var">pid</var>
+or a job specification <var class="var">jobspec</var>;
+if a jobspec is supplied, <code class="code">wait</code> waits for all processes in the job.
+</p>
+<p>If no options or <var class="var">id</var>s are supplied,
+<code class="code">wait</code> waits for all running background jobs and
+the last-executed process substitution,
+if its process id is the same as <var class="var">$!</var>,
 and the return status is zero.
-If the <samp>-n</samp> option is supplied, <code>wait</code> waits for a single job
-from the list of <var>pid</var>s or <var>jobspec</var>s or, if no arguments are
-supplied, any job, 
+</p>
+<p>If the <samp class="option">-n</samp> option is supplied, <code class="code">wait</code> waits for any one of
+the <var class="var">id</var>s or,
+if no <var class="var">id</var>s are supplied, any job or process substitution,
 to complete and returns its exit status.
-If none of the supplied arguments is a child of the shell, or if no arguments
-are supplied and the shell has no unwaited-for children, the exit status
-is 127.
-If the <samp>-p</samp> option is supplied, the process or job identifier of the job
-for which the exit status is returned is assigned to the variable
-<var>varname</var> named by the option argument.
-The variable will be unset initially, before any assignment.
-This is useful only when the <samp>-n</samp> option is supplied.
-Supplying the <samp>-f</samp> option, when job control is enabled,
-forces <code>wait</code> to wait for each <var>pid</var> or <var>jobspec</var> to
-terminate before returning its status, instead of returning when it changes
-status.
-If neither <var>jobspec</var> nor <var>pid</var> specifies an active child process
-of the shell, the return status is 127.
-If <code>wait</code> is interrupted by a signal, the return status will be greater
-than 128, as described above (see <a href="Signals.html">Signals</a>).
-Otherwise, the return status is the exit  status
-of the last process or job waited for.
+If none of the supplied <var class="var">id</var>s is a child of the shell,
+or if no arguments are supplied and the shell has no unwaited-for children,
+the exit status is 127.
+</p>
+<p>If the <samp class="option">-p</samp> option is supplied, <code class="code">wait</code> assigns
+the process or job identifier of the job
+for which the exit status is returned to the
+variable <var class="var">varname</var> named by the option argument.
+The variable,
+which cannot be readonly,
+will be unset initially, before any assignment.
+This is useful only when used with the <samp class="option">-n</samp> option.
+</p>
+<p>Supplying the <samp class="option">-f</samp> option, when job control is enabled,
+forces <code class="code">wait</code> to wait for each <var class="var">id</var> to terminate before
+returning its status, instead of returning when it changes status.
+</p>
+<p>If none of the <var class="var">id</var>s specify one of the shell’s an active child
+processes, the return status is 127.
+If <code class="code">wait</code> is interrupted by a signal,
+any <var class="var">varname</var> will remain unset,
+and the return status will be greater
+than 128, as described above (see <a class="pxref" href="Signals.html">Signals</a>).
+Otherwise, the return status is the exit  status of the last <var class="var">id</var>.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/disown"></a><dt id="index-disown"><span><code>disown</code><a href="#index-disown" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/disown"></a><a id="index-disown"></a><span><code class="code">disown</code><a class="copiable-link" href="#index-disown"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">disown [-ar] [-h] [<var>jobspec</var> … | <var>pid</var> … ]
+<pre class="example-preformatted">disown [-ar] [-h] [<var class="var">id</var> ...]
 </pre></div>
 
-<p>Without options, remove each <var>jobspec</var> from the table of
+<p>Without options, remove each <var class="var">id</var> from the table of
 active jobs.
-If the <samp>-h</samp> option is given, the job is not removed from the table,
-but is marked so that <code>SIGHUP</code> is not sent to the job if the shell
-receives a <code>SIGHUP</code>.
-If <var>jobspec</var> is not present, and neither the <samp>-a</samp> nor the
-<samp>-r</samp> option is supplied, the current job is used.
-If no <var>jobspec</var> is supplied, the <samp>-a</samp> option means to remove or
-mark all jobs; the <samp>-r</samp> option without a <var>jobspec</var>
-argument restricts operation to running jobs.
+Each <var class="var">id</var> may be a job specification <var class="var">jobspec</var>
+or a process <small class="sc">ID</small> <var class="var">pid</var>;
+if <var class="var">id</var> is a <var class="var">pid</var>,
+<code class="code">disown</code> uses the job containing <var class="var">pid</var> as <var class="var">jobspec</var>.
+</p>
+<p>If the <samp class="option">-h</samp> option is supplied,
+<code class="code">disown</code> does not remove the jobs corresponding to each <code class="code">id</code>
+from the jobs table,
+but rather marks them so the shell does not send
+<code class="code">SIGHUP</code>
+to the job if the shell receives a
+<code class="code">SIGHUP</code>.
+</p>
+<p>If no <var class="var">id</var> is supplied, the <samp class="option">-a</samp> option means to remove or
+mark all jobs; the <samp class="option">-r</samp> option without an <var class="var">id</var>
+argument removes or marks running jobs.
+If no <var class="var">id</var> is supplied,
+and neither the <samp class="option">-a</samp> nor the <samp class="option">-r</samp> option is supplied,
+<code class="code">disown</code> removes or marks the current job.
+</p>
+<p>The return value is 0 unless an <var class="var">id</var> does not specify a valid job.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/suspend"></a><dt id="index-suspend"><span><code>suspend</code><a href="#index-suspend" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/suspend"></a><a id="index-suspend"></a><span><code class="code">suspend</code><a class="copiable-link" href="#index-suspend"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example">suspend [-f]
+<pre class="example-preformatted">suspend [-f]
 </pre></div>
 
 <p>Suspend the execution of this shell until it receives a
-<code>SIGCONT</code> signal.
-A login shell,
-or a shell without job control enabled,
-cannot be suspended; the <samp>-f</samp>
-option can be used to override this and force the suspension.
+<code class="code">SIGCONT</code> signal.
+A login shell, or a shell without job control enabled,
+cannot be suspended; the <samp class="option">-f</samp>
+option will override this and force the suspension.
 The return status is 0 unless the shell is a login shell
 or job control is not enabled
 and
-<samp>-f</samp>
+<samp class="option">-f</samp>
 is not supplied.
 </p>
 </dd>
 </dl>
 
-<p>When job control is not active, the <code>kill</code> and <code>wait</code>
-builtins do not accept <var>jobspec</var> arguments.  They must be
-supplied process <small>ID</small>s.
+<p>When job control is not active, the <code class="code">kill</code> and <code class="code">wait</code>
+builtins do not accept <var class="var">jobspec</var> arguments.
+They must be supplied process <small class="sc">ID</small>s.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="Job-Control-Variables.html">Job Control Variables</a>, Previous: <a href="Job-Control-Basics.html">Job Control Basics</a>, Up: <a href="Job-Control.html">Job Control</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

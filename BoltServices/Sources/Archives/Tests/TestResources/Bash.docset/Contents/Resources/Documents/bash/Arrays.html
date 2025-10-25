@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,21 +35,9 @@ A copy of the license is included in the section entitled
 <link href="Aliases.html" rel="prev" title="Aliases">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -58,118 +46,154 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Arrays">
-<div class="header">
+<div class="section-level-extent" id="Arrays">
+<div class="nav-panel">
 <p>
 Next: <a href="The-Directory-Stack.html" accesskey="n" rel="next">The Directory Stack</a>, Previous: <a href="Aliases.html" accesskey="p" rel="prev">Aliases</a>, Up: <a href="Bash-Features.html" accesskey="u" rel="up">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Arrays-1"></span><h3 class="section">6.7 Arrays</h3>
-<span id="index-arrays"></span>
+<h3 class="section" id="Arrays-1"><span>6.7 Arrays<a class="copiable-link" href="#Arrays-1"> &para;</a></span></h3>
+<a class="index-entry-id" id="index-arrays"></a>
 
-<p>Bash provides one-dimensional indexed and associative array variables.
-Any variable may be used as an indexed array;
-the <code>declare</code> builtin will explicitly declare an array.
+<p>Bash
+provides one-dimensional indexed and associative array variables.
+Any variable may be used as an indexed array; the
+<code class="code">declare</code>
+builtin explicitly declares an array.
 There is no maximum
 limit on the size of an array, nor any requirement that members
 be indexed or assigned contiguously.
-Indexed arrays are referenced using integers (including arithmetic
-expressions (see <a href="Shell-Arithmetic.html">Shell Arithmetic</a>)) and are zero-based;
+Indexed arrays are referenced using arithmetic expressions
+that must expand to an integer (see <a class="pxref" href="Shell-Arithmetic.html">Shell Arithmetic</a>))
+and are zero-based;
 associative arrays use arbitrary strings.
 Unless otherwise noted, indexed array indices must be non-negative integers.
 </p>
-<p>An indexed array is created automatically if any variable is assigned to
-using the syntax
+<p>The shell performs
+parameter and variable expansion, arithmetic expansion,
+command substitution, and quote removal
+on indexed array subscripts.
+Since this
+can potentially result in empty strings,
+subscript indexing treats
+those as expressions that evaluate to 0.
+</p>
+<p>The shell performs
+tilde expansion,
+parameter and variable expansion, arithmetic expansion,
+command substitution, and quote removal
+on associative array subscripts.
+Empty strings cannot be used as associative array keys.
+</p>
+<p>Bash automatically creates an indexed array
+if any variable is assigned to using the syntax
 </p><div class="example">
-<pre class="example"><var>name</var>[<var>subscript</var>]=<var>value</var>
+<pre class="example-preformatted"><var class="var">name</var>[<var class="var">subscript</var>]=<var class="var">value</var>
 </pre></div>
 
-<p>The <var>subscript</var>
-is treated as an arithmetic expression that must evaluate to a number.
-To explicitly declare an array, use
+<p>The <var class="var">subscript</var>
+is treated as an arithmetic expression that must evaluate to a number
+greater than or equal to zero.
+To explicitly declare an indexed array, use
 </p><div class="example">
-<pre class="example">declare -a <var>name</var>
+<pre class="example-preformatted">declare -a <var class="var">name</var>
 </pre></div>
-<p>The syntax
+<p>(see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>).
+The syntax
 </p><div class="example">
-<pre class="example">declare -a <var>name</var>[<var>subscript</var>]
+<pre class="example-preformatted">declare -a <var class="var">name</var>[<var class="var">subscript</var>]
 </pre></div>
-<p>is also accepted; the <var>subscript</var> is ignored.
+<p>is also accepted; the <var class="var">subscript</var> is ignored.
 </p>
 <p>Associative arrays are created using
 </p><div class="example">
-<pre class="example">declare -A <var>name</var>
+<pre class="example-preformatted">declare -A <var class="var">name</var>
 </pre></div>
 
-<p>Attributes may be
-specified for an array variable using the <code>declare</code> and
-<code>readonly</code> builtins.  Each attribute applies to all members of
-an array.
+<p>Attributes may be specified for an array variable using the
+<code class="code">declare</code> and <code class="code">readonly</code> builtins.
+Each attribute applies to all members of an array.
 </p>
-<p>Arrays are assigned to using compound assignments of the form
+<p>Arrays are assigned using compound assignments of the form
 </p><div class="example">
-<pre class="example"><var>name</var>=(<var>value1</var> <var>value2</var> &hellip; )
+<pre class="example-preformatted"><var class="var">name</var>=(<var class="var">value1</var> <var class="var">value2</var> ... )
 </pre></div>
 <p>where each
-<var>value</var> may be of the form <code>[<var>subscript</var>]=</code><var>string</var>.
-Indexed array assignments do not require anything but <var>string</var>.
-When assigning to indexed arrays, if
+<var class="var">value</var> may be of the form <code class="code">[<var class="var">subscript</var>]=</code><var class="var">string</var>.
+Indexed array assignments do not require anything but <var class="var">string</var>.
+</p>
+<p>Each <var class="var">value</var> in the list undergoes the shell expansions
+described above (see <a class="pxref" href="Shell-Expansions.html">Shell Expansions</a>),
+but <var class="var">value</var>s that are valid variable assignments
+including the brackets and subscript do not undergo
+brace expansion and word splitting, as with individual
+variable assignments.
+</p>
+<p>When assigning to indexed arrays, if
 the optional subscript is supplied, that index is assigned to;
 otherwise the index of the element assigned is the last index assigned
-to by the statement plus one.  Indexing starts at zero.
-</p>
-<p>Each <var>value</var> in the list undergoes all the shell expansions
-described above (see <a href="Shell-Expansions.html">Shell Expansions</a>).
+to by the statement plus one.
+Indexing starts at zero.
 </p>
 <p>When assigning to an associative array, the words in a compound assignment
 may be either assignment statements, for which the subscript is required,
 or a list of words that is interpreted as a sequence of alternating keys
 and values:
-<var>name</var>=(<var>key1</var> <var>value1</var> <var>key2</var> <var>value2</var> &hellip; ).
+<var class="var">name</var>=(<var class="var">key1</var> <var class="var">value1</var> <var class="var">key2</var> <var class="var">value2</var> &hellip; ).
 These are treated identically to
-<var>name</var>=( [<var>key1</var>]=<var>value1</var> [<var>key2</var>]=<var>value2</var> &hellip; ).
+<var class="var">name</var>=( [<var class="var">key1</var>]=<var class="var">value1</var> [<var class="var">key2</var>]=<var class="var">value2</var> &hellip; ).
 The first word in the list determines how the remaining words
 are interpreted; all assignments in a list must be of the same type.
 When using key/value pairs, the keys may not be missing or empty;
 a final missing value is treated like the empty string.
 </p>
-<p>This syntax is also accepted by the <code>declare</code>
-builtin.  Individual array elements may be assigned to using the
-<code><var>name</var>[<var>subscript</var>]=<var>value</var></code> syntax introduced above.
+<p>This syntax is also accepted by the <code class="code">declare</code>
+builtin.
+Individual array elements may be assigned to using the
+<code class="code"><var class="var">name</var>[<var class="var">subscript</var>]=<var class="var">value</var></code> syntax introduced above.
 </p>
-<p>When assigning to an indexed array, if <var>name</var>
+<p>When assigning to an indexed array, if <var class="var">name</var>
 is subscripted by a negative number, that number is
 interpreted as relative to one greater than the maximum index of
-<var>name</var>, so negative indices count back from the end of the
+<var class="var">name</var>, so negative indices count back from the end of the
 array, and an index of -1 references the last element.
 </p>
-<p>The &lsquo;<samp>+=</samp>&rsquo; operator will append to an array variable when assigning
-using the compound assignment syntax; see <a href="Shell-Parameters.html">Shell Parameters</a> above.
+<p>The &lsquo;<samp class="samp">+=</samp>&rsquo;
+operator appends to an array variable when assigning
+using the compound assignment syntax; see
+<a class="ref" href="Shell-Parameters.html">Shell Parameters</a> above.
 </p>
-<p>Any element of an array may be referenced using
-<code>${<var>name</var>[<var>subscript</var>]}</code>.
+<p>An array element is referenced using
+<code class="code">${<var class="var">name</var>[<var class="var">subscript</var>]}</code>.
 The braces are required to avoid
-conflicts with the shell&rsquo;s filename expansion operators.  If the
-<var>subscript</var> is &lsquo;<samp>@</samp>&rsquo; or &lsquo;<samp>*</samp>&rsquo;, the word expands to all members
-of the array <var>name</var>.  These subscripts differ only when the word
+conflicts with the shell&rsquo;s filename expansion operators.
+If the <var class="var">subscript</var> is &lsquo;<samp class="samp">@</samp>&rsquo; or &lsquo;<samp class="samp">*</samp>&rsquo;,
+the word expands to all members
+of the array <var class="var">name</var>, unless otherwise noted in the description of a
+builtin or word expansion.
+These subscripts differ only when the word
 appears within double quotes.
 If the word is double-quoted,
-<code>${<var>name</var>[*]}</code> expands to a single word with
+<code class="code">${<var class="var">name</var>[*]}</code> expands to a single word with
 the value of each array member separated by the first character of the
-<code>IFS</code> variable, and <code>${<var>name</var>[@]}</code> expands each element of
-<var>name</var> to a separate word.  When there are no array members,
-<code>${<var>name</var>[@]}</code> expands to nothing.
-If the double-quoted expansion occurs within a word, the expansion of
-the first parameter is joined with the beginning part of the original
-word, and the expansion of the last parameter is joined with the last
-part of the original word.
+<code class="env">IFS</code> variable, and <code class="code">${<var class="var">name</var>[@]}</code> expands each element of
+<var class="var">name</var> to a separate word.
+When there are no array members, <code class="code">${<var class="var">name</var>[@]}</code> expands to
+nothing.
+If the double-quoted expansion occurs within a word,
+the expansion of the first parameter is joined with the beginning part of the
+expansion of the original word,
+and the expansion of the last parameter is joined with the last part of the
+expansion of the original word.
 This is analogous to the
-expansion of the special parameters &lsquo;<samp>@</samp>&rsquo; and &lsquo;<samp>*</samp>&rsquo;. 
-<code>${#<var>name</var>[<var>subscript</var>]}</code> expands to the length of
-<code>${<var>name</var>[<var>subscript</var>]}</code>.
-If <var>subscript</var> is &lsquo;<samp>@</samp>&rsquo; or
-&lsquo;<samp>*</samp>&rsquo;, the expansion is the number of elements in the array. 
-If the <var>subscript</var>
+expansion of the special parameters &lsquo;<samp class="samp">@</samp>&rsquo; and &lsquo;<samp class="samp">*</samp>&rsquo;. 
+</p>
+<p><code class="code">${#<var class="var">name</var>[<var class="var">subscript</var>]}</code> expands to the length of
+<code class="code">${<var class="var">name</var>[<var class="var">subscript</var>]}</code>.
+If <var class="var">subscript</var> is &lsquo;<samp class="samp">@</samp>&rsquo; or &lsquo;<samp class="samp">*</samp>&rsquo;,
+the expansion is the number of elements in the array. 
+</p>
+<p>If the <var class="var">subscript</var>
 used to reference an element of an indexed array
 evaluates to a number less than zero, it is
 interpreted as relative to one greater than the maximum index of the array,
@@ -178,52 +202,59 @@ and an index of -1 refers to the last element.
 </p>
 <p>Referencing an array variable without a subscript is equivalent to
 referencing with a subscript of 0.
-Any reference to a variable using a valid subscript is legal, and
-<code>bash</code> will create an array if necessary.
+Any reference to a variable using a valid subscript is valid;
+Bash creates an array if necessary.
 </p>
 <p>An array variable is considered set if a subscript has been assigned a
-value.  The null string is a valid value.
+value.
+The null string is a valid value.
 </p>
 <p>It is possible to obtain the keys (indices) of an array as well as the values.
-${!<var>name</var>[@]} and ${!<var>name</var>[*]} expand to the indices
-assigned in array variable <var>name</var>.
+${!<var class="var">name</var>[@]} and ${!<var class="var">name</var>[*]} expand to the indices
+assigned in array variable <var class="var">name</var>.
 The treatment when in double quotes is similar to the expansion of the
-special parameters &lsquo;<samp>@</samp>&rsquo; and &lsquo;<samp>*</samp>&rsquo; within double quotes.
+special parameters &lsquo;<samp class="samp">@</samp>&rsquo; and &lsquo;<samp class="samp">*</samp>&rsquo; within double quotes.
 </p>
-<p>The <code>unset</code> builtin is used to destroy arrays.
-<code>unset <var>name</var>[<var>subscript</var>]</code>
-destroys the array element at index <var>subscript</var>.
+<p>The <code class="code">unset</code> builtin is used to destroy arrays.
+<code class="code">unset <var class="var">name</var>[<var class="var">subscript</var>]</code>
+unsets the array element at index <var class="var">subscript</var>.
 Negative subscripts to indexed arrays are interpreted as described above.
 Unsetting the last element of an array variable does not unset the variable.
-<code>unset <var>name</var></code>, where <var>name</var> is an array, removes the
+<code class="code">unset <var class="var">name</var></code>, where <var class="var">name</var> is an array, removes the
 entire array.
-<code>unset <var>name</var>[<var>subscript</var>]</code> behaves differently
-depending on the array type when given a
-subscript of &lsquo;<samp>*</samp>&rsquo; or &lsquo;<samp>@</samp>&rsquo;.
-When <var>name</var> is an associative array, it removes the element with key
-&lsquo;<samp>*</samp>&rsquo; or &lsquo;<samp>@</samp>&rsquo;.
-If <var>name</var> is an indexed array, <code>unset</code> removes all of the elements,
+<code class="code">unset <var class="var">name</var>[<var class="var">subscript</var>]</code> behaves differently
+depending on the array type when
+<var class="var">subscript</var> is &lsquo;<samp class="samp">*</samp>&rsquo; or &lsquo;<samp class="samp">@</samp>&rsquo;.
+When <var class="var">name</var> is an associative array, it removes the element with key
+&lsquo;<samp class="samp">*</samp>&rsquo; or &lsquo;<samp class="samp">@</samp>&rsquo;.
+If <var class="var">name</var> is an indexed array, <code class="code">unset</code> removes all of the elements,
 but does not remove the array itself.
 </p>
 <p>When using a variable name with a subscript as an argument to a command,
-such as with <code>unset</code>, without using the word expansion syntax
-described above, the argument is subject to the shell&rsquo;s filename expansion.
-If filename expansion is not desired, the argument should be quoted.
+such as with <code class="code">unset</code>, without using the word expansion syntax
+described above (e.g., unset a[4]),
+the argument is subject to the shell&rsquo;s filename expansion.
+Quote the argument if pathname expansion is not desired
+(e.g., unset &rsquo;a[4]&rsquo;).
 </p>
-<p>The <code>declare</code>, <code>local</code>, and <code>readonly</code>
-builtins each accept a <samp>-a</samp> option to specify an indexed
-array and a <samp>-A</samp> option to specify an associative array.
-If both options are supplied, <samp>-A</samp> takes precedence.
-The <code>read</code> builtin accepts a <samp>-a</samp>
+<p>The <code class="code">declare</code>, <code class="code">local</code>, and <code class="code">readonly</code>
+builtins each accept a <samp class="option">-a</samp> option to specify an indexed
+array and a <samp class="option">-A</samp> option to specify an associative array.
+If both options are supplied, <samp class="option">-A</samp> takes precedence.
+The <code class="code">read</code> builtin accepts a <samp class="option">-a</samp>
 option to assign a list of words read from the standard input
 to an array, and can read values from the standard input into
-individual array elements.  The <code>set</code> and <code>declare</code>
+individual array elements.  The <code class="code">set</code> and <code class="code">declare</code>
 builtins display array values in a way that allows them to be
 reused as input.
+Other builtins accept array name arguments as well
+(e.g., <code class="code">mapfile</code>); see the descriptions
+of individual builtins for details.
+The shell provides a number of builtin array variables.
 </p>
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="The-Directory-Stack.html">The Directory Stack</a>, Previous: <a href="Aliases.html">Aliases</a>, Up: <a href="Bash-Features.html">Bash Features</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

@@ -1,13 +1,13 @@
-<html><!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ --><head>
+<html><!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ --><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -32,21 +32,9 @@ A copy of the license is included in the section entitled
 <link href="Programmable-Completion.html" rel="prev" title="Programmable Completion">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
 div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -55,335 +43,375 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="section" id="Programmable-Completion-Builtins">
-<div class="header">
+<div class="section-level-extent" id="Programmable-Completion-Builtins">
+<div class="nav-panel">
 <p>
 Next: <a href="A-Programmable-Completion-Example.html" accesskey="n" rel="next">A Programmable Completion Example</a>, Previous: <a href="Programmable-Completion.html" accesskey="p" rel="prev">Programmable Completion</a>, Up: <a href="Command-Line-Editing.html" accesskey="u" rel="up">Command Line Editing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Programmable-Completion-Builtins-1"></span><h3 class="section">8.7 Programmable Completion Builtins</h3>
-<span id="index-completion-builtins"></span>
+<h3 class="section" id="Programmable-Completion-Builtins-1"><span>8.7 Programmable Completion Builtins<a class="copiable-link" href="#Programmable-Completion-Builtins-1"> ¶</a></span></h3>
+<a class="index-entry-id" id="index-completion-builtins"></a>
 
 <p>Three builtin commands are available to manipulate the programmable completion
 facilities: one to specify how the arguments to a particular command are to
 be completed, and two to modify the completion as it is happening.
 </p>
-<dl compact="compact">
-<a class="dashAnchor" name="//apple_ref/Builtin/compgen"></a><dt id="index-compgen"><span><code>compgen</code><a href="#index-compgen" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dl class="table">
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/compgen"></a><a id="index-compgen"></a><span><code class="code">compgen</code><a class="copiable-link" href="#index-compgen"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example"><code>compgen [<var>option</var>] [<var>word</var>]</code>
+<pre class="example-preformatted"><code class="code">compgen [-V <var class="var">varname</var>] [<var class="var">option</var>] [<var class="var">word</var>]</code>
 </pre></div>
 
-<p>Generate possible completion matches for <var>word</var> according to
-the <var>option</var>s, which may be any option accepted by the
-<code>complete</code>
-builtin with the exception of <samp>-p</samp> and <samp>-r</samp>, and write
-the matches to the standard output.
-When using the <samp>-F</samp> or <samp>-C</samp> options, the various shell variables
+<p>Generate possible completion matches for <var class="var">word</var> according to
+the <var class="var">option</var>s, which may be any option accepted by the
+<code class="code">complete</code>
+builtin with the exceptions of
+<samp class="option">-p</samp>,
+<samp class="option">-r</samp>,
+<samp class="option">-D</samp>,
+<samp class="option">-E</samp>,
+and
+<samp class="option">-I</samp>,
+and write the matches to the standard output.
+</p>
+<p>If the <samp class="option">-V</samp> option is supplied, <code class="code">compgen</code> stores the generated
+completions into the indexed array variable <var class="var">varname</var> instead of writing
+them to the standard output.
+</p>
+<p>When using the <samp class="option">-F</samp> or <samp class="option">-C</samp> options, the various shell variables
 set by the programmable completion facilities, while available, will not
 have useful values.
 </p>
 <p>The matches will be generated in the same way as if the programmable
 completion code had generated them directly from a completion specification
 with the same flags.
-If <var>word</var> is specified, only those completions matching <var>word</var>
-will be displayed.
+If <var class="var">word</var> is specified, only those completions matching <var class="var">word</var>
+will be displayed or stored.
 </p>
 <p>The return value is true unless an invalid option is supplied, or no
 matches were generated.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/complete"></a><dt id="index-complete"><span><code>complete</code><a href="#index-complete" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/complete"></a><a id="index-complete"></a><span><code class="code">complete</code><a class="copiable-link" href="#index-complete"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example"><code>complete [-abcdefgjksuv] [-o <var>comp-option</var>] [-DEI] [-A <var>action</var>] [-G <var>globpat</var>]
-[-W <var>wordlist</var>] [-F <var>function</var>] [-C <var>command</var>] [-X <var>filterpat</var>]
-[-P <var>prefix</var>] [-S <var>suffix</var>] <var>name</var> [<var>name</var> …]</code>
-<code>complete -pr [-DEI] [<var>name</var> …]</code>
+<pre class="example-preformatted"><code class="code">complete [-abcdefgjksuv] [-o <var class="var">comp-option</var>] [-DEI] [-A <var class="var">action</var>]
+[-G <var class="var">globpat</var>] [-W <var class="var">wordlist</var>] [-F <var class="var">function</var>] [-C <var class="var">command</var>]
+[-X <var class="var">filterpat</var>] [-P <var class="var">prefix</var>] [-S <var class="var">suffix</var>] <var class="var">name</var> [<var class="var">name</var> ...]</code>
+<code class="code">complete -pr [-DEI] [<var class="var">name</var> ...]</code>
 </pre></div>
 
-<p>Specify how arguments to each <var>name</var> should be completed.
-If the <samp>-p</samp> option is supplied, or if no options are supplied, existing
-completion specifications are printed in a way that allows them to be
-reused as input.
-The <samp>-r</samp> option removes a completion specification for
-each <var>name</var>, or, if no <var>name</var>s are supplied, all
+<p>Specify how arguments to each <var class="var">name</var> should be completed.
+</p>
+<p>If the <samp class="option">-p</samp> option is supplied, or if no options or <var class="var">name</var>s
+are supplied, print existing completion specifications
+in a way that allows them to be reused as input.
+The <samp class="option">-r</samp> option removes a completion specification for
+each <var class="var">name</var>, or, if no <var class="var">name</var>s are supplied, all
 completion specifications.
-The <samp>-D</samp> option indicates that other supplied options and actions should
+</p>
+<p>The <samp class="option">-D</samp> option indicates that other supplied options and actions should
 apply to the “default” command completion; that is, completion attempted
 on a command for which no completion has previously been defined.
-The <samp>-E</samp> option indicates that other supplied options and actions should
+The <samp class="option">-E</samp> option indicates that other supplied options and actions should
 apply to “empty” command completion; that is, completion attempted on a 
 blank line.
-The <samp>-I</samp> option indicates that other supplied options and actions should
+The <samp class="option">-I</samp> option indicates that other supplied options and actions should
 apply to completion on the initial non-assignment word on the line, or after a
-command delimiter such as ‘<samp>;</samp>’ or ‘<samp>|</samp>’, which is usually command
+command delimiter such as ‘<samp class="samp">;</samp>’ or ‘<samp class="samp">|</samp>’, which is usually command
 name completion.
-If multiple options are supplied, the <samp>-D</samp> option takes precedence
-over <samp>-E</samp>, and both take precedence over <samp>-I</samp>.
-If any of <samp>-D</samp>, <samp>-E</samp>, or <samp>-I</samp> are supplied, any other
-<var>name</var> arguments are ignored; these completions only apply to the case
+If multiple options are supplied, the <samp class="option">-D</samp> option takes precedence
+over <samp class="option">-E</samp>, and both take precedence over <samp class="option">-I</samp>.
+If any of <samp class="option">-D</samp>, <samp class="option">-E</samp>, or <samp class="option">-I</samp> are supplied, any other
+<var class="var">name</var> arguments are ignored; these completions only apply to the case
 specified by the option.
 </p>
 <p>The process of applying these completion specifications when word completion
-is attempted is described above (see <a href="Programmable-Completion.html">Programmable Completion</a>).
+is attempted is described above (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>).
 </p>
 <p>Other options, if specified, have the following meanings.
-The arguments to the <samp>-G</samp>, <samp>-W</samp>, and <samp>-X</samp> options
-(and, if necessary, the <samp>-P</samp> and <samp>-S</samp> options)
+The arguments to the <samp class="option">-G</samp>, <samp class="option">-W</samp>, and <samp class="option">-X</samp> options
+(and, if necessary, the <samp class="option">-P</samp> and <samp class="option">-S</samp> options)
 should be quoted to protect them from expansion before the
-<code>complete</code> builtin is invoked.
+<code class="code">complete</code> builtin is invoked.
 </p>
-
-<dl compact="compact">
-<dt><span><code>-o <var>comp-option</var></code></span></dt>
-<dd><p>The <var>comp-option</var> controls several aspects of the compspec’s behavior
+<dl class="table">
+<dt><code class="code">-o <var class="var">comp-option</var></code></dt>
+<dd><p>The <var class="var">comp-option</var> controls several aspects of the compspec’s behavior
 beyond the simple generation of completions.
-<var>comp-option</var> may be one of: 
+<var class="var">comp-option</var> may be one of: 
 </p>
-<dl compact="compact">
-<dt><span><code>bashdefault</code></span></dt>
+<dl class="table">
+<dt><code class="code">bashdefault</code></dt>
 <dd><p>Perform the rest of the default Bash completions if the compspec
 generates no matches.
 </p>
 </dd>
-<dt><span><code>default</code></span></dt>
+<dt><code class="code">default</code></dt>
 <dd><p>Use Readline’s default filename completion if the compspec generates
 no matches.
 </p>
 </dd>
-<dt><span><code>dirnames</code></span></dt>
+<dt><code class="code">dirnames</code></dt>
 <dd><p>Perform directory name completion if the compspec generates no matches.
 </p>
 </dd>
-<dt><span><code>filenames</code></span></dt>
-<dd><p>Tell Readline that the compspec generates filenames, so it can perform any
-filename-specific processing (like adding a slash to directory names,
+<dt><code class="code">filenames</code></dt>
+<dd><p>Tell Readline that the compspec generates filenames, so it can perform
+any filename-specific processing (such as adding a slash to directory names,
 quoting special characters, or suppressing trailing spaces).
 This option is intended to be used with shell functions specified
-with <samp>-F</samp>.
+with <samp class="option">-F</samp>.
 </p>
 </dd>
-<dt><span><code>noquote</code></span></dt>
+<dt><code class="code">fullquote</code></dt>
+<dd><p>Tell Readline to quote all the completed words even if they are not
+filenames.
+</p>
+</dd>
+<dt><code class="code">noquote</code></dt>
 <dd><p>Tell Readline not to quote the completed words if they are filenames
 (quoting filenames is the default).
 </p>
 </dd>
-<dt><span><code>nosort</code></span></dt>
+<dt><code class="code">nosort</code></dt>
 <dd><p>Tell Readline not to sort the list of possible completions alphabetically.
 </p>
 </dd>
-<dt><span><code>nospace</code></span></dt>
+<dt><code class="code">nospace</code></dt>
 <dd><p>Tell Readline not to append a space (the default) to words completed at
 the end of the line.
 </p>
 </dd>
-<dt><span><code>plusdirs</code></span></dt>
-<dd><p>After any matches defined by the compspec are generated, 
-directory name completion is attempted and any
-matches are added to the results of the other actions.
-</p>
-</dd>
-</dl>
-
-</dd>
-<dt><span><code>-A <var>action</var></code></span></dt>
-<dd><p>The <var>action</var> may be one of the following to generate a list of possible
-completions:
-</p>
-<dl compact="compact">
-<dt><span><code>alias</code></span></dt>
-<dd><p>Alias names.  May also be specified as <samp>-a</samp>.
-</p>
-</dd>
-<dt><span><code>arrayvar</code></span></dt>
-<dd><p>Array variable names.
-</p>
-</dd>
-<dt><span><code>binding</code></span></dt>
-<dd><p>Readline key binding names (see <a href="Bindable-Readline-Commands.html">Bindable Readline Commands</a>).
-</p>
-</dd>
-<dt><span><code>builtin</code></span></dt>
-<dd><p>Names of shell builtin commands.  May also be specified as <samp>-b</samp>.
-</p>
-</dd>
-<dt><span><code>command</code></span></dt>
-<dd><p>Command names.  May also be specified as <samp>-c</samp>.
-</p>
-</dd>
-<dt><span><code>directory</code></span></dt>
-<dd><p>Directory names.  May also be specified as <samp>-d</samp>.
-</p>
-</dd>
-<dt><span><code>disabled</code></span></dt>
-<dd><p>Names of disabled shell builtins.
-</p>
-</dd>
-<dt><span><code>enabled</code></span></dt>
-<dd><p>Names of enabled shell builtins.
-</p>
-</dd>
-<dt><span><code>export</code></span></dt>
-<dd><p>Names of exported shell variables.  May also be specified as <samp>-e</samp>.
-</p>
-</dd>
-<dt><span><code>file</code></span></dt>
-<dd><p>File names.  May also be specified as <samp>-f</samp>.
-</p>
-</dd>
-<dt><span><code>function</code></span></dt>
-<dd><p>Names of shell functions.
-</p>
-</dd>
-<dt><span><code>group</code></span></dt>
-<dd><p>Group names.  May also be specified as <samp>-g</samp>.
-</p>
-</dd>
-<dt><span><code>helptopic</code></span></dt>
-<dd><p>Help topics as accepted by the <code>help</code> builtin (see <a href="Bash-Builtins.html">Bash Builtin Commands</a>).
-</p>
-</dd>
-<dt><span><code>hostname</code></span></dt>
-<dd><p>Hostnames, as taken from the file specified by the
-<code>HOSTFILE</code> shell variable (see <a href="Bash-Variables.html">Bash Variables</a>).
-</p>
-</dd>
-<dt><span><code>job</code></span></dt>
-<dd><p>Job names, if job control is active.  May also be specified as <samp>-j</samp>.
-</p>
-</dd>
-<dt><span><code>keyword</code></span></dt>
-<dd><p>Shell reserved words.  May also be specified as <samp>-k</samp>.
-</p>
-</dd>
-<dt><span><code>running</code></span></dt>
-<dd><p>Names of running jobs, if job control is active.
-</p>
-</dd>
-<dt><span><code>service</code></span></dt>
-<dd><p>Service names.  May also be specified as <samp>-s</samp>.
-</p>
-</dd>
-<dt><span><code>setopt</code></span></dt>
-<dd><p>Valid arguments for the <samp>-o</samp> option to the <code>set</code> builtin
-(see <a href="The-Set-Builtin.html">The Set Builtin</a>).
-</p>
-</dd>
-<dt><span><code>shopt</code></span></dt>
-<dd><p>Shell option names as accepted by the <code>shopt</code> builtin
-(see <a href="Bash-Builtins.html">Bash Builtin Commands</a>).
-</p>
-</dd>
-<dt><span><code>signal</code></span></dt>
-<dd><p>Signal names.
-</p>
-</dd>
-<dt><span><code>stopped</code></span></dt>
-<dd><p>Names of stopped jobs, if job control is active.
-</p>
-</dd>
-<dt><span><code>user</code></span></dt>
-<dd><p>User names.  May also be specified as <samp>-u</samp>.
-</p>
-</dd>
-<dt><span><code>variable</code></span></dt>
-<dd><p>Names of all shell variables.  May also be specified as <samp>-v</samp>.
+<dt><code class="code">plusdirs</code></dt>
+<dd><p>After generating any matches defined by the compspec, 
+attempt directory name completion and add any
+matches to the results of the other actions.
 </p></dd>
 </dl>
 
 </dd>
-<dt><span><code>-C <var>command</var></code></span></dt>
-<dd><p><var>command</var> is executed in a subshell environment, and its output is
+<dt><code class="code">-A <var class="var">action</var></code></dt>
+<dd><p>The <var class="var">action</var> may be one of the following to generate a list of possible
+completions:
+</p>
+<dl class="table">
+<dt><code class="code">alias</code></dt>
+<dd><p>Alias names.
+May also be specified as <samp class="option">-a</samp>.
+</p>
+</dd>
+<dt><code class="code">arrayvar</code></dt>
+<dd><p>Array variable names.
+</p>
+</dd>
+<dt><code class="code">binding</code></dt>
+<dd><p>Readline key binding names (see <a class="pxref" href="Bindable-Readline-Commands.html">Bindable Readline Commands</a>).
+</p>
+</dd>
+<dt><code class="code">builtin</code></dt>
+<dd><p>Names of shell builtin commands.
+May also be specified as <samp class="option">-b</samp>.
+</p>
+</dd>
+<dt><code class="code">command</code></dt>
+<dd><p>Command names.
+May also be specified as <samp class="option">-c</samp>.
+</p>
+</dd>
+<dt><code class="code">directory</code></dt>
+<dd><p>Directory names.
+May also be specified as <samp class="option">-d</samp>.
+</p>
+</dd>
+<dt><code class="code">disabled</code></dt>
+<dd><p>Names of disabled shell builtins.
+</p>
+</dd>
+<dt><code class="code">enabled</code></dt>
+<dd><p>Names of enabled shell builtins.
+</p>
+</dd>
+<dt><code class="code">export</code></dt>
+<dd><p>Names of exported shell variables.
+May also be specified as <samp class="option">-e</samp>.
+</p>
+</dd>
+<dt><code class="code">file</code></dt>
+<dd><p>File and directory names, similar to Readline’s filename completion.
+May also be specified as <samp class="option">-f</samp>.
+</p>
+</dd>
+<dt><code class="code">function</code></dt>
+<dd><p>Names of shell functions.
+</p>
+</dd>
+<dt><code class="code">group</code></dt>
+<dd><p>Group names.
+May also be specified as <samp class="option">-g</samp>.
+</p>
+</dd>
+<dt><code class="code">helptopic</code></dt>
+<dd><p>Help topics as accepted by the <code class="code">help</code> builtin (see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>).
+</p>
+</dd>
+<dt><code class="code">hostname</code></dt>
+<dd><p>Hostnames, as taken from the file specified by the
+<code class="env">HOSTFILE</code> shell variable (see <a class="pxref" href="Bash-Variables.html">Bash Variables</a>).
+</p>
+</dd>
+<dt><code class="code">job</code></dt>
+<dd><p>Job names, if job control is active.
+May also be specified as <samp class="option">-j</samp>.
+</p>
+</dd>
+<dt><code class="code">keyword</code></dt>
+<dd><p>Shell reserved words.
+May also be specified as <samp class="option">-k</samp>.
+</p>
+</dd>
+<dt><code class="code">running</code></dt>
+<dd><p>Names of running jobs, if job control is active.
+</p>
+</dd>
+<dt><code class="code">service</code></dt>
+<dd><p>Service names.
+May also be specified as <samp class="option">-s</samp>.
+</p>
+</dd>
+<dt><code class="code">setopt</code></dt>
+<dd><p>Valid arguments for the <samp class="option">-o</samp> option to the <code class="code">set</code> builtin
+(see <a class="pxref" href="The-Set-Builtin.html">The Set Builtin</a>).
+</p>
+</dd>
+<dt><code class="code">shopt</code></dt>
+<dd><p>Shell option names as accepted by the <code class="code">shopt</code> builtin
+(see <a class="pxref" href="Bash-Builtins.html">Bash Builtin Commands</a>).
+</p>
+</dd>
+<dt><code class="code">signal</code></dt>
+<dd><p>Signal names.
+</p>
+</dd>
+<dt><code class="code">stopped</code></dt>
+<dd><p>Names of stopped jobs, if job control is active.
+</p>
+</dd>
+<dt><code class="code">user</code></dt>
+<dd><p>User names.
+May also be specified as <samp class="option">-u</samp>.
+</p>
+</dd>
+<dt><code class="code">variable</code></dt>
+<dd><p>Names of all shell variables.
+May also be specified as <samp class="option">-v</samp>.
+</p></dd>
+</dl>
+
+</dd>
+<dt><code class="code">-C <var class="var">command</var></code></dt>
+<dd><p><var class="var">command</var> is executed in a subshell environment, and its output is
 used as the possible completions.
-Arguments are passed as with the <samp>-F</samp> option.
+Arguments are passed as with the <samp class="option">-F</samp> option.
 </p>
 </dd>
-<dt><span><code>-F <var>function</var></code></span></dt>
-<dd><p>The shell function <var>function</var> is executed in the current shell
+<dt><code class="code">-F <var class="var">function</var></code></dt>
+<dd><p>The shell function <var class="var">function</var> is executed in the current shell
 environment.
-When it is executed, $1 is the name of the command whose arguments are
-being completed, $2 is the word being completed, and $3 is the word
-preceding the word being completed, as described above
-(see <a href="Programmable-Completion.html">Programmable Completion</a>).
-When it finishes, the possible completions are retrieved from the value
-of the <code>COMPREPLY</code> array variable.
+When it is executed,
+the first argument ($1) is the name of the command whose arguments are
+being completed,
+the second argument ($2) is the word being completed, and
+the third argument ($3) is the word preceding the word being completed,
+as described above (see <a class="pxref" href="Programmable-Completion.html">Programmable Completion</a>).
+When <code class="code">function</code> finishes,
+programmable completion retrieves
+the possible completions from the value
+of the <code class="env">COMPREPLY</code> array variable.
 </p>
 </dd>
-<dt><span><code>-G <var>globpat</var></code></span></dt>
-<dd><p>The filename expansion pattern <var>globpat</var> is expanded to generate
+<dt><code class="code">-G <var class="var">globpat</var></code></dt>
+<dd><p>Expand the filename expansion pattern <var class="var">globpat</var> to generate
 the possible completions.
 </p>
 </dd>
-<dt><span><code>-P <var>prefix</var></code></span></dt>
-<dd><p><var>prefix</var> is added at the beginning of each possible completion
+<dt><code class="code">-P <var class="var">prefix</var></code></dt>
+<dd><p>Add <var class="var">prefix</var> to the beginning of each possible completion
 after all other options have been applied.
 </p>
 </dd>
-<dt><span><code>-S <var>suffix</var></code></span></dt>
-<dd><p><var>suffix</var> is appended to each possible completion
+<dt><code class="code">-S <var class="var">suffix</var></code></dt>
+<dd><p>Append <var class="var">suffix</var> to each possible completion
 after all other options have been applied.
 </p>
 </dd>
-<dt><span><code>-W <var>wordlist</var></code></span></dt>
-<dd><p>The <var>wordlist</var> is split using the characters in the
-<code>IFS</code> special variable as delimiters, and each resultant word
-is expanded.
+<dt><code class="code">-W <var class="var">wordlist</var></code></dt>
+<dd><p>Split the <var class="var">wordlist</var> using the characters in the
+<code class="env">IFS</code> special variable as delimiters, and expand
+each resulting word.
+Shell quoting is honored within <var class="var">wordlist</var>
+in order to provide a
+mechanism for the words to contain shell metacharacters or characters
+in the value of <code class="env">IFS</code>.
 The possible completions are the members of the resultant list which
-match the word being completed.
+match a prefix of the word being completed.
 </p>
 </dd>
-<dt><span><code>-X <var>filterpat</var></code></span></dt>
-<dd><p><var>filterpat</var> is a pattern as used for filename expansion.
+<dt><code class="code">-X <var class="var">filterpat</var></code></dt>
+<dd><p><var class="var">filterpat</var> is a pattern as used for filename expansion.
 It is applied to the list of possible completions generated by the
 preceding options and arguments, and each completion matching
-<var>filterpat</var> is removed from the list.
-A leading ‘<samp>!</samp>’ in <var>filterpat</var> negates the pattern; in this
-case, any completion not matching <var>filterpat</var> is removed.
+<var class="var">filterpat</var> is removed from the list.
+A leading ‘<samp class="samp">!</samp>’ in <var class="var">filterpat</var> negates the pattern; in this
+case, any completion not matching <var class="var">filterpat</var> is removed.
 </p></dd>
 </dl>
 
 <p>The return value is true unless an invalid option is supplied, an option
-other than <samp>-p</samp> or <samp>-r</samp> is supplied without a <var>name</var>
+other than
+<samp class="option">-p</samp>,
+<samp class="option">-r</samp>,
+<samp class="option">-D</samp>,
+<samp class="option">-E</samp>,
+or
+<samp class="option">-I</samp>
+is supplied without a <var class="var">name</var>
 argument, an attempt is made to remove a completion specification for
-a <var>name</var> for which no specification exists, or
+a <var class="var">name</var> for which no specification exists, or
 an error occurs adding a completion specification.
 </p>
 </dd>
-<a class="dashAnchor" name="//apple_ref/Builtin/compopt"></a><dt id="index-compopt"><span><code>compopt</code><a href="#index-compopt" class="copiable-anchor" style='display:none'> ¶</a></span></dt>
+<dt><a class="dashAnchor" name="//apple_ref/Builtin/compopt"></a><a id="index-compopt"></a><span><code class="code">compopt</code><a class="copiable-link" href="#index-compopt"> ¶</a></span></dt>
 <dd><div class="example">
-<pre class="example"><code>compopt</code> [-o <var>option</var>] [-DEI] [+o <var>option</var>] [<var>name</var>]
+<pre class="example-preformatted"><code class="code">compopt</code> [-o <var class="var">option</var>] [-DEI] [+o <var class="var">option</var>] [<var class="var">name</var>]
 </pre></div>
-<p>Modify completion options for each <var>name</var> according to the
-<var>option</var>s, or for the currently-executing completion if no <var>name</var>s
+<p>Modify completion options for each <var class="var">name</var> according to the
+<var class="var">option</var>s, or for the currently-executing completion if no <var class="var">name</var>s
 are supplied.
-If no <var>option</var>s are given, display the completion options for each
-<var>name</var> or the current completion.
-The possible values of <var>option</var> are those valid for the <code>complete</code>
+If no <var class="var">option</var>s are given, display the completion options for each
+<var class="var">name</var> or the current completion.
+The possible values of <var class="var">option</var> are those valid for the <code class="code">complete</code>
 builtin described above.
-The <samp>-D</samp> option indicates that other supplied options should
-apply to the “default” command completion; that is, completion attempted
-on a command for which no completion has previously been defined.
-The <samp>-E</samp> option indicates that other supplied options should
-apply to “empty” command completion; that is, completion attempted on a 
-blank line.
-The <samp>-I</samp> option indicates that other supplied options should
-apply to completion on the initial non-assignment word on the line, or after a
-command delimiter such as ‘<samp>;</samp>’ or ‘<samp>|</samp>’, which is usually command
-name completion.
 </p>
-<p>If multiple options are supplied, the <samp>-D</samp> option takes precedence
-over <samp>-E</samp>, and both take precedence over <samp>-I</samp>
+<p>The <samp class="option">-D</samp> option indicates that other supplied options should
+apply to the “default” command completion;
+the <samp class="option">-E</samp> option indicates that other supplied options should
+apply to “empty” command completion; and
+the <samp class="option">-I</samp> option indicates that other supplied options should
+apply to completion on the initial word on the line.
+These are determined in the same way as the <code class="code">complete</code> builtin.
+</p>
+<p>If multiple options are supplied, the <samp class="option">-D</samp> option takes precedence
+over <samp class="option">-E</samp>, and both take precedence over <samp class="option">-I</samp>
 </p>
 <p>The return value is true unless an invalid option is supplied, an attempt
-is made to modify the options for a <var>name</var> for which no completion
+is made to modify the options for a <var class="var">name</var> for which no completion
 specification exists, or an output error occurs.
-</p>
-</dd>
+</p></dd>
 </dl>
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Next: <a href="A-Programmable-Completion-Example.html">A Programmable Completion Example</a>, Previous: <a href="Programmable-Completion.html">Programmable Completion</a>, Up: <a href="Command-Line-Editing.html">Command Line Editing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>

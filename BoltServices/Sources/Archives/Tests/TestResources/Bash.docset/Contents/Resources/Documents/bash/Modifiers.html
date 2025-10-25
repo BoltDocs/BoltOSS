@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
-<!-- Created by GNU Texinfo 6.8, https://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 7.2, https://www.gnu.org/software/texinfo/ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- This text is a brief description of the features that are present in
-the Bash shell (version 5.2, 19 September 2022).
+the Bash shell (version 5.3, 18 May 2025).
 
-This is Edition 5.2, last updated 19 September 2022,
+This is Edition 5.3, last updated 18 May 2025,
 of The GNU Bash Reference Manual,
-for Bash, Version 5.2.
+for Bash, Version 5.3.
 
-Copyright (C) 1988-2022 Free Software Foundation, Inc.
+Copyright © 1988-2025 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -34,21 +34,8 @@ A copy of the license is included in the section entitled
 <link href="Word-Designators.html" rel="prev" title="Word Designators">
 <style type="text/css">
 <!--
-a.copiable-anchor {visibility: hidden; text-decoration: none; line-height: 0em}
-a.summary-letter {text-decoration: none}
-blockquote.indentedblock {margin-right: 0em}
-div.display {margin-left: 3.2em}
-div.example {margin-left: 3.2em}
-kbd {font-style: oblique}
-pre.display {font-family: inherit}
-pre.format {font-family: inherit}
-pre.menu-comment {font-family: serif}
-pre.menu-preformatted {font-family: serif}
-span.nolinebreak {white-space: nowrap}
-span.roman {font-family: initial; font-weight: normal}
-span.sansserif {font-family: sans-serif; font-weight: normal}
-span:hover a.copiable-anchor {visibility: visible}
-ul.no-bullet {list-style: none}
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+span:hover a.copiable-link {visibility: visible}
 -->
 </style>
 <link rel="stylesheet" type="text/css" href="">
@@ -57,82 +44,83 @@ ul.no-bullet {list-style: none}
 </head>
 
 <body lang="en">
-<div class="subsection" id="Modifiers">
-<div class="header">
+<div class="subsection-level-extent" id="Modifiers">
+<div class="nav-panel">
 <p>
 Previous: <a href="Word-Designators.html" accesskey="p" rel="prev">Word Designators</a>, Up: <a href="History-Interaction.html" accesskey="u" rel="up">History Expansion</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
 <hr>
-<span id="Modifiers-1"></span><h4 class="subsection">9.3.3 Modifiers</h4>
+<h4 class="subsection" id="Modifiers-1"><span>9.3.3 Modifiers<a class="copiable-link" href="#Modifiers-1"> &para;</a></span></h4>
 
 <p>After the optional word designator, you can add a sequence of one or more
-of the following modifiers, each preceded by a &lsquo;<samp>:</samp>&rsquo;.
+of the following modifiers, each preceded by a &lsquo;<samp class="samp">:</samp>&rsquo;.
 These modify, or edit, the word or words selected from the history event.
 </p>
-<dl compact="compact">
-<dt><span><code>h</code></span></dt>
-<dd><p>Remove a trailing pathname component, leaving only the head.
+<dl class="table">
+<dt><code class="code">h</code></dt>
+<dd><p>Remove a trailing filename component, leaving only the head.
 </p>
 </dd>
-<dt><span><code>t</code></span></dt>
-<dd><p>Remove all leading pathname components, leaving the tail.
+<dt><code class="code">t</code></dt>
+<dd><p>Remove all leading filename components, leaving the tail.
 </p>
 </dd>
-<dt><span><code>r</code></span></dt>
-<dd><p>Remove a trailing suffix of the form &lsquo;<samp>.<var>suffix</var></samp>&rsquo;, leaving
+<dt><code class="code">r</code></dt>
+<dd><p>Remove a trailing suffix of the form &lsquo;<samp class="samp">.<var class="var">suffix</var></samp>&rsquo;, leaving
 the basename.
 </p>
 </dd>
-<dt><span><code>e</code></span></dt>
+<dt><code class="code">e</code></dt>
 <dd><p>Remove all but the trailing suffix.
 </p>
 </dd>
-<dt><span><code>p</code></span></dt>
+<dt><code class="code">p</code></dt>
 <dd><p>Print the new command but do not execute it.
 </p>
 </dd>
-<dt><span><code>q</code></span></dt>
+<dt><code class="code">q</code></dt>
 <dd><p>Quote the substituted words, escaping further substitutions.
 </p>
 </dd>
-<dt><span><code>x</code></span></dt>
-<dd><p>Quote the substituted words as with &lsquo;<samp>q</samp>&rsquo;,
+<dt><code class="code">x</code></dt>
+<dd><p>Quote the substituted words as with &lsquo;<samp class="samp">q</samp>&rsquo;,
 but break into words at spaces, tabs, and newlines.
-The &lsquo;<samp>q</samp>&rsquo; and &lsquo;<samp>x</samp>&rsquo; modifiers are mutually exclusive; the last one
-supplied is used.
+The &lsquo;<samp class="samp">q</samp>&rsquo; and &lsquo;<samp class="samp">x</samp>&rsquo; modifiers are mutually exclusive;
+expansion uses the last one supplied.
 </p>
 </dd>
-<dt><span><code>s/<var>old</var>/<var>new</var>/</code></span></dt>
-<dd><p>Substitute <var>new</var> for the first occurrence of <var>old</var> in the
+<dt><code class="code">s/<var class="var">old</var>/<var class="var">new</var>/</code></dt>
+<dd><p>Substitute <var class="var">new</var> for the first occurrence of <var class="var">old</var> in the
 event line.
-Any character may be used as the delimiter in place of &lsquo;<samp>/</samp>&rsquo;.
-The delimiter may be quoted in <var>old</var> and <var>new</var>
-with a single backslash.  If &lsquo;<samp>&amp;</samp>&rsquo; appears in <var>new</var>,
-it is replaced by <var>old</var>.  A single backslash will quote
-the &lsquo;<samp>&amp;</samp>&rsquo;.
-If <var>old</var> is null, it is set to the last <var>old</var>
+Any character may be used as the delimiter in place of &lsquo;<samp class="samp">/</samp>&rsquo;.
+The delimiter may be quoted in <var class="var">old</var> and <var class="var">new</var>
+with a single backslash.
+If &lsquo;<samp class="samp">&amp;</samp>&rsquo; appears in <var class="var">new</var>, it is replaced with <var class="var">old</var>.
+A single backslash quotes the &lsquo;<samp class="samp">&amp;</samp>&rsquo; in <var class="var">old</var> and <var class="var">new</var>.
+If <var class="var">old</var> is null, it is set to the last <var class="var">old</var>
 substituted, or, if no previous history substitutions took place,
-the last <var>string</var>
-in a !?<var>string</var><code>[?]</code>
+the last <var class="var">string</var>
+in a !?<var class="var">string</var><code class="code">[?]</code>
 search.
-If <var>new</var> is null, each matching <var>old</var> is deleted.
+If <var class="var">new</var> is null, each matching <var class="var">old</var> is deleted.
 The final delimiter is optional if it is the last
 character on the input line.
 </p>
 </dd>
-<dt><span><code>&amp;</code></span></dt>
+<dt><code class="code">&amp;</code></dt>
 <dd><p>Repeat the previous substitution.
 </p>
 </dd>
-<dt><span><code>g</code></span></dt>
-<dt><span><code>a</code></span></dt>
-<dd><p>Cause changes to be applied over the entire event line.  Used in
-conjunction with &lsquo;<samp>s</samp>&rsquo;, as in <code>gs/<var>old</var>/<var>new</var>/</code>,
-or with &lsquo;<samp>&amp;</samp>&rsquo;.
+<dt><code class="code">g</code></dt>
+<dt><code class="code">a</code></dt>
+<dd><p>Cause changes to be applied over the entire event line.
+This is used in conjunction with
+&lsquo;<samp class="samp">s</samp>&rsquo;, as in <code class="code">gs/<var class="var">old</var>/<var class="var">new</var>/</code>,
+or with &lsquo;<samp class="samp">&amp;</samp>&rsquo;.
 </p>
 </dd>
-<dt><span><code>G</code></span></dt>
-<dd><p>Apply the following &lsquo;<samp>s</samp>&rsquo; or &lsquo;<samp>&amp;</samp>&rsquo; modifier once to each word
+<dt><code class="code">G</code></dt>
+<dd><p>Apply the following &lsquo;<samp class="samp">s</samp>&rsquo; or &lsquo;<samp class="samp">&amp;</samp>&rsquo; modifier once to each word
 in the event.
 </p>
 </dd>
@@ -140,7 +128,7 @@ in the event.
 
 </div>
 <hr>
-<div class="header">
+<div class="nav-panel">
 <p>
 Previous: <a href="Word-Designators.html">Word Designators</a>, Up: <a href="History-Interaction.html">History Expansion</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
 </div>
