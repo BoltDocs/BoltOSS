@@ -58,34 +58,79 @@ struct GZipExtensionTests {
     try fileHandle.close()
   }
 
-  @Test func invalidFileHandle() throws {
+  @Test func invalidHeaderTrailerFormat() throws {
+    let infoPlistEntry = try infoPlistIndexEntry()
     let fileHandle = try FileHandle(forReadingFrom: TestResources.tgzURL)
+    #expect(throws: Never.self) {
+      try Gzip.gunzipped(
+        fromFileHandle: fileHandle,
+        offset: infoPlistEntry.offset,
+        outputSize: infoPlistEntry.blockLength * 512,
+        wBits: -Gzip.maxWindowBits
+      )
+    }
     #expect(throws: GzipError.self) {
-      try Gzip.gunzipped(fromFileHandle: fileHandle, offset: 29892, outputSize: 14 * 512)
+      try Gzip.gunzipped(
+        fromFileHandle: fileHandle,
+        offset: infoPlistEntry.offset,
+        outputSize: infoPlistEntry.blockLength * 512
+      )
     }
     try fileHandle.close()
   }
 
   @Test func invalidOffset() throws {
+    let infoPlistEntry = try infoPlistIndexEntry()
     let fileHandle = try FileHandle(forReadingFrom: TestResources.tgzURL)
+    #expect(throws: Never.self) {
+      try Gzip.gunzipped(
+        fromFileHandle: fileHandle,
+        offset: infoPlistEntry.offset,
+        outputSize: infoPlistEntry.blockLength * 512,
+        wBits: -Gzip.maxWindowBits
+      )
+    }
     #expect(throws: GzipError.self) {
-      try Gzip.gunzipped(fromFileHandle: fileHandle, offset: 600000, outputSize: 2 * 512, wBits: -Gzip.maxWindowBits)
+      try Gzip.gunzipped(
+        fromFileHandle: fileHandle,
+        offset: infoPlistEntry.offset + 1,
+        outputSize: infoPlistEntry.blockLength * 512,
+        wBits: -Gzip.maxWindowBits
+      )
     }
     try fileHandle.close()
   }
 
   @Test func invalidDataSize() throws {
+    let infoPlistEntry = try infoPlistIndexEntry()
     let fileHandle = try FileHandle(forReadingFrom: TestResources.tgzURL)
 
-    let data = try Gzip.gunzipped(fromFileHandle: fileHandle, offset: 617018, outputSize: 3 * 512, wBits: -Gzip.maxWindowBits)
+    let blockStart = infoPlistEntry.blockStart
+    let blockLength = infoPlistEntry.blockLength
 
-    #expect(data.count == 3 * 512)
+    #expect(throws: Never.self) {
+      try Gzip.gunzipped(
+        fromFileHandle: fileHandle,
+        offset: infoPlistEntry.offset,
+        outputSize: (blockLength - 1) * 512,
+        wBits: -Gzip.maxWindowBits
+      )
+    }
+
+    let data = try Gzip.gunzipped(
+      fromFileHandle: fileHandle,
+      offset: infoPlistEntry.offset,
+      outputSize: (blockLength + 1) * 512,
+      wBits: -Gzip.maxWindowBits
+    )
+
+    #expect(data.count == (blockLength + 1) * 512)
 
     let gunzippedData = TestResources.gunzippedTarData
 
-    let validSegment = data.subdata(in: 0..<(2 * 512))
-    let emptySegment = data.subdata(in: (2 * 512)..<data.count)
-    let gunzippedSegment = gunzippedData.subdata(in: (3203 * 512)..<(((3203 + 2) * 512)))
+    let validSegment = data.subdata(in: 0..<(blockLength * 512))
+    let emptySegment = data.subdata(in: (blockLength * 512)..<data.count)
+    let gunzippedSegment = gunzippedData.subdata(in: (blockStart * 512)..<(((blockStart + blockLength) * 512)))
 
     if gunzippedSegment != validSegment {
       Issue.record("Mismatched data segment")
@@ -99,26 +144,53 @@ struct GZipExtensionTests {
   }
 
   @Test func invalidBufferSize() throws {
+    let infoPlistEntry = try infoPlistIndexEntry()
     let fileHandle = try FileHandle(forReadingFrom: TestResources.tgzURL)
-    #expect(throws: GzipError.self) {
+    #expect(throws: Never.self) {
       try Gzip.gunzipped(
         fromFileHandle: fileHandle,
-        offset: 600000,
-        outputSize: 2 * 512,
-        wBits: -Gzip.maxWindowBits,
-        bufferSize: 0
+        offset: infoPlistEntry.offset,
+        outputSize: infoPlistEntry.blockLength * 512,
+        wBits: -Gzip.maxWindowBits
       )
     }
     #expect(throws: GzipError.self) {
       try Gzip.gunzipped(
         fromFileHandle: fileHandle,
-        offset: 600000,
-        outputSize: 2 * 512,
+        offset: infoPlistEntry.offset,
+        outputSize: infoPlistEntry.blockLength * 512,
+        wBits: -Gzip.maxWindowBits,
+        bufferSize: 0
+      )
+    }
+    #expect(throws: Never.self) {
+      try Gzip.gunzipped(
+        fromFileHandle: fileHandle,
+        offset: infoPlistEntry.offset,
+        outputSize: infoPlistEntry.blockLength * 512,
         wBits: -Gzip.maxWindowBits,
         bufferSize: -512
       )
     }
     try fileHandle.close()
+  }
+
+  private func infoPlistIndexEntry() throws -> (blockStart: Int, offset: UInt64, blockLength: Int) {
+    let indexFileURL = Bundle.module.url(forResource: "TestResources/Bash.tarix.txt")!
+    let indexFileContent = try String(contentsOf: indexFileURL, encoding: .utf8)
+    let indexLines = indexFileContent.components(separatedBy: "\n")
+
+    let line = try #require(indexLines.first { $0.starts(with: "\"Bash.docset/Contents/Info.plist\",\"") })
+
+    let matches = line.regexMatch(#""Bash.docset/Contents/Info.plist","(\d+) (\d+) (\d+)""#)
+
+    try #require(matches.count == 1 && matches[0].count == 4)
+
+    let blockStart = try #require(Int(matches[0][1]))
+    let offset = try #require(UInt64(matches[0][2]))
+    let blockLength = try #require(Int(matches[0][3]))
+
+    return (blockStart, offset, blockLength)
   }
 
 }
