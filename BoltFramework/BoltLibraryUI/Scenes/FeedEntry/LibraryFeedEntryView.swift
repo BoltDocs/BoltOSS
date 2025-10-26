@@ -92,13 +92,12 @@ private final class DataSource: ObservableObject {
       }
       .assign(to: &$isInstalled)
 
-    let downloadTarixFuture = Future<Void, Error>.awaitingThrowing {
-      // Revist here to see if we should use weak self
-      return try await self.downloadManager.downloadTarix(forFeedEntry: entry)
+    let downloadTarixFuture = Future<Void, Error>.awaitingThrowing { [downloadManager] in
+      return try await downloadManager.downloadTarix(forFeedEntry: entry)
     }
 
     $downloadTarixTrigger
-      .filter { return self.supportsTarix }
+      .filter { [supportsTarix] in supportsTarix }
       .flatMap { _ in
         return downloadTarixFuture.mapToResult()
       }
@@ -119,11 +118,11 @@ private final class DataSource: ObservableObject {
       .assign(to: &$statusResult)
 
     downloadManager.progress(forIdentifier: entry.id)
-      .map { progress -> DownloadStatus in
+      .map { [archivePath] progress -> DownloadStatus in
         let localFileExists = {
           return FileManager.default.fileExists(
             atPath: URL(
-              fileURLWithPath: self.archivePath
+              fileURLWithPath: archivePath
             ).path
           )
         }
