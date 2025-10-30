@@ -57,6 +57,7 @@ enum DocsetInfoKey: String, CaseIterable {
   case humanReadableCopyright = "NSHumanReadableCopyright"
   case developmentRegion = "CFBundleDevelopmentRegion"
   case ftsEnabled = "DashDocSetDefaultFTSEnabled"
+  case ftsNotSupported = "DashDocSetFTSNotSupported"
 
 }
 
