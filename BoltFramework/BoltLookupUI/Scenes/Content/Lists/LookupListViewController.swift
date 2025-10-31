@@ -226,7 +226,7 @@ private final class StubbedLookupListViewModel: LookupListViewModel {
         entryItems: .success(
           [LookupListStubbedEntryItem](
             repeating: LookupListStubbedEntryItem(
-              entry: Entry(typeName: "Class", name: "MyClass", path: "")
+              entry: Entry(typeName: "Class", name: "MyClass", rawPath: "")
             ),
             count: 10
           )
