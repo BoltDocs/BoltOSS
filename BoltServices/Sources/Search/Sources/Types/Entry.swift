@@ -24,17 +24,23 @@ public struct Entry {
 
   public let typeName: String
   public let name: String
-  public let path: String
+  public let rawPath: String
 
+  public private(set) var path = ""
 
   public var type: EntryType? {
     return EntryType.type(forNameOrAlias: typeName)
   }
 
-  public init(typeName: String, name: String, path: String) {
+  public init(typeName: String, name: String, rawPath: String) {
     self.typeName = typeName
     self.name = name
-    self.path = path
+    self.rawPath = rawPath
+    parseRawPath()
+  }
+
+  private mutating func parseRawPath() {
+    path = rawPath.replacing(#/<dash_entry_.*?>/#) { _ in "" }
   }
 
 }

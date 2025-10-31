@@ -90,7 +90,7 @@ struct DocsetSearcher {
     let results = try request.fetchAll(db)
     return results.compactMap { result -> Entry? in
       let included = shouldInclude?(result) ?? true
-      return included ? Entry(typeName: result.type, name: result.name, path: result.path) : nil
+      return included ? Entry(typeName: result.type, name: result.name, rawPath: result.path) : nil
     }
   }
 
