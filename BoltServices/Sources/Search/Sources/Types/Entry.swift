@@ -20,17 +20,12 @@ import GRDB
 
 import BoltTypes
 
-public struct Entry: Codable, TableRecord {
+public struct Entry {
 
   public let typeName: String
   public let name: String
   public let path: String
 
-  public enum CodingKeys: String, CodingKey {
-    case typeName = "type"
-    case name = "name"
-    case path = "path"
-  }
 
   public var type: EntryType? {
     return EntryType.type(forNameOrAlias: typeName)
