@@ -105,6 +105,12 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
       }
       .disposed(by: disposeBag)
 
+    state.clearSearchText
+      .emit(with: self) { owner, _ in
+        owner.searchBar.text = ""
+      }
+      .disposed(by: disposeBag)
+
     searchBar.rx.value
       .map { return $0 ?? "" }
       .bind(to: state.searchQuery)
@@ -150,6 +156,10 @@ extension LookupSearchController: UITextFieldDelegate {
       }
     }
     return true
+  }
+
+  public func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
+    dismiss(animated: true)
   }
 
 }

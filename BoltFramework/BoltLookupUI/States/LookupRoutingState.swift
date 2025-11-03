@@ -86,6 +86,9 @@ final class LookupRoutingState: HasDisposeBag {
 
   private let showsDocumentationPage = BehaviorRelay<Bool>(value: false)
 
+  private let clearSearchTextSubject = PublishSubject<Void>()
+  lazy var clearSearchText: Signal<Void> = { clearSearchTextSubject.asSignalOnErrorJustIgnore() }()
+
   lazy var tokenColor: Driver<BoltColorResource?> = {
     return routingCoordinator.currentRoute
       .map { route -> BoltColorResource? in
@@ -152,6 +155,9 @@ final class LookupRoutingState: HasDisposeBag {
     guard let url = docset.url(forPagePath: entry.path) else {
       return
     }
+
+    clearSearchTextSubject.onNext(())
+
     sceneState.dispatch(action: .updateCurrentURL(url))
     showsDocumentationPage.accept(true)
   }
