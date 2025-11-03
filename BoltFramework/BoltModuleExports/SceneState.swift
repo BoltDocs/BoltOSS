@@ -82,9 +82,6 @@ public class SceneState: HasDisposeBag {
   private let _currentPageURL = PublishRelay<URL>()
   public lazy var currentPageURL: Signal<URL> = { _currentPageURL.asSignal() }()
 
-  private let _currentOnlinePageURL = PublishRelay<URL?>()
-  public lazy var currentOnlinePageURL: Signal<URL?> = { _currentOnlinePageURL.asSignal() }()
-
   public let actions = PublishRelay<SceneAction>()
 
   public func dispatch(action: SceneAction) {

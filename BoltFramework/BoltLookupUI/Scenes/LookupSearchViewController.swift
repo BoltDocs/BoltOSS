@@ -105,10 +105,10 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
       }
       .disposed(by: disposeBag)
 
-      searchBar.rx.value
-        .map { return $0 ?? "" }
-        .bind(to: state.searchQuery)
-        .disposed(by: disposeBag)
+    searchBar.rx.value
+      .map { return $0 ?? "" }
+      .bind(to: state.searchQuery)
+      .disposed(by: disposeBag)
   }
 
 }
