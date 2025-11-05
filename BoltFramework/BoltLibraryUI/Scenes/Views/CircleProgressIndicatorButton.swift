@@ -75,12 +75,10 @@ public struct CircleProgressIndicatorButton: View {
 
 #if DEBUG
 
-@available(iOS 17.0, *)
 #Preview(traits: .fixedLayout(width: 200, height: 200)) {
   CircleProgressIndicatorButton(progress: 0)
 }
 
-@available(iOS 17.0, *)
 #Preview(traits: .fixedLayout(width: 200, height: 200)) {
   CircleProgressIndicatorButton(progress: nil)
 }

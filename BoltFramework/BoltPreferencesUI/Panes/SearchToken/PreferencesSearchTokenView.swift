@@ -65,9 +65,7 @@ final class PreferencesTypeBrowserViewController: UITableViewController, UISearc
 
     navigationItem.searchController = searchController
     navigationItem.hidesSearchBarWhenScrolling = false
-    if #available(iOS 16, *) {
-      navigationItem.preferredSearchBarPlacement = .stacked
-    }
+    navigationItem.preferredSearchBarPlacement = .stacked
 
     definesPresentationContext = true
   }
