@@ -1,4 +1,5 @@
 #include "./App.xcconfig"
+#include "./Bolt-Entitlements.xcconfig"
 
 ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*] = AppIcon_macOS
 CURRENT_PROJECT_VERSION = 1
