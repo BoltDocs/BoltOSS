@@ -137,7 +137,6 @@ public final class BoltContentUnavailableUIView: UIView {
 
 #if DEBUG
 
-@available(iOS 17.0, *)
 #Preview(traits: .fixedLayout(width: 300, height: 300)) {
 
   BoltContentUnavailableView(

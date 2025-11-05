@@ -291,7 +291,6 @@ final class LibraryFeedInfoVersionsStubbedSectionModel: FeedInfoVersionsSectionM
 
 }
 
-@available(iOS 17.0, *)
 #Preview(traits: .fixedLayout(width: 480, height: 640)) {
 
   let feed = StubFeed(

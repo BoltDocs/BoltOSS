@@ -218,7 +218,6 @@ private final class StubbedLookupListViewModel: LookupListViewModel {
 
 }
 
-@available(iOS 17.0, *)
 #Preview(traits: .fixedLayout(width: 480, height: 640)) {
   UINavigationController(
     rootViewController: LookupListViewController(
@@ -236,7 +235,6 @@ private final class StubbedLookupListViewModel: LookupListViewModel {
   )
 }
 
-@available(iOS 17.0, *)
 #Preview(traits: .fixedLayout(width: 480, height: 640)) {
   UINavigationController(
     rootViewController: LookupListViewController(

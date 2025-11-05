@@ -97,10 +97,8 @@ private class PreferencesHomeViewModel: ObservableObject {
       .map(UpdateCheckingFrequency.init(seconds:))
       .assign(to: &$updateCheckingFrequency)
 
-    if #available(iOS 16.4, *) {
-      UserDefaults.standard.publisher(for: \.webViewInspectable)
-        .assign(to: &$webViewInspectable)
-    }
+    UserDefaults.standard.publisher(for: \.webViewInspectable)
+      .assign(to: &$webViewInspectable)
   }
 
   func checkForDocsetUpdates() {
@@ -247,15 +245,13 @@ public struct PreferencesHomeView: View {
             .sheet(isPresented: $isTypeBrowserPresented) {
               PreferencesTypeBrowserView()
             }
-            if #available(iOS 16.4, *) {
-              BoltToggle(
-                isOn: Binding(
-                  get: { viewModel.webViewInspectable },
-                  set: { UserDefaults.standard.webViewInspectable = $0 }
-                )
-              ) {
-                Text("Preferences-Home-InternalDiagnostics-webViewInspector".boltLocalized)
-              }
+            BoltToggle(
+              isOn: Binding(
+                get: { viewModel.webViewInspectable },
+                set: { UserDefaults.standard.webViewInspectable = $0 }
+              )
+            ) {
+              Text("Preferences-Home-InternalDiagnostics-webViewInspector".boltLocalized)
             }
             Button("Preferences-Home-InternalDiagnostics-resetData".boltLocalized) {
               if isCacheClearing {

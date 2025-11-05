@@ -117,9 +117,7 @@ public final class SceneManager {
     with(browserViewController) {
       $0.navigationItem.searchController = lookupSearchController
       $0.navigationItem.hidesSearchBarWhenScrolling = false
-      if #available(iOS 16.0, *) {
-        $0.navigationItem.preferredSearchBarPlacement = .stacked
-      }
+      $0.navigationItem.preferredSearchBarPlacement = .stacked
     }
 
     with(doubleColumnSplitViewController) {

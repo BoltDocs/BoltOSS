@@ -81,10 +81,8 @@ final class BrowserView: UIView, HasDisposeBag {
     }
     webView = WKWebView(frame: .zero, configuration: configuration)
 
-    if #available(iOS 16.4, *) {
-      if UserDefaults.standard.webViewInspectable {
-        webView.isInspectable = true
-      }
+    if UserDefaults.standard.webViewInspectable {
+      webView.isInspectable = true
     }
 
     webView.allowsBackForwardNavigationGestures = false

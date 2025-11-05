@@ -16,8 +16,6 @@
 
 import RxSwift
 
-#if swift(>=6.2)
-
 public extension ObservableType where Self: SendableMetatype, Element: Sendable {
 
   func asyncMap<Result>(_ transform: @Sendable @escaping (Element) async throws -> Result) -> Observable<Result> {
@@ -29,19 +27,3 @@ public extension ObservableType where Self: SendableMetatype, Element: Sendable 
   }
 
 }
-
-#else
-
-public extension ObservableType where Element: Sendable {
-
-  func asyncMap<Result>(_ transform: @Sendable @escaping (Element) async throws -> Result) -> Observable<Result> {
-    flatMap { element in
-      Single.create {
-        try await transform(element)
-      }
-    }
-  }
-
-}
-
-#endif

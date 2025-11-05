@@ -166,7 +166,6 @@ public struct DownloadProgressListItemView: View {
 
 #if DEBUG
 
-@available(iOS 17.0, *)
 #Preview {
 
   struct StubbedError: Error { }
