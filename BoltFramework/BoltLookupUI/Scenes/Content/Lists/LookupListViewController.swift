@@ -153,8 +153,8 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
       make.edges.equalToSuperview()
     }
 
-    tableView.rx.itemSelected.subscribe { item in
-      self.tableView.deselectRow(at: item, animated: true)
+    tableView.rx.itemSelected.subscribe(with: self) { owner, item in
+      owner.tableView.deselectRow(at: item, animated: true)
     }
     .disposed(by: disposeBag)
 
