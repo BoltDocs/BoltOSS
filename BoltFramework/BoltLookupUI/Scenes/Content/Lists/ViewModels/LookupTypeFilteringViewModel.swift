@@ -79,40 +79,45 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
       .bind(to: _showsLoadingIndicator)
       .disposed(by: disposeBag)
 
-    routingState.searchQuery
-      .asObservable()
-      .flatMapLatest { [docset, searchService, type, activityIndicator] query -> Observable<Result<[LookupListCellItem], Error>> in
-        if query.isEmpty {
-          return Single<[Entry]>.create {
-            let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
-            return try await docsetSearchIndex.fetchAllEntries(forType: type)
-          }
-          .map { entries -> [LookupListCellItem] in
-            return entries.map { entry in
-              return LookupListEntryItem(docset: docset, entry: entry)
-            }
-          }
-          .asObservable()
-          .mapToResult()
-          .trackActivity(activityIndicator)
-        } else {
-          return Single<[Entry]>.create {
-            let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
-            return try await docsetSearchIndex.fetchEntries(forQuery: query, type: type)
-          }
-          .map { entries -> [LookupListCellItem] in
-            return entries.map { entry in
-              return LookupListEntryItem(docset: docset, entry: entry)
-            }
-          }
-          .asObservable()
-          .mapToResult()
-          .trackActivity(activityIndicator)
+    Observable.combineLatest(
+      routingState.searchQuery.asObservable(),
+      routingState.presentsLookupList.asObservable()
+    )
+    .filter { _, presentsLookupList in
+      return presentsLookupList
+    }
+    .flatMapLatest { [docset, searchService, type, activityIndicator] query, _ -> Observable<Result<[LookupListCellItem], Error>> in
+      if query.isEmpty {
+        return Single<[Entry]>.create {
+          let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
+          return try await docsetSearchIndex.fetchAllEntries(forType: type)
         }
+        .map { entries -> [LookupListCellItem] in
+          return entries.map { entry in
+            return LookupListEntryItem(docset: docset, entry: entry)
+          }
+        }
+        .asObservable()
+        .mapToResult()
+        .trackActivity(activityIndicator)
+      } else {
+        return Single<[Entry]>.create {
+          let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
+          return try await docsetSearchIndex.fetchEntries(forQuery: query, type: type)
+        }
+        .map { entries -> [LookupListCellItem] in
+          return entries.map { entry in
+            return LookupListEntryItem(docset: docset, entry: entry)
+          }
+        }
+        .asObservable()
+        .mapToResult()
+        .trackActivity(activityIndicator)
       }
-      .startWith(.success([]))
-      .bind(to: _results)
-      .disposed(by: disposeBag)
+    }
+    .startWith(.success([]))
+    .bind(to: _results)
+    .disposed(by: disposeBag)
   }
 
 }
