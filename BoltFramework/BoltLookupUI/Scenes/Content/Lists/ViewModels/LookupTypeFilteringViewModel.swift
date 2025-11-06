@@ -80,6 +80,7 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
       .disposed(by: disposeBag)
 
     routingState.searchQuery
+      .asObservable()
       .flatMapLatest { [docset, searchService, type, activityIndicator] query -> Observable<Result<[LookupListCellItem], Error>> in
         if query.isEmpty {
           return Single<[Entry]>.create {

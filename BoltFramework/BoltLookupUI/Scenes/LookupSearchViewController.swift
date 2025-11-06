@@ -113,7 +113,9 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
 
     searchBar.rx.value
       .map { return $0 ?? "" }
-      .bind(to: state.searchQuery)
+      .subscribe(with: self) { owner, searchQuery in
+        owner.state.updateSearchQuery(searchQuery)
+      }
       .disposed(by: disposeBag)
   }
 

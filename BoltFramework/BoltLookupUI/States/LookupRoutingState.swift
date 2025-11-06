@@ -76,7 +76,8 @@ final class LookupRoutingState: HasDisposeBag {
       .disposed(by: disposeBag)
   }
 
-  let searchQuery = BehaviorRelay<String>(value: "")
+  private let searchQueryRelay = BehaviorRelay<String>(value: "")
+  lazy var searchQuery: Driver<String> = { searchQueryRelay.asDriver() }()
 
   lazy var presentsLookupList: Driver<Bool> = {
     return showsDocumentationPage
@@ -149,6 +150,10 @@ final class LookupRoutingState: HasDisposeBag {
 
   func changeScope(_ scope: LookupScope) {
     sceneState.dispatch(action: .updateCurrentScope(scope))
+  }
+
+  func updateSearchQuery(_ query: String) {
+    searchQueryRelay.accept(query)
   }
 
   func selectEntry(docset: Docset, entry: Entry) {

@@ -83,6 +83,7 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
       .disposed(by: disposeBag)
 
     routingState.searchQuery
+      .asObservable()
       .flatMapLatest { [docset, searchService, activityIndicator] queryString -> Observable<Result<[LookupListCellItem], Error>> in
         if queryString.isEmpty {
           return Single<[TypeCountPair]>.create {
