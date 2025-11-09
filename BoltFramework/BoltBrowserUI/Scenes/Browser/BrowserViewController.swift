@@ -183,9 +183,7 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
     view.insertSubview(browserView, belowSubview: progressView)
     browserView.snp.makeConstraints { make in
       make.top.equalTo(view.safeAreaLayoutGuide)
-      make.leading.equalToSuperview()
-      make.trailing.equalToSuperview()
-      make.bottom.equalTo(view.safeAreaLayoutGuide)
+      make.leading.trailing.bottom.equalToSuperview()
     }
   }
 
