@@ -79,11 +79,12 @@ final class LookupRoutingState: HasDisposeBag {
   private let searchQueryRelay = BehaviorRelay<String>(value: "")
   lazy var searchQuery: Driver<String> = { searchQueryRelay.asDriver() }()
 
-  lazy var presentsLookupList: Driver<Bool> = {
+  lazy var presentsLookupListDriver: Driver<Bool> = {
     return showsDocumentationPage
       .asDriver()
       .map(!)
   }()
+  var presentsLookupList: Bool { !(showsDocumentationPage.value) }
 
   private let showsDocumentationPage = BehaviorRelay<Bool>(value: false)
 

@@ -87,7 +87,7 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
       }
       .disposed(by: disposeBag)
 
-    state.presentsLookupList
+    state.presentsLookupListDriver
       .drive(rx.showsSearchResultsController)
       .disposed(by: disposeBag)
 
@@ -161,7 +161,9 @@ extension LookupSearchController: UITextFieldDelegate {
   }
 
   public func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
-    dismiss(animated: true)
+    if !state.presentsLookupList {
+      dismiss(animated: true)
+    }
   }
 
 }

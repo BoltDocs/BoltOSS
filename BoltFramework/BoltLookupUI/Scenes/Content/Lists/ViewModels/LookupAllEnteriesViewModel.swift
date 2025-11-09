@@ -84,7 +84,7 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
 
     Observable.combineLatest(
       routingState.searchQuery.asObservable(),
-      routingState.presentsLookupList.asObservable()
+      routingState.presentsLookupListDriver.asObservable()
     )
     .filter { _, presentsLookupList in
       return presentsLookupList
