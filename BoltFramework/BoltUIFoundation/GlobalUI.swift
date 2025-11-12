@@ -57,25 +57,6 @@ public struct ErrorMessage {
 @MainActor
 public struct GlobalUI {
 
-  public static func configureNavigationBarAppearance(tintColor: UIColor) {
-    let navigationBar = UINavigationBar.appearance()
-
-    let scrollEdgeNavBarAppearance = UINavigationBarAppearance()
-
-    scrollEdgeNavBarAppearance.configureWithTransparentBackground()
-    scrollEdgeNavBarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
-    scrollEdgeNavBarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
-
-    let normalNavBarAppearance = scrollEdgeNavBarAppearance.copy()
-    normalNavBarAppearance.configureWithDefaultBackground()
-    normalNavBarAppearance.backgroundEffect = UIBlurEffect(style: .systemMaterial)
-
-    navigationBar.tintColor = tintColor
-
-    navigationBar.scrollEdgeAppearance = scrollEdgeNavBarAppearance
-    navigationBar.standardAppearance = normalNavBarAppearance
-  }
-
   static weak var currentAlertController: UIAlertController?
 
   public static func dismissCurrentAlertController(completion: (() -> Void)? = nil) {

@@ -17,6 +17,7 @@
 import UIKit
 import WebKit
 
+import Overture
 import RxCocoa
 import RxSwift
 import SnapKit
@@ -83,9 +84,16 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
 
   override public func viewDidLoad() {
     super.viewDidLoad()
+
     view.backgroundColor = .systemBackground
 
-    navigationItem.largeTitleDisplayMode = .never
+    with(navigationItem) {
+      $0.largeTitleDisplayMode = .never
+      $0.scrollEdgeAppearance = update(UINavigationBarAppearance()) {
+        $0.configureWithDefaultBackground()
+        $0.shadowColor = .clear
+      }
+    }
 
     setupProgressView()
 
@@ -118,18 +126,6 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
       .disposed(by: disposeBag)
 
     setupToolbarItems()
-  }
-
-  override public func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    navigationController?.navigationBar.scrollEdgeAppearance?.configureWithOpaqueBackground()
-    navigationController?.navigationBar.scrollEdgeAppearance?.shadowColor = .clear
-  }
-
-  override public func viewWillDisappear(_ animated: Bool) {
-    super.viewWillDisappear(animated)
-    navigationController?.navigationBar.scrollEdgeAppearance = UINavigationBar.appearance().scrollEdgeAppearance
-    navigationController?.navigationBar.standardAppearance = UINavigationBar.appearance().standardAppearance
   }
 
   private func setupBrowserView(initialURL: URL, enablesJavaScript: Bool) {
@@ -182,8 +178,7 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
 
     view.insertSubview(browserView, belowSubview: progressView)
     browserView.snp.makeConstraints { make in
-      make.top.equalTo(view.safeAreaLayoutGuide)
-      make.leading.trailing.bottom.equalToSuperview()
+      make.edges.equalToSuperview()
     }
   }
 
