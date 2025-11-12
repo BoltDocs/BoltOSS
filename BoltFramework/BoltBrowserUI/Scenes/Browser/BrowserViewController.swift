@@ -35,42 +35,12 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
 
   private let sceneState: SceneState
 
-  private lazy var backButton = UIBarButtonItem(
-    image: UIImage(systemName: "chevron.left"),
-    style: .plain,
-    target: self,
-    action: #selector(backButtonTapped(_:))
-  )
-
-  private lazy var forwardButton = UIBarButtonItem(
-    image: UIImage(systemName: "chevron.right"),
-    style: .plain,
-    target: self,
-    action: #selector(forwardButtonTapped(_:))
-  )
-
-  private lazy var tableOfContentsButton = UIBarButtonItem(
-    image: UIImage(systemName: "list.bullet"),
-    style: .plain,
-    target: self,
-    action: #selector(tableOfContentsButtonTapped(_:))
-  )
-
-  private lazy var bookmarkButton = UIBarButtonItem(
-    image: UIImage(systemName: "bookmark"),
-    style: .plain,
-    target: self,
-    action: #selector(bookmarkButtonTapped(_:))
-  )
-
-  private lazy var shareButton = UIBarButtonItem(
-    image: UIImage(systemName: "square.and.arrow.up"),
-    style: .plain,
-    target: self,
-    action: #selector(shareButtonTapped(_:))
-  )
-
   private var docset: Docset?
+
+  public var titleDriver: Driver<String> { browserView.title }
+  public var currentURLDriver: Driver<URL?> { browserView.currentURLDriver }
+  public var canGoBackDriver: Driver<Bool> { browserView.canGoBack }
+  public var canGoForwardDriver: Driver<Bool> { browserView.canGoForward }
 
   public init(sceneState: SceneState) {
     self.sceneState = sceneState
@@ -86,14 +56,6 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
     super.viewDidLoad()
 
     view.backgroundColor = .systemBackground
-
-    with(navigationItem) {
-      $0.largeTitleDisplayMode = .never
-      $0.scrollEdgeAppearance = update(UINavigationBarAppearance()) {
-        $0.configureWithDefaultBackground()
-        $0.shadowColor = .clear
-      }
-    }
 
     setupProgressView()
 
@@ -117,15 +79,6 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
         }
       }
       .disposed(by: disposeBag)
-
-    sceneState.lookupListVisible
-      .drive(with: self) { owner, isShown in
-        owner.navigationController?.setToolbarHidden(isShown, animated: true)
-        owner.updateNavigationBarAppearance(forLookupListVisible: isShown)
-      }
-      .disposed(by: disposeBag)
-
-    setupToolbarItems()
   }
 
   private func setupBrowserView(initialURL: URL, enablesJavaScript: Bool) {
@@ -135,35 +88,6 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
 
     sceneState.currentPageURL
       .emit(to: browserView.url)
-      .disposed(by: browserView.disposeBag)
-
-    // If current URL matches homePageURL, or URL is blank, display title from Docset
-    Driver.combineLatest(
-      browserView.title,
-      browserView.currentURLDriver,
-      sceneState.currentScope
-    )
-    .map { pageTitle, currentURL, currentScope -> String in
-      guard case let .docset(docset) = currentScope else {
-        return "Browser-BrowserController-defaultTitle".boltLocalized
-      }
-      guard let currentURL = currentURL else {
-        return docset.displayName
-      }
-      if currentURL.isBlank || currentURL == docset.indexPageURL {
-        return docset.displayName
-      }
-      return pageTitle
-    }
-    .drive(rx.title)
-    .disposed(by: browserView.disposeBag)
-
-    browserView.canGoBack
-      .drive(backButton.rx.isEnabled)
-      .disposed(by: browserView.disposeBag)
-
-    browserView.canGoForward
-      .drive(forwardButton.rx.isEnabled)
       .disposed(by: browserView.disposeBag)
 
     browserView.estimatedProgress
@@ -197,65 +121,23 @@ extension BrowserViewController {
     }
   }
 
-  private func setupToolbarItems() {
-    let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-
-    let moreButton = UIBarButtonItem(
-      image: UIImage(systemName: "textformat.size"),
-      menu: UIMenu(
-        title: "",
-        children: [
-          UIAction(title: "Smaller Text", image: UIImage(systemName: "textformat.size.smaller")) { [weak self] _ in
-            self?.browserView.zoomOut()
-          },
-          UIAction(title: "Larger Text", image: UIImage(systemName: "textformat.size.larger")) { [weak self] _ in
-            self?.browserView.zoomIn()
-          },
-        ]
-      )
-    )
-
-    toolbarItems = [
-      backButton,
-      flexibleSpace,
-      forwardButton,
-      flexibleSpace,
-      tableOfContentsButton,
-      flexibleSpace,
-      bookmarkButton,
-      flexibleSpace,
-      shareButton,
-      flexibleSpace,
-      moreButton,
-    ]
-  }
-
-  func updateNavigationBarAppearance(forLookupListVisible lookupVisible: Bool) {
-    let navigationBar = navigationController?.navigationBar
-    if lookupVisible {
-      navigationBar?.standardAppearance.configureWithOpaqueBackground()
-    } else {
-      navigationBar?.standardAppearance.configureWithDefaultBackground()
-    }
-  }
-
-  @objc func backButtonTapped(_ sender: Any?) {
+  public func goBack() {
     browserView.goBack()
   }
 
-  @objc func forwardButtonTapped(_ sender: Any?) {
+  public func goForward() {
     browserView.goForward()
   }
 
-  @objc func tableOfContentsButtonTapped(_ sender: Any?) {
-
+  public func zoomIn() {
+    browserView.zoomIn()
   }
 
-  @objc func bookmarkButtonTapped(_ sender: Any?) {
-
+  public func zoomOut() {
+    browserView.zoomOut()
   }
 
-  @objc func shareButtonTapped(_ sender: Any?) {
+  public func shareCurrentPage() {
     guard let currentURL = browserView.currentURL else {
       return
     }
@@ -272,10 +154,6 @@ extension BrowserViewController {
     )
 
     present(activityViewController, animated: true)
-  }
-
-  @objc func moreButtonTapped(_ sender: Any?) {
-
   }
 
 }

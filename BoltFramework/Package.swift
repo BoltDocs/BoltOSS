@@ -74,6 +74,7 @@ let libraryTargets: [Target] = [
     name: "BoltLookupUI",
     dependencies: [
       "SnapKit",
+      "BoltBrowserUI",
       "BoltUIFoundation",
       "BoltModuleExports",
       "RoutableNavigation",
@@ -119,7 +120,6 @@ let libraryTargets: [Target] = [
 let frameworkTarget: Target = {
   let dependencies: [Target.Dependency] = [
     "BoltUIFoundation",
-    "BoltBrowserUI",
     "BoltHomeUI",
     "BoltLookupUI",
     "BoltLibraryUI",
