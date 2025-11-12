@@ -24,7 +24,6 @@ import RxRelay
 import RxSwift
 import SnapKit
 
-import BoltBrowserUI
 import BoltHomeUI
 import BoltLookupUI
 import BoltModuleExports
@@ -73,7 +72,7 @@ public final class SceneManager {
   private lazy var secondaryNavigationController = SecondaryNavigationController()
 
   private lazy var welcomeViewController = WelcomeViewController()
-  private lazy var browserViewController = BrowserViewController(sceneState: state)
+  private lazy var lookupContentViewController = LookupContentViewController(sceneState: state)
 
   private let state = SceneState()
   private let disposeBag = DisposeBag()
@@ -114,7 +113,7 @@ public final class SceneManager {
       })
       .disposed(by: disposeBag)
 
-    with(browserViewController) {
+    with(lookupContentViewController) {
       $0.navigationItem.searchController = lookupSearchController
       $0.navigationItem.hidesSearchBarWhenScrolling = false
       $0.navigationItem.preferredSearchBarPlacement = .stacked
@@ -135,7 +134,7 @@ public final class SceneManager {
             owner.homeCompactNavigationController.setViewControllers(
               [
                 owner.homeViewControllerCompact,
-                owner.browserViewController,
+                owner.lookupContentViewController,
               ],
               animated: true
             )
@@ -151,7 +150,7 @@ public final class SceneManager {
         } else {
           owner.homeCompactNavigationController.viewControllers = [owner.homeViewControllerCompact]
           if scope != nil {
-            owner.secondaryNavigationController.viewControllers = [owner.browserViewController]
+            owner.secondaryNavigationController.viewControllers = [owner.lookupContentViewController]
           } else {
             owner.secondaryNavigationController.viewControllers = [owner.welcomeViewController]
           }
