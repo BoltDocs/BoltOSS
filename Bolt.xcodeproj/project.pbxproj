@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		6B593CBA2B6DEED20042E688 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B593CBB2B6DEED20042E688 /* Main.storyboard */; };
-		6B81CF0E2D106E0B00908962 /* SDK-iOS.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B81CF0D2D106E0B00908962 /* SDK-iOS.xcconfig */; };
 		6BC6404A2D0EF64A00E51A09 /* SnapshottingTests in Frameworks */ = {isa = PBXBuildFile; productRef = 6BC640492D0EF64A00E51A09 /* SnapshottingTests */; };
 		6BC6404C2D0EF66D00E51A09 /* BoltFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 6BC6404B2D0EF66D00E51A09 /* BoltFramework */; };
 		6BC6404D2D0EF66D00E51A09 /* BoltFramework in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 6BC6404B2D0EF66D00E51A09 /* BoltFramework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -372,7 +371,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				716D6AA62498A68400EE68B2 /* LaunchScreen.storyboard in Resources */,
-				6B81CF0E2D106E0B00908962 /* SDK-iOS.xcconfig in Resources */,
 				6B593CBA2B6DEED20042E688 /* Main.storyboard in Resources */,
 				718B0149252978BA0060ACBC /* Assets.xcassets in Resources */,
 			);
