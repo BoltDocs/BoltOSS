@@ -54,7 +54,7 @@ final class LookupRoutingState: HasDisposeBag {
 
     sceneState.currentScope
       .drive(with: self) { owner, _ in
-        owner.showsDocumentationPage.accept(false)
+        owner.sceneState.dispatch(action: .updateLookupListShowsDocPage(false))
       }
       .disposed(by: disposeBag)
   }
@@ -80,13 +80,10 @@ final class LookupRoutingState: HasDisposeBag {
   lazy var searchQuery: Driver<String> = { searchQueryRelay.asDriver() }()
 
   lazy var presentsLookupListDriver: Driver<Bool> = {
-    return showsDocumentationPage
-      .asDriver()
+    return sceneState.lookupListShowsDocPage
       .map(!)
   }()
-  var presentsLookupList: Bool { !(showsDocumentationPage.value) }
-
-  private let showsDocumentationPage = BehaviorRelay<Bool>(value: false)
+  var presentsLookupList: Bool { !(sceneState.lookupListShowsDocPageValue) }
 
   private let clearSearchTextSubject = PublishSubject<Void>()
   lazy var clearSearchText: Signal<Void> = { clearSearchTextSubject.asSignalOnErrorJustIgnore() }()
@@ -129,8 +126,7 @@ final class LookupRoutingState: HasDisposeBag {
         }
       }
 
-    let pageTokens = showsDocumentationPage
-      .asDriver()
+    let pageTokens = sceneState.lookupListShowsDocPage
       .map { showsDocumentationPage -> [UISearchToken] in
         if showsDocumentationPage {
           let tokenImage = UIImage(systemName: "doc.text")!
@@ -165,12 +161,12 @@ final class LookupRoutingState: HasDisposeBag {
     clearSearchTextSubject.onNext(())
 
     sceneState.dispatch(action: .updateCurrentURL(url))
-    showsDocumentationPage.accept(true)
+    sceneState.dispatch(action: .updateLookupListShowsDocPage(true))
   }
 
   func deselectEntryOrPop() {
-    if showsDocumentationPage.value {
-      showsDocumentationPage.accept(false)
+    if sceneState.lookupListShowsDocPageValue {
+      sceneState.dispatch(action: .updateLookupListShowsDocPage(false))
     } else {
       routingCoordinator.pop()
     }
