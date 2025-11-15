@@ -119,8 +119,7 @@ analyzer_rules:
   - unused_import
 
 excluded:
-  - "**/legacy/*.swift"
-  - "**/.build/**"
+  - "**/.build/"
 
 indentation: 2
 
