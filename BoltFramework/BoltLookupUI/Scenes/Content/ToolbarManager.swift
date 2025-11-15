@@ -77,10 +77,8 @@ final class ToolbarManager {
     action: #selector(shareButtonTapped(_:))
   )
 
-  private func setupToolbarItems() {
-    let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-
-    let moreButton = UIBarButtonItem(
+  private lazy var moreButton: UIBarButtonItem = {
+    return UIBarButtonItem(
       image: UIImage(systemName: "textformat.size"),
       menu: UIMenu(
         title: "",
@@ -100,7 +98,10 @@ final class ToolbarManager {
         ]
       )
     )
+  }()
 
+  private func setupToolbarItems() {
+    let flexibleSpace = UIBarButtonItem.flexibleSpace()
     viewController?.toolbarItems = [
       backButton,
       flexibleSpace,
