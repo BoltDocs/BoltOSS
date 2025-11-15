@@ -161,7 +161,7 @@ let package = Package(
     .package(url: "https://github.com/BoltDocs/RoutableNavigation.git", revision: "5fa1eb3"),
     .package(path: "../BoltRxSwift"),
     .package(path: "../BoltLocalizations"),
-    .package(path: "./BoltServices"),
+    .package(path: "../BoltServices"),
   ],
   targets: libraryTargets + [frameworkTarget]
 )
