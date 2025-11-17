@@ -37,4 +37,6 @@ open Bolt.xcodeproj
 
 ## License
 
-This software is licensed under the terms of the Apache License Version 2.0 (Apache-2.0). Full text of the license is available in the [LICENSE](LICENSE) file and [online](https://www.apache.org/licenses/LICENSE-2.0).
+This software is licensed under the terms of the Apache License Version 2.0 (Apache-2.0), unless otherwise stated. Full text of the license is available in the [LICENSE](LICENSE) file and [online](https://www.apache.org/licenses/LICENSE-2.0).
+
+Some source code in this project may be under different licenses (such as MPL). Please refer to the individual source files or license files for specific licensing information.

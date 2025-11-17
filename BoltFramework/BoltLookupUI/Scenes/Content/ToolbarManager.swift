@@ -14,8 +14,12 @@
 // limitations under the License.
 //
 
+import Combine
 import UIKit
 
+import Overture
+
+import BoltModuleExports
 import BoltRxSwift
 
 protocol ToolbarManagerDelegate: AnyObject {
@@ -28,15 +32,48 @@ protocol ToolbarManagerDelegate: AnyObject {
 
 }
 
+enum ToolbarMode {
+  case normal
+  case findInPage
+}
+
 final class ToolbarManager {
 
   typealias Delegate = UIViewController & ToolbarManagerDelegate
 
   private weak var viewController: Delegate?
 
-  init(viewController: Delegate) {
+  var mode: ToolbarMode = .normal {
+    didSet {
+      if mode != oldValue {
+        updateToolbarItems(forMode: mode)
+      }
+    }
+  }
+
+  private let findInPageViewModel: FindInPageToolbarViewModel
+
+  private var cancellables = Set<AnyCancellable>()
+
+  init(
+    viewController: Delegate,
+    findInPageToolbarViewModel: FindInPageToolbarViewModel
+  ) {
     self.viewController = viewController
-    setupToolbarItems()
+    self.findInPageViewModel = findInPageToolbarViewModel
+
+    findInPageViewModel.$resultsText
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] text in
+        guard let self = self else {
+          return
+        }
+        findInPageResultCountLabel.text = text
+        findInPageResultCountLabel.sizeToFit()
+      }
+      .store(in: &cancellables)
+
+    updateToolbarItems(forMode: mode)
   }
 
   var backButtonEnabled: Binder<Bool> { backButton.rx.isEnabled }
@@ -100,21 +137,61 @@ final class ToolbarManager {
     )
   }()
 
-  private func setupToolbarItems() {
-    let flexibleSpace = UIBarButtonItem.flexibleSpace()
-    viewController?.toolbarItems = [
-      backButton,
-      flexibleSpace,
-      forwardButton,
-      flexibleSpace,
-      tableOfContentsButton,
-      flexibleSpace,
-      bookmarkButton,
-      flexibleSpace,
-      shareButton,
-      flexibleSpace,
-      moreButton,
-    ]
+  private lazy var findInPageResultCountLabel: UILabel = {
+    let label = UILabel()
+    label.font = UIFont.systemFont(ofSize: 14)
+    label.textColor = .secondaryLabel
+    label.textAlignment = .left
+    return label
+  }()
+
+  private lazy var findInPageResultCountItem: UIBarButtonItem = {
+    return UIBarButtonItem(customView: findInPageResultCountLabel)
+  }()
+
+  private lazy var previousButton: UIBarButtonItem = {
+    let button = UIBarButtonItem(
+      image: UIImage(systemName: "chevron.up"),
+      style: .plain,
+      target: self,
+      action: #selector(findInPagePreviousButtonTapped)
+    )
+    return button
+  }()
+
+  private lazy var nextButton: UIBarButtonItem = {
+    let button = UIBarButtonItem(
+      image: UIImage(systemName: "chevron.down"),
+      style: .plain,
+      target: self,
+      action: #selector(findInPageNextButtonTapped)
+    )
+    return button
+  }()
+
+  private func updateToolbarItems(forMode mode: ToolbarMode) {
+    let toolbarItems: [UIBarButtonItem] = {
+      let flexibleSpace = UIBarButtonItem.flexibleSpace()
+      switch mode {
+      case .normal:
+        return [
+          backButton,
+          flexibleSpace,
+          forwardButton,
+          flexibleSpace,
+          tableOfContentsButton,
+          flexibleSpace,
+          bookmarkButton,
+          flexibleSpace,
+          shareButton,
+          flexibleSpace,
+          moreButton,
+        ]
+      case .findInPage:
+        return [findInPageResultCountItem, flexibleSpace, previousButton, nextButton]
+      }
+    }()
+    viewController?.toolbarItems = toolbarItems
   }
 
   @objc func backButtonTapped(_ sender: Any?) {
@@ -135,6 +212,14 @@ final class ToolbarManager {
 
   @objc func shareButtonTapped(_ sender: Any?) {
     viewController?.toolbarManagerDidTapShare(self)
+  }
+
+  @objc func findInPagePreviousButtonTapped(_ sender: Any?) {
+    findInPageViewModel.previousButtonTapped()
+  }
+
+  @objc func findInPageNextButtonTapped(_ sender: Any?) {
+    findInPageViewModel.nextButtonTapped()
   }
 
 }

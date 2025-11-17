@@ -37,13 +37,21 @@ private struct SearchTextFieldTextPreservation {
 
 public final class LookupSearchController: UISearchController, HasDisposeBag {
 
-  let state: LookupRoutingState!
+  private let sceneState: SceneState
+
+  private let state: LookupRoutingState
 
   private let resultsController: LookupSearchResultsController
 
   private var preservedSearchFieldText: SearchTextFieldTextPreservation?
 
+  private lazy var findInPageToolbar: FindInPageToolbar = {
+    let viewModel = FindInPageToolbarViewModel(sceneState: sceneState)
+    return FindInPageToolbar(viewModel: viewModel)
+  }()
+
   public init(sceneState: SceneState) {
+    self.sceneState = sceneState
     self.state = LookupRoutingState(sceneState: sceneState)
     resultsController = LookupSearchResultsController(
       sceneState: sceneState,
@@ -72,6 +80,7 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
     with(searchBar) {
       $0.delegate = self
       $0.placeholder = UIKitLocalizations.search
+      $0.inputAccessoryView = findInPageToolbar
       with($0.searchTextField) {
         $0.delegate = self
         $0.autocorrectionType = .no
@@ -88,7 +97,10 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
       .disposed(by: disposeBag)
 
     state.presentsLookupListDriver
-      .drive(rx.showsSearchResultsController)
+      .drive(with: self) { owner, presentsLookupList in
+        owner.showsSearchResultsController = presentsLookupList
+        owner.findInPageToolbar.isHidden = presentsLookupList
+      }
       .disposed(by: disposeBag)
 
     state.searchTokens

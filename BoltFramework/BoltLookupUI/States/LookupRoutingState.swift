@@ -57,6 +57,13 @@ final class LookupRoutingState: HasDisposeBag {
         owner.sceneState.dispatch(action: .updateLookupListShowsDocPage(false))
       }
       .disposed(by: disposeBag)
+
+    searchQuery
+      .filter { _ in sceneState.lookupListShowsDocPageValue == true }
+      .drive(with: self) { owner, query in
+        owner.sceneState.dispatch(action: .findInPage(query: query))
+      }
+      .disposed(by: disposeBag)
   }
 
   func setupScopeRouting() {

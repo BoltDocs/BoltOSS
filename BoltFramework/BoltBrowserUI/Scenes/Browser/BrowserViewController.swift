@@ -79,6 +79,24 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
         }
       }
       .disposed(by: disposeBag)
+
+    sceneState.findInPageQuery
+      .emit(with: self) { owner, query in
+        owner.browserView.findInPage(query: query)
+      }
+      .disposed(by: disposeBag)
+
+    sceneState.findPreviousInPage
+      .emit(with: self) { owner, _ in
+        owner.browserView.findPreviousInPage()
+      }
+      .disposed(by: disposeBag)
+
+    sceneState.findNextInPage
+      .emit(with: self) { owner, _ in
+        owner.browserView.findNextInPage()
+      }
+      .disposed(by: disposeBag)
   }
 
   private func setupBrowserView(initialURL: URL, enablesJavaScript: Bool) {
@@ -98,6 +116,18 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
     browserView.estimatedProgress
       .map { $0 == 1.0 }
       .drive(progressView.rx.isHidden)
+      .disposed(by: browserView.disposeBag)
+
+    browserView.findInPageCurrentIndex
+      .emit(with: self) { owner, currentIndex in
+        owner.sceneState.dispatch(action: .updateFindInPageCurrentIndex(currentIndex))
+      }
+      .disposed(by: browserView.disposeBag)
+
+    browserView.findInPageTotalResults
+      .emit(with: self) { owner, totalResults in
+        owner.sceneState.dispatch(action: .updateFindInPageTotalResults(totalResults))
+      }
       .disposed(by: browserView.disposeBag)
 
     view.insertSubview(browserView, belowSubview: progressView)

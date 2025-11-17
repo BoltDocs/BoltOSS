@@ -30,6 +30,9 @@ let libraryTargets: [Target] = [
       "BoltUIFoundation",
     ],
     path: "./BoltBrowserUI",
+    resources: [
+      .copy("./Resources/."),
+    ],
     swiftSettings: [
       .swiftLanguageMode(.v5)
     ]
