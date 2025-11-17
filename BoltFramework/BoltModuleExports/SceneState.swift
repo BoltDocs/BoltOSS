@@ -50,6 +50,11 @@ public enum SceneAction {
   case updateLookupListShowsDocPage(_: Bool)
   case updateCurrentScope(_: LookupScope)
   case updateCurrentURL(_: URL)
+  case findInPage(query: String)
+  case findPreviousInPage
+  case findNextInPage
+  case updateFindInPageCurrentIndex(_: Int)
+  case updateFindInPageTotalResults(_: Int)
 
   case onPresentLibrary
   case onPresentPreferences
@@ -87,6 +92,21 @@ public class SceneState: HasDisposeBag {
   private let _currentPageURL = PublishRelay<URL>()
   public lazy var currentPageURL: Signal<URL> = { _currentPageURL.asSignal() }()
 
+  private let _findInPageQuery = PublishRelay<String>()
+  public lazy var findInPageQuery: Signal<String> = { _findInPageQuery.asSignal() }()
+
+  private let _findPreviousInPage = PublishRelay<Void>()
+  public lazy var findPreviousInPage: Signal<Void> = { _findPreviousInPage.asSignal() }()
+
+  private let _findNextInPage = PublishRelay<Void>()
+  public lazy var findNextInPage: Signal<Void> = { _findNextInPage.asSignal() }()
+
+  private let _findInPageCurrentIndex = PublishRelay<Int>()
+  public lazy var findInPageCurrentIndex: Signal<Int> = { _findInPageCurrentIndex.asSignal() }()
+
+  private let _findInPageTotalResults = PublishRelay<Int>()
+  public lazy var findInPageTotalResults: Signal<Int> = { _findInPageTotalResults.asSignal() }()
+
   public let actions = PublishRelay<SceneAction>()
 
   public func dispatch(action: SceneAction) {
@@ -99,6 +119,16 @@ public class SceneState: HasDisposeBag {
       _currentScope.accept(scope)
     case let .updateCurrentURL(url):
       _currentPageURL.accept(url)
+    case let .findInPage(query: query):
+      _findInPageQuery.accept(query)
+    case .findPreviousInPage:
+      _findPreviousInPage.accept(())
+    case .findNextInPage:
+      _findNextInPage.accept(())
+    case let .updateFindInPageCurrentIndex(value):
+      _findInPageCurrentIndex.accept(value)
+    case let .updateFindInPageTotalResults(value):
+      _findInPageTotalResults.accept(value)
     case .onPresentLibrary:
       _onPresentLibrary.accept(())
     case .onPresentPreferences:

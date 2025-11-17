@@ -36,7 +36,11 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     self.sceneState = sceneState
     browserViewController = BrowserViewController(sceneState: sceneState)
     super.init(nibName: nil, bundle: nil)
-    toolbarManager = ToolbarManager(viewController: self)
+    let findInPageViewModel = FindInPageToolbarViewModel(sceneState: sceneState)
+    toolbarManager = ToolbarManager(
+      viewController: self,
+      findInPageToolbarViewModel: findInPageViewModel
+    )
   }
 
   @available(*, unavailable)
@@ -72,10 +76,20 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
     sceneState.lookupListVisible
       .drive(with: self) { owner, lookupListVisible in
-        owner.navigationController?.setToolbarHidden(lookupListVisible, animated: true)
         owner.updateNavigationBarAppearance(forLookupListVisible: lookupListVisible)
       }
       .disposed(by: disposeBag)
+
+    Driver.combineLatest(
+      sceneState.lookupListVisible,
+      sceneState.lookupListShowsDocPage
+    )
+    .drive(with: self) { owner, value in
+      let (lookupListVisible, lookupListShowsDocPage) = value
+      owner.navigationController?.setToolbarHidden(lookupListVisible && !lookupListShowsDocPage, animated: false)
+      owner.toolbarManager.mode = (lookupListVisible && lookupListShowsDocPage) ? .findInPage : .normal
+    }
+    .disposed(by: disposeBag)
 
     // If current URL matches homePageURL, or URL is blank, display title from Docset
     Driver.combineLatest(

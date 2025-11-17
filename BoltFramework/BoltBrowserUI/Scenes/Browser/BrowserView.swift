@@ -26,7 +26,7 @@ import BoltRxSwift
 import BoltServices
 import BoltUtils
 
-final class BrowserView: UIView, HasDisposeBag {
+final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
 
   lazy var url: Binder<URL> = {
     Binder<URL>(webView) { target, url in
@@ -59,6 +59,12 @@ final class BrowserView: UIView, HasDisposeBag {
     return webView.rx.estimatedProgressObservable
   }()
 
+  private let findInPageCurrentIndexSubject = PublishRelay<Int>()
+  lazy var findInPageCurrentIndex: Signal<Int> = { findInPageCurrentIndexSubject.asSignal() }()
+
+  private let findInPageTotalResultsSubject = PublishRelay<Int>()
+  lazy var findInPageTotalResults: Signal<Int> = { findInPageTotalResultsSubject.asSignal() }()
+
   private var webView: WKWebView!
   private var scaleFactor: CGFloat = 1.0 {
     didSet {
@@ -75,10 +81,29 @@ final class BrowserView: UIView, HasDisposeBag {
         $0.preferredContentMode = UserDefaults.standard.enablesDesktopMode ? .desktop : .recommended
       }
 
+      let userContentController = update(WKUserContentController()) {
+        if
+          let scriptPath = Bundle.module.path(forResource: "Resources/FindInPage", ofType: "js"),
+          let script = try? String(contentsOfFile: scriptPath, encoding: .utf8)
+        {
+          $0.addUserScript(
+            WKUserScript(
+              source: script,
+              injectionTime: .atDocumentEnd,
+              forMainFrameOnly: true
+            )
+          )
+        }
+        let findInPageHandler = FindInPageMessageHandler(delegate: self)
+        $0.add(findInPageHandler, name: findInPageHandler.name)
+      }
+
       $0.websiteDataStore = UserDefaults.standard.disablesPrivateBrowsing ? .default() : .nonPersistent()
       $0.defaultWebpagePreferences = pagePreferences
       $0.setURLSchemeHandler(TarixURLSchemeHandler(), forURLScheme: DocsetFileURLScheme.scheme)
+      $0.userContentController = userContentController
     }
+
     webView = WKWebView(frame: .zero, configuration: configuration)
 
     if UserDefaults.standard.webViewInspectable {
@@ -118,10 +143,42 @@ final class BrowserView: UIView, HasDisposeBag {
     scaleFactor -= 0.25
   }
 
+  func findInPage(query: String) {
+    Self.logger.debug("find in page with query: \(query)")
+    let escapedQuery = query.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
+    webView.evaluateJavaScript("window.__bolt__.find(\"\(escapedQuery)\")")
+  }
+
+  func findPreviousInPage() {
+    webView.evaluateJavaScript("window.__bolt__.findPrevious()")
+  }
+
+  func findNextInPage() {
+    webView.evaluateJavaScript("window.__bolt__.findNext()")
+  }
+
   private func updatePageZoom(_ scaleFactor: CGFloat) {
     // Use the private `viewScale` property to properly handle page zooming.
     // See also: https://github.com/mozilla-mobile/firefox-ios/blob/a4d5dbf/BrowserKit/Sources/WebEngine/WKWebview/WKEngineSession.swift#L295
     webView.setValue(scaleFactor, forKey: "viewScale")
+  }
+
+}
+
+extension BrowserView: FindInPageMessageHandlerDelegate {
+
+  func findInPageHelper(
+    _: FindInPageMessageHandler,
+    didUpdateCurrentResult currentResult: Int
+  ) {
+    findInPageCurrentIndexSubject.accept(currentResult)
+  }
+
+  func findInPageHelper(
+    _: FindInPageMessageHandler,
+    didUpdateTotalResults totalResults: Int
+  ) {
+    findInPageTotalResultsSubject.accept(totalResults)
   }
 
 }
