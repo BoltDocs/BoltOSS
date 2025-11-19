@@ -121,6 +121,29 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
 
 }
 
+// MARK: Search Field Text Preservation
+
+private extension LookupSearchController {
+
+  private func preserveSearchFieldText() {
+    preservedSearchFieldText = SearchTextFieldTextPreservation(
+      text: searchBar.searchTextField.text,
+      tokens: searchBar.searchTextField.tokens
+    )
+  }
+
+  private func restoreSearchFieldText() {
+    guard let preservedSearchFieldText = self.preservedSearchFieldText else {
+      return
+    }
+    searchBar.searchTextField.text = preservedSearchFieldText.text
+    searchBar.searchTextField.tokens = preservedSearchFieldText.tokens
+    searchBar.delegate?.searchBar?(searchBar, textDidChange: searchBar.text ?? "")
+    self.preservedSearchFieldText = nil
+  }
+
+}
+
 extension LookupSearchController: UITextFieldDelegate {
 
   public func textFieldDidChangeSelection(_ textField: UITextField) {
@@ -160,12 +183,6 @@ extension LookupSearchController: UITextFieldDelegate {
     return true
   }
 
-  public func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
-    if !state.presentsLookupList {
-      dismiss(animated: true)
-    }
-  }
-
 }
 
 extension LookupSearchController: UISearchBarDelegate {
@@ -179,24 +196,10 @@ extension LookupSearchController: UISearchBarDelegate {
   }
 
   public func textFieldDidEndEditing(_ textField: UITextField) {
-    restoreSearchFieldText()
-  }
-
-  private func preserveSearchFieldText() {
-    preservedSearchFieldText = SearchTextFieldTextPreservation(
-      text: searchBar.searchTextField.text,
-      tokens: searchBar.searchTextField.tokens
-    )
-  }
-
-  private func restoreSearchFieldText() {
-    guard let preservedSearchFieldText = self.preservedSearchFieldText else {
-      return
+    if !state.presentsLookupList {
+      dismiss(animated: true)
     }
-    searchBar.searchTextField.text = preservedSearchFieldText.text
-    searchBar.searchTextField.tokens = preservedSearchFieldText.tokens
-    searchBar.delegate?.searchBar?(searchBar, textDidChange: searchBar.text ?? "")
-    self.preservedSearchFieldText = nil
+    restoreSearchFieldText()
   }
 
 }
