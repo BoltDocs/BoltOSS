@@ -74,18 +74,16 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       .drive(toolbarManager.forwardButtonEnabled)
       .disposed(by: disposeBag)
 
-    sceneState.lookupListVisible
-      .drive(with: self) { owner, lookupListVisible in
-        owner.updateNavigationBarAppearance(forLookupListVisible: lookupListVisible)
-      }
-      .disposed(by: disposeBag)
-
     Driver.combineLatest(
       sceneState.lookupListVisible,
       sceneState.lookupListShowsDocPage
     )
     .drive(with: self) { owner, value in
       let (lookupListVisible, lookupListShowsDocPage) = value
+      owner.updateNavigationBarAppearance(
+        forLookupListVisible: lookupListVisible,
+        showsDocPage: lookupListShowsDocPage
+      )
       owner.navigationController?.setToolbarHidden(lookupListVisible && !lookupListShowsDocPage, animated: false)
       owner.toolbarManager.mode = (lookupListVisible && lookupListShowsDocPage) ? .findInPage : .normal
     }
@@ -115,9 +113,12 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
   // MARK: - Private
 
-  private func updateNavigationBarAppearance(forLookupListVisible lookupVisible: Bool) {
+  private func updateNavigationBarAppearance(
+    forLookupListVisible lookupVisible: Bool,
+    showsDocPage: Bool
+  ) {
     let navigationBar = navigationController?.navigationBar
-    if lookupVisible {
+    if lookupVisible, !showsDocPage {
       navigationBar?.standardAppearance.configureWithOpaqueBackground()
     } else {
       navigationBar?.standardAppearance.configureWithDefaultBackground()
