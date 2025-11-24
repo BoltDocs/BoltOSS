@@ -1,3 +1,5 @@
+<p><img src="./Assets/AppIcon_256.png" alt="Bolt" width="128"/></p>
+
 # BoltOSS
 
 Bolt is an offline documentation browser inspired by [Dash](https://kapeli.com/dash), dedicatedly built for iOS and iPadOS.

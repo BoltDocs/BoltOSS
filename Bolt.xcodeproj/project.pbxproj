@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		6B593CBA2B6DEED20042E688 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B593CBB2B6DEED20042E688 /* Main.storyboard */; };
+		6BA5718D2ED5FF4E00FBD45A /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 6BA5718C2ED5FF4E00FBD45A /* AppIcon.icon */; };
+		6BA5718F2ED600B400FBD45A /* AppIcon_Development.icon in Resources */ = {isa = PBXBuildFile; fileRef = 6BA5718E2ED600B400FBD45A /* AppIcon_Development.icon */; };
 		6BC6404A2D0EF64A00E51A09 /* SnapshottingTests in Frameworks */ = {isa = PBXBuildFile; productRef = 6BC640492D0EF64A00E51A09 /* SnapshottingTests */; };
 		6BC6404C2D0EF66D00E51A09 /* BoltFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 6BC6404B2D0EF66D00E51A09 /* BoltFramework */; };
 		6BC6404D2D0EF66D00E51A09 /* BoltFramework in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 6BC6404B2D0EF66D00E51A09 /* BoltFramework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -71,6 +73,8 @@
 		6B81CE5B2D0EA6AC00908962 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
 		6B81CF0D2D106E0B00908962 /* SDK-iOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "SDK-iOS.xcconfig"; sourceTree = "<group>"; };
 		6B87A8112765CE35003731CD /* BoltLocalizations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BoltLocalizations; sourceTree = "<group>"; };
+		6BA5718C2ED5FF4E00FBD45A /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		6BA5718E2ED600B400FBD45A /* AppIcon_Development.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon_Development.icon; sourceTree = "<group>"; };
 		6BCE13DE2B63F20C008C5285 /* BoltUtils */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltUtils; sourceTree = "<group>"; };
 		6BD4A11927A5602A007FC756 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		6BD55A852AC65EE00096ACB9 /* BoltRxSwift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltRxSwift; sourceTree = "<group>"; };
@@ -150,6 +154,8 @@
 		715A5F0F247BCCD100CB39DD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6BA5718C2ED5FF4E00FBD45A /* AppIcon.icon */,
+				6BA5718E2ED600B400FBD45A /* AppIcon_Development.icon */,
 				718B0148252978BA0060ACBC /* Assets.xcassets */,
 				716D6AA52498A68400EE68B2 /* LaunchScreen.storyboard */,
 				6B593CBB2B6DEED20042E688 /* Main.storyboard */,
@@ -370,7 +376,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6BA5718F2ED600B400FBD45A /* AppIcon_Development.icon in Resources */,
 				716D6AA62498A68400EE68B2 /* LaunchScreen.storyboard in Resources */,
+				6BA5718D2ED5FF4E00FBD45A /* AppIcon.icon in Resources */,
 				6B593CBA2B6DEED20042E688 /* Main.storyboard in Resources */,
 				718B0149252978BA0060ACBC /* Assets.xcassets in Resources */,
 			);

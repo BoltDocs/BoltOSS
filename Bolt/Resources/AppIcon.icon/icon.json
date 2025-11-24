@@ -1,0 +1,146 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "srgb:0.09020,0.72157,0.94510,1.00000",
+      "srgb:0.09020,0.38431,0.88235,1.00000"
+    ],
+    "orientation" : {
+      "start" : {
+        "x" : 0.5,
+        "y" : 0
+      },
+      "stop" : {
+        "x" : 0.5,
+        "y" : 0.7
+      }
+    }
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "glass-specializations" : [
+            {
+              "value" : false
+            },
+            {
+              "appearance" : "tinted",
+              "value" : true
+            }
+          ],
+          "image-name" : "bolt@2x.png",
+          "name" : "bolt@2x",
+          "opacity-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : 0.92
+            }
+          ]
+        }
+      ],
+      "name" : "Bolt",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "glass" : false,
+          "hidden" : false,
+          "image-name" : "books@2x.png",
+          "name" : "books@2x",
+          "opacity-specializations" : [
+            {
+              "value" : 1
+            },
+            {
+              "appearance" : "dark",
+              "value" : 0.5
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.4
+            }
+          ]
+        }
+      ],
+      "name" : "Books",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "blend-mode" : "normal",
+          "fill" : "none",
+          "glass" : true,
+          "hidden" : false,
+          "image-name" : "outer-border.svg",
+          "name" : "outer-border",
+          "opacity-specializations" : [
+            {
+              "value" : 0.4
+            },
+            {
+              "appearance" : "light",
+              "value" : 1
+            }
+          ],
+          "position" : {
+            "scale" : 2,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "fill" : "none",
+          "hidden" : false,
+          "image-name" : "grids@2x.png",
+          "name" : "grids@2x",
+          "opacity-specializations" : [
+            {
+              "value" : 0.42
+            },
+            {
+              "appearance" : "dark",
+              "value" : 0.22
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.15
+            }
+          ]
+        }
+      ],
+      "name" : "Background",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
