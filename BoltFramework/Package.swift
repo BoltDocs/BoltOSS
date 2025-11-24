@@ -1,4 +1,4 @@
-// swift-tools-version:6.0
+// swift-tools-version:6.2
 
 //
 // Copyright (C) 2024 Bolt Contributors
@@ -145,8 +145,8 @@ let frameworkTarget: Target = {
 let package = Package(
   name: "BoltFramework",
   platforms: [
-    .iOS(.v17),
-    .macCatalyst(.v18),
+    .iOS(.v18),
+    .macCatalyst(.v26),
   ],
   products: [
     .library(
