@@ -69,7 +69,17 @@ final class ToolbarManager {
           return
         }
         findInPageResultCountLabel.text = text
-        findInPageResultCountLabel.sizeToFit()
+      }
+      .store(in: &cancellables)
+
+    findInPageViewModel.$navigationButtonEnabled
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] enabled in
+        guard let self = self else {
+          return
+        }
+        findInPagePreviousButton.isEnabled = enabled
+        findInPageNextButton.isEnabled = enabled
       }
       .store(in: &cancellables)
 
@@ -146,10 +156,17 @@ final class ToolbarManager {
   }()
 
   private lazy var findInPageResultCountItem: UIBarButtonItem = {
-    return UIBarButtonItem(customView: findInPageResultCountLabel)
+    let containerView = UIView()
+    containerView.addSubview(findInPageResultCountLabel)
+    findInPageResultCountLabel.snp.makeConstraints { make in
+      make.leading.equalToSuperview().offset(6)
+      make.trailing.equalToSuperview().offset(-6)
+      make.top.bottom.equalToSuperview()
+    }
+    return UIBarButtonItem(customView: containerView)
   }()
 
-  private lazy var previousButton: UIBarButtonItem = {
+  private lazy var findInPagePreviousButton: UIBarButtonItem = {
     let button = UIBarButtonItem(
       image: UIImage(systemName: "chevron.up"),
       style: .plain,
@@ -159,7 +176,7 @@ final class ToolbarManager {
     return button
   }()
 
-  private lazy var nextButton: UIBarButtonItem = {
+  private lazy var findInPageNextButton: UIBarButtonItem = {
     let button = UIBarButtonItem(
       image: UIImage(systemName: "chevron.down"),
       style: .plain,
@@ -188,7 +205,7 @@ final class ToolbarManager {
           moreButton,
         ]
       case .findInPage:
-        return [findInPageResultCountItem, flexibleSpace, previousButton, nextButton]
+        return [flexibleSpace, findInPageResultCountItem, findInPagePreviousButton, findInPageNextButton]
       }
     }()
     viewController?.toolbarItems = toolbarItems

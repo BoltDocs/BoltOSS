@@ -18,6 +18,7 @@ import Combine
 import UIKit
 
 import Overture
+import SnapKit
 
 final class FindInPageToolbar: UIToolbar {
 
@@ -34,7 +35,14 @@ final class FindInPageToolbar: UIToolbar {
   }()
 
   private lazy var resultCountItem: UIBarButtonItem = {
-    return UIBarButtonItem(customView: resultCountLabel)
+    let containerView = UIView()
+    containerView.addSubview(resultCountLabel)
+    resultCountLabel.snp.makeConstraints { make in
+      make.leading.equalToSuperview().offset(6)
+      make.trailing.equalToSuperview().offset(-6)
+      make.top.bottom.equalToSuperview()
+    }
+    return UIBarButtonItem(customView: containerView)
   }()
 
   private lazy var previousButton: UIBarButtonItem = {
@@ -70,17 +78,13 @@ final class FindInPageToolbar: UIToolbar {
   }
 
   private func setupToolbar() {
-    let flexibleSpace = UIBarButtonItem(
-      barButtonSystemItem: .flexibleSpace,
-      target: nil,
-      action: nil
-    )
-    items = [resultCountItem, flexibleSpace, previousButton, nextButton]
+    items = [.flexibleSpace(), resultCountItem, previousButton, nextButton]
     sizeToFit()
   }
 
   private func setupViewModelBindings() {
     cancellables.removeAll()
+
     viewModel.$resultsText
       .receive(on: DispatchQueue.main)
       .sink { [weak self] text in
@@ -88,7 +92,18 @@ final class FindInPageToolbar: UIToolbar {
           return
         }
         resultCountLabel.text = text
-        resultCountLabel.sizeToFit()
+        resultCountItem.isHidden = text.isEmpty
+      }
+      .store(in: &cancellables)
+
+    viewModel.$navigationButtonEnabled
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] enabled in
+        guard let self = self else {
+          return
+        }
+        previousButton.isEnabled = enabled
+        nextButton.isEnabled = enabled
       }
       .store(in: &cancellables)
   }
