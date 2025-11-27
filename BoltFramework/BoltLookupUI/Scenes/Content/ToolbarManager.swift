@@ -32,9 +32,9 @@ protocol ToolbarManagerDelegate: AnyObject {
 
 }
 
-enum ToolbarMode {
+enum ToolbarMode: Equatable {
   case normal
-  case findInPage
+  case search(scope: SearchScope)
 }
 
 final class ToolbarManager {
@@ -147,6 +147,26 @@ final class ToolbarManager {
     )
   }()
 
+  private lazy var searchScopeTypesButton: UIBarButtonItem = {
+    let button = UIBarButtonItem(
+      image: UIImage(systemName: "c.square"),
+      style: .plain,
+      target: self,
+      action: #selector(searchScopeTypesButtonTapped)
+    )
+    return button
+  }()
+
+  private lazy var searchScopeDocPageButton: UIBarButtonItem = {
+    let button = UIBarButtonItem(
+      image: UIImage(systemName: "text.document"),
+      style: .plain,
+      target: self,
+      action: #selector(searchScopeDocPageButtonTapped)
+    )
+    return button
+  }()
+
   private lazy var findInPageResultCountLabel: UILabel = {
     let label = UILabel()
     label.font = UIFont.systemFont(ofSize: 14)
@@ -204,8 +224,20 @@ final class ToolbarManager {
           flexibleSpace,
           moreButton,
         ]
-      case .findInPage:
-        return [flexibleSpace, findInPageResultCountItem, findInPagePreviousButton, findInPageNextButton]
+      case let .search(scope):
+        var items = [
+          searchScopeTypesButton,
+          searchScopeDocPageButton,
+          flexibleSpace,
+        ]
+        if scope == .docPage {
+          items += [
+            findInPageResultCountItem,
+            findInPagePreviousButton,
+            findInPageNextButton,
+          ]
+        }
+        return items
       }
     }()
     viewController?.toolbarItems = toolbarItems
@@ -229,6 +261,14 @@ final class ToolbarManager {
 
   @objc func shareButtonTapped(_ sender: Any?) {
     viewController?.toolbarManagerDidTapShare(self)
+  }
+
+  @objc func searchScopeTypesButtonTapped(_ sender: Any?) {
+
+  }
+
+  @objc func searchScopeDocPageButtonTapped(_ sender: Any?) {
+
   }
 
   @objc func findInPagePreviousButtonTapped(_ sender: Any?) {

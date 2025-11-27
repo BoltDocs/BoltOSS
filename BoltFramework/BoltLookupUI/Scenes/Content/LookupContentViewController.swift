@@ -51,6 +51,8 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
   override public func viewDidLoad() {
     super.viewDidLoad()
 
+    navigationController?.isToolbarHidden = false
+
     with(navigationItem) {
       $0.largeTitleDisplayMode = .never
       $0.scrollEdgeAppearance = update(UINavigationBarAppearance()) {
@@ -84,8 +86,14 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
         forLookupListVisible: lookupListVisible,
         showsDocPage: lookupListShowsDocPage
       )
-      owner.navigationController?.setToolbarHidden(lookupListVisible && !lookupListShowsDocPage, animated: false)
-      owner.toolbarManager.mode = (lookupListVisible && lookupListShowsDocPage) ? .findInPage : .normal
+      let mode: ToolbarMode = {
+        if lookupListVisible {
+          return lookupListShowsDocPage ? .search(scope: .docPage) : .search(scope: .types)
+        } else {
+          return .normal
+        }
+      }()
+      owner.toolbarManager.mode = mode
     }
     .disposed(by: disposeBag)
 

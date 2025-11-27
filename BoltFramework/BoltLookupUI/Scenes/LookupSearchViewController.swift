@@ -45,9 +45,9 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
 
   private var preservedSearchFieldText: SearchTextFieldTextPreservation?
 
-  private lazy var findInPageToolbar: FindInPageToolbar = {
-    let viewModel = FindInPageToolbarViewModel(sceneState: sceneState)
-    return FindInPageToolbar(viewModel: viewModel)
+  private lazy var searchInputAccessoryToolbar: SearchInputAccessoryToolbar = {
+    let findInPageViewModel = FindInPageToolbarViewModel(sceneState: sceneState)
+    return SearchInputAccessoryToolbar(findInPageViewModel: findInPageViewModel)
   }()
 
   public init(sceneState: SceneState) {
@@ -80,7 +80,7 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
     with(searchBar) {
       $0.delegate = self
       $0.placeholder = UIKitLocalizations.search
-      $0.inputAccessoryView = findInPageToolbar
+      $0.inputAccessoryView = searchInputAccessoryToolbar
       with($0.searchTextField) {
         $0.delegate = self
         $0.autocorrectionType = .no
@@ -99,7 +99,7 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
     state.presentsLookupListDriver
       .drive(with: self) { owner, presentsLookupList in
         owner.showsSearchResultsController = presentsLookupList
-        owner.findInPageToolbar.isHidden = presentsLookupList
+        owner.searchInputAccessoryToolbar.scope = presentsLookupList ? .types : .docPage
       }
       .disposed(by: disposeBag)
 
