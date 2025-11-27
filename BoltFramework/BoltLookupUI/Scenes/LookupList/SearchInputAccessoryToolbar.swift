@@ -20,11 +20,37 @@ import UIKit
 import Overture
 import SnapKit
 
-final class FindInPageToolbar: UIToolbar {
+final class SearchInputAccessoryToolbar: UIToolbar {
 
-  private let viewModel: FindInPageToolbarViewModel
+  var scope: SearchScope? {
+    didSet {
+      updateToolbarItems()
+    }
+  }
+
+  private let findInPageViewModel: FindInPageToolbarViewModel
 
   private var cancellables = Set<AnyCancellable>()
+
+  private lazy var searchScopeTypesButton: UIBarButtonItem = {
+    let button = UIBarButtonItem(
+      image: UIImage(systemName: "c.square"),
+      style: .plain,
+      target: self,
+      action: #selector(searchScopeTypesButtonTapped)
+    )
+    return button
+  }()
+
+  private lazy var searchScopeDocPageButton: UIBarButtonItem = {
+    let button = UIBarButtonItem(
+      image: UIImage(systemName: "text.document"),
+      style: .plain,
+      target: self,
+      action: #selector(searchScopeDocPageButtonTapped)
+    )
+    return button
+  }()
 
   private lazy var resultCountLabel: UILabel = {
     let label = UILabel()
@@ -65,10 +91,10 @@ final class FindInPageToolbar: UIToolbar {
     return button
   }()
 
-  init(viewModel: FindInPageToolbarViewModel) {
-    self.viewModel = viewModel
+  init(findInPageViewModel: FindInPageToolbarViewModel) {
+    self.findInPageViewModel = findInPageViewModel
     super.init(frame: .zero)
-    setupToolbar()
+    updateToolbarItems()
     setupViewModelBindings()
   }
 
@@ -77,15 +103,31 @@ final class FindInPageToolbar: UIToolbar {
     fatalError("\(#function) is not implemented")
   }
 
-  private func setupToolbar() {
-    items = [.flexibleSpace(), resultCountItem, previousButton, nextButton]
+  private func updateToolbarItems() {
+    var items = [
+      searchScopeTypesButton,
+      searchScopeDocPageButton,
+      .flexibleSpace(),
+    ]
+    if let scope = scope {
+      if scope == .docPage {
+        items += [
+          resultCountItem,
+          previousButton,
+          nextButton,
+        ]
+      }
+    }
+
+    self.items = items
+
     sizeToFit()
   }
 
   private func setupViewModelBindings() {
     cancellables.removeAll()
 
-    viewModel.$resultsText
+    findInPageViewModel.$resultsText
       .receive(on: DispatchQueue.main)
       .sink { [weak self] text in
         guard let self = self else {
@@ -96,7 +138,7 @@ final class FindInPageToolbar: UIToolbar {
       }
       .store(in: &cancellables)
 
-    viewModel.$navigationButtonEnabled
+    findInPageViewModel.$navigationButtonEnabled
       .receive(on: DispatchQueue.main)
       .sink { [weak self] enabled in
         guard let self = self else {
@@ -110,12 +152,20 @@ final class FindInPageToolbar: UIToolbar {
 
   // MARK: - Actions
 
+  @objc func searchScopeTypesButtonTapped(_ sender: Any?) {
+
+  }
+
+  @objc func searchScopeDocPageButtonTapped(_ sender: Any?) {
+
+  }
+
   @objc private func previousButtonTapped() {
-    viewModel.previousButtonTapped()
+    findInPageViewModel.previousButtonTapped()
   }
 
   @objc private func nextButtonTapped() {
-    viewModel.nextButtonTapped()
+    findInPageViewModel.nextButtonTapped()
   }
 
 }
