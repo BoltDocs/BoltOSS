@@ -85,9 +85,10 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalizations.done) {
+          Button(UIKitLocalizations.done, systemImage: "checkmark") {
             dismissSheetModal?()
           }
+          .labelStyle(.toolbar)
         }
       }
       .if(Model.allowsRefresh) {

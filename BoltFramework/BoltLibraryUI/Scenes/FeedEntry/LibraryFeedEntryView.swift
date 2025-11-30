@@ -331,9 +331,10 @@ struct LibraryFeedEntryView: View {
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
-        Button(UIKitLocalizations.done) {
+        Button(UIKitLocalizations.done, systemImage: "checkmark") {
           dismissSheetModal?()
         }
+        .labelStyle(.toolbar)
       }
     }
   }

@@ -138,9 +138,10 @@ public struct LibraryDownloadsListView: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalizations.done) {
+          Button(UIKitLocalizations.done, systemImage: "checkmark") {
             dismiss()
           }
+          .labelStyle(.toolbar)
         }
       }
     }

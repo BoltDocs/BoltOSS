@@ -61,9 +61,10 @@ public struct LibraryHomeListView: View {
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalizations.done) {
+          Button(UIKitLocalizations.done, systemImage: "checkmark") {
             dismissSheetModal?()
           }
+          .labelStyle(.toolbar)
         }
       }
     }

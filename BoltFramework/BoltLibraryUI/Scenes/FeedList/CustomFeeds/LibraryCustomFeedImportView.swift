@@ -69,13 +69,14 @@ struct LibraryCustomFeedImportView: View {
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .cancellationAction) {
-        Button(UIKitLocalizations.cancel) {
+        Button(UIKitLocalizations.cancel, systemImage: "xmark") {
           dismiss()
         }
+        .labelStyle(.toolbar)
       }
       ToolbarItem(placement: .confirmationAction) {
         if !isLoading {
-          Button(UIKitLocalizations.done) {
+          Button(UIKitLocalizations.done, systemImage: "checkmark") {
             guard let scheme = feedURLScheme else {
               return
             }
@@ -100,6 +101,7 @@ struct LibraryCustomFeedImportView: View {
               }
             }
           }
+          .labelStyle(.toolbar)
           .disabled(doneButtonDisabled)
         } else {
           ProgressView()
