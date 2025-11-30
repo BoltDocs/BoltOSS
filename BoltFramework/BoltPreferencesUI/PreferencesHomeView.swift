@@ -280,9 +280,10 @@ public struct PreferencesHomeView: View {
       .listStyle(.insetGrouped)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalizations.done) {
+          Button(UIKitLocalizations.done, systemImage: "checkmark") {
             dismiss()
           }
+          .labelStyle(.toolbar)
         }
       }
     }

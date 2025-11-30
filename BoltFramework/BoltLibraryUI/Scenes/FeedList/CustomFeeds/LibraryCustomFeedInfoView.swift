@@ -69,10 +69,11 @@ struct LibraryCustomFeedInfoView: View {
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
-        Button(UIKitLocalizations.done) {
+        Button(UIKitLocalizations.done, systemImage: "checkmark") {
           onTextFieldSubmit()
           dismiss()
         }
+        .labelStyle(.toolbar)
       }
     }
   }

@@ -139,9 +139,10 @@ struct LibraryCustomFeedListView: View {
     .navigationBarTitleDisplayMode(.large)
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
-        Button(UIKitLocalizations.done) {
+        Button(UIKitLocalizations.done, systemImage: "checkmark") {
           dismissSheetModal?()
         } // Button
+        .labelStyle(.toolbar)
       } // ToolbarItem
       ToolbarItemGroup(placement: .bottomBar) {
         Spacer()
