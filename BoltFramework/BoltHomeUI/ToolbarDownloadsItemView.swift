@@ -57,6 +57,9 @@ final class ToolbarDownloadsItemView: UIView {
     update(ItemButton(type: .system)) {
       $0.setTitle("Home-Toolbar-DownloadsButtonTitle".boltLocalized, for: .normal)
       $0.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+      if #available(iOS 26.0, *) {
+        $0.tintColor = .label
+      }
     }
   }()
 
@@ -64,6 +67,9 @@ final class ToolbarDownloadsItemView: UIView {
     update(ItemButton(type: .system)) {
       $0.setTitle("Home-Toolbar-UpdatesButtonTitle".boltLocalized, for: .normal)
       $0.titleLabel?.font = UIFont.systemFont(ofSize: 11)
+      if #available(iOS 26.0, *) {
+        $0.tintColor = .label
+      }
     }
   }()
 

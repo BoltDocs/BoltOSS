@@ -54,6 +54,11 @@ enum DocsetsListModel: Hashable {
 
 public final class HomeViewController: BaseViewController, SearchBarProvider {
 
+  private struct BarButtonItems {
+    var leftItems: [UIBarButtonItem]
+    var rightItems: [UIBarButtonItem]
+  }
+
   @Injected(\.analyticsService)
   private var analyticsService: AnalyticsService?
 
@@ -99,50 +104,64 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
   private func setupToolbar() {
     navigationController?.setToolbarHidden(false, animated: true)
 
-    let rightBarButtonItems = isEditingObservable.map { [weak self] isEditing -> [UIBarButtonItem] in
-      isEditing ? [
-        update(
-          UIBarButtonItem(
-            systemItem: .done,
-            primaryAction: UIAction { [weak self] _ in
-              self?.isEditingRelay.accept(false)
+    let barButtonItems = isEditingObservable.map { [weak self, isForCollapsedSidebar] isEditing -> BarButtonItems in
+      if isEditing {
+        let doneButtonItem = UIBarButtonItem(
+          systemItem: .done,
+          primaryAction: UIAction { [weak self] _ in
+            self?.isEditingRelay.accept(false)
+          }
+        )
+        if #unavailable(iOS 26.0) {
+          doneButtonItem.tintColor = UIColor.tintColor
+        }
+        if #available(iOS 26.0, *), !isForCollapsedSidebar {
+          return BarButtonItems(leftItems: [doneButtonItem], rightItems: [])
+        } else {
+          return BarButtonItems(leftItems: [], rightItems: [doneButtonItem])
+        }
+      } else {
+        let moreButtonIconName = {
+          if #available(iOS 26.0, *) {
+            return "ellipsis"
+          } else {
+            return "ellipsis.circle"
+          }
+        }()
+        let moreButtonItem = UIBarButtonItem(
+          title: nil,
+          image: UIImage(systemName: moreButtonIconName),
+          primaryAction: nil,
+          menu: UIMenu(
+            title: "",
+            children: update(
+              [
+                UIAction(
+                  title: UIKitLocalizations.select,
+                  image: UIImage(systemName: "checkmark.circle")
+                ) { [weak self] _ in
+                  self?.isEditingRelay.accept(true)
+                },
+              ]
+            ) {
+              if RuntimeEnvironment.isInternalBuild {
+                $0.append(Self.createDiagnosticsMenu())
+              }
             }
           )
-        ) {
-          $0.tintColor = UIColor.tintColor
-        },
-      ] : [
-        update(
-          UIBarButtonItem(
-            title: nil,
-            image: UIImage(systemName: "ellipsis.circle"),
-            primaryAction: nil,
-            menu: UIMenu(
-              title: "",
-              children: update(
-                [
-                  UIAction(
-                    title: UIKitLocalizations.select,
-                    image: UIImage(systemName: "checkmark.circle")
-                  ) { [weak self] _ in
-                    self?.isEditingRelay.accept(true)
-                  },
-                ]
-              ) {
-                if RuntimeEnvironment.isInternalBuild {
-                  $0.append(Self.createDiagnosticsMenu())
-                }
-              }
-            )
-          )
-        ) {
-          $0.tintColor = UIColor.tintColor
-        },
-      ]
+        )
+        if #unavailable(iOS 26.0) {
+          moreButtonItem.tintColor = UIColor.tintColor
+        }
+        return BarButtonItems(leftItems: [], rightItems: [moreButtonItem])
+      }
     }
 
-    rightBarButtonItems
-      .bind(to: navigationItem.rx.rightBarButtonItems)
+    barButtonItems
+      .subscribe(with: self) { owner, items in
+        owner.navigationItem.leftBarButtonItems = items.leftItems
+        owner.navigationItem.rightBarButtonItems = items.rightItems
+      }
       .disposed(by: disposeBag)
 
     Driver.combineLatest(
