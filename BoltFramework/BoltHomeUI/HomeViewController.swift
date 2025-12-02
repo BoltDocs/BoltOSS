@@ -99,7 +99,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
   private func setupToolbar() {
     navigationController?.setToolbarHidden(false, animated: true)
 
-    let rightBarButtonItems = isEditingObservable.map { isEditing -> [UIBarButtonItem] in
+    let rightBarButtonItems = isEditingObservable.map { [weak self] isEditing -> [UIBarButtonItem] in
       isEditing ? [
         update(
           UIBarButtonItem(
@@ -155,7 +155,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     .drive(toolbarTrashItem.rx.isEnabled)
     .disposed(by: disposeBag)
 
-    let toolbarItems = isEditingRelay.map { [toolbarTrashItem] isEditing -> [UIBarButtonItem] in
+    let toolbarItems = isEditingRelay.map { [weak self, toolbarTrashItem] isEditing -> [UIBarButtonItem] in
       var items = isEditing ? [
         toolbarTrashItem,
         .flexibleSpace(),
