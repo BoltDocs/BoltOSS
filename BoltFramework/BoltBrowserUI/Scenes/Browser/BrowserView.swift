@@ -117,6 +117,11 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
       $0.edges.equalTo(self)
     }
 
+    let scrollView = webView.scrollView
+    if #available(iOS 26.0, *) {
+      scrollView.topEdgeEffect.style = .hard
+    }
+
     webView.load(URLRequest(url: initialURL))
   }
 

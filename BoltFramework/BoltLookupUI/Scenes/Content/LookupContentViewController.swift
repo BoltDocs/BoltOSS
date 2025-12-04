@@ -136,9 +136,16 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       navigationItem.scrollEdgeAppearance?.configureWithTransparentBackground()
     } else {
       navigationItem.standardAppearance?.configureWithDefaultBackground()
+      navigationItem.standardAppearance?.shadowColor = standardShadowColor
       navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
     }
   }
+
+  private let standardShadowColor: UIColor? = {
+    let appearance = UINavigationBarAppearance()
+    appearance.configureWithOpaqueBackground()
+    return appearance.shadowColor
+  }()
 
 }
 
