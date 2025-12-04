@@ -125,11 +125,18 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     forLookupListVisible lookupVisible: Bool,
     showsDocPage: Bool
   ) {
-    let navigationBar = navigationController?.navigationBar
+    if navigationItem.standardAppearance == nil{
+      navigationItem.standardAppearance = UINavigationBarAppearance()
+    }
+    if navigationItem.scrollEdgeAppearance == nil{
+      navigationItem.scrollEdgeAppearance = UINavigationBarAppearance()
+    }
     if lookupVisible, !showsDocPage {
-      navigationBar?.standardAppearance.configureWithOpaqueBackground()
+      navigationItem.standardAppearance?.configureWithDefaultBackground()
+      navigationItem.scrollEdgeAppearance?.configureWithTransparentBackground()
     } else {
-      navigationBar?.standardAppearance.configureWithDefaultBackground()
+      navigationItem.standardAppearance?.configureWithDefaultBackground()
+      navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
     }
   }
 
