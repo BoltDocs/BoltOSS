@@ -18,11 +18,19 @@ import UIKit
 
 public extension UIDevice {
 
-  static var isiPhone: Bool {
+  static var isPhone: Bool {
     return Self.current.userInterfaceIdiom == .phone
   }
 
-  static var isiPad: Bool {
+  static var isPad: Bool {
+    #if targetEnvironment(macCatalyst)
+      return false
+    #else
+      return isPadOrCatalyst
+    #endif
+  }
+
+  static var isPadOrCatalyst: Bool {
     return Self.current.userInterfaceIdiom == .pad
   }
 
