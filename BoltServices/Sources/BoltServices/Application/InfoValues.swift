@@ -21,11 +21,11 @@ import BoltUtils
 public struct InfoValues {
 
   public static let appDisplayName = stringValue(forKey: "CFBundleDisplayName")
+  public static let appBundleIdentifier = stringValue(forKey: "CFBundleIdentifier")
   public static let appVersion = stringValue(forKey: "CFBundleShortVersionString")
   public static let appBuildNumber = stringValue(forKey: "CFBundleVersion")
-  public static let appCommit = stringValue(forKey: "BoltCommit")
 
-  public static let bundleIdentifier = stringValue(forKey: "CFBundleIdentifier")
+  public static let appCommit = stringValue(forKey: "BoltCommit")
 
   public static var iconImage: PlatformImage? {
     #if !targetEnvironment(macCatalyst)
