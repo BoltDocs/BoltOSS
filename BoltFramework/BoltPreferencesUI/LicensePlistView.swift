@@ -24,7 +24,7 @@ import LicensePlistViewController
 struct LicensePlistView: UIViewControllerRepresentable {
 
   func makeUIViewController(context: Context) -> some UIViewController {
-    return LicensePlistViewController(fileNamed: "\(InfoValues.bundleIdentifier).Licenses")
+    return LicensePlistViewController(fileNamed: "\(InfoValues.appBundleIdentifier).Licenses")
   }
 
   func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
