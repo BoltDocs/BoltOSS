@@ -14,27 +14,17 @@
 // limitations under the License.
 //
 
-import SwiftUI
-
+import BoltServices
 import BoltUtils
 
-// https://swiftwithmajid.com/2025/07/01/glassifying-toolbars-in-swiftui/
+public extension RuntimeEnvironment {
 
-public struct ToolbarLabelStyle: LabelStyle {
-
-  public func makeBody(configuration: Configuration) -> some View {
-    if RuntimeEnvironment.isOS26UIEnabled {
-      Label(configuration)
+  static let isOS26UIEnabled: Bool = {
+    if #available(iOS 26.0, *) {
+      return !InfoValues.uiDesignRequiresCompatibility
     } else {
-      Label(configuration)
-        .labelStyle(.titleOnly)
+      return false
     }
-  }
-
-}
-
-public extension LabelStyle where Self == ToolbarLabelStyle {
-
-  static var toolbar: Self { Self() }
+  }()
 
 }
