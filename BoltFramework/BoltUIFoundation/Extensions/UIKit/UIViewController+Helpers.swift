@@ -18,17 +18,6 @@ import UIKit
 
 public extension UIViewController {
 
-  var isIniPadSplitOrOverlay: Bool {
-    #if targetEnvironment(macCatalyst)
-    return false
-    #else
-    guard UIDevice.isiPad, let window = self.view.window else {
-      return false
-    }
-    return !(window.frame.width == window.screen.bounds.width)
-    #endif
-  }
-
   func configureNavigationBarAppearance(enforceLargeTitle: Bool) {
     guard
       let navigationBar = (navigationController?.navigationBar) ?? (self as? UINavigationController)?.navigationBar
