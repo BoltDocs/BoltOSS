@@ -87,7 +87,7 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
         $0.allowsCopyingTokens = false
         $0.allowsDeletingTokens = false
         $0.autocapitalizationType = .none
-        if #available(iOS 26.0, *), UIDevice.isPadOrCatalyst {
+        if RuntimeEnvironment.isOS26UIEnabled, UIDevice.isPadOrCatalyst {
           $0.clearButtonMode = .whileEditing
         }
       }

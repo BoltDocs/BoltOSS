@@ -25,6 +25,8 @@ public struct InfoValues {
   public static let appVersion = stringValue(forKey: "CFBundleShortVersionString")
   public static let appBuildNumber = stringValue(forKey: "CFBundleVersion")
 
+  public static let uiDesignRequiresCompatibility = boolValue(forKey: "UIDesignRequiresCompatibility")
+
   public static let appCommit = stringValue(forKey: "BoltCommit")
 
   public static var iconImage: PlatformImage? {
@@ -50,6 +52,10 @@ public struct InfoValues {
 
   private static func stringValue(forKey key: String) -> String {
     return Bundle.main.object(forInfoDictionaryKey: key) as? String ?? ""
+  }
+
+  private static func boolValue(forKey key: String) -> Bool {
+    return Bundle.main.object(forInfoDictionaryKey: key) as? Bool ?? false
   }
 
 }
