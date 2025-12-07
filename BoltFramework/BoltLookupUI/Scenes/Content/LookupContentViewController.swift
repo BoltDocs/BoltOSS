@@ -55,10 +55,6 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
     with(navigationItem) {
       $0.largeTitleDisplayMode = .never
-      $0.scrollEdgeAppearance = update(UINavigationBarAppearance()) {
-        $0.configureWithDefaultBackground()
-        $0.shadowColor = .clear
-      }
     }
 
     addChild(browserViewController) {
@@ -125,11 +121,20 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     forLookupListVisible lookupVisible: Bool,
     showsDocPage: Bool
   ) {
-    let navigationBar = navigationController?.navigationBar
+    if navigationItem.standardAppearance == nil {
+      navigationItem.standardAppearance = UINavigationBarAppearance()
+    }
+    if navigationItem.scrollEdgeAppearance == nil {
+      navigationItem.scrollEdgeAppearance = UINavigationBarAppearance()
+    }
+
     if lookupVisible, !showsDocPage {
-      navigationBar?.standardAppearance.configureWithOpaqueBackground()
+      navigationItem.standardAppearance?.configureWithOpaqueBackground()
+      navigationItem.scrollEdgeAppearance?.configureWithOpaqueBackground()
     } else {
-      navigationBar?.standardAppearance.configureWithDefaultBackground()
+      navigationItem.standardAppearance?.configureWithDefaultBackground()
+      navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
+      navigationItem.scrollEdgeAppearance?.shadowColor = .clear
     }
   }
 
