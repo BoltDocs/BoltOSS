@@ -20,11 +20,18 @@ import BoltBrowserUI
 import BoltModuleExports
 import BoltRxSwift
 import BoltUIFoundation
+import BoltUtils
 
 import Overture
 import SnapKit
 
 public final class LookupContentViewController: UIViewController, HasDisposeBag {
+
+  private let systemNavigationBarShadowColor: UIColor? = {
+    let appearance = UINavigationBarAppearance()
+    appearance.configureWithOpaqueBackground()
+    return appearance.shadowColor
+  }()
 
   private let sceneState: SceneState
 
@@ -59,8 +66,15 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
     addChild(browserViewController) {
       view.addSubview($0)
-      $0.snp.makeConstraints {
-        $0.edges.equalToSuperview()
+      if RuntimeEnvironment.isOS26UIEnabled {
+        $0.snp.makeConstraints {
+          $0.top.equalTo(view.safeAreaLayoutGuide)
+          $0.leading.trailing.bottom.equalToSuperview()
+        }
+      } else {
+        $0.snp.makeConstraints {
+          $0.edges.equalToSuperview()
+        }
       }
     }
 
@@ -128,13 +142,24 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       navigationItem.scrollEdgeAppearance = UINavigationBarAppearance()
     }
 
-    if lookupVisible, !showsDocPage {
-      navigationItem.standardAppearance?.configureWithOpaqueBackground()
-      navigationItem.scrollEdgeAppearance?.configureWithOpaqueBackground()
+    if RuntimeEnvironment.isOS26UIEnabled {
+      if lookupVisible, !showsDocPage {
+        navigationItem.standardAppearance?.configureWithDefaultBackground()
+        navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
+      } else {
+        navigationItem.standardAppearance?.configureWithDefaultBackground()
+        navigationItem.standardAppearance?.shadowColor = systemNavigationBarShadowColor
+        navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
+      }
     } else {
-      navigationItem.standardAppearance?.configureWithDefaultBackground()
-      navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
-      navigationItem.scrollEdgeAppearance?.shadowColor = .clear
+      if lookupVisible, !showsDocPage {
+        navigationItem.standardAppearance?.configureWithOpaqueBackground()
+        navigationItem.scrollEdgeAppearance?.configureWithOpaqueBackground()
+      } else {
+        navigationItem.standardAppearance?.configureWithDefaultBackground()
+        navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
+        navigationItem.scrollEdgeAppearance?.shadowColor = .clear
+      }
     }
   }
 
