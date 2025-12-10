@@ -21,6 +21,8 @@ import Overture
 
 import BoltModuleExports
 import BoltRxSwift
+import BoltUIFoundation
+import BoltUtils
 
 protocol ToolbarManagerDelegate: AnyObject {
 
@@ -211,19 +213,30 @@ final class ToolbarManager {
       let flexibleSpace = UIBarButtonItem.flexibleSpace()
       switch mode {
       case .normal:
-        return [
-          backButton,
-          flexibleSpace,
-          forwardButton,
-          flexibleSpace,
-          tableOfContentsButton,
-          flexibleSpace,
-          bookmarkButton,
-          flexibleSpace,
-          shareButton,
-          flexibleSpace,
-          moreButton,
-        ]
+        if RuntimeEnvironment.isOS26UIEnabled {
+          return [
+            backButton,
+            forwardButton,
+            tableOfContentsButton,
+            bookmarkButton,
+            shareButton,
+            moreButton,
+          ]
+        } else {
+          return [
+            backButton,
+            flexibleSpace,
+            forwardButton,
+            flexibleSpace,
+            tableOfContentsButton,
+            flexibleSpace,
+            bookmarkButton,
+            flexibleSpace,
+            shareButton,
+            flexibleSpace,
+            moreButton,
+          ]
+        }
       case let .search(scope):
         var items = [
           searchScopeTypesButton,

@@ -43,6 +43,9 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     let activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
     activityIndicator.startAnimating()
     let barButtonItem = UIBarButtonItem(customView: activityIndicator)
+    if #available(iOS 26.0, *) {
+      barButtonItem.hidesSharedBackground = true
+    }
     return barButtonItem
   }()
 
