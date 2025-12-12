@@ -106,6 +106,9 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
 
     webView = WKWebView(frame: .zero, configuration: configuration)
 
+    let scrollView = webView.scrollView
+    scrollView.keyboardDismissMode = .interactiveWithAccessory
+
     if UserDefaults.standard.webViewInspectable {
       webView.isInspectable = true
     }

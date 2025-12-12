@@ -211,9 +211,6 @@ extension LookupSearchController: UISearchBarDelegate {
   }
 
   public func textFieldDidEndEditing(_ textField: UITextField) {
-    if !state.presentsLookupList {
-      dismiss(animated: true)
-    }
     restoreSearchFieldText()
   }
 
