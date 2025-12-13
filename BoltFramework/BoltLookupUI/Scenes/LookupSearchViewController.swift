@@ -50,6 +50,19 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
     return SearchInputAccessoryToolbar(findInPageViewModel: findInPageViewModel)
   }()
 
+  private lazy var searchInputAccessoryView: UIView = {
+    let toolbarBottomPadding: CGFloat = RuntimeEnvironment.isOS26UIEnabled ? 10 : 0
+    var bounds = CGRect(origin: .zero, size: searchInputAccessoryToolbar.bounds.size)
+    bounds.size.height += toolbarBottomPadding
+    let inputView = UIView(frame: bounds)
+    inputView.addSubview(searchInputAccessoryToolbar)
+    searchInputAccessoryToolbar.snp.makeConstraints {
+      $0.top.leading.trailing.equalToSuperview()
+      $0.bottom.equalToSuperview().inset(toolbarBottomPadding)
+    }
+    return inputView
+  }()
+
   public init(sceneState: SceneState) {
     self.sceneState = sceneState
     self.state = LookupRoutingState(sceneState: sceneState)
@@ -80,7 +93,7 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
     with(searchBar) {
       $0.delegate = self
       $0.placeholder = UIKitLocalizations.search
-      $0.inputAccessoryView = searchInputAccessoryToolbar
+      $0.inputAccessoryView = searchInputAccessoryView
       with($0.searchTextField) {
         $0.delegate = self
         $0.autocorrectionType = .no
