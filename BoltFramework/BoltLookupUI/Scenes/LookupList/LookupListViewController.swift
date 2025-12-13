@@ -146,7 +146,7 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     // Used to remove separators on empty cells
     tableView.tableFooterView = UIView()
 
-    tableView.keyboardDismissMode = .interactiveWithAccessory
+    tableView.keyboardDismissMode = .onDragWithAccessory
 
     tableView.rowHeight = 44
     tableView.sectionHeaderHeight = 44
