@@ -181,7 +181,7 @@ final class ToolbarManager {
     let containerView = UIView()
     containerView.addSubview(findInPageResultCountLabel)
     findInPageResultCountLabel.snp.makeConstraints { make in
-      make.leading.equalToSuperview().offset(6)
+      make.leading.equalToSuperview().offset(RuntimeEnvironment.isOS26UIEnabled ? 12 : 6)
       make.trailing.equalToSuperview().offset(-6)
       make.top.bottom.equalToSuperview()
     }

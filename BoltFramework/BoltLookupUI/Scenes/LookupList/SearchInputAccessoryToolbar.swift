@@ -20,6 +20,9 @@ import UIKit
 import Overture
 import SnapKit
 
+import BoltUIFoundation
+import BoltUtils
+
 final class SearchInputAccessoryToolbar: UIToolbar {
 
   var scope: SearchScope? {
@@ -64,7 +67,7 @@ final class SearchInputAccessoryToolbar: UIToolbar {
     let containerView = UIView()
     containerView.addSubview(resultCountLabel)
     resultCountLabel.snp.makeConstraints { make in
-      make.leading.equalToSuperview().offset(6)
+      make.leading.equalToSuperview().offset(RuntimeEnvironment.isOS26UIEnabled ? 12 : 6)
       make.trailing.equalToSuperview().offset(-6)
       make.top.bottom.equalToSuperview()
     }
