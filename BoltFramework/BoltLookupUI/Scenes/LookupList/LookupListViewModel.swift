@@ -22,10 +22,14 @@ protocol LookupListViewModel {
 
   var title: Driver<String> { get }
 
+  var hasSearchConstraints: Driver<Bool> { get }
+
   var showsLoadingIndicator: Driver<Bool> { get }
 
   var results: Driver<Result<[LookupListCellItem], Error>> { get }
 
   var itemSelected: PublishRelay<LookupListCellItem> { get }
+
+  func onClickCancel()
 
 }

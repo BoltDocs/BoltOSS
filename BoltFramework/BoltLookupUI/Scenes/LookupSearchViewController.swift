@@ -139,6 +139,12 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
       }
       .disposed(by: disposeBag)
 
+    state.dismissSearchDriver
+      .emit(with: self) { owner, _ in
+        owner.dismiss(animated: true)
+      }
+      .disposed(by: disposeBag)
+
     searchBar.rx.value
       .map { return $0 ?? "" }
       .subscribe(with: self) { owner, searchQuery in

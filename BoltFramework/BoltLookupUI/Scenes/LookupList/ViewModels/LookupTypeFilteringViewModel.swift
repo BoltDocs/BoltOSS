@@ -40,6 +40,11 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
     return _title.asDriver()
   }
 
+  private let _hasSearchConstraints = BehaviorRelay<Bool>(value: false)
+  var hasSearchConstraints: Driver<Bool> {
+    return _hasSearchConstraints.asDriver()
+  }
+
   private let _showsLoadingIndicator = BehaviorRelay<Bool>(value: false)
   var showsLoadingIndicator: Driver<Bool> {
     return _showsLoadingIndicator
@@ -73,6 +78,16 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
     Observable.just(type.plural)
       .bind(to: _title)
       .disposed(by: disposeBag)
+
+    Driver.combineLatest(
+      routingState.searchQuery,
+      routingState.searchTokens
+    )
+    .map { query, tokens in
+      return !query.isEmpty || !tokens.isEmpty
+    }
+    .drive(_hasSearchConstraints)
+    .disposed(by: disposeBag)
 
     activityIndicator
       .asObservable()
@@ -118,6 +133,10 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
     .startWith(.success([]))
     .bind(to: _results)
     .disposed(by: disposeBag)
+  }
+
+  func onClickCancel() {
+    routingState.dismissSearch()
   }
 
 }
