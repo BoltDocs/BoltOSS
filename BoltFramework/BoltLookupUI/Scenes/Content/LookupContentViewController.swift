@@ -39,10 +39,14 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
   private var toolbarManager: ToolbarManager!
 
+  private lazy var toolbar = UIToolbar()
+
   public init(sceneState: SceneState) {
     self.sceneState = sceneState
     browserViewController = BrowserViewController(sceneState: sceneState)
+
     super.init(nibName: nil, bundle: nil)
+
     let findInPageViewModel = FindInPageToolbarViewModel(sceneState: sceneState)
     toolbarManager = ToolbarManager(
       delegate: self,
@@ -85,6 +89,13 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     browserViewController.canGoForwardDriver
       .drive(toolbarManager.forwardButtonEnabled)
       .disposed(by: disposeBag)
+
+    if RuntimeEnvironment.isOS26UIEnabled {
+      view.addSubview(toolbar)
+      toolbar.snp.makeConstraints {
+        $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+      }
+    }
 
     Driver.combineLatest(
       sceneState.lookupListVisible,
@@ -188,7 +199,11 @@ extension LookupContentViewController: ToolbarManagerDelegate {
   }
 
   func toolbarManager(_ toolbarManager: ToolbarManager, updateToolbarItems items: [UIBarButtonItem]) {
-    toolbarItems = items
+    if RuntimeEnvironment.isOS26UIEnabled {
+      toolbar.items = items
+    } else {
+      toolbarItems = items
+    }
   }
 
 }
