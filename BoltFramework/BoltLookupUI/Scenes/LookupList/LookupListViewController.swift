@@ -126,7 +126,12 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     if RuntimeEnvironment.isOS26UIEnabled {
       view.addSubview(lookupSearchToolbar)
       lookupSearchToolbar.snp.makeConstraints { make in
-        make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+        make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+        #if targetEnvironment(macCatalyst)
+        make.bottom.equalToSuperview().inset(20)
+        #else
+        make.bottom.equalTo(view.safeAreaLayoutGuide)
+        #endif
       }
     }
 

@@ -94,6 +94,11 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       view.addSubview(toolbar)
       toolbar.snp.makeConstraints {
         $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+        #if targetEnvironment(macCatalyst)
+        $0.bottom.equalToSuperview().inset(20)
+        #else
+        $0.bottom.equalTo(view.safeAreaLayoutGuide)
+        #endif
       }
     }
 
