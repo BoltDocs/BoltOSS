@@ -19,6 +19,7 @@ import UIKit
 import Overture
 import RxCocoa
 
+import BoltModuleExports
 import BoltServices
 import BoltUIFoundation
 import BoltUtils
@@ -26,9 +27,12 @@ import RoutableNavigation
 
 final class LookupNavigationViewController: RoutableNavigationController<LookupRouteElement> {
 
+  private var sceneState: SceneState
+
   private weak var routingState: LookupRoutingState!
 
-  init(routingState: LookupRoutingState) {
+  init(sceneState: SceneState, routingState: LookupRoutingState) {
+    self.sceneState = sceneState
     self.routingState = routingState
     super.init(coordinator: routingState.routingCoordinator)
   }
@@ -54,6 +58,7 @@ final class LookupNavigationViewController: RoutableNavigationController<LookupR
     case .entries(let docset):
       return update(
         LookupListViewController(
+          sceneState: sceneState,
           viewModel: LookupAllEntriesViewModel(
             routingState: routingState,
             docset: docset
@@ -65,6 +70,7 @@ final class LookupNavigationViewController: RoutableNavigationController<LookupR
     case let .types(docset, type):
       return update(
         LookupListViewController(
+          sceneState: sceneState,
           viewModel: LookupTypeFilteringViewModel(
             routingState: routingState,
             type: type,

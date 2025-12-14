@@ -20,14 +20,24 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+import BoltModuleExports
 import BoltUIFoundation
 import BoltUtils
 
 final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseViewController, UITableViewDelegate {
 
+  private var sceneState: SceneState
   private var viewModel: ListViewModel
 
-  init(viewModel: ListViewModel) {
+  private lazy var lookupSearchToolbar: SearchInputAccessoryToolbar = {
+    let findInPageViewModel = FindInPageToolbarViewModel(sceneState: sceneState)
+    let toolbar = SearchInputAccessoryToolbar(findInPageViewModel: findInPageViewModel)
+    toolbar.scope = .types
+    return toolbar
+  }()
+
+  init(sceneState: SceneState, viewModel: ListViewModel) {
+    self.sceneState = sceneState
     self.viewModel = viewModel
     super.init(nibName: nil, bundle: nil)
   }
@@ -90,6 +100,13 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     view.addSubview(contentUnavailableView)
     contentUnavailableView.snp.makeConstraints { make in
       make.edges.equalToSuperview()
+    }
+
+    if RuntimeEnvironment.isOS26UIEnabled {
+      view.addSubview(lookupSearchToolbar)
+      lookupSearchToolbar.snp.makeConstraints { make in
+        make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+      }
     }
 
     // FIXME: .distinctUntilChanged() should be used
@@ -224,6 +241,7 @@ private final class StubbedLookupListViewModel: LookupListViewModel {
 #Preview(traits: .fixedLayout(width: 480, height: 640)) {
   UINavigationController(
     rootViewController: LookupListViewController(
+      sceneState: SceneState(),
       viewModel: StubbedLookupListViewModel(
         entryItems: .success(
           [LookupListStubbedEntryItem](
@@ -241,6 +259,7 @@ private final class StubbedLookupListViewModel: LookupListViewModel {
 #Preview(traits: .fixedLayout(width: 480, height: 640)) {
   UINavigationController(
     rootViewController: LookupListViewController(
+      sceneState: SceneState(),
       viewModel: StubbedLookupListViewModel(
         entryItems: .failure(StubbedError())
       )

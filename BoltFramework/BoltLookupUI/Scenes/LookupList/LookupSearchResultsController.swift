@@ -50,7 +50,10 @@ final class LookupSearchResultsController: UIViewController {
     routingState: LookupRoutingState
   ) {
     self.sceneState = sceneState
-    navigationViewController = LookupNavigationViewController(routingState: routingState)
+    navigationViewController = LookupNavigationViewController(
+      sceneState: sceneState,
+      routingState: routingState
+    )
     super.init(nibName: nil, bundle: nil)
   }
 
