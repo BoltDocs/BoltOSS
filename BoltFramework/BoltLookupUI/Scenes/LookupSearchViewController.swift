@@ -78,10 +78,6 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
     fatalError("\(#function) has not been implemented")
   }
 
-  public func changeScope(_ scope: LookupScope) {
-    state.changeScope(scope)
-  }
-
   override public func viewDidLoad() {
     super.viewDidLoad()
 

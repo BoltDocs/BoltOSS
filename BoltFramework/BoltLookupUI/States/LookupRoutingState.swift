@@ -54,6 +54,9 @@ final class LookupRoutingState: HasDisposeBag {
 
     sceneState.currentScope
       .drive(with: self) { owner, _ in
+        owner.clearSearchTextSubject.onNext(())
+        owner.dismissSearchSubject.onNext(())
+        owner.sceneState.dispatch(action: .lookupListVisibilityChange(false))
         owner.sceneState.dispatch(action: .updateLookupListShowsDocPage(false))
       }
       .disposed(by: disposeBag)
@@ -87,8 +90,13 @@ final class LookupRoutingState: HasDisposeBag {
   lazy var searchQuery: Driver<String> = { searchQueryRelay.asDriver() }()
 
   lazy var presentsLookupListDriver: Driver<Bool> = {
-    return sceneState.lookupListShowsDocPage
-      .map(!)
+    Driver.combineLatest(
+      sceneState.lookupListVisible,
+      sceneState.lookupListShowsDocPage
+    )
+    .map { lookupListVisible, showsDocPage in
+      return lookupListVisible && !showsDocPage
+    }
   }()
   var presentsLookupList: Bool { !(sceneState.lookupListShowsDocPageValue) }
 
@@ -154,10 +162,6 @@ final class LookupRoutingState: HasDisposeBag {
   }()
 
   // MARK: - Interfaces
-
-  func changeScope(_ scope: LookupScope) {
-    sceneState.dispatch(action: .updateCurrentScope(scope))
-  }
 
   func updateSearchQuery(_ query: String) {
     searchQueryRelay.accept(query)
