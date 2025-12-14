@@ -95,6 +95,9 @@ final class LookupRoutingState: HasDisposeBag {
   private let clearSearchTextSubject = PublishSubject<Void>()
   lazy var clearSearchText: Signal<Void> = { clearSearchTextSubject.asSignalOnErrorJustIgnore() }()
 
+  private let dismissSearchSubject = PublishSubject<Void>()
+  lazy var dismissSearchDriver: Signal<Void> = { dismissSearchSubject.asSignalOnErrorJustIgnore() }()
+
   lazy var tokenColor: Driver<BoltColorResource?> = {
     return routingCoordinator.currentRoute
       .map { route -> BoltColorResource? in
@@ -158,6 +161,10 @@ final class LookupRoutingState: HasDisposeBag {
 
   func updateSearchQuery(_ query: String) {
     searchQueryRelay.accept(query)
+  }
+
+  func dismissSearch() {
+    dismissSearchSubject.onNext(())
   }
 
   func selectEntry(docset: Docset, entry: Entry) {
