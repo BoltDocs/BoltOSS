@@ -32,6 +32,8 @@ protocol ToolbarManagerDelegate: AnyObject {
   func toolbarManagerDidTapZoomOut(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapShare(_ toolbarManager: ToolbarManager)
 
+  func toolbarManager(_ toolbarManager: ToolbarManager, updateToolbarItems items: [UIBarButtonItem])
+
 }
 
 enum ToolbarMode: Equatable {
@@ -41,9 +43,7 @@ enum ToolbarMode: Equatable {
 
 final class ToolbarManager {
 
-  typealias Delegate = UIViewController & ToolbarManagerDelegate
-
-  private weak var viewController: Delegate?
+  private weak var delegate: ToolbarManagerDelegate?
 
   var mode: ToolbarMode = .normal {
     didSet {
@@ -58,10 +58,10 @@ final class ToolbarManager {
   private var cancellables = Set<AnyCancellable>()
 
   init(
-    viewController: Delegate,
+    delegate: ToolbarManagerDelegate,
     findInPageToolbarViewModel: FindInPageToolbarViewModel
   ) {
-    self.viewController = viewController
+    self.delegate = delegate
     self.findInPageViewModel = findInPageToolbarViewModel
 
     findInPageViewModel.$resultsText
@@ -136,13 +136,13 @@ final class ToolbarManager {
             guard let self = self else {
               return
             }
-            viewController?.toolbarManagerDidTapZoomOut(self)
+            delegate?.toolbarManagerDidTapZoomOut(self)
           },
           UIAction(title: "Larger Text", image: UIImage(systemName: "textformat.size.larger")) { [weak self] _ in
             guard let self = self else {
               return
             }
-            viewController?.toolbarManagerDidTapZoomIn(self)
+            delegate?.toolbarManagerDidTapZoomIn(self)
           },
         ]
       )
@@ -253,15 +253,15 @@ final class ToolbarManager {
         return items
       }
     }()
-    viewController?.toolbarItems = toolbarItems
+    delegate?.toolbarManager(self, updateToolbarItems: toolbarItems)
   }
 
   @objc func backButtonTapped(_ sender: Any?) {
-    viewController?.toolbarManagerDidTapGoBack(self)
+    delegate?.toolbarManagerDidTapGoBack(self)
   }
 
   @objc func forwardButtonTapped(_ sender: Any?) {
-    viewController?.toolbarManagerDidTapGoForward(self)
+    delegate?.toolbarManagerDidTapGoForward(self)
   }
 
   @objc func tableOfContentsButtonTapped(_ sender: Any?) {
@@ -273,7 +273,7 @@ final class ToolbarManager {
   }
 
   @objc func shareButtonTapped(_ sender: Any?) {
-    viewController?.toolbarManagerDidTapShare(self)
+    delegate?.toolbarManagerDidTapShare(self)
   }
 
   @objc func searchScopeTypesButtonTapped(_ sender: Any?) {

@@ -45,7 +45,7 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     super.init(nibName: nil, bundle: nil)
     let findInPageViewModel = FindInPageToolbarViewModel(sceneState: sceneState)
     toolbarManager = ToolbarManager(
-      viewController: self,
+      delegate: self,
       findInPageToolbarViewModel: findInPageViewModel
     )
   }
@@ -185,6 +185,10 @@ extension LookupContentViewController: ToolbarManagerDelegate {
 
   func toolbarManagerDidTapShare(_ toolbarManager: ToolbarManager) {
     browserViewController.shareCurrentPage()
+  }
+
+  func toolbarManager(_ toolbarManager: ToolbarManager, updateToolbarItems items: [UIBarButtonItem]) {
+    toolbarItems = items
   }
 
 }
