@@ -89,7 +89,7 @@ final class ToolbarDownloadsItemView: UIView {
 
     addSubview(stackView)
     stackView.snp.makeConstraints {
-      $0.verticalEdges.equalTo(self)
+      $0.centerY.equalTo(self)
       $0.horizontalEdges.equalTo(self).inset(10)
     }
 

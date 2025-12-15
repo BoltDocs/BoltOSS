@@ -144,9 +144,7 @@ extension BrowserViewController {
     progressView = UIProgressView(progressViewStyle: .bar)
     view.addSubview(progressView)
     progressView.snp.makeConstraints { make in
-      make.top.equalTo(view.safeAreaLayoutGuide)
-      make.leading.equalToSuperview()
-      make.trailing.equalToSuperview()
+      make.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
       make.height.equalTo(2)
     }
   }
