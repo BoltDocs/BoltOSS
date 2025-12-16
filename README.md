@@ -14,10 +14,6 @@ This project is in the early development process and the official release will b
 
 Releases would be tagged or branched but no binary products would be uploaded.
 
-## Liquid Glass
-
-Liquid Glass is temporarily disabled due to preview test failures. Adapting to the OS 26 UI and its features is planned, but not prioritized until the core functionalities are properly implemented.
-
 ## Build instructions
 
 We support building for up to 2 recent major versions of iOS and iPadOS and the most recent major version of Mac Catalyst, so currently it would be built with iOS 18, iPadOS 18, and Mac Catalyst 26 (macOS 26).
