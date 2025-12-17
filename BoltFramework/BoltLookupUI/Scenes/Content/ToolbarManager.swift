@@ -149,26 +149,6 @@ final class ToolbarManager {
     )
   }()
 
-  private lazy var searchScopeTypesButton: UIBarButtonItem = {
-    let button = UIBarButtonItem(
-      image: UIImage(systemName: "c.square"),
-      style: .plain,
-      target: self,
-      action: #selector(searchScopeTypesButtonTapped)
-    )
-    return button
-  }()
-
-  private lazy var searchScopeDocPageButton: UIBarButtonItem = {
-    let button = UIBarButtonItem(
-      image: UIImage(systemName: "text.document"),
-      style: .plain,
-      target: self,
-      action: #selector(searchScopeDocPageButtonTapped)
-    )
-    return button
-  }()
-
   private lazy var findInPageResultCountLabel: UILabel = {
     let label = UILabel()
     label.font = UIFont.systemFont(ofSize: 14)
@@ -238,13 +218,10 @@ final class ToolbarManager {
           ]
         }
       case let .search(scope):
-        var items = [
-          searchScopeTypesButton,
-          searchScopeDocPageButton,
-          flexibleSpace,
-        ]
+        var items = [UIBarButtonItem]()
         if scope == .docPage {
           items += [
+            flexibleSpace,
             findInPageResultCountItem,
             findInPagePreviousButton,
             findInPageNextButton,
@@ -274,14 +251,6 @@ final class ToolbarManager {
 
   @objc func shareButtonTapped(_ sender: Any?) {
     delegate?.toolbarManagerDidTapShare(self)
-  }
-
-  @objc func searchScopeTypesButtonTapped(_ sender: Any?) {
-
-  }
-
-  @objc func searchScopeDocPageButtonTapped(_ sender: Any?) {
-
   }
 
   @objc func findInPagePreviousButtonTapped(_ sender: Any?) {

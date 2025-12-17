@@ -35,26 +35,6 @@ final class SearchInputAccessoryToolbar: UIToolbar {
 
   private var cancellables = Set<AnyCancellable>()
 
-  private lazy var searchScopeTypesButton: UIBarButtonItem = {
-    let button = UIBarButtonItem(
-      image: UIImage(systemName: "c.square"),
-      style: .plain,
-      target: self,
-      action: #selector(searchScopeTypesButtonTapped)
-    )
-    return button
-  }()
-
-  private lazy var searchScopeDocPageButton: UIBarButtonItem = {
-    let button = UIBarButtonItem(
-      image: UIImage(systemName: "text.document"),
-      style: .plain,
-      target: self,
-      action: #selector(searchScopeDocPageButtonTapped)
-    )
-    return button
-  }()
-
   private lazy var resultCountLabel: UILabel = {
     let label = UILabel()
     label.font = UIFont.systemFont(ofSize: 14)
@@ -107,11 +87,7 @@ final class SearchInputAccessoryToolbar: UIToolbar {
   }
 
   private func updateToolbarItems() {
-    var items = [
-      searchScopeTypesButton,
-      searchScopeDocPageButton,
-      .flexibleSpace(),
-    ]
+    var items = [ UIBarButtonItem.flexibleSpace() ]
     if let scope = scope {
       if scope == .docPage {
         items += [
@@ -154,14 +130,6 @@ final class SearchInputAccessoryToolbar: UIToolbar {
   }
 
   // MARK: - Actions
-
-  @objc func searchScopeTypesButtonTapped(_ sender: Any?) {
-
-  }
-
-  @objc func searchScopeDocPageButtonTapped(_ sender: Any?) {
-
-  }
 
   @objc private func previousButtonTapped() {
     findInPageViewModel.previousButtonTapped()

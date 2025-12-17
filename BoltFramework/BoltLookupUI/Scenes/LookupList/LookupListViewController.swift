@@ -32,13 +32,6 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
   private var sceneState: SceneState
   private var viewModel: ListViewModel
 
-  private lazy var lookupSearchToolbar: SearchInputAccessoryToolbar = {
-    let findInPageViewModel = FindInPageToolbarViewModel(sceneState: sceneState)
-    let toolbar = SearchInputAccessoryToolbar(findInPageViewModel: findInPageViewModel)
-    toolbar.scope = .types
-    return toolbar
-  }()
-
   init(sceneState: SceneState, viewModel: ListViewModel) {
     self.sceneState = sceneState
     self.viewModel = viewModel
@@ -121,18 +114,6 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     view.addSubview(contentUnavailableView)
     contentUnavailableView.snp.makeConstraints { make in
       make.edges.equalToSuperview()
-    }
-
-    if RuntimeEnvironment.isOS26UIEnabled {
-      view.addSubview(lookupSearchToolbar)
-      lookupSearchToolbar.snp.makeConstraints { make in
-        make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-        #if targetEnvironment(macCatalyst)
-        make.bottom.equalToSuperview().inset(20)
-        #else
-        make.bottom.equalTo(view.safeAreaLayoutGuide)
-        #endif
-      }
     }
 
     // FIXME: .distinctUntilChanged() should be used
