@@ -85,11 +85,17 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
     automaticallyShowsCancelButton = true
     hidesNavigationBarDuringPresentation = true
     obscuresBackgroundDuringPresentation = false
+    scopeBarActivation = .onSearchActivation
 
     with(searchBar) {
       $0.delegate = self
       $0.placeholder = UIKitLocalizations.search
       $0.inputAccessoryView = searchInputAccessoryView
+      $0.scopeButtonTitles = [
+        "Lookup-SearchScope-Index".boltLocalized,
+        "Lookup-SearchScope-Reference".boltLocalized,
+        "Lookup-SearchScope-Contents".boltLocalized,
+      ]
       with($0.searchTextField) {
         $0.delegate = self
         $0.autocorrectionType = .no
