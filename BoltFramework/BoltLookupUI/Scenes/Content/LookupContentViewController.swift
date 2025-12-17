@@ -41,6 +41,12 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
   private lazy var toolbar = UIToolbar()
 
+  private var toolbarMode: ToolbarMode = .normal {
+    didSet {
+      toolbarManager.mode = toolbarMode
+    }
+  }
+
   public init(sceneState: SceneState) {
     self.sceneState = sceneState
     browserViewController = BrowserViewController(sceneState: sceneState)
@@ -119,7 +125,7 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
           return .normal
         }
       }()
-      owner.toolbarManager.mode = mode
+      owner.toolbarMode = mode
     }
     .disposed(by: disposeBag)
 
@@ -204,10 +210,16 @@ extension LookupContentViewController: ToolbarManagerDelegate {
   }
 
   func toolbarManager(_ toolbarManager: ToolbarManager, updateToolbarItems items: [UIBarButtonItem]) {
-    if RuntimeEnvironment.isOS26UIEnabled {
-      toolbar.items = items
-    } else {
+    guard RuntimeEnvironment.isOS26UIEnabled else {
       toolbarItems = items
+      return
+    }
+    if case .normal = toolbarMode {
+      toolbarItems = items
+      toolbar.items = []
+    } else {
+      toolbar.items = items
+      toolbarItems = []
     }
   }
 
