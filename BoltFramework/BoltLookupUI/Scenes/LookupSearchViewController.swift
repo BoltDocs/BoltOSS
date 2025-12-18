@@ -16,6 +16,7 @@
 
 import UIKit
 
+import IssueReporting
 import Overture
 
 import RxCocoa
@@ -91,11 +92,7 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
       $0.delegate = self
       $0.placeholder = UIKitLocalizations.search
       $0.inputAccessoryView = searchInputAccessoryView
-      $0.scopeButtonTitles = [
-        "Lookup-SearchScope-Index".boltLocalized,
-        "Lookup-SearchScope-Reference".boltLocalized,
-        "Lookup-SearchScope-Contents".boltLocalized,
-      ]
+      $0.scopeButtonTitles = LookupSearchScope.allCases.map { $0.displayTitle }
       with($0.searchTextField) {
         $0.delegate = self
         $0.autocorrectionType = .no
@@ -119,6 +116,11 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
         owner.showsSearchResultsController = presentsLookupList
         owner.searchInputAccessoryToolbar.scope = presentsLookupList ? .types : .docPage
       }
+      .disposed(by: disposeBag)
+
+    state.searchScope
+      .map { $0.index }
+      .drive(searchBar.rx.selectedScopeButtonIndex)
       .disposed(by: disposeBag)
 
     state.searchTokens
@@ -222,6 +224,14 @@ extension LookupSearchController: UITextFieldDelegate {
 }
 
 extension LookupSearchController: UISearchBarDelegate {
+
+  public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange index: Int) {
+    guard let selectedScope = SearchScope(index: index) else {
+      reportIssue("unknown search scope index: \(index)")
+      return
+    }
+    state.selectSearchScope(selectedScope)
+  }
 
   public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
     preserveSearchFieldText()
