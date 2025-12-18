@@ -44,10 +44,16 @@ public enum LookupScope: Sendable, Hashable {
   case favorites
 }
 
+public enum LookupSearchScope: Equatable {
+  case types
+  case docPage
+  case tableOfContents
+}
+
 public enum SceneAction {
 
   case lookupListVisibilityChange(_: Bool)
-  case updateLookupListShowsDocPage(_: Bool)
+  case updateLookupSearchScope(_: LookupSearchScope)
   case updateCurrentScope(_: LookupScope)
   case updateCurrentURL(_: URL)
   case findInPage(query: String)
@@ -82,9 +88,9 @@ public class SceneState: HasDisposeBag {
   private let _lookupListVisible = BehaviorRelay<Bool>(value: false)
   public lazy var lookupListVisible: Driver<Bool> = { _lookupListVisible.asDriver() }()
 
-  private let _lookupListShowsDocPage = BehaviorRelay<Bool>(value: false)
-  public var lookupListShowsDocPageValue: Bool { _lookupListShowsDocPage.value }
-  public lazy var lookupListShowsDocPage: Driver<Bool> = { _lookupListShowsDocPage.asDriver() }()
+  private let _lookupSearchScope = BehaviorRelay<LookupSearchScope>(value: .types)
+  public var lookupSearchScopeValue: LookupSearchScope { _lookupSearchScope.value }
+  public lazy var lookupSearchScope: Driver<LookupSearchScope> = { _lookupSearchScope.asDriver() }()
 
   private let _currentScope = BehaviorRelay<LookupScope?>(value: nil)
   public lazy var currentScope: Driver<LookupScope?> = { _currentScope.asDriver() }()
@@ -113,8 +119,8 @@ public class SceneState: HasDisposeBag {
     switch action {
     case let .lookupListVisibilityChange(visibility):
       _lookupListVisible.accept(visibility)
-    case let .updateLookupListShowsDocPage(value):
-      _lookupListShowsDocPage.accept(value)
+    case let .updateLookupSearchScope(value):
+      _lookupSearchScope.accept(value)
     case let .updateCurrentScope(scope):
       _currentScope.accept(scope)
     case let .updateCurrentURL(url):

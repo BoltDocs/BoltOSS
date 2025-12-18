@@ -16,7 +16,37 @@
 
 import Foundation
 
-enum SearchScope: Equatable {
-  case types
-  case docPage
+import BoltLocalizations
+import BoltModuleExports
+
+typealias SearchScope = LookupSearchScope
+
+extension SearchScope {
+
+  static var allCases: [Self] {
+    [.types, .docPage, .tableOfContents]
+  }
+
+  init?(index: Int) {
+    guard 0..<Self.allCases.count ~= index else {
+      return nil
+    }
+    self = Self.allCases[index]
+  }
+
+  var index: Int {
+    return Self.allCases.firstIndex(of: self) ?? 0
+  }
+
+  var displayTitle: String {
+    switch self {
+    case .types:
+      return "Lookup-SearchScope-Index".boltLocalized
+    case .docPage:
+      return "Lookup-SearchScope-Reference".boltLocalized
+    case .tableOfContents:
+      return "Lookup-SearchScope-Contents".boltLocalized
+    }
+  }
+
 }

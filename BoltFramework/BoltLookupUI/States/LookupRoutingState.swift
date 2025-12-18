@@ -57,12 +57,12 @@ final class LookupRoutingState: HasDisposeBag {
         owner.clearSearchTextSubject.onNext(())
         owner.dismissSearchSubject.onNext(())
         owner.sceneState.dispatch(action: .lookupListVisibilityChange(false))
-        owner.sceneState.dispatch(action: .updateLookupListShowsDocPage(false))
+        owner.sceneState.dispatch(action: .updateLookupSearchScope(.types))
       }
       .disposed(by: disposeBag)
 
     searchQuery
-      .filter { _ in sceneState.lookupListShowsDocPageValue == true }
+      .filter { _ in sceneState.lookupSearchScopeValue == .docPage }
       .drive(with: self) { owner, query in
         owner.sceneState.dispatch(action: .findInPage(query: query))
       }
@@ -86,19 +86,21 @@ final class LookupRoutingState: HasDisposeBag {
       .disposed(by: disposeBag)
   }
 
+  var searchScope: Driver<SearchScope> { sceneState.lookupSearchScope }
+
   private let searchQueryRelay = BehaviorRelay<String>(value: "")
   lazy var searchQuery: Driver<String> = { searchQueryRelay.asDriver() }()
 
   lazy var presentsLookupListDriver: Driver<Bool> = {
     Driver.combineLatest(
       sceneState.lookupListVisible,
-      sceneState.lookupListShowsDocPage
+      sceneState.lookupSearchScope
     )
-    .map { lookupListVisible, showsDocPage in
-      return lookupListVisible && !showsDocPage
+    .map { lookupListVisible, searchScope in
+      return lookupListVisible && searchScope == .types
     }
   }()
-  var presentsLookupList: Bool { !(sceneState.lookupListShowsDocPageValue) }
+  var presentsLookupList: Bool { sceneState.lookupSearchScopeValue == .types }
 
   private let clearSearchTextSubject = PublishSubject<Void>()
   lazy var clearSearchText: Signal<Void> = { clearSearchTextSubject.asSignalOnErrorJustIgnore() }()
@@ -144,9 +146,9 @@ final class LookupRoutingState: HasDisposeBag {
         }
       }
 
-    let pageTokens = sceneState.lookupListShowsDocPage
-      .map { showsDocumentationPage -> [UISearchToken] in
-        if showsDocumentationPage {
+    let pageTokens = sceneState.lookupSearchScope
+      .map { searchScope -> [UISearchToken] in
+        if searchScope == .docPage {
           let tokenImage = UIImage(systemName: "doc.text")!
             .withTintColor(UIColor.white)
           return [UISearchToken.imageOnlyToken(withImage: tokenImage)]
@@ -171,6 +173,10 @@ final class LookupRoutingState: HasDisposeBag {
     dismissSearchSubject.onNext(())
   }
 
+  func selectSearchScope(_ searchScope: SearchScope) {
+    sceneState.dispatch(action: .updateLookupSearchScope(searchScope))
+  }
+
   func selectEntry(docset: Docset, entry: Entry) {
     guard let url = docset.url(forPagePath: entry.path) else {
       return
@@ -179,14 +185,15 @@ final class LookupRoutingState: HasDisposeBag {
     clearSearchTextSubject.onNext(())
 
     sceneState.dispatch(action: .updateCurrentURL(url))
-    sceneState.dispatch(action: .updateLookupListShowsDocPage(true))
+    sceneState.dispatch(action: .updateLookupSearchScope(.docPage))
   }
 
   func deselectEntryOrPop() {
-    if sceneState.lookupListShowsDocPageValue {
-      sceneState.dispatch(action: .updateLookupListShowsDocPage(false))
-    } else {
+    switch sceneState.lookupSearchScopeValue {
+    case .types:
       routingCoordinator.pop()
+    case .docPage, .tableOfContents:
+      sceneState.dispatch(action: .updateLookupSearchScope(.types))
     }
   }
 

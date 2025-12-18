@@ -110,17 +110,17 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
     Driver.combineLatest(
       sceneState.lookupListVisible,
-      sceneState.lookupListShowsDocPage
+      sceneState.lookupSearchScope
     )
     .drive(with: self) { owner, value in
-      let (lookupListVisible, lookupListShowsDocPage) = value
+      let (lookupListVisible, searchScope) = value
       owner.updateNavigationBarAppearance(
         forLookupListVisible: lookupListVisible,
-        showsDocPage: lookupListShowsDocPage
+        showsDocPage: searchScope == .docPage
       )
       let mode: ToolbarMode = {
         if lookupListVisible {
-          return lookupListShowsDocPage ? .search(scope: .docPage) : .search(scope: .types)
+          return .search(scope: searchScope)
         } else {
           return .normal
         }
