@@ -49,15 +49,14 @@ final class LookupRoutingState: HasDisposeBag {
   private let sceneState: SceneState
   let routingCoordinator = NavigationRouteCoordinator<LookupRouteElement>()
 
+  private var preservedSearchQuery = ""
+
   init(sceneState: SceneState) {
     self.sceneState = sceneState
 
     sceneState.currentScope
       .drive(with: self) { owner, _ in
-        owner.clearSearchTextSubject.onNext(())
-        owner.dismissSearchSubject.onNext(())
-        owner.sceneState.dispatch(action: .lookupListVisibilityChange(false))
-        owner.sceneState.dispatch(action: .updateLookupSearchScope(.types))
+        owner.clearRoutingState()
       }
       .disposed(by: disposeBag)
 
@@ -102,8 +101,8 @@ final class LookupRoutingState: HasDisposeBag {
   }()
   var presentsLookupList: Bool { sceneState.lookupSearchScopeValue == .types }
 
-  private let clearSearchTextSubject = PublishSubject<Void>()
-  lazy var clearSearchText: Signal<Void> = { clearSearchTextSubject.asSignalOnErrorJustIgnore() }()
+  private let updateSearchTextRelay = PublishRelay<String>()
+  lazy var updateSearchText: Signal<String> = { updateSearchTextRelay.asSignal() }()
 
   private let dismissSearchSubject = PublishSubject<Void>()
   lazy var dismissSearchDriver: Signal<Void> = { dismissSearchSubject.asSignalOnErrorJustIgnore() }()
@@ -148,11 +147,16 @@ final class LookupRoutingState: HasDisposeBag {
 
     let pageTokens = sceneState.lookupSearchScope
       .map { searchScope -> [UISearchToken] in
-        if searchScope == .docPage {
+        switch searchScope {
+        case .docPage:
           let tokenImage = UIImage(systemName: "doc.text")!
             .withTintColor(UIColor.white)
           return [UISearchToken.imageOnlyToken(withImage: tokenImage)]
-        } else {
+        case .tableOfContents:
+          let tokenImage = UIImage(systemName: "list.bullet")!
+            .withTintColor(UIColor.white)
+          return [UISearchToken.imageOnlyToken(withImage: tokenImage)]
+        default:
           return []
         }
       }
@@ -182,7 +186,8 @@ final class LookupRoutingState: HasDisposeBag {
       return
     }
 
-    clearSearchTextSubject.onNext(())
+    preservedSearchQuery = searchQueryRelay.value
+    updateSearchTextRelay.accept("")
 
     sceneState.dispatch(action: .updateCurrentURL(url))
     sceneState.dispatch(action: .updateLookupSearchScope(.docPage))
@@ -194,11 +199,23 @@ final class LookupRoutingState: HasDisposeBag {
       routingCoordinator.pop()
     case .docPage, .tableOfContents:
       sceneState.dispatch(action: .updateLookupSearchScope(.types))
+      updateSearchTextRelay.accept(preservedSearchQuery)
+      preservedSearchQuery = ""
     }
   }
 
   func onChangeSearchActive(_ active: Bool) {
     sceneState.dispatch(action: .lookupListVisibilityChange(active))
+  }
+
+  // MARK: - Private
+
+  private func clearRoutingState() {
+    preservedSearchQuery = ""
+    updateSearchTextRelay.accept("")
+    dismissSearchSubject.onNext(())
+    sceneState.dispatch(action: .lookupListVisibilityChange(false))
+    sceneState.dispatch(action: .updateLookupSearchScope(.types))
   }
 
 }
