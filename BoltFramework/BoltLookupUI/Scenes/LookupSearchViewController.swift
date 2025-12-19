@@ -137,10 +137,8 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
       }
       .disposed(by: disposeBag)
 
-    state.clearSearchText
-      .emit(with: self) { owner, _ in
-        owner.searchBar.text = ""
-      }
+    state.updateSearchText
+      .emit(to: searchBar.rx.text)
       .disposed(by: disposeBag)
 
     state.dismissSearchDriver
