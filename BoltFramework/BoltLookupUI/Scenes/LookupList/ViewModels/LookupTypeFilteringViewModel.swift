@@ -31,25 +31,16 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
   let itemSelected = PublishRelay<LookupListCellItem>()
 
   private let _results = BehaviorRelay<Result<[LookupListCellItem], Error>>(value: .success([]))
-  var results: Driver<Result<[LookupListCellItem], Error>> {
-    return _results.asDriver()
-  }
+  lazy var results: Driver<Result<[LookupListCellItem], Error>> = { _results.asDriver() }()
 
   private let _title = BehaviorRelay<String>(value: "")
-  var title: Driver<String> {
-    return _title.asDriver()
-  }
+  lazy var title: Driver<String> = { _title.asDriver() }()
 
   private let _hasSearchConstraints = BehaviorRelay<Bool>(value: false)
-  var hasSearchConstraints: Driver<Bool> {
-    return _hasSearchConstraints.asDriver()
-  }
+  lazy var hasSearchConstraints: Driver<Bool> = { _hasSearchConstraints.asDriver() }()
 
   private let _showsLoadingIndicator = BehaviorRelay<Bool>(value: false)
-  var showsLoadingIndicator: Driver<Bool> {
-    return _showsLoadingIndicator
-      .asDriver()
-  }
+  lazy var showsLoadingIndicator: Driver<Bool> = { _showsLoadingIndicator .asDriver() }()
 
   private weak var routingState: LookupRoutingState!
   private let type: EntryType
