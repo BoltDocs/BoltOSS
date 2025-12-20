@@ -96,6 +96,12 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       .drive(toolbarManager.forwardButtonEnabled)
       .disposed(by: disposeBag)
 
+    browserViewController.currentURLDriver
+      .drive(with: self) { owner, currentURL in
+        owner.sceneState.dispatch(action: .updateDocPageCurrentURL(currentURL))
+      }
+      .disposed(by: disposeBag)
+
     if RuntimeEnvironment.isOS26UIEnabled {
       view.addSubview(toolbar)
       toolbar.snp.makeConstraints {
@@ -147,7 +153,10 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       }
       return pageTitle
     }
-    .drive(rx.title)
+    .drive(with: self) { owner, title in
+      owner.title = title
+      owner.sceneState.dispatch(action: .updateLookupSceneTitle(title))
+    }
     .disposed(by: disposeBag)
   }
 
