@@ -82,6 +82,22 @@ struct DocsetSearcher {
     }
   }
 
+  static func entries(forIndexDBQueue dbQueue: DatabaseQueue, basePath: String) async throws -> [Entry] {
+    return try await withCheckedThrowingContinuation { continuation in
+      do {
+        try dbQueue.read { db in
+          let request = SearchIndex.filter(
+            Column("path").like("\(basePath)#%")
+          )
+          let entries = try fetchEntries(forDB: db, request: request)
+          continuation.resume(returning: entries)
+        }
+      } catch {
+        continuation.resume(throwing: error)
+      }
+    }
+  }
+
   private static func fetchEntries(
     forDB db: Database,
     request: QueryInterfaceRequest<SearchIndex>,

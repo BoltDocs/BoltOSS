@@ -31,7 +31,8 @@ final class LookupSearchResultsController: UIViewController {
 
   private var sceneState: SceneState
 
-  private var navigationViewController: LookupNavigationViewController
+  private var typesViewController: LookupTypesViewController
+  private var tableOfContentsViewController: LookupTableOfContentsViewController
 
   private var currentSearchIndexRelay = BehaviorRelay<DocsetSearchIndex?>(value: nil)
 
@@ -50,7 +51,11 @@ final class LookupSearchResultsController: UIViewController {
     routingState: LookupRoutingState
   ) {
     self.sceneState = sceneState
-    navigationViewController = LookupNavigationViewController(
+    typesViewController = LookupTypesViewController(
+      sceneState: sceneState,
+      routingState: routingState
+    )
+    tableOfContentsViewController = LookupTableOfContentsViewController(
       sceneState: sceneState,
       routingState: routingState
     )
@@ -110,8 +115,22 @@ final class LookupSearchResultsController: UIViewController {
       }
       .disposed(by: disposeBag)
 
-    addChild(navigationViewController) {
-      view.insertSubview($0, at: 0)
+    sceneState.lookupSearchScope
+      .drive(with: self) { owner, searchScope in
+        owner.typesViewController.view.isHidden = searchScope != .types
+        owner.tableOfContentsViewController.view.isHidden = searchScope != .tableOfContents
+      }
+      .disposed(by: disposeBag)
+
+    addChild(typesViewController) {
+      view.addSubview($0)
+      $0.snp.makeConstraints { make in
+        make.edges.equalToSuperview()
+      }
+    }
+
+    addChild(tableOfContentsViewController) {
+      view.addSubview($0)
       $0.snp.makeConstraints { make in
         make.edges.equalToSuperview()
       }

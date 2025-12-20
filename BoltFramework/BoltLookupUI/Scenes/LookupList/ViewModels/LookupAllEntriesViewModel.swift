@@ -91,12 +91,13 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
 
     Observable.combineLatest(
       routingState.searchQuery.asObservable(),
-      routingState.presentsLookupListDriver.asObservable()
+      routingState.presentsLookupListDriver.asObservable(),
+      routingState.searchScope.asObservable()
     )
-    .filter { _, presentsLookupList in
-      return presentsLookupList
+    .filter { _, presentsLookupList, searchScope in
+      return presentsLookupList && searchScope == .types
     }
-    .flatMapLatest { [docset, searchService, activityIndicator] queryString, _ -> Observable<Result<[LookupListCellItem], Error>> in
+    .flatMapLatest { [docset, searchService, activityIndicator] queryString, _, _ -> Observable<Result<[LookupListCellItem], Error>> in
       if queryString.isEmpty {
         return Single<[TypeCountPair]>.create {
           let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)

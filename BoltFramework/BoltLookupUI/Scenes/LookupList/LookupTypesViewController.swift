@@ -25,7 +25,7 @@ import BoltUIFoundation
 import BoltUtils
 import RoutableNavigation
 
-final class LookupNavigationViewController: RoutableNavigationController<LookupRouteElement> {
+final class LookupTypesViewController: RoutableNavigationController<LookupRouteElement> {
 
   private var sceneState: SceneState
 
