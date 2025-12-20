@@ -87,6 +87,10 @@ final class LookupRoutingState: HasDisposeBag {
 
   var searchScope: Driver<SearchScope> { sceneState.lookupSearchScope }
 
+  var docPageCurrentURL: Driver<URL?> { sceneState.docPageCurrentURL }
+
+  var sceneTitle: Driver<String> { sceneState.lookupSceneTitle }
+
   private let searchQueryRelay = BehaviorRelay<String>(value: "")
   lazy var searchQuery: Driver<String> = { searchQueryRelay.asDriver() }()
 
@@ -96,7 +100,8 @@ final class LookupRoutingState: HasDisposeBag {
       sceneState.lookupSearchScope
     )
     .map { lookupListVisible, searchScope in
-      return lookupListVisible && searchScope == .types
+      return lookupListVisible &&
+        (searchScope == .types || searchScope == .tableOfContents)
     }
   }()
   var presentsLookupList: Bool { sceneState.lookupSearchScopeValue == .types }

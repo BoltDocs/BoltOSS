@@ -125,6 +125,13 @@ public final class DocsetSearchIndex: Sendable, CustomStringConvertible, LoggerP
     return try await DocsetSearcher.entries(forIndexDBQueue: dbQueue, rawQuery: rawQuery, type: type)
   }
 
+  public func fetchEntries(forBasePath basePath: String) async throws -> [Entry] {
+    guard let dbQueue = indexDBQueue else {
+      throw DocsetSearchIndexError.noDatabaseQueue
+    }
+    return try await DocsetSearcher.entries(forIndexDBQueue: dbQueue, basePath: basePath)
+  }
+
   private func checkSearchIndexValid() async -> DocsetSearchIndexError? {
     return await withCheckedContinuation { continuation in
       let dbPath = indexDBPath
