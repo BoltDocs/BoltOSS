@@ -55,7 +55,9 @@ public enum SceneAction {
   case lookupListVisibilityChange(_: Bool)
   case updateLookupSearchScope(_: LookupSearchScope)
   case updateCurrentScope(_: LookupScope)
-  case updateCurrentURL(_: URL)
+  case updateDocPageCurrentURL(_: URL?)
+  case updateLookupSceneTitle(_: String)
+  case docPageLoadURL(_: URL)
   case findInPage(query: String)
   case findPreviousInPage
   case findNextInPage
@@ -95,8 +97,14 @@ public class SceneState: HasDisposeBag {
   private let _currentScope = BehaviorRelay<LookupScope?>(value: nil)
   public lazy var currentScope: Driver<LookupScope?> = { _currentScope.asDriver() }()
 
-  private let _currentPageURL = PublishRelay<URL>()
-  public lazy var currentPageURL: Signal<URL> = { _currentPageURL.asSignal() }()
+  private let _docPageCurrentURL = BehaviorRelay<URL?>(value: nil)
+  public lazy var docPageCurrentURL: Driver<URL?> = { _docPageCurrentURL.asDriver() }()
+
+  private let _lookupSceneTitle = BehaviorRelay<String>(value: "")
+  public lazy var lookupSceneTitle: Driver<String> = { _lookupSceneTitle.asDriver() }()
+
+  private let _docPageLoadURL = PublishRelay<URL>()
+  public lazy var docPageLoadURL: Signal<URL> = { _docPageLoadURL.asSignal() }()
 
   private let _findInPageQuery = PublishRelay<String>()
   public lazy var findInPageQuery: Signal<String> = { _findInPageQuery.asSignal() }()
@@ -123,8 +131,12 @@ public class SceneState: HasDisposeBag {
       _lookupSearchScope.accept(value)
     case let .updateCurrentScope(scope):
       _currentScope.accept(scope)
-    case let .updateCurrentURL(url):
-      _currentPageURL.accept(url)
+    case let .updateDocPageCurrentURL(url):
+      _docPageCurrentURL.accept(url)
+    case let .updateLookupSceneTitle(title):
+      _lookupSceneTitle.accept(title)
+    case let .docPageLoadURL(url):
+      _docPageLoadURL.accept(url)
     case let .findInPage(query: query):
       _findInPageQuery.accept(query)
     case .findPreviousInPage:

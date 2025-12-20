@@ -127,7 +127,7 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
       .drive(canGoForwardRelay)
       .disposed(by: disposeBag)
 
-    sceneState.currentPageURL
+    sceneState.docPageLoadURL
       .emit(to: browserView.url)
       .disposed(by: browserView.disposeBag)
 

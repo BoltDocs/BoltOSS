@@ -189,7 +189,7 @@ final class LookupRoutingState: HasDisposeBag {
     preservedSearchQuery = searchQueryRelay.value
     updateSearchTextRelay.accept("")
 
-    sceneState.dispatch(action: .updateCurrentURL(url))
+    sceneState.dispatch(action: .docPageLoadURL(url))
     sceneState.dispatch(action: .updateLookupSearchScope(.docPage))
   }
 
