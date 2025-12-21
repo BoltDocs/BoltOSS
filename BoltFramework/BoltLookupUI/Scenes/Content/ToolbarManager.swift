@@ -28,6 +28,7 @@ protocol ToolbarManagerDelegate: AnyObject {
 
   func toolbarManagerDidTapGoBack(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapGoForward(_ toolbarManager: ToolbarManager)
+  func toolbarManagerDidTapTableOfContents(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapZoomIn(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapZoomOut(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapShare(_ toolbarManager: ToolbarManager)
@@ -41,7 +42,7 @@ enum ToolbarMode: Equatable {
   case search(scope: SearchScope)
 }
 
-final class ToolbarManager {
+final class ToolbarManager: HasDisposeBag {
 
   private weak var delegate: ToolbarManagerDelegate?
 
@@ -53,16 +54,26 @@ final class ToolbarManager {
     }
   }
 
+  private let sceneState: SceneState
   private let findInPageViewModel: FindInPageToolbarViewModel
 
   private var cancellables = Set<AnyCancellable>()
 
   init(
-    delegate: ToolbarManagerDelegate,
-    findInPageToolbarViewModel: FindInPageToolbarViewModel
+    sceneState: SceneState,
+    findInPageToolbarViewModel: FindInPageToolbarViewModel,
+    delegate: ToolbarManagerDelegate
   ) {
-    self.delegate = delegate
+    self.sceneState = sceneState
     self.findInPageViewModel = findInPageToolbarViewModel
+    self.delegate = delegate
+    setupBindings()
+  }
+
+  private func setupBindings() {
+    sceneState.lookupHasTableOfContents
+      .drive(tableOfContentsButton.rx.isEnabled)
+      .disposed(by: disposeBag)
 
     findInPageViewModel.$resultsText
       .receive(on: DispatchQueue.main)
@@ -242,7 +253,7 @@ final class ToolbarManager {
   }
 
   @objc func tableOfContentsButtonTapped(_ sender: Any?) {
-
+    delegate?.toolbarManagerDidTapTableOfContents(self)
   }
 
   @objc func bookmarkButtonTapped(_ sender: Any?) {

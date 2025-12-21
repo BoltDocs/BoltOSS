@@ -123,6 +123,20 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
       .drive(searchBar.rx.selectedScopeButtonIndex)
       .disposed(by: disposeBag)
 
+    state.hasTableOfContents
+      .drive(with: self) { owner, hasTableOfContents in
+        owner.searchBar.scopeButtonTitles = hasTableOfContents ? [
+          LookupSearchScope.types.displayTitle,
+          LookupSearchScope.docPage.displayTitle,
+          LookupSearchScope.tableOfContents.displayTitle,
+        ] : [
+          LookupSearchScope.types.displayTitle,
+          LookupSearchScope.docPage.displayTitle,
+        ]
+        owner.scopeBarSetNeedsLayout()
+      }
+      .disposed(by: disposeBag)
+
     state.searchTokens
       .drive(with: self) { owner, tokens in
         let searchTextField = owner.searchBar.searchTextField
@@ -153,6 +167,24 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
         owner.state.updateSearchQuery(searchQuery)
       }
       .disposed(by: disposeBag)
+  }
+
+  // MARK: Interfaces
+
+  func presentTableOfContents() {
+    isActive = true
+    state.selectSearchScope(.tableOfContents)
+  }
+
+  // MARK: Private
+
+  private func scopeBarSetNeedsLayout() {
+    if let containerView = searchBar.scopeBar?.superview {
+      #if DEBUG
+      assert(String(describing: type(of: containerView)) == "_UISearchBarScopeContainerView")
+      #endif
+      containerView.setNeedsLayout()
+    }
   }
 
 }

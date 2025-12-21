@@ -91,6 +91,8 @@ final class LookupRoutingState: HasDisposeBag {
 
   var sceneTitle: Driver<String> { sceneState.lookupSceneTitle }
 
+  var hasTableOfContents: Driver<Bool> { sceneState.lookupHasTableOfContents }
+
   private let searchQueryRelay = BehaviorRelay<String>(value: "")
   lazy var searchQuery: Driver<String> = { searchQueryRelay.asDriver() }()
 
@@ -173,6 +175,10 @@ final class LookupRoutingState: HasDisposeBag {
   }()
 
   // MARK: - Interfaces
+
+  func updateHasTableOfContents(_ value: Bool) {
+    sceneState.dispatch(action: .updateLookupHasTableOfContents(value))
+  }
 
   func updateSearchQuery(_ query: String) {
     searchQueryRelay.accept(query)

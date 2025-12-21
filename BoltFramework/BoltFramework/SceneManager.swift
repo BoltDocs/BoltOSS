@@ -67,8 +67,6 @@ public final class SceneManager {
   private lazy var homeViewControllerCompact = HomeViewController(sceneState: state, isForCollapsedSidebar: true)
   private lazy var homeViewControllerRegular = HomeViewController(sceneState: state, isForCollapsedSidebar: false)
 
-  private lazy var lookupSearchController = LookupSearchController(sceneState: state)
-
   private lazy var secondaryNavigationController = SecondaryNavigationController()
 
   private lazy var welcomeViewController = WelcomeViewController()
@@ -112,12 +110,6 @@ public final class SceneManager {
         )
       })
       .disposed(by: disposeBag)
-
-    with(lookupContentViewController) {
-      $0.navigationItem.searchController = lookupSearchController
-      $0.navigationItem.hidesSearchBarWhenScrolling = false
-      $0.navigationItem.preferredSearchBarPlacement = .stacked
-    }
 
     with(doubleColumnSplitViewController) {
       $0.setViewController(homePrimaryNavigationController, for: .primary)

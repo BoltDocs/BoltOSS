@@ -57,6 +57,7 @@ public enum SceneAction {
   case updateCurrentScope(_: LookupScope)
   case updateDocPageCurrentURL(_: URL?)
   case updateLookupSceneTitle(_: String)
+  case updateLookupHasTableOfContents(_: Bool)
   case docPageLoadURL(_: URL)
   case findInPage(query: String)
   case findPreviousInPage
@@ -103,6 +104,9 @@ public class SceneState: HasDisposeBag {
   private let _lookupSceneTitle = BehaviorRelay<String>(value: "")
   public lazy var lookupSceneTitle: Driver<String> = { _lookupSceneTitle.asDriver() }()
 
+  private let _lookupHasTableOfContents = BehaviorRelay<Bool>(value: false)
+  public lazy var lookupHasTableOfContents: Driver<Bool> = { _lookupHasTableOfContents.asDriver() }()
+
   private let _docPageLoadURL = PublishRelay<URL>()
   public lazy var docPageLoadURL: Signal<URL> = { _docPageLoadURL.asSignal() }()
 
@@ -135,6 +139,8 @@ public class SceneState: HasDisposeBag {
       _docPageCurrentURL.accept(url)
     case let .updateLookupSceneTitle(title):
       _lookupSceneTitle.accept(title)
+    case let .updateLookupHasTableOfContents(value):
+      _lookupHasTableOfContents.accept(value)
     case let .docPageLoadURL(url):
       _docPageLoadURL.accept(url)
     case let .findInPage(query: query):
