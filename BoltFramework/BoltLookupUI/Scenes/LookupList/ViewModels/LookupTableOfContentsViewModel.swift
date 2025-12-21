@@ -102,34 +102,35 @@ final class LookupTableOfContentsViewModel: LookupListViewModel, HasDisposeBag, 
       .bind(to: _showsLoadingIndicator)
       .disposed(by: disposeBag)
 
-    Observable.combineLatest(
-      routingState.docPageCurrentURL.asObservable(),
-      routingState.presentsLookupListDriver.asObservable(),
-      routingState.searchScope.asObservable()
-    )
-    .filter { _, presentsLookupList, searchScope in
-      return presentsLookupList && searchScope == .tableOfContents
-    }
-    .flatMapLatest { [searchService, docset, activityIndicator] currentPageURL, _, _ -> Observable<Result<[Entry], Error>> in
-      guard let currentPageURL = currentPageURL else {
-        return Observable.just(.success([]))
-      }
-      return Single<[Entry]>.create {
-        var basePath = currentPageURL.relativePath
-        if basePath.starts(with: "/") {
-          basePath.removeFirst()
+    routingState.docPageCurrentURL.asObservable()
+      .flatMapLatest { [searchService, docset, activityIndicator] currentPageURL -> Observable<Result<[Entry], Error>> in
+        guard let currentPageURL = currentPageURL else {
+          return Observable.just(.success([]))
         }
-        let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
-        let entries = try await docsetSearchIndex.fetchEntries(forBasePath: basePath)
-        Self.logger.debug("fetched \(entries.count) entries for basePath: \(basePath)")
-        return entries
+        return Single<[Entry]>.create {
+          var basePath = currentPageURL.relativePath
+          if basePath.starts(with: "/") {
+            basePath.removeFirst()
+          }
+          let docsetSearchIndex = await searchService.searchIndex(forDocset: docset)
+          let entries = try await docsetSearchIndex.fetchEntries(forBasePath: basePath)
+          Self.logger.debug("fetched \(entries.count) entries for basePath: \(basePath)")
+          return entries
+        }
+        .asObservable()
+        .mapToResult()
+        .trackActivity(activityIndicator)
       }
-      .asObservable()
-      .mapToResult()
-      .trackActivity(activityIndicator)
-    }
-    .bind(to: unfilteredResults)
-    .disposed(by: disposeBag)
+      .subscribe(with: self) { owner, results in
+        switch results {
+        case let .success(entries):
+          owner.routingState.updateHasTableOfContents(!entries.isEmpty)
+        case .failure:
+          owner.routingState.updateHasTableOfContents(false)
+        }
+        owner.unfilteredResults.accept(results)
+      }
+      .disposed(by: disposeBag)
   }
 
   func onClickCancel() {

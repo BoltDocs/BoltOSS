@@ -36,6 +36,7 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
   private let sceneState: SceneState
 
   private let browserViewController: BrowserViewController
+  private let lookupSearchController: LookupSearchController
 
   private var toolbarManager: ToolbarManager!
 
@@ -50,13 +51,15 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
   public init(sceneState: SceneState) {
     self.sceneState = sceneState
     browserViewController = BrowserViewController(sceneState: sceneState)
+    lookupSearchController = LookupSearchController(sceneState: sceneState)
 
     super.init(nibName: nil, bundle: nil)
 
     let findInPageViewModel = FindInPageToolbarViewModel(sceneState: sceneState)
     toolbarManager = ToolbarManager(
-      delegate: self,
-      findInPageToolbarViewModel: findInPageViewModel
+      sceneState: sceneState,
+      findInPageToolbarViewModel: findInPageViewModel,
+      delegate: self
     )
   }
 
@@ -72,6 +75,9 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
     with(navigationItem) {
       $0.largeTitleDisplayMode = .never
+      $0.searchController = lookupSearchController
+      $0.hidesSearchBarWhenScrolling = false
+      $0.preferredSearchBarPlacement = .stacked
     }
 
     addChild(browserViewController) {
@@ -204,6 +210,10 @@ extension LookupContentViewController: ToolbarManagerDelegate {
 
   func toolbarManagerDidTapGoForward(_ toolbarManager: ToolbarManager) {
     browserViewController.goForward()
+  }
+
+  func toolbarManagerDidTapTableOfContents(_ toolbarManager: ToolbarManager) {
+    lookupSearchController.presentTableOfContents()
   }
 
   func toolbarManagerDidTapZoomIn(_ toolbarManager: ToolbarManager) {

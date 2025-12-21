@@ -29,7 +29,7 @@ final class LookupTableOfContentsViewController: UINavigationController, HasDisp
   init(sceneState: SceneState, routingState: LookupRoutingState) {
     self.sceneState = sceneState
     self.routingState = routingState
-    super.init(rootViewController: LookupInitialViewController())
+    super.init(nibName: nil, bundle: nil)
   }
 
   @available(*, unavailable)
