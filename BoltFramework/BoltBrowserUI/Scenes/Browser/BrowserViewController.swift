@@ -37,10 +37,17 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
 
   private var docset: Docset?
 
-  public var titleDriver: Driver<String> { browserView.title }
-  public var currentURLDriver: Driver<URL?> { browserView.currentURLDriver }
-  public var canGoBackDriver: Driver<Bool> { browserView.canGoBack }
-  public var canGoForwardDriver: Driver<Bool> { browserView.canGoForward }
+  private let titleRelay = BehaviorRelay<String>(value: "")
+  public lazy var titleDriver: Driver<String> = { titleRelay.asDriver() }()
+
+  private let currentURLRelay = BehaviorRelay<URL?>(value: nil)
+  public lazy var currentURLDriver: Driver<URL?> = { currentURLRelay.asDriver() }()
+
+  private let canGoBackRelay = BehaviorRelay<Bool>(value: false)
+  public lazy var canGoBackDriver: Driver<Bool> = { canGoBackRelay.asDriver() }()
+
+  private let canGoForwardRelay = BehaviorRelay<Bool>(value: false)
+  public lazy var canGoForwardDriver: Driver<Bool> = { canGoForwardRelay.asDriver() }()
 
   public init(sceneState: SceneState) {
     self.sceneState = sceneState
@@ -103,6 +110,22 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
     browserView?.removeFromSuperview()
 
     browserView = BrowserView(initialURL: initialURL, enablesJavaScript: enablesJavaScript)
+
+    browserView.title
+      .drive(titleRelay)
+      .disposed(by: disposeBag)
+
+    browserView.currentURLDriver
+      .drive(currentURLRelay)
+      .disposed(by: disposeBag)
+
+    browserView.canGoBack
+      .drive(canGoBackRelay)
+      .disposed(by: disposeBag)
+
+    browserView.canGoForward
+      .drive(canGoForwardRelay)
+      .disposed(by: disposeBag)
 
     sceneState.currentPageURL
       .emit(to: browserView.url)
