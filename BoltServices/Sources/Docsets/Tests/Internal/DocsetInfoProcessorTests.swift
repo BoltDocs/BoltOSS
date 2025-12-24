@@ -39,6 +39,29 @@ final class DocsetInfoProcessorTests: XCTestCase {
     Container.shared.manager.pop()
   }
 
+  func testProcessFallbackURL() throws {
+    let docsetInfoProcessor = Container.shared.docsetInfoProcessor()
+
+    let infoDictWithFallback: InfoDictionary = [
+      "CFBundleIdentifier": "com.jazzy.rxswift",
+      "CFBundleName": "RxSwift",
+      "DashDocSetFallbackURL": "https://docs.rxswift.org",
+      "DocSetFallbackURL": "https://other.rxswift.org",
+    ]
+
+    let docsetInfoWithFallback = docsetInfoProcessor.docsetInfo(forInfoDictionary: infoDictWithFallback)
+    XCTAssertEqual(docsetInfoWithFallback.fallbackURL?.absoluteString, "https://docs.rxswift.org")
+
+    let infoDictWithLegacyFallback: InfoDictionary = [
+      "CFBundleIdentifier": "com.jazzy.rxswift",
+      "CFBundleName": "RxSwift",
+      "DocSetFallbackURL": "https://docs.rxswift.org",
+    ]
+
+    let docsetInfoWithLegacyFallback = docsetInfoProcessor.docsetInfo(forInfoDictionary: infoDictWithLegacyFallback)
+    XCTAssertEqual(docsetInfoWithLegacyFallback.fallbackURL?.absoluteString, "https://docs.rxswift.org")
+  }
+
   func testProcessForInstallationWithRepoProcessor() throws {
     let docsetInfoProcessor = Container.shared.docsetInfoProcessor()
 

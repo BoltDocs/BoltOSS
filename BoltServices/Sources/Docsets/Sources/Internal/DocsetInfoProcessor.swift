@@ -35,7 +35,8 @@ enum DocsetInfoKey: String, CaseIterable {
 
   case indexFilePath = "dashIndexFilePath"
   case isJavaScriptEnabled = "isJavaScriptEnabled"
-  case fallbackURL = "DashDocSetFallbackURL"
+  case dashFallbackURL = "DashDocSetFallbackURL"
+  case fallbackURL = "DocSetFallbackURL"
   case playgroundURL = "DashDocSetPlayURL"
 
   case isDash = "isDashDocset"
@@ -138,7 +139,9 @@ final class DocsetInfoProcessorImp: DocsetInfoProcessor, LoggerProvider {
     isJavaScriptEnabled = isJavaScriptEnabled || Self.isPlatformJavaScriptEnabled(forPlatformFamily: platformFamily, generatorFamily: generatorFamily)
 
     let fallbackURL: URL?
-    if let fallbackURLString = infoDict.getInfoValue(key: .fallbackURL, type: String.self) {
+    if let fallbackURLString = infoDict.getInfoValue(key: .dashFallbackURL, type: String.self) {
+      fallbackURL = URL(string: fallbackURLString)
+    } else if let fallbackURLString = infoDict.getInfoValue(key: .fallbackURL, type: String.self) {
       fallbackURL = URL(string: fallbackURLString)
     } else {
       fallbackURL = nil
