@@ -75,6 +75,10 @@ final class ToolbarManager: HasDisposeBag {
       .drive(tableOfContentsButton.rx.isEnabled)
       .disposed(by: disposeBag)
 
+    sceneState.canShareCurrentDocPage
+      .drive(shareButton.rx.isEnabled)
+      .disposed(by: disposeBag)
+
     findInPageViewModel.$resultsText
       .receive(on: DispatchQueue.main)
       .sink { [weak self] text in

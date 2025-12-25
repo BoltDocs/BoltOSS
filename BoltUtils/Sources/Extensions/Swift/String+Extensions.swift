@@ -78,7 +78,7 @@ public extension String {
     guard let url = URL(string: self) else {
       return false
     }
-    return ["http", "https"].contains(url.scheme)
+    return url.isHTTPURL
   }
 
 }
