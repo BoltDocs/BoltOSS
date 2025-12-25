@@ -36,4 +36,15 @@ public extension URL {
     return absoluteString.isEmpty || absoluteString == "about:blank"
   }
 
+  var isHTTPURL: Bool {
+    return ["http", "https"].contains(scheme)
+  }
+
+  var pathFragment: String {
+    if let fragment = fragment() {
+      return "\(path)#\(fragment)"
+    }
+    return path
+  }
+
 }

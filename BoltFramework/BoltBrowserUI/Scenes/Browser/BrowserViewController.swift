@@ -41,6 +41,7 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
   public lazy var titleDriver: Driver<String> = { titleRelay.asDriver() }()
 
   private let currentURLRelay = BehaviorRelay<URL?>(value: nil)
+  public var currentURL: URL? { currentURLRelay.value }
   public lazy var currentURLDriver: Driver<URL?> = { currentURLRelay.asDriver() }()
 
   private let canGoBackRelay = BehaviorRelay<Bool>(value: false)
@@ -186,25 +187,6 @@ extension BrowserViewController {
 
   public func zoomOut() {
     browserView.zoomOut()
-  }
-
-  public func shareCurrentPage() {
-    guard let currentURL = browserView.currentURL else {
-      return
-    }
-
-    guard let fallbackURL = docset?.fallbackURL else {
-      return
-    }
-
-    let url = fallbackURL.appendingPathComponent(currentURL.path)
-
-    let activityViewController = UIActivityViewController(
-      activityItems: [url],
-      applicationActivities: [ SafariActivity() ]
-    )
-
-    present(activityViewController, animated: true)
   }
 
 }

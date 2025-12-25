@@ -17,6 +17,7 @@
 import UIKit
 
 import BoltBrowserUI
+import BoltLocalizations
 import BoltModuleExports
 import BoltRxSwift
 import BoltUIFoundation
@@ -107,6 +108,28 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
         owner.sceneState.dispatch(action: .updateDocPageCurrentURL(currentURL))
       }
       .disposed(by: disposeBag)
+
+    Driver.combineLatest(
+      sceneState.currentScope,
+      browserViewController.currentURLDriver
+    )
+    .map { currentScope, currentURL -> Bool in
+      guard let currentURL = currentURL else {
+        return false
+      }
+      if currentURL.isHTTPURL {
+        return true
+      }
+      guard let currentScope = currentScope, case let .docset(docset) = currentScope else {
+        return false
+      }
+      return docset.canResolveOnlineURL(forPathFragment: currentURL.pathFragment)
+    }
+    .drive(with: self) { owner, canResolveOnlineURL in
+      owner.sceneState.dispatch(action: .updateCanShareCurrentDocPage(canResolveOnlineURL))
+
+    }
+    .disposed(by: disposeBag)
 
     if RuntimeEnvironment.isOS26UIEnabled {
       view.addSubview(toolbar)
@@ -200,6 +223,14 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     }
   }
 
+  private func presentActivityViewController(forURL url: URL) {
+    let activityViewController = UIActivityViewController(
+      activityItems: [url],
+      applicationActivities: [ SafariActivity() ]
+    )
+    present(activityViewController, animated: true)
+  }
+
 }
 
 extension LookupContentViewController: ToolbarManagerDelegate {
@@ -225,7 +256,22 @@ extension LookupContentViewController: ToolbarManagerDelegate {
   }
 
   func toolbarManagerDidTapShare(_ toolbarManager: ToolbarManager) {
-    browserViewController.shareCurrentPage()
+    guard let currentURL = browserViewController.currentURL else {
+      return
+    }
+    if currentURL.isHTTPURL {
+      presentActivityViewController(forURL: currentURL)
+      return
+    }
+    guard
+      let currentScope = sceneState.currentScopeValue,
+      case let .docset(docset) = currentScope
+    else {
+      return
+    }
+    if let onlinePageURL = docset.onlineURL(forPathFragment: currentURL.pathFragment) {
+      presentActivityViewController(forURL: onlinePageURL)
+    }
   }
 
   func toolbarManager(_ toolbarManager: ToolbarManager, updateToolbarItems items: [UIBarButtonItem]) {

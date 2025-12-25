@@ -56,6 +56,7 @@ public enum SceneAction {
   case updateLookupSearchScope(_: LookupSearchScope)
   case updateCurrentScope(_: LookupScope)
   case updateDocPageCurrentURL(_: URL?)
+  case updateCanShareCurrentDocPage(_: Bool)
   case updateLookupSceneTitle(_: String)
   case updateLookupHasTableOfContents(_: Bool)
   case docPageLoadURL(_: URL)
@@ -96,10 +97,14 @@ public class SceneState: HasDisposeBag {
   public lazy var lookupSearchScope: Driver<LookupSearchScope> = { _lookupSearchScope.asDriver() }()
 
   private let _currentScope = BehaviorRelay<LookupScope?>(value: nil)
+  public var currentScopeValue: LookupScope? { _currentScope.value }
   public lazy var currentScope: Driver<LookupScope?> = { _currentScope.asDriver() }()
 
   private let _docPageCurrentURL = BehaviorRelay<URL?>(value: nil)
   public lazy var docPageCurrentURL: Driver<URL?> = { _docPageCurrentURL.asDriver() }()
+
+  private let _canShareCurrentDocPage = BehaviorRelay<Bool>(value: false)
+  public lazy var canShareCurrentDocPage: Driver<Bool> = { _canShareCurrentDocPage.asDriver() }()
 
   private let _lookupSceneTitle = BehaviorRelay<String>(value: "")
   public lazy var lookupSceneTitle: Driver<String> = { _lookupSceneTitle.asDriver() }()
@@ -137,6 +142,8 @@ public class SceneState: HasDisposeBag {
       _currentScope.accept(scope)
     case let .updateDocPageCurrentURL(url):
       _docPageCurrentURL.accept(url)
+    case let .updateCanShareCurrentDocPage(value):
+      _canShareCurrentDocPage.accept(value)
     case let .updateLookupSceneTitle(title):
       _lookupSceneTitle.accept(title)
     case let .updateLookupHasTableOfContents(value):
