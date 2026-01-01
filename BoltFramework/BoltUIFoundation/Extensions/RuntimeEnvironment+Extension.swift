@@ -27,4 +27,8 @@ public extension RuntimeEnvironment {
     }
   }()
 
+  static var hidesUnfinishedFeatures: Bool {
+    return !isInternalBuild
+  }
+
 }

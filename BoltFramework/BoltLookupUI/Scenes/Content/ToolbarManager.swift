@@ -127,12 +127,17 @@ final class ToolbarManager: HasDisposeBag {
     action: #selector(tableOfContentsButtonTapped(_:))
   )
 
-  private lazy var bookmarkButton = UIBarButtonItem(
-    image: UIImage(systemName: "bookmark"),
-    style: .plain,
-    target: self,
-    action: #selector(bookmarkButtonTapped(_:))
-  )
+  private lazy var bookmarkButton: UIBarButtonItem? = {
+    guard !RuntimeEnvironment.hidesUnfinishedFeatures else {
+      return nil
+    }
+    return UIBarButtonItem(
+      image: UIImage(systemName: "bookmark"),
+      style: .plain,
+      target: self,
+      action: #selector(bookmarkButtonTapped(_:))
+    )
+  }()
 
   private lazy var shareButton = UIBarButtonItem(
     image: UIImage(systemName: "square.and.arrow.up"),
@@ -208,29 +213,20 @@ final class ToolbarManager: HasDisposeBag {
       let flexibleSpace = UIBarButtonItem.flexibleSpace()
       switch mode {
       case .normal:
+        let items = [
+          backButton,
+          forwardButton,
+          tableOfContentsButton,
+          bookmarkButton,
+          shareButton,
+          moreButton,
+        ].compactMap { $0 }
         if RuntimeEnvironment.isOS26UIEnabled {
-          return [
-            backButton,
-            forwardButton,
-            tableOfContentsButton,
-            bookmarkButton,
-            shareButton,
-            moreButton,
-          ]
+          return items
         } else {
-          return [
-            backButton,
-            flexibleSpace,
-            forwardButton,
-            flexibleSpace,
-            tableOfContentsButton,
-            flexibleSpace,
-            bookmarkButton,
-            flexibleSpace,
-            shareButton,
-            flexibleSpace,
-            moreButton,
-          ]
+          return items.enumerated().flatMap { index, item in
+            index < items.count - 1 ? [item, flexibleSpace] : [item]
+          }
         }
       case let .search(scope):
         var items = [UIBarButtonItem]()

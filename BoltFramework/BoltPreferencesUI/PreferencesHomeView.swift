@@ -170,15 +170,17 @@ public struct PreferencesHomeView: View {
   public var body: some View {
     NavigationView {
       List {
-        Section("Preferences-Home-Appearance-sectionTitle".boltLocalized) {
-          NavigationLink(
-            "Preferences-Home-Appearance-tintColorButtonTitle".boltLocalized,
-            destination: PreferencesTintColorView()
-          )
-          Button("Preferences-Home-Appearance-changeIconButtonTitle".boltLocalized) {
-            GlobalUI.showMessageToast(
-              withText: "Preferences-Home-Appearance-toastToBeImplemented".boltLocalized
+        if !RuntimeEnvironment.hidesUnfinishedFeatures {
+          Section("Preferences-Home-Appearance-sectionTitle".boltLocalized) {
+            NavigationLink(
+              "Preferences-Home-Appearance-tintColorButtonTitle".boltLocalized,
+              destination: PreferencesTintColorView()
             )
+            Button("Preferences-Home-Appearance-changeIconButtonTitle".boltLocalized) {
+              GlobalUI.showMessageToast(
+                withText: "Preferences-Home-Appearance-toastToBeImplemented".boltLocalized
+              )
+            }
           }
         }
         Section("Preferences-Home-General-sectionTitle".boltLocalized) {

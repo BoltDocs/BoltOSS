@@ -18,30 +18,38 @@ import Foundation
 import SwiftUI
 
 import BoltTypes
+import BoltUIFoundation
 import BoltUtils
 
 extension LibraryHomeListViewModel {
 
-  static let defaultItems = [
-    Section(
-      id: "local",
-      header: "Advanced",
-      items: [
-        Section.Item(
-          name: "Custom Feeds",
-          icon: BoltImageResource(named: "overview-icons/custom-feed", in: .module),
-          description: "Feeds with custom URL or imported from the web",
-          itemType: .customFeeds
-        ),
+  static let defaultItems: [Section] = {
+    var items = [
+      Section.Item(
+        name: "Custom Feeds",
+        icon: BoltImageResource(named: "overview-icons/custom-feed", in: .module),
+        description: "Feeds with custom URL or imported from the web",
+        itemType: .customFeeds
+      ),
+    ]
+    if RuntimeEnvironment.hidesUnfinishedFeatures {
+      items.append(
         Section.Item(
           name: "Install from Files",
           icon: BoltImageResource(named: "overview-icons/local", in: Bundle.module),
           description: "Install transferred docsets from files",
           itemType: .transfer
-        ),
-      ]
-    ),
-  ]
+        )
+      )
+    }
+    return [
+      Section(
+        id: "local",
+        header: "Advanced",
+        items: items
+      ),
+    ]
+  }()
 
 }
 
