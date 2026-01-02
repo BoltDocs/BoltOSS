@@ -1,20 +1,25 @@
 #!/bin/sh
 
+set -e
+
 BASEDIR=$(dirname $0)
 
 LICENSE_PLIST_PATH="$BASEDIR/../Thirdparty/LicensePlist"
-LICENSE_PLIST_VERSION="3_26_0"
+LICENSE_PLIST_VERSION="3_27_2"
 
-RESOURCES_PATH="$BASEDIR/../$PRODUCT_NAME/Resources/LicensePlist"
-
-CONFIG_PATH=${@:1}
+CONFIG_PATH=$1
 if [ -z "$CONFIG_PATH" ]; then
   CONFIG_PATH=$LICENSE_PLIST_PATH/license_plist.yml
 fi
 
+RESOURCES_PATH=$2
+if [ -z "$RESOURCES_PATH" ]; then
+  RESOURCES_PATH="$BASEDIR/../$PRODUCT_NAME/Resources/LicensePlist"
+fi
+
 FAIL_IF_MISSING_LICENSE_FLAG=''
-if [ ! -z "$CIRCLECI" ]; then
-FAIL_IF_MISSING_LICENSE_FLAG='--fail-if-missing-license'
+if [ "$CONFIGURATION" = "Release" ]; then
+  FAIL_IF_MISSING_LICENSE_FLAG='--fail-if-missing-license'
 fi
 
 mkdir -p $RESOURCES_PATH
