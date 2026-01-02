@@ -34,4 +34,27 @@ public extension UIDevice {
     return Self.current.userInterfaceIdiom == .pad
   }
 
+  static var systemBuildVersion: String? {
+    var size: size_t = 0
+    sysctlbyname("kern.osversion", nil, &size, nil, 0)
+
+    var build = [CChar](repeating: 0, count: size)
+    sysctlbyname("kern.osversion", &build, &size, nil, 0)
+
+    return String(cString: build)
+  }
+
+  static var deviceIdentifier: String? {
+    var systemInfo = utsname()
+    uname(&systemInfo)
+
+    let machine = withUnsafePointer(to: &systemInfo.machine) {
+      $0.withMemoryRebound(to: CChar.self, capacity: 1) {
+        String(cString: $0)
+      }
+    }
+
+    return machine
+  }
+
 }

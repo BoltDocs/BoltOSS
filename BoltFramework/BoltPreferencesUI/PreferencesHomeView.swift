@@ -228,9 +228,10 @@ public struct PreferencesHomeView: View {
             viewModel.checkForDocsetUpdates()
           }
         }
-        Section("Preferences-Home-About-sectionTitle".boltLocalized) {
+        Section("Preferences-Home-Help-sectionTitle".boltLocalized) {
+          helpSectionItems
           NavigationLink(
-            "Preferences-Home-About-aboutButtonTitle".boltLocalized,
+            "Preferences-Home-Help-aboutButtonTitle".boltLocalized,
             destination: PreferencesAboutView()
           )
         }
