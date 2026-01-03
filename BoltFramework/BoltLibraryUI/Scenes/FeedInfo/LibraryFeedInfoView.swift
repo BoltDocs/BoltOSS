@@ -63,10 +63,16 @@ struct LibraryFeedInfoView: View {
   }
 
   private var placeHolderMessage: String {
-    if feed.isUnavailable {
-      return feed.unavailableMessage ?? "\(feed.displayName) is currently not available."
+    guard feed.isUnavailable else {
+      return ""
     }
-    return ""
+    if let unavailableMessage = feed.unavailableMessage {
+      let localizedMessage = unavailableMessage.boltLocalized
+      if localizedMessage != feed.unavailableMessage {
+        return localizedMessage
+      }
+    }
+    return "Library-FeedsInfo-docsetNotAvailableHint".boltLocalized(feed.displayName)
   }
 
   private var feed: Feed
