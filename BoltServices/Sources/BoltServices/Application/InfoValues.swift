@@ -28,6 +28,7 @@ public struct InfoValues {
   public static let uiDesignRequiresCompatibility = boolValue(forKey: "UIDesignRequiresCompatibility")
 
   public static let appCommit = stringValue(forKey: "BoltCommit")
+  public static let ossCommit = stringValue(forKey: "BoltOSSCommit")
 
   public static var iconImage: PlatformImage? {
     #if !targetEnvironment(macCatalyst)

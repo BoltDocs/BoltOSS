@@ -40,11 +40,24 @@ struct PreferencesAboutView: View {
             #endif
             VStack(spacing: 4) {
               Text("\(InfoValues.appDisplayName) - \(InfoValues.appVersion) (\(InfoValues.appBuildNumber))")
-              #if !DEBUG
-              Text("(\(InfoValues.appCommit))")
-              #else
-              Text("(Debug)")
-              #endif
+              Group {
+                #if !DEBUG
+                let commit = { () -> String in
+                  var res = ""
+                  let appCommit = InfoValues.appCommit
+                  if !appCommit.isEmpty {
+                    res += "\(appCommit) - "
+                  }
+                  res += "\(InfoValues.ossCommit)"
+                  return res
+                }()
+                Text("(\(commit))")
+                #else
+                Text("(Debug)")
+                #endif
+              }
+              .font(.system(size: 10))
+              .foregroundColor(Color.secondary)
             }
           }
           .frame(maxWidth: .infinity)
