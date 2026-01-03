@@ -51,6 +51,12 @@ struct PreferencesAboutView: View {
           .padding(.bottom, 12)
           .textCase(.none)
       ) {
+        Button("Preferences-About-websiteTitle".boltLocalized) {
+          UIApplication.shared.open(Constnats.websiteURL)
+        }
+        Button("Preferences-About-privacyPolicyTitle".boltLocalized) {
+          UIApplication.shared.open(Constnats.privacyPolicyURL)
+        }
         NavigationLink("Preferences-About-acknowledgementsTitle".boltLocalized) {
           DeferredView {
             LicensePlistView()
