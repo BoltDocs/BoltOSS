@@ -269,13 +269,13 @@ public struct PreferencesHomeView: View {
             .tint(Color.red)
             internalSectionItems
           }
-        }
-        if let crashesService = crashesService {
-          Section("Preferences-Home-DebugDiagnostics-sectionTitle".boltLocalized) {
-            Button("Preferences-Home-DebugDiagnostics-testCrashButtonTitle".boltLocalized) {
-              crashesService.generateTestCrash()
+          if let crashesService = crashesService {
+            Section("Preferences-Home-DebugDiagnostics-sectionTitle".boltLocalized) {
+              Button("Preferences-Home-DebugDiagnostics-testCrashButtonTitle".boltLocalized) {
+                crashesService.generateTestCrash()
+              }
+              .tint(Color.red)
             }
-            .tint(Color.red)
           }
         }
       }

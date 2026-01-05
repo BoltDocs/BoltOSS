@@ -76,9 +76,11 @@ public struct LibraryUpdatesListView: View {
           }
           .labelStyle(.toolbar)
         }
-        ToolbarItem(placement: .bottomBar) {
-          Button("Update All") {
-            dismiss()
+        if !RuntimeEnvironment.hidesUnfinishedFeatures {
+          ToolbarItem(placement: .bottomBar) {
+            Button("Update All") {
+              dismiss()
+            }
           }
         }
       }

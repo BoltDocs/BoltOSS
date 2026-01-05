@@ -32,7 +32,7 @@ extension LibraryHomeListViewModel {
         itemType: .customFeeds
       ),
     ]
-    if RuntimeEnvironment.hidesUnfinishedFeatures {
+    if !RuntimeEnvironment.hidesUnfinishedFeatures {
       items.append(
         Section.Item(
           name: "Install from Files",
