@@ -57,7 +57,7 @@ public struct LibraryHomeListView: View {
         }
       }
       .listStyle(.insetGrouped)
-      .navigationTitle("Install New Docsets")
+      .navigationTitle("Library-Home-title".boltLocalized)
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {

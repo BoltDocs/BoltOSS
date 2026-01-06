@@ -35,7 +35,7 @@ struct LibraryFeedInfoView: View {
     init(feed: Feed) { self.feed = feed }
 
     var body: some View {
-      Section("Feed") {
+      Section("Library-FeedInfo-SectionTitles-Feed".boltLocalized) {
         HStack {
           let image = feed.iconImageForList?.image
           Image(uiImage: image ?? UIImage())
