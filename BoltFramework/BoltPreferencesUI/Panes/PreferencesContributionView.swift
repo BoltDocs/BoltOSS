@@ -80,7 +80,7 @@ struct PreferencesContributionView: View {
       Section("Preferences-About-Contribute-localizationTitle".boltLocalized) {
         ContributionListItem(
           title: "Preferences-About-Contribute-helpTranslateButtonTitle".boltLocalized,
-          url: URL(string: "https://github.com/orgs/BoltDocs/BoltLocalizations")!
+          url: URL(string: "https://github.com/BoltDocs/BoltLocalizations")!
         )
       }
       Section(
