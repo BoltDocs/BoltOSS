@@ -67,7 +67,7 @@ public struct LibraryUpdatesListView: View {
         }
       }
       .background(Color.systemGroupedBackground)
-      .navigationTitle("Updates")
+      .navigationTitle("Library-Updates-title".boltLocalized)
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
@@ -78,7 +78,7 @@ public struct LibraryUpdatesListView: View {
         }
         if !RuntimeEnvironment.hidesUnfinishedFeatures {
           ToolbarItem(placement: .bottomBar) {
-            Button("Update All") {
+            Button("Library-Updates-updateAllButtonTitle".boltLocalized) {
               dismiss()
             }
           }

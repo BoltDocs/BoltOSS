@@ -87,8 +87,8 @@ public struct LibraryDownloadsListView: View {
     NavigationView {
       VStack {
         Picker("", selection: $currentScope) {
-          Text("All").tag(Scope.all)
-          Text("Completed").tag(Scope.completed)
+          Text("Library-Downloads-scopeBarAll".boltLocalized).tag(Scope.all)
+          Text("Library-Downloads-scopeBarCompleted".boltLocalized).tag(Scope.completed)
         }
         .padding([.leading, .trailing], 8)
         .pickerStyle(.segmented)
@@ -122,7 +122,7 @@ public struct LibraryDownloadsListView: View {
               configuration: BoltContentUnavailableViewConfiguration(
                 image: Self.emptyStateImage,
                 imageSize: CGSize(width: 142, height: 142),
-                message: "No Downloads",
+                message: "Library-Downloads-noDownloadsHint".boltLocalized,
                 shouldDisplayIndicator: false,
                 showsMessage: true,
                 showsDetailButton: false,
@@ -134,7 +134,7 @@ public struct LibraryDownloadsListView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
       .background(Color.systemGroupedBackground)
-      .navigationTitle("Downloads")
+      .navigationTitle("Library-Downloads-title".boltLocalized)
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
