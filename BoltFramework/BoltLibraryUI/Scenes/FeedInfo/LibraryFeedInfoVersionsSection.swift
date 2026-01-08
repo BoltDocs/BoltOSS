@@ -20,6 +20,7 @@ import SwiftUI
 import Factory
 
 import BoltDocsets
+import BoltLocalizations
 import BoltTypes
 import BoltUIFoundation
 import BoltUtils
@@ -214,7 +215,7 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
             // versions for docsets marked 'latest' should be hidden to the user
             DownloadProgressListItemView(
               identifier: entry.id,
-              title: entry.isTrackedAsLatest ? "Latest" : entry.version,
+              title: entry.isTrackedAsLatest ? "Library-FeedInfo-Versions-latest".boltLocalized : entry.version,
               subtitle: nil, // (!entry.feed.shouldHideVersions && entry.isTrackedAsLatest) ? entry.version : nil,
               preventsHighlight: true
             )
@@ -227,7 +228,7 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
             destination: DeferredView { LibraryFeedEntryView(entry) }
           ) {
             let subtitle = {
-              var res = "Update Available"
+              var res = "Library-FeedInfo-Versions-updateAvailable".boltLocalized
               if RuntimeEnvironment.isInternalBuild {
                 res += " (\(entry.version) / \(currentVersion))"
               }
@@ -235,7 +236,7 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
             }()
             DownloadProgressListItemView(
               identifier: entry.id,
-              title: "Latest",
+              title: "Library-FeedInfo-Versions-latest".boltLocalized,
               subtitle: subtitle,
               preventsHighlight: true
             )
@@ -254,8 +255,8 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
         assert(entry.isTrackedAsLatest)
         return AnyView(
           FeedInfoStaticListItem(
-            title: "Latest",
-            subtitle: "Up to date",
+            title: "Library-FeedInfo-Versions-latest".boltLocalized,
+            subtitle: "Library-FeedInfo-Versions-upToDate".boltLocalized,
             indicatorSymbolName: "checkmark.circle"
           )
         )
@@ -269,7 +270,10 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
       if case .result(let result) = viewModel.statusResult {
         if case .success(let listModel) = result {
           if !listModel.shouldHideVersions {
-            BoltToggle("Show All Available Versions", isOn: $showsAllVersions)
+            BoltToggle(
+              "Library-FeedInfo-Versions-showAllVersions".boltLocalized,
+              isOn: $showsAllVersions
+            )
           }
           ForEach(listModel.items) { entry in
             buildVersionsListItem(
@@ -278,14 +282,14 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
             )
           }
         } else {
-          Button("Retry") {
+          Button(BoltLocalizations.retry) {
             viewModel.refreshTrigger = ()
           }
         }
       } else {
         HStack(spacing: 8) {
           ProgressView()
-          Text("Loading Versions…")
+          Text("Library-FeedInfo-loadingVersionsHint".boltLocalized)
         }
       }
     }
