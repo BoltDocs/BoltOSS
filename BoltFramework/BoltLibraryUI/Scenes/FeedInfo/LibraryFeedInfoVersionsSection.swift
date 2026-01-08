@@ -22,6 +22,7 @@ import Factory
 import BoltDocsets
 import BoltTypes
 import BoltUIFoundation
+import BoltUtils
 
 struct FeedInfoVersionsSectionListModel {
 
@@ -69,8 +70,22 @@ final class LibraryFeedInfoVersionsSectionModelImp: FeedInfoVersionsSectionModel
 
   private(set) var feed: Feed
 
+  private let installedRecordsForCurrentFeed = CurrentValueSubject<[LibraryRecord], Never>([])
+
   init(feed: Feed) {
     self.feed = feed
+
+    libraryDocsetsManager.installedRecordsPublisher
+      .map { records -> [LibraryRecord] in
+        let mappedRecords = records.filter {
+          $0.repository == feed.repository && $0.name == feed.id
+        }
+        return mappedRecords
+      }
+      .sink { [installedRecordsForCurrentFeed] mappedRecords in
+        installedRecordsForCurrentFeed.send(mappedRecords)
+      }
+      .store(in: &cancellables)
 
     let fetchEntriesPublisher: () -> Future<FeedEntries, Error> = {
       return Future<[FeedEntry], Error>.awaitingThrowing {
@@ -78,10 +93,10 @@ final class LibraryFeedInfoVersionsSectionModelImp: FeedInfoVersionsSectionModel
       }
     }
 
-    let handleRefreshing: () -> AnyPublisher<Result<FeedInfoVersionsSectionListModel, Error>, Never> = { [libraryDocsetsManager] in
+    let handleRefreshing: () -> AnyPublisher<Result<FeedInfoVersionsSectionListModel, Error>, Never> = { [installedRecordsForCurrentFeed] in
       return Publishers.CombineLatest(
         fetchEntriesPublisher(),
-        libraryDocsetsManager.installedRecordsPublisher
+        installedRecordsForCurrentFeed
           .setFailureType(to: Error.self)
       )
       .map { feedEntries, records -> FeedInfoVersionsSectionListModel in
@@ -89,7 +104,7 @@ final class LibraryFeedInfoVersionsSectionModelImp: FeedInfoVersionsSectionModel
           var installableStatus: FeedInfoVersionsSectionListModel.InstallableStatus
           if entry.isTrackedAsLatest {
             // FIXME: may contain multiple matching records here
-            if let record = records.first(where: { $0.version == entry.version && $0.installedAsLatestVersion == true }) {
+            if let record = records.first(where: { $0.installedAsLatestVersion == true }) {
               if record.version == entry.version {
                 installableStatus = .latest
               } else {
@@ -211,9 +226,13 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
           NavigationLink(
             destination: DeferredView { LibraryFeedEntryView(entry) }
           ) {
-            let subtitle = shouldHideVersions
-              ? "Update Available:"
-              : "Update Available: \(entry.version) / \(currentVersion)"
+            let subtitle = {
+              var res = "Update Available"
+              if RuntimeEnvironment.isInternalBuild {
+                res += " (\(entry.version) / \(currentVersion))"
+              }
+              return res
+            }()
             DownloadProgressListItemView(
               identifier: entry.id,
               title: "Latest",
