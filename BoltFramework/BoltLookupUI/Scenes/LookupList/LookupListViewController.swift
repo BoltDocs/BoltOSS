@@ -97,7 +97,7 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
         UIAlertController.alert(
           withTitle: "An Error Occurred",
           message: error.localizedDescription,
-          confirmAction: ("OK", .default, nil)
+          confirmAction: (UIKitLocalizations.ok, .default, nil)
         )
       )
     }

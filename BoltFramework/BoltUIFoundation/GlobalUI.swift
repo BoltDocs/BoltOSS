@@ -20,6 +20,7 @@ import GSMessages
 
 import Overture
 
+import BoltLocalizations
 import BoltServices
 
 public let kFoundationBundle = Bundle.module
@@ -119,7 +120,7 @@ public struct GlobalUI {
           UIAlertController.alert(
             withTitle: errorMessage.entity.description,
             message: error.localizedDescription,
-            confirmAction: ("OK", .default, nil)
+            confirmAction: (UIKitLocalizations.ok, .default, nil)
           )
         )
       }

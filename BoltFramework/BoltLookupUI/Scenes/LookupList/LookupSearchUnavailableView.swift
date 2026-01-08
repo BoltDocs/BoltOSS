@@ -19,6 +19,7 @@ import SwiftUI
 
 import RxCombine
 
+import BoltLocalizations
 import BoltSearch
 import BoltUIFoundation
 import BoltUtils
@@ -83,7 +84,7 @@ struct LookupSearchUnavailableView: View {
               UIAlertController.alert(
                 withTitle: "Failed to Create Search Index",
                 message: error.localizedDescription,
-                confirmAction: ("OK", .default, nil)
+                confirmAction: (UIKitLocalizations.ok, .default, nil)
               )
             )
           }

@@ -173,7 +173,7 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
               UIAlertController.alert(
                 withTitle: "Failed to Load Feeds",
                 message: error.localizedDescription,
-                confirmAction: ("OK", .default, nil)
+                confirmAction: (UIKitLocalizations.ok, .default, nil)
               )
             )
           },
