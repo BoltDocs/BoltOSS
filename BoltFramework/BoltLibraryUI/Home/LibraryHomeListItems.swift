@@ -26,18 +26,18 @@ extension LibraryHomeListViewModel {
   static let defaultItems: [Section] = {
     var items = [
       Section.Item(
-        name: "Custom Feeds",
+        name: "Library-Home-Items-customFeedsTitle".boltLocalized,
         icon: BoltImageResource(named: "overview-icons/custom-feed", in: .module),
-        description: "Feeds with custom URL or imported from the web",
+        description: "Library-Home-Items-customFeedsDescription".boltLocalized,
         itemType: .customFeeds
       ),
     ]
     if !RuntimeEnvironment.hidesUnfinishedFeatures {
       items.append(
         Section.Item(
-          name: "Install from Files",
+          name: "Library-Home-Items-importFeedsTitle".boltLocalized,
           icon: BoltImageResource(named: "overview-icons/local", in: Bundle.module),
-          description: "Install transferred docsets from files",
+          description: "Library-Home-Items-importFeedsDescription".boltLocalized,
           itemType: .transfer
         )
       )
@@ -45,7 +45,7 @@ extension LibraryHomeListViewModel {
     return [
       Section(
         id: "local",
-        header: "Advanced",
+        header: "Library-Home-SectionTitles-advanced".boltLocalized,
         items: items
       ),
     ]

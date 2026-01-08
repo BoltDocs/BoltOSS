@@ -35,7 +35,7 @@ struct LibraryFeedInfoView: View {
     init(feed: Feed) { self.feed = feed }
 
     var body: some View {
-      Section("Feed") {
+      Section("Library-FeedInfo-SectionTitles-Docset".boltLocalized) {
         HStack {
           let image = feed.iconImageForList?.image
           Image(uiImage: image ?? UIImage())
@@ -72,7 +72,7 @@ struct LibraryFeedInfoView: View {
         return localizedMessage
       }
     }
-    return "Library-FeedsInfo-docsetNotAvailableHint".boltLocalized(feed.displayName)
+    return "Library-FeedInfo-docsetNotAvailableHint".boltLocalized(feed.displayName)
   }
 
   private var feed: Feed

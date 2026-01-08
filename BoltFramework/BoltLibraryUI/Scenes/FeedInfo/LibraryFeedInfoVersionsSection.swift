@@ -246,7 +246,7 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
   }
 
   var body: some View {
-    Section(header: Text("Versions")) {
+    Section(header: Text("Library-FeedInfo-SectionTitles-Version".boltLocalized)) {
       if case .result(let result) = viewModel.statusResult {
         if case .success(let listModel) = result {
           if !listModel.shouldHideVersions {
