@@ -20,10 +20,6 @@ import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
 
-extension ErrorMessageEntity {
-  static let fetchFeedsFailed = ErrorMessageEntity(description: "Failed to fetch available feeds")
-}
-
 class RefreshActionPerformer: ObservableObject {
 
   enum Status: Equatable {
@@ -153,8 +149,8 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
     .overlay {
       if actionPerformer.status != .success {
         let message = actionPerformer.error == nil ?
-          "Loading Feeds" :
-          "Failed to Load Feeds"
+          "Library-FeedList-loadingDocsetsHint".boltLocalized :
+          "Library-FeedList-failedToLoadDocsetsHint".boltLocalized
         BoltContentUnavailableView(
           configuration: BoltContentUnavailableViewConfiguration(
             image: Model.emptyStateImage,
@@ -171,7 +167,7 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
             }
             GlobalUI.presentAlertController(
               UIAlertController.alert(
-                withTitle: "Failed to Load Feeds",
+                withTitle: "Library-FeedList-failedToLoadDocsetsHint".boltLocalized,
                 message: error.localizedDescription,
                 confirmAction: (UIKitLocalizations.ok, .default, nil)
               )
