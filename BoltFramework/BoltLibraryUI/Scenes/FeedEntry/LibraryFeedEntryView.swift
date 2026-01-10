@@ -34,6 +34,11 @@ private final class DataSource: ObservableObject {
     case failed
   }
 
+  struct SectionFooterLine {
+    let icon: String
+    let text: String
+  }
+
   @Injected(\.downloadManager)
   private var downloadManager: DownloadManager
 
@@ -54,6 +59,10 @@ private final class DataSource: ObservableObject {
 
   @Published var downloadStatus: DownloadStatus = .notDownloaded
   @Published var isInstalled = false
+
+  @Published var installsWithTarix = true
+
+  @Published var installSectionFooter = [SectionFooterLine]()
 
   var entry: FeedEntry
 
@@ -146,6 +155,48 @@ private final class DataSource: ObservableObject {
         }
       }
       .assign(to: &$downloadStatus)
+
+    Publishers.CombineLatest3($downloadStatus, $estimatedSizeStatusResult, $installsWithTarix)
+      .map { [weak self] downloadStatus, estimatedSizeStatusResult, installsWithTarix -> [SectionFooterLine] in
+        guard let self = self else {
+          return []
+        }
+        var lines = [SectionFooterLine]()
+        if case .downloaded = downloadStatus {
+          lines.append(SectionFooterLine(icon: "checkmark.circle", text: "Ready to Install"))
+        } else {
+          if
+            let estimatedSizeStatusResult = estimatedSizeStatusResult,
+            case .success(let size) = estimatedSizeStatusResult
+          {
+            if let size = size {
+              lines.append(
+                SectionFooterLine(
+                  icon: "arrow.down.circle",
+                  text: "Download Size: \(String.formatBytes(bytes: Double(size)))"
+                )
+              )
+            } else {
+              lines.append(
+                SectionFooterLine(
+                  icon: "rays",
+                  text: "Getting Download Size..."
+                )
+              )
+            }
+          }
+        }
+        if supportsTarix, installsWithTarix != true {
+          lines.append(
+            SectionFooterLine(
+              icon: "exclamationmark.triangle",
+              text: "Installing docsets without an archive index (tarix) can significantly increase the size of installed docset and installation time."
+            )
+          )
+        }
+        return lines
+      }
+      .assign(to: &$installSectionFooter)
   }
 
   @MainActor
@@ -180,20 +231,15 @@ struct LibraryFeedEntryView: View {
     self.dataSource = DataSource(entry: entry)
   }
 
-  @State private var installsWithTarix = true
+  @State private var advancedOptionsExpanded = false
   @State private var installsAsLatest = true
 
   @ObservedObject private var dataSource: DataSource
 
   private func optionsSection() -> some View {
-    Section(header: Text("Options")) {
-      HStack {
-        Text("Version")
-        Spacer()
-        Text(dataSource.versionText)
-      }
+    DisclosureGroup("Advanced Options", isExpanded: $advancedOptionsExpanded) {
       if dataSource.supportsTarix {
-        BoltToggle("Install with Archive Index", isOn: $installsWithTarix.animation(.default))
+        BoltToggle("Install with Archive Index", isOn: $dataSource.installsWithTarix.animation(.default))
       }
     }
   }
@@ -230,35 +276,27 @@ struct LibraryFeedEntryView: View {
   }
 
   private func docsetSection() -> some View {
-    Section(
-      header: Text("Docset"),
-      footer: Group {
-        if case .downloaded = dataSource.downloadStatus {
-          Text("\(Image(systemName: "checkmark.circle")) Ready to Install")
-        } else {
-          if
-            let estimatedSizeStatusResult = dataSource.estimatedSizeStatusResult,
-            case .success(let size) = estimatedSizeStatusResult
-          {
-            if let size = size {
-              Text("\(Image(systemName: "arrow.down.circle")) Download Size: \(String.formatBytes(bytes: Double(size)))")
-            }
-          } else {
-            Text("\(Image(systemName: "rays")) Getting Download Size...")
-          }
-        }
+    Section("Docset") {
+      HStack {
+        Label("\(dataSource.entry.feed.displayName)", systemImage: "text.book.closed")
+          .labelStyle(ListItemLabelStyle())
+          .layoutPriority(1)
+        Spacer()
+        Text(dataSource.versionText)
       }
-    ) {
-      Label("\(dataSource.fileNameToDisplay).tgz", systemImage: "text.book.closed")
-        .labelStyle(ListItemLabelStyle())
     }
   }
 
   private func installSection() -> some View {
     Group {
       Section(footer: Group {
-        if dataSource.supportsTarix, installsWithTarix != true {
-          Text("\(Image(systemName: "exclamationmark.triangle")) Installing docsets without a archive index (tarix) can significantly increase the size of installed docset and installation time.")
+        let footerLines = dataSource.installSectionFooter
+        if !footerLines.isEmpty {
+          footerLines.enumerated().reduce(Text("")) { result, item in
+            let (index, line) = item
+            let lineText = Text("\(Image(systemName: line.icon)) \(line.text)")
+            return index == 0 ? Text("\n\(lineText)") : Text("\(result)\n\n\(lineText)")
+          }
         }
       }) {
         if case let .downloading(progress) = dataSource.downloadStatus {
@@ -312,16 +350,16 @@ struct LibraryFeedEntryView: View {
 
   var body: some View {
     Form {
-      optionsSection()
-      if dataSource.supportsTarix, installsWithTarix {
+      docsetSection()
+      if dataSource.supportsTarix, dataSource.installsWithTarix {
         tarixSection()
       }
-      docsetSection()
       if !dataSource.isInstalled {
         installSection()
       } else {
         uninstallSection()
       }
+      optionsSection()
     }
     .task {
       await dataSource.fetchDocsetDownloadSize()
@@ -358,7 +396,7 @@ struct LibraryFeedEntryView: View {
   private func startInstall() {
     let observable = libraryDocsetsManager.installOrUpdateDocset(
       forEntry: dataSource.entry,
-      usingTarix: dataSource.supportsTarix && installsWithTarix
+      usingTarix: dataSource.supportsTarix && dataSource.installsWithTarix
     )
     // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
