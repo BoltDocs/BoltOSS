@@ -19,11 +19,17 @@ import SwiftUI
 public struct BoltToggle<Label>: View where Label: View {
 
   public private(set) var isOn: Binding<Bool>
+  public private(set) var isEnabled: Bool
 
   public private(set) var label: Label
 
-  public init(isOn: Binding<Bool>, @ViewBuilder label: () -> Label) {
+  public init(
+    isOn: Binding<Bool>,
+    isEnabled: Bool = true,
+    @ViewBuilder label: () -> Label
+  ) {
     self.isOn = isOn
+    self.isEnabled = isEnabled
     self.label = label()
   }
 
@@ -31,6 +37,7 @@ public struct BoltToggle<Label>: View where Label: View {
     Toggle(isOn: isOn) {
       label
     }
+    .disabled(!isEnabled)
     .tint(.accentColor)
   }
 
@@ -38,9 +45,10 @@ public struct BoltToggle<Label>: View where Label: View {
 
 public extension BoltToggle where Label == Text {
 
-  init<S>(_ title: S, isOn: Binding<Bool>) where S: StringProtocol {
-    self.isOn = isOn
-    self.label = Text(title)
+  init<S>(_ title: S, isOn: Binding<Bool>, isEnabled: Bool = true) where S: StringProtocol {
+    self.init(isOn: isOn, isEnabled: isEnabled) {
+      Text(title)
+    }
   }
 
 }
