@@ -17,13 +17,14 @@
 import UIKit
 
 import BoltDatabase
+import BoltLocalizations
 import BoltTypes
 
 extension HomeViewController {
 
   static func createDiagnosticsMenu() -> UIMenu {
     return UIMenu(
-      title: "Diagnostics",
+      title: "Localizations-General-diagnostics".boltLocalized,
       image: UIImage(systemName: "ladybug"),
       children: [
         UIAction(

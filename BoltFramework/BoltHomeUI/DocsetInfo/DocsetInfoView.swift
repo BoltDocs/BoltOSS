@@ -83,11 +83,15 @@ private struct ListItemBoolContentView: View {
     HStack {
       if editable {
         Picker("", selection: value) {
-          Text("Yes").tag(true)
-          Text("No").tag(false)
+          Text("Localizations-General-yes".boltLocalized).tag(true)
+          Text("Localizations-General-no".boltLocalized).tag(false)
         }
       } else {
-        Text(value.wrappedValue ? "Yes" : "No")
+        Text(
+          value.wrappedValue ?
+            "Localizations-General-yes".boltLocalized :
+            "Localizations-General-no".boltLocalized
+        )
       }
     }
   }
@@ -115,16 +119,16 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
   var repository: String {
     switch docset.repository {
     case .main:
-      return "Main"
+      return "Library-Home-Items-mainDocsetsTitle".boltLocalized
     case .cheatsheet:
-      return "Cheatsheet"
+      return "Library-Home-Items-cheatsheetsTitle".boltLocalized
     case .userContributed:
-      return "User Contributed"
+      return "Library-Home-Items-userContributedTitle".boltLocalized
     case .custom:
-      return "Custom"
+      return "Library-Home-Items-customFeedsTitle".boltLocalized
     case let repository:
       reportIssue("Unhandled repository type: \(repository)")
-      return "Unknown"
+      return "Home-DocsetInfo-InstalledFrom-unknown".boltLocalized
     }
   }
 
@@ -189,13 +193,13 @@ struct DocsetInfoView: View {
       List {
         // basic info
         Section {
-          ListItemView("Version") {
+          ListItemView("Home-DocsetInfo-SectionTitles-version".boltLocalized) {
             ListItemStringContentView(
               content: $viewModel.version,
               editable: viewModel.isDiagnosticsModeOn
             )
           }
-          ListItemView("Auto Updates") {
+          ListItemView("Home-DocsetInfo-SectionTitles-autoUpdates".boltLocalized) {
             ListItemBoolContentView(
               value: $viewModel.installedAsLatestVersion,
               editable: viewModel.isDiagnosticsModeOn
@@ -204,7 +208,7 @@ struct DocsetInfoView: View {
         }
         // feed
         Section {
-          ListItemView("Installed From") {
+          ListItemView("Home-DocsetInfo-SectionTitles-installedFrom".boltLocalized) {
             Text(viewModel.repository)
           }
         }
@@ -212,7 +216,7 @@ struct DocsetInfoView: View {
         Section {
           if viewModel.isDiagnosticsModeOn {
             // identifier
-            ListItemView("Identifier") {
+            ListItemView("Home-DocsetInfo-SectionTitles-identifier".boltLocalized) {
               Text(viewModel.identifier)
             }
           }
@@ -220,7 +224,7 @@ struct DocsetInfoView: View {
       }
       .listStyle(.plain)
       if RuntimeEnvironment.isInternalBuild {
-        Button("Diagnostics") {
+        Button("Localizations-General-diagnostics".boltLocalized) {
           viewModel.toggleDiagnosticsMode()
         }
         .padding()

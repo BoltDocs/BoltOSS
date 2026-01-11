@@ -56,7 +56,7 @@ struct HomeListItemViewModel {
       title = docset.displayName
       subTitle = { () -> String in
         if docset.installedAsLatestVersion {
-          return "Latest"
+          return "Home-List-Items-latest".boltLocalized
         } else {
           return docset.version
         }
