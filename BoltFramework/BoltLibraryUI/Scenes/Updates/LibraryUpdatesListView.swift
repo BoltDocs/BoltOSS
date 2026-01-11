@@ -60,7 +60,7 @@ public struct LibraryUpdatesListView: View {
             DownloadProgressListItemView(
               identifier: entry.id,
               title: entry.feed.displayName,
-              subtitle: entry.isTrackedAsLatest ? "Latest" : entry.version,
+              subtitle: entry.isTrackedAsLatest ? "Library-Updates-Items-latest" : entry.version,
               preventsHighlight: true
             )
           }
