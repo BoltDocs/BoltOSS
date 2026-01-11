@@ -48,9 +48,7 @@ private final class DataSource: ObservableObject {
   private var cancellables = Set<AnyCancellable>()
   private let activityStatusTracker = ActivityStatusTracker<Void, Error>()
 
-  var supportsTarix: Bool {
-    return entry.feed.supportsArchiveIndex
-  }
+  let supportsTarix: Bool
 
   @Published var downloadTarixTrigger: Void = ()
   @Published var statusResult: ActivityStatus<Void, Error> = .idle
@@ -60,11 +58,11 @@ private final class DataSource: ObservableObject {
   @Published var downloadStatus: DownloadStatus = .notDownloaded
   @Published var isInstalled = false
 
-  @Published var installsWithTarix = true
+  @Published var installsWithTarix: Bool
 
   @Published var installSectionFooter = [SectionFooterLine]()
 
-  var entry: FeedEntry
+  private(set) var entry: FeedEntry
 
   var versionText: String {
     if entry.isTrackedAsLatest {
@@ -90,6 +88,8 @@ private final class DataSource: ObservableObject {
 
   init(entry: FeedEntry) {
     self.entry = entry
+    self.supportsTarix = entry.feed.supportsArchiveIndex
+    self.installsWithTarix = supportsTarix
 
     libraryDocsetsManager.installedRecordsPublisher
       .map { installations in
@@ -238,9 +238,11 @@ struct LibraryFeedEntryView: View {
 
   private func optionsSection() -> some View {
     DisclosureGroup("Advanced Options", isExpanded: $advancedOptionsExpanded) {
-      if dataSource.supportsTarix {
-        BoltToggle("Install with Archive Index", isOn: $dataSource.installsWithTarix.animation(.default))
-      }
+      BoltToggle(
+        "Install with Archive Index",
+        isOn: $dataSource.installsWithTarix.animation(.default),
+        isEnabled: dataSource.supportsTarix
+      )
     }
   }
 
