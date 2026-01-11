@@ -58,8 +58,8 @@ struct LibraryFeedInfoView: View {
 
   typealias VersionsSection = LibraryFeedInfoVersionsSection
 
-  @Environment(\.dismissSheetModal)
-  private var dismissSheetModal: DismissAction?
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   @Injected(\.repositoryRegistry)
   private var repositoryRegistry: RepositoryRegistry
@@ -88,23 +88,25 @@ struct LibraryFeedInfoView: View {
   }
 
   var body: some View {
-    Form {
-      if !isPlaceHolder {
-        InfoSection(feed: feed)
-        VersionsSection(feed: feed)
-      } else {
-        Text(placeHolderMessage)
-      }
-    }
-    .listStyle(.insetGrouped)
-    .navigationTitle(feed.displayName)
-    .navigationBarTitleDisplayMode(.inline)
-    .toolbar {
-      ToolbarItem(placement: .confirmationAction) {
-        Button(UIKitLocalizations.done, systemImage: "checkmark") {
-          dismissSheetModal?()
+    NavigationStack {
+      Form {
+        if !isPlaceHolder {
+          InfoSection(feed: feed)
+          VersionsSection(feed: feed)
+        } else {
+          Text(placeHolderMessage)
         }
-        .labelStyle(.toolbar)
+      }
+      .listStyle(.insetGrouped)
+      .navigationTitle(feed.displayName)
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .confirmationAction) {
+          Button(UIKitLocalizations.done, systemImage: "checkmark") {
+            dismissCurrentSheetModal?()
+          }
+          .labelStyle(.toolbar)
+        }
       }
     }
   }

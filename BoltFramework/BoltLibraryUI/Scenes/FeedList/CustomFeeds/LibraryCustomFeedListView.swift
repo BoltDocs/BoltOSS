@@ -63,24 +63,26 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
 
 struct LibraryCustomFeedListView: View {
 
-  @Environment(\.dismissSheetModal)
-  private var dismissSheetModal: DismissAction?
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   @ObservedObject private var model = LibraryCustomFeedListViewModel()
 
   @State private var showsImportFeedSheet = false
   @State private var feedForFeedInfoSheet: CustomFeed?
 
+  @State private var selectedFeed: IdentifiableFeed?
+
   static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/custom-feed", in: .module).platformImage!
 
   var body: some View {
     List {
       ForEach(model.feeds, id: \.id) { feed in
-        NavigationLink {
-          DeferredView { LibraryFeedInfoView(feed) }
+        Button {
+          selectedFeed = IdentifiableFeed(feed: feed)
         } label: {
           LibraryFeedListItemView(image: feed.iconImageForList?.image, title: feed.displayName)
-        } // NavigationLink
+        }
         .contextMenu {
           Button {
             feedForFeedInfoSheet = feed
@@ -140,7 +142,7 @@ struct LibraryCustomFeedListView: View {
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
         Button(UIKitLocalizations.done, systemImage: "checkmark") {
-          dismissSheetModal?()
+          dismissCurrentSheetModal?()
         } // Button
         .labelStyle(.toolbar)
       } // ToolbarItem
@@ -154,6 +156,13 @@ struct LibraryCustomFeedListView: View {
       } // ToolbarItemGroup
     } // toolbar
     .animation(.default, value: model.feeds.map { $0.id })
+    .sheet(item: $selectedFeed) { identifiableFeed in
+      DeferredView {
+        SheetContainer {
+          LibraryFeedInfoView(identifiableFeed.feed)
+        }
+      }
+    } // sheet
     .sheet(isPresented: $showsImportFeedSheet) {
       NavigationView {
         LibraryCustomFeedImportView()

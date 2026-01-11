@@ -230,8 +230,11 @@ struct LibraryFeedEntryView: View {
   @Injected(\.libraryDocsetsManager)
   private var libraryDocsetsManager: LibraryDocsetsManager
 
-  @Environment(\.dismissSheetModal)
-  private var dismissSheetModal: DismissAction?
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
+
+  @Environment(\.dismissAllSheetModals)
+  private var dismissAllSheetModals: (() -> Void)?
 
   init(_ entry: FeedEntry) {
     self.dataSource = DataSource(entry: entry)
@@ -386,7 +389,7 @@ struct LibraryFeedEntryView: View {
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
         Button(UIKitLocalizations.done, systemImage: "checkmark") {
-          dismissSheetModal?()
+          dismissCurrentSheetModal?()
         }
         .labelStyle(.toolbar)
       }
@@ -419,7 +422,7 @@ struct LibraryFeedEntryView: View {
       if case .finished = completion {
         Task {
           await downloadManager.cancelDownload(forIdentifier: dataSource.entry.id)
-          dismissSheetModal?()
+          dismissAllSheetModals?()
         }
       }
     })
