@@ -66,7 +66,7 @@ private final class DataSource: ObservableObject {
 
   var versionText: String {
     if entry.isTrackedAsLatest {
-      return "Latest"
+      return "Library-FeedEntry-Docset-latestLabel".boltLocalized
     } else {
       return entry.version
     }
@@ -163,7 +163,12 @@ private final class DataSource: ObservableObject {
         }
         var lines = [SectionFooterLine]()
         if case .downloaded = downloadStatus {
-          lines.append(SectionFooterLine(icon: "checkmark.circle", text: "Ready to Install"))
+          lines.append(
+            SectionFooterLine(
+              icon: "checkmark.circle",
+              text: "Library-FeedEntry-Docset-readyToInstallHint".boltLocalized
+            )
+          )
         } else {
           if
             let estimatedSizeStatusResult = estimatedSizeStatusResult,
@@ -173,14 +178,15 @@ private final class DataSource: ObservableObject {
               lines.append(
                 SectionFooterLine(
                   icon: "arrow.down.circle",
-                  text: "Download Size: \(String.formatBytes(bytes: Double(size)))"
+                  text: "Library-FeedEntry-Docset-downloadSizeHint"
+                    .boltLocalized(String.formatBytes(bytes: Double(size)))
                 )
               )
             } else {
               lines.append(
                 SectionFooterLine(
                   icon: "rays",
-                  text: "Getting Download Size..."
+                  text: "Library-FeedEntry-Docset-gettingDownloadSizeHint".boltLocalized
                 )
               )
             }
@@ -190,7 +196,7 @@ private final class DataSource: ObservableObject {
           lines.append(
             SectionFooterLine(
               icon: "exclamationmark.triangle",
-              text: "Installing docsets without an archive index (tarix) can significantly increase the size of installed docset and installation time."
+              text: "Library-FeedEntry-Docset-installWithoutArchiveIndexHint".boltLocalized
             )
           )
         }
@@ -237,9 +243,12 @@ struct LibraryFeedEntryView: View {
   @ObservedObject private var dataSource: DataSource
 
   private func optionsSection() -> some View {
-    DisclosureGroup("Advanced Options", isExpanded: $advancedOptionsExpanded) {
+    DisclosureGroup(
+      "Library-FeedEntry-SectionTitles-advancedOptions".boltLocalized,
+      isExpanded: $advancedOptionsExpanded
+    ) {
       BoltToggle(
-        "Install with Archive Index",
+        "Library-FeedEntry-Options-installWithArchiveIndexLabel".boltLocalized,
         isOn: $dataSource.installsWithTarix.animation(.default),
         isEnabled: dataSource.supportsTarix
       )
@@ -247,7 +256,7 @@ struct LibraryFeedEntryView: View {
   }
 
   private func tarixSection() -> some View {
-    Section(header: Text("Archive Index")) {
+    Section(header: Text("Library-FeedEntry-SectionTitles-archiveIndex".boltLocalized)) {
       HStack {
         Label("\(dataSource.fileNameToDisplay).tarix", systemImage: "doc.text")
           .labelStyle(ListItemLabelStyle())
@@ -278,7 +287,7 @@ struct LibraryFeedEntryView: View {
   }
 
   private func docsetSection() -> some View {
-    Section("Docset") {
+    Section("Library-FeedEntry-SectionTitles-docset".boltLocalized) {
       HStack {
         Label("\(dataSource.entry.feed.displayName)", systemImage: "text.book.closed")
           .labelStyle(ListItemLabelStyle())
@@ -321,19 +330,19 @@ struct LibraryFeedEntryView: View {
         }, label: {
           switch dataSource.downloadStatus {
           case .notDownloaded:
-            Text("Download")
+            Text("Library-FeedEntry-Install-downloadButtonTitle".boltLocalized)
           case .downloading:
-            Text("Cancel Download")
+            Text("Library-FeedEntry-Install-cancelDownloadButtonTitle".boltLocalized)
           case .downloaded:
-            Text("Install")
+            Text("Library-FeedEntry-Install-installButtonTitle".boltLocalized)
           case .failed:
-            Text("Retry Download")
+            Text("Library-FeedEntry-Install-retryDownloadButtonTitle".boltLocalized)
           }
         })
       }
       Section {
         if case .downloaded = dataSource.downloadStatus {
-          Button("Delete", role: .destructive) {
+          Button(UIKitLocalizations.delete, role: .destructive) {
             Task {
               await dataSource.deleteArchive()
             }
@@ -345,7 +354,7 @@ struct LibraryFeedEntryView: View {
 
   private func uninstallSection() -> some View {
     Section {
-      Button("Already Installed") { }
+      Button("Library-FeedEntry-Install-alreadyInstalledLabel".boltLocalized) { }
         .disabled(true)
     }
   }
