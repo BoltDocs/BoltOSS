@@ -16,21 +16,39 @@
 
 import SwiftUI
 
-private struct DismissSheetModalEnvironmentKey: EnvironmentKey {
-  static let defaultValue: DismissAction? = nil
+private struct SheetDismissalActionsEnvironmentKey: EnvironmentKey {
+  static let defaultValue: [DismissAction] = []
 }
 
 public extension EnvironmentValues {
-  var dismissSheetModal: DismissAction? {
-    get { self[DismissSheetModalEnvironmentKey.self] }
-    set { self[DismissSheetModalEnvironmentKey.self] = newValue }
+
+  fileprivate var sheetDismissalActions: [DismissAction] {
+    get { self[SheetDismissalActionsEnvironmentKey.self] }
+    set { self[SheetDismissalActionsEnvironmentKey.self] = newValue }
   }
+
+  var dismissCurrentSheetModal: DismissAction? {
+    sheetDismissalActions.last
+  }
+
+  var dismissAllSheetModals: (() -> Void)? {
+    guard !sheetDismissalActions.isEmpty else {
+      return nil
+    }
+    return {
+      sheetDismissalActions.forEach { $0() }
+    }
+  }
+
 }
 
 public struct SheetContainer<Content: View>: View {
 
   @Environment(\.dismiss)
   private var dismiss: DismissAction
+
+  @Environment(\.sheetDismissalActions)
+  private var sheetDismissalActions: [DismissAction]
 
   public init(@ViewBuilder content: @escaping () -> Content) {
     self.content = content
@@ -40,6 +58,6 @@ public struct SheetContainer<Content: View>: View {
 
   public var body: some View {
     content()
-      .environment(\.dismissSheetModal, dismiss)
+      .environment(\.sheetDismissalActions, sheetDismissalActions + [dismiss])
   }
 }

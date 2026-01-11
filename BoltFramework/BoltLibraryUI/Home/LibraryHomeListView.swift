@@ -22,8 +22,8 @@ import BoltUtils
 
 public struct LibraryHomeListView: View {
 
-  @Environment(\.dismissSheetModal)
-  private var dismissSheetModal: DismissAction?
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   typealias Item = LibraryHomeListViewModel.Section.Item
 
@@ -62,7 +62,7 @@ public struct LibraryHomeListView: View {
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
           Button(UIKitLocalizations.done, systemImage: "checkmark") {
-            dismissSheetModal?()
+            dismissCurrentSheetModal?()
           }
           .labelStyle(.toolbar)
         }

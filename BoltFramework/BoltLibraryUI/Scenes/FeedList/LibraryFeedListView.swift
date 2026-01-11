@@ -58,8 +58,8 @@ class RefreshActionPerformer: ObservableObject {
 
 struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFeedListViewModel {
 
-  @Environment(\.dismissSheetModal)
-  private var dismissSheetModal: DismissAction?
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   @StateObject private var model = Model()
   @StateObject private var actionPerformer = RefreshActionPerformer()
@@ -82,7 +82,7 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
           Button(UIKitLocalizations.done, systemImage: "checkmark") {
-            dismissSheetModal?()
+            dismissCurrentSheetModal?()
           }
           .labelStyle(.toolbar)
         }
@@ -114,6 +114,8 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
 
   @State private var searchText = ""
 
+  @State private var selectedFeed: IdentifiableFeed?
+
   private var filteredFeeds: [Feed] {
     let result: [Feed]
     if searchText.isEmpty {
@@ -134,15 +136,15 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
     List {
       if actionPerformer.status == .success {
         ForEach(filteredFeeds, id: \.id) { feed in
-          NavigationLink {
-            DeferredView { LibraryFeedInfoView(feed) }
+          Button {
+            selectedFeed = IdentifiableFeed(feed: feed)
           } label: {
             LibraryFeedListItemView(image: feed.iconImageForList?.image, title: feed.displayName)
-          } // NavigationLink
+          }
           .tint(Color.primary)
-        } // ForEach
-      } // if
-    } // List
+        }
+      }
+    }
     .searchable(text: $searchText, prompt: UIKitLocalizations.search)
     .textInputAutocapitalization(.never)
     .disableAutocorrection(true)
@@ -181,6 +183,13 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
     } // List
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.systemGroupedBackground)
+    .sheet(item: $selectedFeed) { identifiableFeed in
+      DeferredView {
+        SheetContainer {
+          LibraryFeedInfoView(identifiableFeed.feed)
+        }
+      }
+    }
   }
 
 }
