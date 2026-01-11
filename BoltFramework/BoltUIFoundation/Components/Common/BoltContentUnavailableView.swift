@@ -97,7 +97,7 @@ public struct BoltContentUnavailableView: View {
         Button {
           retryAction()
         } label: {
-          Text("Retry")
+          Text("Localizations-General-retry".boltLocalized)
         } // Button
       }
     } // VStack
