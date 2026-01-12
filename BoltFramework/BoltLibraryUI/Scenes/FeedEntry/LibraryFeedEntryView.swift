@@ -291,9 +291,9 @@ struct LibraryFeedEntryView: View {
       HStack {
         Label("\(dataSource.entry.feed.displayName)", systemImage: "text.book.closed")
           .labelStyle(ListItemLabelStyle())
-          .layoutPriority(1)
         Spacer()
         Text(dataSource.versionText)
+          .layoutPriority(1)
       }
     }
   }
