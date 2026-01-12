@@ -45,6 +45,12 @@ struct LibraryFeedInfoView: View {
             .foregroundColor(Color.primary)
             .frame(width: 30, height: 30)
           Text(feed.displayName)
+            .lineLimit(2)
+            .modify {
+              if #available(iOS 26, *) {
+                $0.lineHeight(.multiple(factor: 1.1))
+              }
+            }
         }
       }
     }

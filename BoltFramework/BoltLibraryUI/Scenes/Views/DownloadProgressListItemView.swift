@@ -121,8 +121,14 @@ public struct DownloadProgressListItemView: View {
 
   public var body: some View {
     HStack {
-      VStack(alignment: .leading, spacing: 4) {
+      VStack(alignment: .leading, spacing: 6) {
         Text(title)
+          .lineLimit(2)
+          .modify {
+            if #available(iOS 26, *) {
+              $0.lineHeight(.multiple(factor: 1.1))
+            }
+          }
         switch model.progress {
         case .pending:
           ProgressView()

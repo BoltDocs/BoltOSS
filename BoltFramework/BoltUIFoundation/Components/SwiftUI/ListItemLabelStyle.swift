@@ -18,12 +18,14 @@ import SwiftUI
 
 public struct ListItemLabelStyle: LabelStyle {
 
-  private var iconSize: CGSize?
   private var spacing: CGFloat
+  private var iconSize: CGSize?
+  private var lineLimit: Int
 
-  public init(spacing: CGFloat = 8, iconSize: CGSize? = nil) {
+  public init(spacing: CGFloat = 8, iconSize: CGSize? = nil, lineLimit: Int = 1) {
     self.iconSize = iconSize
     self.spacing = spacing
+    self.lineLimit = lineLimit
   }
 
   public func makeBody(configuration: Configuration) -> some View {
@@ -34,7 +36,7 @@ public struct ListItemLabelStyle: LabelStyle {
           $0.frame(width: iconSize!.width, height: iconSize!.height)
         }
       configuration.title
-        .lineLimit(1)
+        .lineLimit(lineLimit)
         .truncationMode(.middle)
     }
   }

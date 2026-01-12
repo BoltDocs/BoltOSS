@@ -38,9 +38,27 @@ final class HomeListCollectionViewItemCell: UICollectionViewListCell {
       )
 
       $0.prefersSideBySideTextAndSecondaryText = false
-      $0.textToSecondaryTextVerticalPadding = 0
+      $0.textToSecondaryTextVerticalPadding = 2
 
-      $0.text = viewModel.title
+      #if targetEnvironment(macCatalyst)
+      $0.textProperties.numberOfLines = 1
+      #else
+      $0.textProperties.numberOfLines = 2
+      #endif
+
+      let paragraphStyle = NSMutableParagraphStyle()
+      paragraphStyle.lineHeightMultiple = 1
+      paragraphStyle.lineBreakMode = .byTruncatingTail
+
+      let attributedTitle = NSAttributedString(
+        string: viewModel.title ?? "",
+        attributes: [
+          .font: UIFont.systemFont(ofSize: 16),
+          .paragraphStyle: paragraphStyle,
+        ]
+      )
+
+      $0.attributedText = attributedTitle
       $0.secondaryText = viewModel.subTitle
       $0.image = viewModel.image?.image
     }
