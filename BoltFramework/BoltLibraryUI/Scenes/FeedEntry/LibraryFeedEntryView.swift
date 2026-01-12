@@ -290,7 +290,12 @@ struct LibraryFeedEntryView: View {
     Section("Library-FeedEntry-SectionTitles-docset".boltLocalized) {
       HStack {
         Label("\(dataSource.entry.feed.displayName)", systemImage: "text.book.closed")
-          .labelStyle(ListItemLabelStyle())
+          .labelStyle(ListItemLabelStyle(lineLimit: 2))
+          .modify {
+            if #available(iOS 26, *) {
+              $0.lineHeight(.multiple(factor: 1.1))
+            }
+          }
         Spacer()
         Text(dataSource.versionText)
           .layoutPriority(1)
