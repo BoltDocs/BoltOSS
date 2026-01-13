@@ -73,6 +73,8 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     return isEditingRelay.asObservable().distinctUntilChanged()
   }()
 
+  private var searchActiveRelay = BehaviorRelay<Bool>(value: false)
+
   private lazy var toolbarTrashItem: UIBarButtonItem = {
     return update(UIBarButtonItem()) {
       $0.primaryAction = UIAction(
@@ -247,6 +249,13 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
     searchBar.autocapitalizationType = .none
     searchBar.placeholder = UIKitLocalizations.search
+
+    Observable.merge([
+      searchController.rx.willPresent.map { true },
+      searchController.rx.willDismiss.map { false }
+    ])
+    .bind(to: searchActiveRelay)
+    .disposed(by: disposeBag)
   }
 
   var docsets = BehaviorRelay<[LibraryInstallationQueryResult]>(value: [])
@@ -320,15 +329,20 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
     Driver.combineLatest(
       docsets.asDriver(),
-      searchBar.rx.text.asDriver()
+      searchBar.rx.text.asDriver(),
+      searchActiveRelay.asDriver()
     )
-    .map { docsets, query -> [LibraryInstallationQueryResult] in
-      if let query = query, !query.isEmpty {
-        return docsets.filter { queryResult in
-          return queryResult.displayName.lowercased().contains(query)
-        }
+    .map { docsets, query, searchActive -> [LibraryInstallationQueryResult] in
+      guard searchActive else {
+        return docsets
       }
-      return docsets
+      let trimmedQuery = (query ?? "").trimmingWhitespacesAndNewLines().lowercased()
+      guard !trimmedQuery.isEmpty else {
+        return docsets
+      }
+      return docsets.filter { queryResult in
+        return queryResult.displayName.lowercased().contains(trimmedQuery)
+      }
     }
     .map { docsets in
       update(NSDiffableDataSourceSectionSnapshot<DocsetsListModel>()) {
