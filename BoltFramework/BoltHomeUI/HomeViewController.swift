@@ -252,7 +252,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
     Observable.merge([
       searchController.rx.willPresent.map { true },
-      searchController.rx.willDismiss.map { false }
+      searchController.rx.willDismiss.map { false },
     ])
     .bind(to: searchActiveRelay)
     .disposed(by: disposeBag)
