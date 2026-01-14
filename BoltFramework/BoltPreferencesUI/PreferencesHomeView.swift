@@ -135,8 +135,8 @@ private class PreferencesHomeViewModel: ObservableObject {
 
 public struct PreferencesHomeView: View {
 
-  @Environment(\.dismiss)
-  private var dismiss: DismissAction
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   @StateObject private var viewModel: PreferencesHomeViewModel
 
@@ -246,7 +246,9 @@ public struct PreferencesHomeView: View {
               isTypeBrowserPresented.toggle()
             }
             .sheet(isPresented: $isTypeBrowserPresented) {
-              PreferencesTypeBrowserView()
+              SheetContainer {
+                PreferencesTypeBrowserView()
+              }
             }
             BoltToggle(
               isOn: Binding(
@@ -284,7 +286,7 @@ public struct PreferencesHomeView: View {
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
           Button(UIKitLocalizations.done, systemImage: "checkmark") {
-            dismiss()
+            dismissCurrentSheetModal?()
           }
           .labelStyle(.toolbar)
         }

@@ -28,8 +28,8 @@ struct LibraryCustomFeedImportView: View {
   @Injected(\.feedsService)
   private var feedsService: FeedsService
 
-  @Environment(\.dismiss)
-  private var dismiss: DismissAction
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   init(feedURL: URL? = nil) {
     _urlInput = .init(initialValue: feedURL?.absoluteString ?? "")
@@ -70,7 +70,7 @@ struct LibraryCustomFeedImportView: View {
     .toolbar {
       ToolbarItem(placement: .cancellationAction) {
         Button(UIKitLocalizations.cancel, systemImage: "xmark") {
-          dismiss()
+          dismissCurrentSheetModal?()
         }
         .labelStyle(.toolbar)
       }
@@ -95,7 +95,7 @@ struct LibraryCustomFeedImportView: View {
                 // pre-check the feed is valid
                 let _ = try await feed.fetchEntries()
                 try feedsService.insertCustomFeed(feed)
-                dismiss()
+                dismissCurrentSheetModal?()
               } catch {
                 GlobalUI.showMessageToast(withErrorMessage: ErrorMessage(entity: .failedToImportCustomFeed, nestedError: error))
               }

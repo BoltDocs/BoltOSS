@@ -38,7 +38,9 @@ struct BoltAppNavigator {
     sceneState: SceneState
   ) {
     let preferencesView = PreferencesHomeView(sceneState: sceneState)
-    let preferencesViewController = UIHostingController(rootView: preferencesView)
+    let preferencesViewController = UIHostingController(
+      rootView: SheetContainer { preferencesView }
+    )
     preferencesViewController.modalPresentationStyle = .formSheet
     if let root = window.topViewController {
       root.present(preferencesViewController, animated: true)

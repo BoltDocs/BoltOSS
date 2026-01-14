@@ -184,10 +184,8 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.systemGroupedBackground)
     .sheet(item: $selectedFeed) { identifiableFeed in
-      DeferredView {
-        SheetContainer {
-          LibraryFeedInfoView(identifiableFeed.feed)
-        }
+      SheetContainer {
+        LibraryFeedInfoView(identifiableFeed.feed)
       }
     }
   }

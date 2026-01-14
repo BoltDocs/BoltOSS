@@ -27,8 +27,8 @@ struct LibraryCustomFeedInfoView: View {
 
   private(set) var feed: CustomFeed
 
-  @Environment(\.dismiss)
-  private var dismiss: DismissAction
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   @Injected(\.feedsService)
   private var feedsService: FeedsService
@@ -71,7 +71,7 @@ struct LibraryCustomFeedInfoView: View {
       ToolbarItem(placement: .confirmationAction) {
         Button(UIKitLocalizations.done, systemImage: "checkmark") {
           onTextFieldSubmit()
-          dismiss()
+          dismissCurrentSheetModal?()
         }
         .labelStyle(.toolbar)
       }

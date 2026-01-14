@@ -158,8 +158,8 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
 
 struct DocsetInfoView: View {
 
-  @Environment(\.dismiss)
-  private var dismiss: DismissAction
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   @StateObject private var viewModel: DocsetInfoViewModel
 
@@ -180,7 +180,7 @@ struct DocsetInfoView: View {
         .labelStyle(ListItemLabelStyle(spacing: 8, iconSize: CGSize(width: 24, height: 24)))
         Spacer()
         Button(
-          action: { dismiss() },
+          action: { dismissCurrentSheetModal?() },
           label: {
             Image(systemName: "xmark.circle.fill")
               .foregroundStyle(.gray.opacity(0.5))
