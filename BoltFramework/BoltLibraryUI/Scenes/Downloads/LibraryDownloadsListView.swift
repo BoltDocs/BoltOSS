@@ -72,8 +72,8 @@ public struct LibraryDownloadsListView: View {
     case completed
   }
 
-  @Environment(\.dismiss)
-  private var dismiss: DismissAction
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   @State var currentScope: Scope = .all
 
@@ -139,7 +139,7 @@ public struct LibraryDownloadsListView: View {
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
           Button(UIKitLocalizations.done, systemImage: "checkmark") {
-            dismiss()
+            dismissCurrentSheetModal?()
           }
           .labelStyle(.toolbar)
         }

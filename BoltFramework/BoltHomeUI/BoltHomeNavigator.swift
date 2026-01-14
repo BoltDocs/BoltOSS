@@ -19,11 +19,16 @@ import SwiftUI
 import UIKit
 
 import BoltServices
+import BoltUIFoundation
 
 struct BoltHomeNavigator {
 
   static func presentDocsetInfo(_ docset: Docset) {
-    let preferencesViewController = UIHostingController(rootView: DocsetInfoView(docset: docset))
+    let preferencesViewController = UIHostingController(
+      rootView: SheetContainer {
+        DocsetInfoView(docset: docset)
+      }
+    )
     preferencesViewController.modalPresentationStyle = .formSheet
     if let root = UIApplication.shared.keyWindowOfActiveScene?.topViewController {
       root.present(preferencesViewController, animated: true)

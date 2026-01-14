@@ -41,8 +41,8 @@ private class LibraryUpdatesListViewModel: ObservableObject, LoggerProvider {
 
 public struct LibraryUpdatesListView: View {
 
-  @Environment(\.dismiss)
-  private var dismiss: DismissAction
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   @StateObject private var viewModel = LibraryUpdatesListViewModel()
 
@@ -72,14 +72,14 @@ public struct LibraryUpdatesListView: View {
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
           Button(UIKitLocalizations.done, systemImage: "checkmark") {
-            dismiss()
+            dismissCurrentSheetModal?()
           }
           .labelStyle(.toolbar)
         }
         if !RuntimeEnvironment.hidesUnfinishedFeatures {
           ToolbarItem(placement: .bottomBar) {
             Button("Library-Updates-updateAllButtonTitle".boltLocalized) {
-              dismiss()
+              dismissCurrentSheetModal?()
             }
           }
         }

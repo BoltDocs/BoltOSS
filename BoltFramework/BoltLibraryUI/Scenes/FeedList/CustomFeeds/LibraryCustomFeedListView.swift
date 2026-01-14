@@ -157,21 +157,23 @@ struct LibraryCustomFeedListView: View {
     } // toolbar
     .animation(.default, value: model.feeds.map { $0.id })
     .sheet(item: $selectedFeed) { identifiableFeed in
-      DeferredView {
-        SheetContainer {
-          LibraryFeedInfoView(identifiableFeed.feed)
-        }
-      }
+      SheetContainer {
+        LibraryFeedInfoView(identifiableFeed.feed)
+      } // SheetContainer
     } // sheet
     .sheet(isPresented: $showsImportFeedSheet) {
-      NavigationView {
-        LibraryCustomFeedImportView()
-      } // NavigationView
+      SheetContainer {
+        NavigationView {
+          LibraryCustomFeedImportView()
+        } // NavigationView
+      } // SheetContainer
     } // sheet
     .sheet(item: $feedForFeedInfoSheet) { feed in
-      NavigationView {
-        LibraryCustomFeedInfoView(feed: feed)
-      } // NavigationView
+      SheetContainer {
+        NavigationView {
+          LibraryCustomFeedInfoView(feed: feed)
+        } // NavigationView
+      } // SheetContainer
     }
   }
 
