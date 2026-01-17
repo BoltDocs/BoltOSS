@@ -137,11 +137,18 @@ public struct LibraryDownloadsListView: View {
       .navigationTitle("Library-Downloads-title".boltLocalized)
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalizations.done, systemImage: "checkmark") {
-            dismissCurrentSheetModal?()
+        if RuntimeEnvironment.isOS26UIEnabled {
+          ToolbarItem(placement: .cancellationAction) {
+            Button(UIKitLocalizations.close, systemImage: "xmark") {
+              dismissCurrentSheetModal?()
+            }
           }
-          .labelStyle(.toolbar)
+        } else {
+          ToolbarItem(placement: .confirmationAction) {
+            Button(UIKitLocalizations.done) {
+              dismissCurrentSheetModal?()
+            }
+          }
         }
       }
     }
