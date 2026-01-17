@@ -83,6 +83,7 @@ struct LibraryCustomFeedListView: View {
         } label: {
           LibraryFeedListItemView(image: feed.iconImageForList?.image, title: feed.displayName)
         }
+        .tint(Color.primary)
         .contextMenu {
           Button {
             feedForFeedInfoSheet = feed
