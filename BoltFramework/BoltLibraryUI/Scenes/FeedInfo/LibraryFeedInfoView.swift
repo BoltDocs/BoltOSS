@@ -101,11 +101,18 @@ struct LibraryFeedInfoView: View {
       .navigationTitle(feed.displayName)
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalizations.done, systemImage: "checkmark") {
-            dismissCurrentSheetModal?()
+        if RuntimeEnvironment.isOS26UIEnabled {
+          ToolbarItem(placement: .topBarTrailing) {
+            Button(UIKitLocalizations.close, systemImage: "xmark") {
+              dismissCurrentSheetModal?()
+            }
           }
-          .labelStyle(.toolbar)
+        } else {
+          ToolbarItem(placement: .confirmationAction) {
+            Button(UIKitLocalizations.done) {
+              dismissCurrentSheetModal?()
+            }
+          }
         }
       }
     }

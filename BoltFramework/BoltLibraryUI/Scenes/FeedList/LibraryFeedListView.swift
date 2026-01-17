@@ -19,6 +19,7 @@ import SwiftUI
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
+import BoltUtils
 
 class RefreshActionPerformer: ObservableObject {
 
@@ -80,11 +81,18 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
       .navigationTitle(Model.title)
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
-        ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalizations.done, systemImage: "checkmark") {
-            dismissCurrentSheetModal?()
+        if RuntimeEnvironment.isOS26UIEnabled {
+          ToolbarItem(placement: .topBarTrailing) {
+            Button(UIKitLocalizations.close, systemImage: "xmark") {
+              dismissCurrentSheetModal?()
+            }
           }
-          .labelStyle(.toolbar)
+        } else {
+          ToolbarItem(placement: .confirmationAction) {
+            Button(UIKitLocalizations.done) {
+              dismissCurrentSheetModal?()
+            }
+          }
         }
       }
       .if(Model.allowsRefresh) {
