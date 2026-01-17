@@ -47,7 +47,14 @@ public struct LibraryHomeListView: View {
     NavigationView {
       List {
         ForEach(models) { section in
-          Section(header: Text(section.header)) {
+          Section(
+            header: Text(section.header),
+            footer: Group {
+              if let footer = section.footer {
+                Text(footer)
+              }
+            }
+          ) {
             ForEach(section.items) { item in
               NavigationLink(destination: DeferredView { destinationView(for: item.itemType) }) {
                 LibraryHomeListItemView(itemModel: item)

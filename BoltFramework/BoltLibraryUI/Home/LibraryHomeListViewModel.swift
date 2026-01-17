@@ -44,6 +44,7 @@ struct LibraryHomeListViewModel {
 
     var header: String
     var items: [Item]
+    var footer: AttributedString?
   }
 
 }
