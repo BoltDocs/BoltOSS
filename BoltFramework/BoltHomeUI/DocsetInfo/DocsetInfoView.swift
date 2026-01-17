@@ -114,7 +114,7 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
 
   var displayName: String { docset.displayName }
 
-  var iconImage: IdentifiableImage { docset.iconImage }
+  var iconImage: UIImage? { docset.iconImageForInfo }
 
   var repository: String {
     switch docset.repository {
@@ -168,29 +168,64 @@ struct DocsetInfoView: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
-      HStack {
-        Label {
-          Text(viewModel.displayName)
-            .font(.headline)
-        } icon: {
-          Image(uiImage: viewModel.iconImage.image)
-            .resizable()
-        }
-        .labelStyle(ListItemLabelStyle(spacing: 8, iconSize: CGSize(width: 24, height: 24)))
-        Spacer()
-        Button(
-          action: { dismissCurrentSheetModal?() },
-          label: {
-            Image(systemName: "xmark.circle.fill")
-              .foregroundStyle(.gray.opacity(0.5))
-              .font(.title2)
+    let docsetInfoView = DocsetInfoListView(viewModel: viewModel)
+    if RuntimeEnvironment.isOS26UIEnabled {
+      NavigationStack {
+        docsetInfoView
+        .navigationTitle(viewModel.displayName)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+          ToolbarItem(placement: .cancellationAction) {
+            Button(UIKitLocalizations.close, systemImage: "xmark") {
+              dismissCurrentSheetModal?()
+            }
           }
-        )
+        }
       }
-      .padding()
-      // TODO: support for docset keywords
+    } else {
+      VStack(spacing: 0) {
+        HStack {
+          Label {
+            Text(viewModel.displayName)
+              .font(.headline)
+          } icon: {
+            Image(uiImage: viewModel.iconImage ?? UIImage())
+              .resizable()
+          }
+          .labelStyle(ListItemLabelStyle(spacing: 8, iconSize: CGSize(width: 24, height: 24)))
+          Spacer()
+          Button(
+            action: { dismissCurrentSheetModal?() },
+            label: {
+              Image(systemName: "xmark.circle.fill")
+                .foregroundStyle(.gray.opacity(0.5))
+                .font(.title2)
+            }
+          )
+        }
+        .padding()
+        docsetInfoView
+      }
+    }
+  }
+
+}
+
+private struct DocsetInfoListView: View {
+
+  @ObservedObject var viewModel: DocsetInfoViewModel
+
+  var body: some View {
+    // TODO: support for docset keywords
+    VStack(spacing: 0) {
       List {
+        Section {
+          VStack(alignment: .center, spacing: 12) {
+            Image(uiImage: viewModel.iconImage ?? UIImage())
+          }
+          .frame(maxWidth: .infinity)
+        }
+        .listRowSeparator(.hidden)
         // basic info
         Section {
           ListItemView("Home-DocsetInfo-SectionTitles-version".boltLocalized) {
