@@ -36,21 +36,12 @@ struct LibraryFeedInfoView: View {
 
     var body: some View {
       Section("Library-FeedInfo-SectionTitles-Docset".boltLocalized) {
-        HStack {
-          let image = feed.iconImageForList?.image
-          Image(uiImage: image ?? UIImage())
-            .if(image?.isSymbolImage ?? false) {
-              $0.renderingMode(.template)
-            }
-            .foregroundColor(Color.primary)
-            .frame(width: 30, height: 30)
-          Text(feed.displayName)
-            .lineLimit(2)
-            .bolt_lineHeight(
-              factor: 1,
-              systemFontSize: UIFont.labelFontSize
-            )
-        }
+        let image = feed.iconImageForList?.image
+        LibraryFeedListItemView(
+          image: image,
+          title: feed.displayName,
+          lineLimit: 2
+        )
       }
     }
   }
