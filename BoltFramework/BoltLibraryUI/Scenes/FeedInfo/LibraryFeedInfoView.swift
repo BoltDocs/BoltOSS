@@ -46,11 +46,10 @@ struct LibraryFeedInfoView: View {
             .frame(width: 30, height: 30)
           Text(feed.displayName)
             .lineLimit(2)
-            .modify {
-              if #available(iOS 26, *) {
-                $0.lineHeight(.multiple(factor: 1.1))
-              }
-            }
+            .bolt_lineHeight(
+              factor: 1,
+              systemFontSize: UIFont.labelFontSize
+            )
         }
       }
     }

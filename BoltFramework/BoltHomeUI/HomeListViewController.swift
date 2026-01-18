@@ -53,7 +53,7 @@ final class HomeListCollectionViewItemCell: UICollectionViewListCell {
       let attributedTitle = NSAttributedString(
         string: viewModel.title ?? "",
         attributes: [
-          .font: UIFont.systemFont(ofSize: 16),
+          .font: UIFont.preferredFont(forTextStyle: .body),
           .paragraphStyle: paragraphStyle,
         ]
       )
