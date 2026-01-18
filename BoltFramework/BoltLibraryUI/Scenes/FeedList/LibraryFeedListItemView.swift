@@ -18,21 +18,46 @@ import SwiftUI
 
 import BoltUIFoundation
 
-struct LibraryFeedListItemView: View {
+struct LibraryFeedListItemView<Trailing: View>: View {
 
   var image: UIImage?
   var title: String
+  var lineLimit: Int?
+
+  @ViewBuilder var trailing: () -> Trailing
 
   var body: some View {
-    Label {
-      Text(title)
-    } icon: {
-      Image(uiImage: image ?? UIImage())
-        .if(image?.isSymbolImage ?? false) {
-          $0.renderingMode(.template)
-        }
+    HStack {
+      Label {
+        Text(title)
+          .bolt_lineHeight(
+            factor: 1,
+            systemFontSize: UIFont.labelFontSize
+          )
+      } icon: {
+        Image(uiImage: image ?? UIImage())
+          .if(image?.isSymbolImage ?? false) {
+            $0.renderingMode(.template)
+          }
+      }
+      .labelStyle(
+        ListItemLabelStyle(
+          spacing: 8,
+          iconSize: CGSize(width: 30, height: 30),
+          lineLimit: lineLimit
+        )
+      )
+      Spacer()
+      trailing()
     }
-    .labelStyle(ListItemLabelStyle(spacing: 8, iconSize: CGSize(width: 30, height: 30)))
+  }
+
+}
+
+extension LibraryFeedListItemView where Trailing == EmptyView {
+
+  init(image: UIImage?, title: String, lineLimit: Int? = nil) {
+    self.init(image: image, title: title, lineLimit: lineLimit, trailing: { EmptyView() })
   }
 
 }

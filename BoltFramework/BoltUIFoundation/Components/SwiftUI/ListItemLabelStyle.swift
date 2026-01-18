@@ -20,9 +20,9 @@ public struct ListItemLabelStyle: LabelStyle {
 
   private var spacing: CGFloat
   private var iconSize: CGSize?
-  private var lineLimit: Int
+  private var lineLimit: Int? = nil
 
-  public init(spacing: CGFloat = 8, iconSize: CGSize? = nil, lineLimit: Int = 1) {
+  public init(spacing: CGFloat = 8, iconSize: CGSize? = nil, lineLimit: Int? = nil) {
     self.iconSize = iconSize
     self.spacing = spacing
     self.lineLimit = lineLimit
@@ -36,7 +36,7 @@ public struct ListItemLabelStyle: LabelStyle {
           $0.frame(width: iconSize!.width, height: iconSize!.height)
         }
       configuration.title
-        .lineLimit(lineLimit)
+        .lineLimit(lineLimit ?? 1)
         .truncationMode(.middle)
     }
   }

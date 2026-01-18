@@ -303,14 +303,12 @@ struct LibraryFeedEntryView: View {
 
   private func docsetSection() -> some View {
     Section("Library-FeedEntry-SectionTitles-docset".boltLocalized) {
-      HStack {
-        Label("\(dataSource.entry.feed.displayName)", systemImage: "text.book.closed")
-          .labelStyle(ListItemLabelStyle(lineLimit: 2))
-          .bolt_lineHeight(
-            factor: 1,
-            systemFontSize: UIFont.labelFontSize
-          )
-        Spacer()
+      let feed = dataSource.entry.feed
+      LibraryFeedListItemView(
+        image: feed.iconImageForList?.image,
+        title: feed.displayName,
+        lineLimit: 2
+      ) {
         Text(dataSource.versionText)
           .layoutPriority(1)
       }
