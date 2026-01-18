@@ -27,9 +27,15 @@ import BoltUtils
 
 private final class DataSource: ObservableObject {
 
+  struct DownloadProgress {
+    var progress: Double
+    var receivedBytes: Int64?
+    var expectedBytes: Int64?
+  }
+
   enum DownloadStatus {
     case notDownloaded
-    case downloading(progress: Double)
+    case downloading(DownloadProgress)
     case downloaded
     case failed
   }
@@ -138,13 +144,19 @@ private final class DataSource: ObservableObject {
         if let progress = progress {
           switch progress {
           case .pending:
-            return .downloading(progress: 0.0)
-          case let .downloading(receivedSize, expectedSize):
+            return .downloading(DownloadProgress(progress: 0.0))
+          case let .downloading(receivedBytes, expectedBytes):
             var progress: Double = 0
-            if receivedSize >= 0, expectedSize >= 0 {
-              progress = Double(receivedSize) / Double(expectedSize)
+            if receivedBytes >= 0, expectedBytes > 0 {
+              progress = Double(receivedBytes) / Double(expectedBytes)
             }
-            return .downloading(progress: progress)
+            return .downloading(
+              DownloadProgress(
+                progress: progress,
+                receivedBytes: receivedBytes,
+                expectedBytes: expectedBytes
+              )
+            )
           case .completed:
             return localFileExists() ? .downloaded : .failed
           case .failed:
@@ -169,7 +181,7 @@ private final class DataSource: ObservableObject {
               text: "Library-FeedEntry-Docset-readyToInstallHint".boltLocalized
             )
           )
-        } else {
+        } else if case .notDownloaded = downloadStatus {
           if
             let estimatedSizeStatusResult = estimatedSizeStatusResult,
             case .success(let size) = estimatedSizeStatusResult
@@ -317,9 +329,20 @@ struct LibraryFeedEntryView: View {
           }
         }
       }) {
-        if case let .downloading(progress) = dataSource.downloadStatus {
-          ProgressView(value: progress)
-            .progressViewStyle(.linear)
+        if case let .downloading(downloadProgress) = dataSource.downloadStatus {
+          VStack(alignment: .leading, spacing: 8) {
+            ProgressView(value: downloadProgress.progress)
+              .progressViewStyle(.linear)
+            if
+              let receivedBytes = downloadProgress.receivedBytes,
+              let expectedBytes = downloadProgress.expectedBytes
+            {
+              Text("\(String.formatBytes(bytes: Double(receivedBytes))) / \(String.formatBytes(bytes: Double(expectedBytes)))")
+                .foregroundColor(.secondary)
+                .font(.system(.caption))
+            }
+          }
+          .padding(.top, 4)
         }
         Button(action: {
           Task {
