@@ -137,6 +137,7 @@ struct LibraryCustomFeedListView: View {
       } // if
     } // overlay
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .scrollContentBackground(.hidden)
     .background(Color.systemGroupedBackground)
     .navigationTitle("Library-ImportedFeeds-List-title".boltLocalized)
     .navigationBarTitleDisplayMode(.large)
