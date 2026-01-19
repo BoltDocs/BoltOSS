@@ -158,42 +158,39 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
     .disableAutocorrection(true)
     .overlay {
       if actionPerformer.status != .success {
-        ZStack {
-          let message = actionPerformer.error == nil ?
-            "Library-FeedList-loadingDocsetsHint".boltLocalized :
-            "Library-FeedList-failedToLoadDocsetsHint".boltLocalized
-          BoltContentUnavailableView(
-            configuration: BoltContentUnavailableViewConfiguration(
-              image: Model.emptyStateImage,
-              imageSize: CGSize(width: 142, height: 142),
-              message: message,
-              shouldDisplayIndicator: actionPerformer.status == .loading,
-              showsMessage: true,
-              showsDetailButton: actionPerformer.error != nil,
-              showsRetryButton: actionPerformer.error != nil
-            ), // BoltContentUnavailableViewConfiguration
-            detailAction: {
-              guard case let .error(error) = actionPerformer.status else {
-                return
-              }
-              GlobalUI.presentAlertController(
-                UIAlertController.alert(
-                  withTitle: "Library-FeedList-failedToLoadDocsetsHint".boltLocalized,
-                  message: error.localizedDescription,
-                  confirmAction: (UIKitLocalizations.ok, .default, nil)
-                )
-              )
-            },
-            retryAction: {
-              Task { await actionPerformer.perform() }
+        let message = actionPerformer.error == nil ?
+          "Library-FeedList-loadingDocsetsHint".boltLocalized :
+          "Library-FeedList-failedToLoadDocsetsHint".boltLocalized
+        BoltContentUnavailableView(
+          configuration: BoltContentUnavailableViewConfiguration(
+            image: Model.emptyStateImage,
+            imageSize: CGSize(width: 142, height: 142),
+            message: message,
+            shouldDisplayIndicator: actionPerformer.status == .loading,
+            showsMessage: true,
+            showsDetailButton: actionPerformer.error != nil,
+            showsRetryButton: actionPerformer.error != nil
+          ), // BoltContentUnavailableViewConfiguration
+          detailAction: {
+            guard case let .error(error) = actionPerformer.status else {
+              return
             }
-          ) // BoltContentUnavailableView
-        } // ZStack
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.systemGroupedBackground)
+            GlobalUI.presentAlertController(
+              UIAlertController.alert(
+                withTitle: "Library-FeedList-failedToLoadDocsetsHint".boltLocalized,
+                message: error.localizedDescription,
+                confirmAction: (UIKitLocalizations.ok, .default, nil)
+              )
+            )
+          },
+          retryAction: {
+            Task { await actionPerformer.perform() }
+          }
+        ) // BoltContentUnavailableView
       } // if
-    } // overlay
+    } // List
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.systemGroupedBackground)
     .sheet(item: $selectedFeed) { identifiableFeed in
       SheetContainer {
         LibraryFeedInfoView(identifiableFeed.feed)
