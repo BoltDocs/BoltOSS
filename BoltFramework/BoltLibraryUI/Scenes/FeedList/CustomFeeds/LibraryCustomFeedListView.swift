@@ -123,24 +123,21 @@ struct LibraryCustomFeedListView: View {
     } // List
     .overlay {
       if model.feeds.isEmpty {
-        ZStack {
-          BoltContentUnavailableView(
-            configuration: BoltContentUnavailableViewConfiguration(
-              image: Self.emptyStateImage,
-              imageSize: CGSize(width: 142, height: 142),
-              message: "Library-ImportedFeeds-List-noFeed".boltLocalized,
-              shouldDisplayIndicator: false,
-              showsMessage: true,
-              showsDetailButton: false,
-              showsRetryButton: false
-            ) // BoltContentUnavailableViewConfiguration
-          ) // BoltContentUnavailableView
-        } // ZStack
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.systemGroupedBackground)
+        BoltContentUnavailableView(
+          configuration: BoltContentUnavailableViewConfiguration(
+            image: Self.emptyStateImage,
+            imageSize: CGSize(width: 142, height: 142),
+            message: "Library-ImportedFeeds-List-noFeed".boltLocalized,
+            shouldDisplayIndicator: false,
+            showsMessage: true,
+            showsDetailButton: false,
+            showsRetryButton: false
+          ) // BoltContentUnavailableViewConfiguration
+        ) // BoltContentUnavailableView
       } // if
     } // overlay
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.systemGroupedBackground)
     .navigationTitle("Library-ImportedFeeds-List-title".boltLocalized)
     .navigationBarTitleDisplayMode(.large)
     .toolbar {
