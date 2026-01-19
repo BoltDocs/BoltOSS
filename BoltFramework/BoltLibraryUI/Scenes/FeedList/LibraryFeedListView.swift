@@ -188,8 +188,9 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
           }
         ) // BoltContentUnavailableView
       } // if
-    } // List
+    } // overlay
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .scrollContentBackground(.hidden)
     .background(Color.systemGroupedBackground)
     .sheet(item: $selectedFeed) { identifiableFeed in
       SheetContainer {
