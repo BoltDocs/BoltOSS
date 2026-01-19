@@ -31,10 +31,12 @@ private class LibraryUpdatesListViewModel: ObservableObject, LoggerProvider {
   private var docsetUpdateChecker: DocsetUpdateChecker
 
   @Published var updatableEntries = [FeedEntry]()
+  @Published var updatesFetched = false
 
   func fetchUpdates() async {
     updatableEntries = await docsetUpdateChecker.fetchDocsetUpdates(useCachedEntries: false)
       .map(\.feedEntry)
+    updatesFetched = true
   }
 
 }
@@ -46,7 +48,7 @@ public struct LibraryUpdatesListView: View {
 
   @StateObject private var viewModel = LibraryUpdatesListViewModel()
 
-  static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/downloads", in: .module).platformImage!
+  static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/upgrade", in: .module).platformImage!
 
   public init() { }
 
@@ -91,8 +93,30 @@ public struct LibraryUpdatesListView: View {
           }
         }
       }
+      .scrollContentBackground(.hidden)
+      .background(Color.systemGroupedBackground)
     }
     .navigationViewStyle(.stack)
+    .overlay {
+      if !viewModel.updatesFetched || viewModel.updatableEntries.isEmpty {
+        ZStack {
+          let message = viewModel.updatesFetched ?
+            "Library-Updates-noUpdatesHint".boltLocalized :
+            "Library-Updates-fetchingUpdatesHint".boltLocalized
+          BoltContentUnavailableView(
+            configuration: BoltContentUnavailableViewConfiguration(
+              image: Self.emptyStateImage,
+              imageSize: CGSize(width: 142, height: 142),
+              message: message,
+              shouldDisplayIndicator: !viewModel.updatesFetched,
+              showsMessage: true,
+              showsDetailButton: false,
+              showsRetryButton: false
+            ),
+          )
+        }
+      }
+    }
     .task {
       await viewModel.fetchUpdates()
     }
