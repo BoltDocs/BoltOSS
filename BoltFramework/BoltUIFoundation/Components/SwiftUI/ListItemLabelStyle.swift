@@ -20,7 +20,7 @@ public struct ListItemLabelStyle: LabelStyle {
 
   private var spacing: CGFloat
   private var iconSize: CGSize?
-  private var lineLimit: Int? = nil
+  private var lineLimit: Int?
 
   public init(spacing: CGFloat = 8, iconSize: CGSize? = nil, lineLimit: Int? = nil) {
     self.iconSize = iconSize

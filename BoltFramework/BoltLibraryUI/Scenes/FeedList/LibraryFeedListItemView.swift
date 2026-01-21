@@ -57,6 +57,7 @@ struct LibraryFeedListItemView<Trailing: View>: View {
 extension LibraryFeedListItemView where Trailing == EmptyView {
 
   init(image: UIImage?, title: String, lineLimit: Int? = nil) {
+    // swiftlint:disable:next trailing_closure
     self.init(image: image, title: title, lineLimit: lineLimit, trailing: { EmptyView() })
   }
 
