@@ -34,8 +34,10 @@ public struct DashFeedSchemeHandler: SchemeHandler {
     }
     GlobalUI.dismissAllModals {
       let feedImportViewController = UIHostingController(
-        rootView: NavigationView {
-          LibraryCustomFeedImportView(feedURL: scheme.feedURL)
+        rootView: SheetContainer {
+          NavigationView {
+            LibraryCustomFeedImportView(feedURL: scheme.feedURL)
+          }
         }
       )
       GlobalUI.presentModal(feedImportViewController, completionHandler: nil)
