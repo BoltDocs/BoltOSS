@@ -21,6 +21,7 @@ import IssueReporting
 
 import BoltFramework
 import BoltModuleExports
+import BoltURLSchemes
 import BoltUtils
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
@@ -28,6 +29,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
   var window: UIWindow?
 
   var sceneManager: SceneManager?
+
+  @LazyInjected(\.schemeService)
+  private var schemeService: SchemeService
+
+  // swiftlint:disable:next discouraged_optional_collection
+  private var urlContextsOnSceneSessionConnect: Set<UIOpenURLContext>?
 
   func scene(
     _ scene: UIScene,
@@ -47,6 +54,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
     }
     #endif
 
+    urlContextsOnSceneSessionConnect = connectionOptions.urlContexts
+
     sceneManager = SceneManager(window)
   }
 
@@ -60,6 +69,14 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
   func sceneDidBecomeActive(_ scene: UIScene) {
     // Called when the scene has moved from an inactive state to an active state.
     // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+
+    if let urlContexts = urlContextsOnSceneSessionConnect {
+      urlContextsOnSceneSessionConnect = nil
+      if !urlContexts.isEmpty {
+        schemeService.matchToHandle(withURLs: urlContexts.map { $0.url })
+      }
+    }
+
     checkForDocsetUpdatesIfNeeded()
   }
 
@@ -109,8 +126,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
 
 extension SceneDelegate {
 
-  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    Container.shared.schemeService().matchToHandle(withURLs: URLContexts.map { $0.url })
+  func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
+    if !urlContexts.isEmpty {
+      schemeService.matchToHandle(withURLs: urlContexts.map { $0.url })
+    }
   }
 
 }
