@@ -26,13 +26,12 @@ public extension FileManager {
     var extensions = expectedExtension.split(separator: ".").map { String($0) }
     return paths.filter { path in
       // For matching files like 'file.tar.gz'
-      let candidateExtensions = URL(fileURLWithPath: path).pathExtensions
+      var candidateExtensions = URL(fileURLWithPath: path).pathExtensions
       if !caseSensitive {
         extensions = extensions.map { $0.lowercased() }
-        return extensions == candidateExtensions.map { $0.lowercased() }
-      } else {
-        return extensions == candidateExtensions
+        candidateExtensions = candidateExtensions.map { $0.lowercased() }
       }
+      return candidateExtensions.reversed().starts(with: extensions.reversed())
     }
   }
 

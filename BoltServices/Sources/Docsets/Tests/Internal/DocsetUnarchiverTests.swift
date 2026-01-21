@@ -107,4 +107,44 @@ final class TarUnarchiverTests: XCTestCase {
     )
   }
 
+  func testUnarchiveDownloadedDocsetWithMultipleExtensions() async throws {
+    let destPath = NSTemporaryDirectory().appendingPathComponent(UUID().uuidString)
+
+    let resultProgress = try await awaitPublisher(
+      DocsetUnarchiver.unarchiveDownloadedDocsetWithoutTarix(
+        downloadedTarPath: Bundle.module.path(forResource: "TestResources/MultipleExtensions", ofType: "tgz")!,
+        toPath: destPath,
+        forFeedEntry: FeedEntry(
+          feed: StubFeed(
+            repository: .main,
+            id: "MultipleExtensions",
+            displayName: "MultipleExtensions",
+            aliases: [],
+            shouldHideVersions: false,
+            supportsArchiveIndex: false,
+            icon: EntryIcon.bundled(.docsetIcon(.vim))
+          ),
+          version: "1.0",
+          isTrackedAsLatest: false,
+          isDocsetBundle: false,
+          docsetLocation: ResourceLocations.stubbed
+        ),
+        removeSourceFiles: false
+      ),
+      timeout: 10
+    )
+
+    guard case .completed = resultProgress else {
+      XCTFail("Not returning complete")
+      return
+    }
+
+    XCTAssert(
+      FileManager.default.contentsEqual(
+        atPath: destPath.appendingPathComponent("MultipleExtensions.abc.docset"),
+        andPath: Bundle.module.path(forResource: "TestResources/MultipleExtensions.abc.docset")!
+      )
+    )
+  }
+
 }
