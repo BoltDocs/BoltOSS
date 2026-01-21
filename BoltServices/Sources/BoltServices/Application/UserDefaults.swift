@@ -59,10 +59,25 @@ public extension UserDefaults {
       {
         return intValue
       }
-      return -1
+      return 86400 // 24 * 3600
     }
     set {
       setValue(newValue, forKey: "updateCheckingFrequency")
+    }
+  }
+
+  @objc dynamic var lastCheckForUpdates: Int {
+    get {
+      if
+        let value = object(forKey: "lastCheckForUpdates"),
+          let intValue = value as? Int
+      {
+        return intValue
+      }
+      return -1
+    }
+    set {
+      setValue(newValue, forKey: "lastCheckForUpdates")
     }
   }
 

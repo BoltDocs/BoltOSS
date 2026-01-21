@@ -21,8 +21,9 @@ import IssueReporting
 
 import BoltFramework
 import BoltModuleExports
+import BoltUtils
 
-final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
 
   var window: UIWindow?
 
@@ -59,6 +60,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func sceneDidBecomeActive(_ scene: UIScene) {
     // Called when the scene has moved from an inactive state to an active state.
     // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+    checkForDocsetUpdatesIfNeeded()
   }
 
   func sceneWillResignActive(_ scene: UIScene) {
@@ -75,6 +77,30 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // Called as the scene transitions from the foreground to the background.
     // Use this method to save data, release shared resources, and store enough scene-specific state information
     // to restore the scene back to its current state.
+  }
+
+  // MARK: - Private
+
+  private func checkForDocsetUpdatesIfNeeded() {
+    let updateCheckingFrequency = UserDefaults.standard.updateCheckingFrequency
+    let lastCheckForUpdates = UserDefaults.standard.lastCheckForUpdates
+
+    guard updateCheckingFrequency > 0 else {
+      Self.logger.info("skip docset update checking due to frequency set to never")
+      return
+    }
+
+    let currentTimeInterval = Int(Date.now.timeIntervalSince1970)
+
+    if currentTimeInterval - lastCheckForUpdates > updateCheckingFrequency {
+      Self.logger.info("start checking for docset update, last check: \(lastCheckForUpdates)")
+      UserDefaults.standard.lastCheckForUpdates = currentTimeInterval
+      Task {
+        let docsetUpdateChecker = Container.shared.docsetUpdateChecker()
+        let entries = await docsetUpdateChecker.fetchDocsetUpdates(useCachedEntries: false)
+        Self.logger.info("\(entries.count) updatable entries available")
+      }
+    }
   }
 
 }
