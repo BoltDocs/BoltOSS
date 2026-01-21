@@ -42,7 +42,9 @@ public extension EntryIconProvider {
         withSize: CGSize(width: 56, height: 56),
         contentSize: CGSize(width: 32, height: 32),
         backgroundColor: .white,
-        cornerRadius: 8
+        cornerRadius: 8,
+        borderWidth: 0.25,
+        borderColor: .gray
       )
   }
 
