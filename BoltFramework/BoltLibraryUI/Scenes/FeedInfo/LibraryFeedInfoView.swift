@@ -63,9 +63,14 @@ struct LibraryFeedInfoView: View {
       return ""
     }
     if let unavailableMessage = feed.unavailableMessage {
-      let localizedMessage = unavailableMessage.boltLocalized
-      if localizedMessage != feed.unavailableMessage {
-        return localizedMessage
+      switch unavailableMessage {
+      case .general:
+        return "MainFeed-unavailable_general".boltLocalized(feed.displayName)
+      case let .message(message):
+        let localizedMessage = message.boltLocalized
+        if localizedMessage != message {
+          return localizedMessage
+        }
       }
     }
     return "Library-FeedInfo-docsetNotAvailableHint".boltLocalized(feed.displayName)

@@ -71,7 +71,7 @@ public struct CustomFeed: Feed, Identifiable, Equatable {
   public var icon = EntryIcon.providerDefault
 
   public var isUnavailable = false
-  public var unavailableMessage: String?
+  public var unavailableMessage: UnavailableMessage?
 
   public func fetchEntries() async throws -> FeedEntries {
     return try await Container.shared.feedsService().asInternal().fetchEntries(forCustomFeed: self)

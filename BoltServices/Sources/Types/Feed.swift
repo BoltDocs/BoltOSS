@@ -16,6 +16,11 @@
 
 import BoltUtils
 
+public enum UnavailableMessage {
+  case general
+  case message(_: String)
+}
+
 public protocol Feed: EntryIconProvider {
 
   var repository: RepositoryIdentifier { get }
@@ -29,7 +34,7 @@ public protocol Feed: EntryIconProvider {
   var icon: EntryIcon { get }
 
   var isUnavailable: Bool { get }
-  var unavailableMessage: String? { get }
+  var unavailableMessage: UnavailableMessage? { get }
 
   func fetchEntries() async throws -> FeedEntries
 
