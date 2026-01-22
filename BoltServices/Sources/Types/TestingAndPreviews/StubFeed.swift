@@ -32,7 +32,7 @@ public struct StubFeed: Feed {
   public var icon: EntryIcon
 
   public var isUnavailable = false
-  public var unavailableMessage: String?
+  public var unavailableMessage: UnavailableMessage?
 
   public func fetchEntries() throws -> FeedEntries {
     return FeedEntries()
@@ -51,7 +51,7 @@ public struct StubFeed: Feed {
     supportsArchiveIndex: Bool,
     icon: EntryIcon,
     isUnavailable: Bool = false,
-    unavailableMessage: String? = nil
+    unavailableMessage: UnavailableMessage? = nil
   ) {
     self.repository = repository
     self.id = id
