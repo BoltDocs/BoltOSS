@@ -1,6 +1,11 @@
 #!/bin/sh
 
 set -e
+set -x
+
+if ! [ "${CONFIGURATION}" == "Release" ]; then
+  exit
+fi
 
 BASEDIR=$(dirname $0)
 

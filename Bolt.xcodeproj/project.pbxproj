@@ -291,7 +291,7 @@
 				715F6A22247B65F700AB1300 /* Sources */,
 				715F6A23247B65F700AB1300 /* Frameworks */,
 				715F6A24247B65F700AB1300 /* Resources */,
-				7108E1F426D6A1DF00EA2E20 /* Generate Thirdparty Licenses */,
+				7108E1F426D6A1DF00EA2E20 /* [Release Only] Generate Third-Party Licenses */,
 				7183887F247BFACE00DADD5D /* Run SwiftLint */,
 				716E2A1C26DB29A1002DE710 /* Embed Frameworks */,
 				719F7DA0252D599300E18C05 /* [Release Only] Version Tracking */,
@@ -387,7 +387,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7108E1F426D6A1DF00EA2E20 /* Generate Thirdparty Licenses */ = {
+		7108E1F426D6A1DF00EA2E20 /* [Release Only] Generate Third-Party Licenses */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -397,7 +397,7 @@
 			);
 			inputPaths = (
 			);
-			name = "Generate Thirdparty Licenses";
+			name = "[Release Only] Generate Third-Party Licenses";
 			outputFileListPaths = (
 			);
 			outputPaths = (
