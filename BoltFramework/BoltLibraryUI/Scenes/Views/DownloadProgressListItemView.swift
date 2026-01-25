@@ -23,56 +23,27 @@ import BoltServices
 import BoltUIFoundation
 import BoltUtils
 
-private class DownloadProgressListItemViewModel: ObservableObject {
+public protocol DownloadProgressListItemViewModelType: ObservableObject {
 
-  @Injected(\.downloadManager)
-  private var downloadManager: DownloadManager
+  var progress: DownloadProgress? { get }
+  var progressSubtitle: String? { get }
 
-  @Published var progress: DownloadProgress?
-  @Published var progressSubtitle: String?
+}
 
-  private var identifier: String
+extension DownloadProgressListItemViewModelType {
 
-  init(identifier: String) {
-    self.identifier = identifier
-
-    let progressPublisher = downloadManager.progress(forIdentifier: identifier)
-    setupPublishers(progressPublisher: progressPublisher)
-  }
-
-  init(
-    identifier: String,
-    progressPublisher: AnyPublisher<DownloadProgress?, Never>
-  ) {
-    self.identifier = identifier
-    setupPublishers(progressPublisher: progressPublisher)
-  }
-
-  private func setupPublishers(progressPublisher: AnyPublisher<DownloadProgress?, Never>) {
-    progressPublisher
-      .map {  progress -> String? in
-        switch progress {
-        case .none:
-          return nil
-        case .pending:
-          return "Waiting..."
-        case let .downloading(receivedBytes, expectedBytes):
-          return Self.formatDownloading(receivedBytes: receivedBytes, expectedBytes: expectedBytes)
-        case .completed:
-          return "Downloaded"
-        case .failed:
-          return "Download Fail"
-        }
-      }
-      .assign(to: &$progressSubtitle)
-
-    progressPublisher
-      .assign(to: &$progress)
-  }
-
-  func cancelButtonTap() {
-    Task {
-      await downloadManager.cancelDownload(forIdentifier: identifier)
+  fileprivate static func title(forProgress progress: DownloadProgress?) -> String? {
+    switch progress {
+    case .none:
+      return nil
+    case .pending:
+      return "Waiting..."
+    case let .downloading(receivedBytes, expectedBytes):
+      return Self.formatDownloading(receivedBytes: receivedBytes, expectedBytes: expectedBytes)
+    case .completed:
+      return "Downloaded"
+    case .failed:
+      return "Download Fail"
     }
   }
 
@@ -88,26 +59,53 @@ private class DownloadProgressListItemViewModel: ObservableObject {
 
 }
 
-public struct DownloadProgressListItemView: View {
+final class DownloadProgressListItemViewModel: DownloadProgressListItemViewModelType {
+
+  @Injected(\.downloadManager)
+  private var downloadManager: DownloadManager
+
+  @Published var progress: DownloadProgress?
+  @Published var progressSubtitle: String?
+
+  private var identifier: String
+
+  fileprivate init(identifier: String) {
+    self.identifier = identifier
+
+    let progressPublisher = downloadManager.progress(forIdentifier: identifier)
+    setupPublishers(progressPublisher: progressPublisher)
+  }
+
+  private func setupPublishers(progressPublisher: AnyPublisher<DownloadProgress?, Never>) {
+    progressPublisher
+      .map { progress -> String? in
+        Self.title(forProgress: progress)
+      }
+      .assign(to: &$progressSubtitle)
+
+    progressPublisher
+      .assign(to: &$progress)
+  }
+
+  func cancelButtonTap() {
+    Task {
+      await downloadManager.cancelDownload(forIdentifier: identifier)
+    }
+  }
+
+}
+
+public struct DownloadProgressListItemView<ViewModel: DownloadProgressListItemViewModelType>: View {
 
   var title: String
   var subtitle: String?
 
   private var preventsHighlight: Bool
 
-  @StateObject private var model: DownloadProgressListItemViewModel
-
-  init(identifier: String, title: String, subtitle: String? = nil, preventsHighlight: Bool = false) {
-    self.init(
-      model: DownloadProgressListItemViewModel(identifier: identifier),
-      title: title,
-      subtitle: subtitle,
-      preventsHighlight: preventsHighlight
-    )
-  }
+  @StateObject private var model: ViewModel
 
   fileprivate init(
-    model: @autoclosure @escaping () -> DownloadProgressListItemViewModel,
+    model: @autoclosure @escaping () -> ViewModel,
     title: String,
     subtitle: String? = nil,
     preventsHighlight: Bool = false
@@ -168,9 +166,36 @@ public struct DownloadProgressListItemView: View {
 
 }
 
+extension DownloadProgressListItemView where ViewModel == DownloadProgressListItemViewModel {
+
+  init(identifier: String, title: String, subtitle: String? = nil, preventsHighlight: Bool = false) {
+    self.init(
+      model: DownloadProgressListItemViewModel(identifier: identifier),
+      title: title,
+      subtitle: subtitle,
+      preventsHighlight: preventsHighlight
+    )
+  }
+
+}
+
 #if DEBUG
 
 #Preview {
+
+  final class StubbedDownloadProgressListItemViewModel: DownloadProgressListItemViewModelType {
+
+    @Published var progress: DownloadProgress?
+
+    var progressSubtitle: String? {
+      return Self.title(forProgress: progress)
+    }
+
+    init(progress: DownloadProgress?) {
+      self.progress = progress
+    }
+
+  }
 
   struct StubbedError: Error { }
 
@@ -186,10 +211,8 @@ public struct DownloadProgressListItemView: View {
     ForEach(progresses.indices, id: \.self) { index in
       PreviewCase(caption: progresses[index].0) {
         DownloadProgressListItemView(
-          model: DownloadProgressListItemViewModel(
-            identifier: "",
-            progressPublisher: Just<DownloadProgress?>(progresses[index].1)
-              .eraseToAnyPublisher()
+          model: StubbedDownloadProgressListItemViewModel(
+            progress: progresses[index].1
           ),
           title: "Download Title"
         )
