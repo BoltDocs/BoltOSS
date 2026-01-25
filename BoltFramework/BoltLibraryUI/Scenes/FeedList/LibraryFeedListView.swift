@@ -147,7 +147,12 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
           Button {
             selectedFeed = IdentifiableFeed(feed: feed)
           } label: {
-            LibraryFeedListItemView(image: feed.iconImageForList?.image, title: feed.displayName)
+            LibraryFeedListItemView(image: feed.iconImageForList?.image, title: feed.displayName) {
+              Image(systemName: "chevron.right")
+                .font(.footnote)
+                .fontWeight(.semibold)
+                .foregroundStyle(.tertiary)
+            }
           }
           .tint(Color.primary)
         }
