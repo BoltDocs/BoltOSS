@@ -77,10 +77,12 @@ public struct CompletedDownloadListItemView: View {
 
   private var preventsHighlight: Bool
 
-  @ObservedObject private var model: CompletedDownloadListItemViewModel
+  @StateObject private var model: CompletedDownloadListItemViewModel
 
   init(taskEntity: DownloadTaskEntity, title: String, subtitle: String? = nil, preventsHighlight: Bool = false) {
-    self.model = CompletedDownloadListItemViewModel(taskEntity: taskEntity)
+    self._model = StateObject(
+      wrappedValue: CompletedDownloadListItemViewModel(taskEntity: taskEntity)
+    )
     self.title = title
     self.subtitle = subtitle
     self.preventsHighlight = preventsHighlight

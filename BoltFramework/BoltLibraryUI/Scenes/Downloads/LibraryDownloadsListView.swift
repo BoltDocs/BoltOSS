@@ -77,7 +77,7 @@ public struct LibraryDownloadsListView: View {
 
   @State var currentScope: Scope = .all
 
-  @ObservedObject private var model = LibraryDownloadsListViewModel()
+  @StateObject private var model = LibraryDownloadsListViewModel()
 
   static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/downloads", in: .module).platformImage!
 

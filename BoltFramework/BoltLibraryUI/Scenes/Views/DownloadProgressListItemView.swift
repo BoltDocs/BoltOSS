@@ -95,12 +95,11 @@ public struct DownloadProgressListItemView: View {
 
   private var preventsHighlight: Bool
 
-  @ObservedObject private var model: DownloadProgressListItemViewModel
+  @StateObject private var model: DownloadProgressListItemViewModel
 
   init(identifier: String, title: String, subtitle: String? = nil, preventsHighlight: Bool = false) {
-    let model = DownloadProgressListItemViewModel(identifier: identifier)
     self.init(
-      model: model,
+      model: DownloadProgressListItemViewModel(identifier: identifier),
       title: title,
       subtitle: subtitle,
       preventsHighlight: preventsHighlight
@@ -108,12 +107,12 @@ public struct DownloadProgressListItemView: View {
   }
 
   fileprivate init(
-    model: DownloadProgressListItemViewModel,
+    model: @autoclosure @escaping () -> DownloadProgressListItemViewModel,
     title: String,
     subtitle: String? = nil,
     preventsHighlight: Bool = false
   ) {
-    self.model = model
+    self._model = StateObject(wrappedValue: model())
     self.title = title
     self.subtitle = subtitle
     self.preventsHighlight = preventsHighlight
