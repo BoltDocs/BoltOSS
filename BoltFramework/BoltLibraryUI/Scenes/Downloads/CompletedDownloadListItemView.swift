@@ -32,13 +32,15 @@ private class CompletedDownloadListItemViewModel: ObservableObject {
   enum ActionButton {
     case delete
     case remove
-    case more
   }
 
   let subtitle: String?
-  var actionButtons = [ActionButton]()
+
+  @Published var actionButtons = [ActionButton]()
+  @Published var canShowFeedInfo = false
 
   let taskEntity: DownloadTaskEntity
+
   private let localTarPath: String
 
   init(taskEntity: DownloadTaskEntity) {
@@ -52,7 +54,8 @@ private class CompletedDownloadListItemViewModel: ObservableObject {
       byteSize > 0
     {
       subtitle = String.formatBytes(bytes: Double(byteSize))
-      actionButtons.append(contentsOf: [.delete, .more])
+      actionButtons.append(.delete)
+      canShowFeedInfo = true
     } else {
       subtitle = "Removed"
       actionButtons.append(.remove)
@@ -118,24 +121,15 @@ public struct CompletedDownloadListItemView: View {
             } label: {
               Image(systemName: "xmark")
             }
-          case .more:
-            // https://stackoverflow.com/questions/66231181/hide-chevron-arrow-on-navigationlink-when-displaying-a-view-swiftui
-            Button { } label: {
-              Image(systemName: "ellipsis")
-            }
-            .overlay {
-              NavigationLink(
-                destination: { DeferredView { LibraryDownloadsFeedInfoView(taskEntity: model.taskEntity) } },
-                label: { EmptyView() }
-              )
-              .opacity(0)
-            }
           }
         }
       }
     }
     .if(preventsHighlight) {
       $0.buttonStyle(.borderless)
+    }
+    .navigationLink(when: model.canShowFeedInfo) {
+      DeferredView { LibraryDownloadsFeedInfoView(taskEntity: model.taskEntity) }
     }
   }
 
