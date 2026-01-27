@@ -189,6 +189,13 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     .disposed(by: disposeBag)
   }
 
+  public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+    if presentedViewController == lookupSearchController {
+      lookupSearchController.onDismiss(animated: flag)
+    }
+    super.dismiss(animated: flag, completion: completion)
+  }
+
   // MARK: - Private
 
   private func updateNavigationBarAppearance(

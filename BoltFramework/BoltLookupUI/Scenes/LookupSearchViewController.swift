@@ -176,6 +176,10 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
     state.selectSearchScope(.tableOfContents)
   }
 
+  func onDismiss(animated: Bool) {
+    restoreSearchFieldText()
+  }
+
   // MARK: Private
 
   private func scopeBarSetNeedsLayout() {
@@ -265,14 +269,6 @@ extension LookupSearchController: UISearchBarDelegate {
 
   public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
     preserveSearchFieldText()
-  }
-
-  public func textFieldDidBeginEditing(_ textField: UITextField) {
-    restoreSearchFieldText()
-  }
-
-  public func textFieldDidEndEditing(_ textField: UITextField) {
-    restoreSearchFieldText()
   }
 
 }
