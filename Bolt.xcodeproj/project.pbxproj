@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6B593CBA2B6DEED20042E688 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B593CBB2B6DEED20042E688 /* Main.storyboard */; };
+		6B7332842F3067A100D3B39D /* BoltAppKitBridgeRuntime.bundle in Embed Plugins */ = {isa = PBXBuildFile; fileRef = 6B7332492F3043C200D3B39D /* BoltAppKitBridgeRuntime.bundle */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BA5718D2ED5FF4E00FBD45A /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 6BA5718C2ED5FF4E00FBD45A /* AppIcon.icon */; };
 		6BA5718F2ED600B400FBD45A /* AppIcon_Development.icon in Resources */ = {isa = PBXBuildFile; fileRef = 6BA5718E2ED600B400FBD45A /* AppIcon_Development.icon */; };
 		6BC6404A2D0EF64A00E51A09 /* SnapshottingTests in Frameworks */ = {isa = PBXBuildFile; productRef = 6BC640492D0EF64A00E51A09 /* SnapshottingTests */; };
@@ -23,6 +24,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		6B7332802F30675F00D3B39D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 715F6A1E247B65F700AB1300 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6B7332482F3043C200D3B39D;
+			remoteInfo = BoltAppKitBridgeRuntime;
+		};
 		6B81CE412D0EA2B000908962 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 715F6A1E247B65F700AB1300 /* Project object */;
@@ -33,6 +41,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		6B7332832F30678400D3B39D /* Embed Plugins */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				6B7332842F3067A100D3B39D /* BoltAppKitBridgeRuntime.bundle in Embed Plugins */,
+			);
+			name = "Embed Plugins";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6BC6404E2D0EF66D00E51A09 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -65,6 +84,8 @@
 		6B1C87BC2F37627A00ECC414 /* Info_catalyst.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info_catalyst.plist; sourceTree = "<group>"; };
 		6B311D2C2BBE68E500A9756C /* BoltCombineExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltCombineExtensions; sourceTree = "<group>"; };
 		6B593CBB2B6DEED20042E688 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		6B7332492F3043C200D3B39D /* BoltAppKitBridgeRuntime.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BoltAppKitBridgeRuntime.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B73325F2F304A1200D3B39D /* BoltAppKitBridgeRuntime.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = BoltAppKitBridgeRuntime.xcconfig; sourceTree = "<group>"; };
 		6B73D7942AEE7D1300CC98AB /* BuildScripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BuildScripts; sourceTree = "<group>"; };
 		6B73D7952AEE7D5A00CC98AB /* Bolt.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Bolt.xcconfig; sourceTree = "<group>"; };
 		6B73D7962AEE7D5A00CC98AB /* Bolt-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Bolt-Debug.xcconfig"; sourceTree = "<group>"; };
@@ -95,6 +116,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6B7332522F30441300D3B39D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppKitBridge.swift,
+			);
+			target = 6B7332482F3043C200D3B39D /* BoltAppKitBridgeRuntime */;
+		};
 		6B9360E92E7BEF86004C2357 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -105,11 +133,19 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		6B73324F2F3043F900D3B39D /* BoltAppKitBridgeRuntime */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6B7332522F30441300D3B39D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = BoltAppKitBridgeRuntime; sourceTree = "<group>"; };
 		6B81CE322D0EA2AF00908962 /* BoltPreviewApp */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6B9360E92E7BEF86004C2357 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = BoltPreviewApp; sourceTree = "<group>"; };
 		6B81CE432D0EA2B000908962 /* BoltPreviewTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = BoltPreviewTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		6B7332462F3043C200D3B39D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6B81CE2E2D0EA2AF00908962 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,6 +184,7 @@
 				6B73D7952AEE7D5A00CC98AB /* Bolt.xcconfig */,
 				6B73D7962AEE7D5A00CC98AB /* Bolt-Debug.xcconfig */,
 				6B73D7972AEE7D5A00CC98AB /* Bolt-Release.xcconfig */,
+				6B73325F2F304A1200D3B39D /* BoltAppKitBridgeRuntime.xcconfig */,
 			);
 			path = BuildConfigurations;
 			sourceTree = "<group>";
@@ -180,6 +217,7 @@
 				6BDA6C2E2827D30700D932FD /* BoltServices */,
 				71799FC026DB28F6001A2811 /* BoltFramework */,
 				715F6A28247B65F700AB1300 /* Bolt */,
+				6B73324F2F3043F900D3B39D /* BoltAppKitBridgeRuntime */,
 				6B81CE322D0EA2AF00908962 /* BoltPreviewApp */,
 				6B81CE432D0EA2B000908962 /* BoltPreviewTests */,
 				715F6A27247B65F700AB1300 /* Products */,
@@ -193,6 +231,7 @@
 				715F6A26247B65F700AB1300 /* Bolt.app */,
 				6B81CE312D0EA2AF00908962 /* BoltPreviewApp.app */,
 				6B81CE402D0EA2B000908962 /* BoltPreviewTests.xctest */,
+				6B7332492F3043C200D3B39D /* BoltAppKitBridgeRuntime.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -238,6 +277,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		6B7332482F3043C200D3B39D /* BoltAppKitBridgeRuntime */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6B73324C2F3043C200D3B39D /* Build configuration list for PBXNativeTarget "BoltAppKitBridgeRuntime" */;
+			buildPhases = (
+				6B7332452F3043C200D3B39D /* Sources */,
+				6B7332462F3043C200D3B39D /* Frameworks */,
+				6B7332472F3043C200D3B39D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6B04F22B2F38837D005F56E7 /* PBXTargetDependency */,
+			);
+			name = BoltAppKitBridgeRuntime;
+			packageProductDependencies = (
+			);
+			productName = BoltAppKitBridgeRuntime;
+			productReference = 6B7332492F3043C200D3B39D /* BoltAppKitBridgeRuntime.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 		6B81CE302D0EA2AF00908962 /* BoltPreviewApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6B81CE582D0EA2B000908962 /* Build configuration list for PBXNativeTarget "BoltPreviewApp" */;
@@ -296,11 +355,13 @@
 				7108E1F426D6A1DF00EA2E20 /* [Release Only] Generate Third-Party Licenses */,
 				7183887F247BFACE00DADD5D /* Run SwiftLint */,
 				716E2A1C26DB29A1002DE710 /* Embed Frameworks */,
+				6B7332832F30678400D3B39D /* Embed Plugins */,
 				719F7DA0252D599300E18C05 /* [Release Only] Version Tracking */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				6B7332812F30675F00D3B39D /* PBXTargetDependency */,
 				6B2056002B62B4A200F90415 /* PBXTargetDependency */,
 				716E2A1E26DB29A8002DE710 /* PBXTargetDependency */,
 			);
@@ -323,6 +384,9 @@
 				LastUpgradeCheck = 2610;
 				ORGANIZATIONNAME = "Bolt Project";
 				TargetAttributes = {
+					6B7332482F3043C200D3B39D = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					6B81CE302D0EA2AF00908962 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -355,11 +419,19 @@
 				715F6A25247B65F700AB1300 /* Bolt */,
 				6B81CE302D0EA2AF00908962 /* BoltPreviewApp */,
 				6B81CE3F2D0EA2B000908962 /* BoltPreviewTests */,
+				6B7332482F3043C200D3B39D /* BoltAppKitBridgeRuntime */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		6B7332472F3043C200D3B39D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6B81CE2F2D0EA2AF00908962 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -449,6 +521,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		6B7332452F3043C200D3B39D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6B81CE2D2D0EA2AF00908962 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -476,9 +555,19 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		6B04F22B2F38837D005F56E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 6B04F22A2F38837D005F56E7 /* BoltAppKitBridge */;
+		};
 		6B2056002B62B4A200F90415 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = 6B2055FF2B62B4A200F90415 /* ValidateStringsPlugin */;
+		};
+		6B7332812F30675F00D3B39D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = maccatalyst;
+			target = 6B7332482F3043C200D3B39D /* BoltAppKitBridgeRuntime */;
+			targetProxy = 6B7332802F30675F00D3B39D /* PBXContainerItemProxy */;
 		};
 		6B81CE422D0EA2B000908962 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -492,6 +581,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		6B73324A2F3043C200D3B39D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B73325F2F304A1200D3B39D /* BoltAppKitBridgeRuntime.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		6B73324B2F3043C200D3B39D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B73325F2F304A1200D3B39D /* BoltAppKitBridgeRuntime.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
 		6B81CE522D0EA2B000908962 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6B81CE5B2D0EA6AC00908962 /* App.xcconfig */;
@@ -579,6 +682,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		6B73324C2F3043C200D3B39D /* Build configuration list for PBXNativeTarget "BoltAppKitBridgeRuntime" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6B73324A2F3043C200D3B39D /* Debug */,
+				6B73324B2F3043C200D3B39D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		6B81CE582D0EA2B000908962 /* Build configuration list for PBXNativeTarget "BoltPreviewApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -629,6 +741,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		6B04F22A2F38837D005F56E7 /* BoltAppKitBridge */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BoltAppKitBridge;
+		};
 		6B2055FF2B62B4A200F90415 /* ValidateStringsPlugin */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = "plugin:ValidateStringsPlugin";
