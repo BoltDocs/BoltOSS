@@ -37,16 +37,13 @@ private class SecondaryNavigationController: UIViewController {
     didSet {
       managedNavigationController.viewControllers = viewControllers
       if !viewControllers.isEmpty {
-        addChild(managedNavigationController) { childView in
-          view.addSubview(childView)
-          childView.snp.makeConstraints {
-            $0.edges.equalTo(view)
-          }
+        view.addSubview(managedNavigationController.view)
+        managedNavigationController.view.snp.makeConstraints {
+          $0.top.bottom.trailing.equalTo(view)
+          $0.leading.equalTo(view.safeAreaLayoutGuide)
         }
       } else {
-        removeChild(managedNavigationController) { childView in
-          childView.removeFromSuperview()
-        }
+        managedNavigationController.view.removeFromSuperview()
       }
     }
   }
