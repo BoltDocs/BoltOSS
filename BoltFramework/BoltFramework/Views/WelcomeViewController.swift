@@ -25,9 +25,13 @@ private struct WelcomeView: View {
 
   var body: some View {
     ZStack(alignment: .center) {
-      Text("Framework-WelcomeController-welcomeTip".boltLocalized)
+      Text("Framework-WelcomeController-noSelectionHint".boltLocalized)
+        .font(.title3)
+        .fontWeight(.medium)
+        .foregroundStyle(.secondary)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .ignoresSafeArea()
   }
 
 }
@@ -47,8 +51,6 @@ final class WelcomeViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    title = "Framework-WelcomeController-title".boltLocalized
-
     configureNavigationBarAppearance(enforceLargeTitle: false)
     addChild(contentViewController) {
       view.addSubview($0)
