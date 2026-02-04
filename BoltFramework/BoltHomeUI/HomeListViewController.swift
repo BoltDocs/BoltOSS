@@ -22,6 +22,7 @@ import Overture
 import BoltLocalizations
 import BoltRxSwift
 import BoltServices
+import BoltModuleExports
 import BoltUIFoundation
 
 final class HomeListCollectionViewItemCell: UICollectionViewListCell {
@@ -68,6 +69,7 @@ final class HomeListCollectionViewItemCell: UICollectionViewListCell {
 
 final class HomeListViewController: UIViewController, UICollectionViewDelegate, HasDisposeBag {
 
+  private let sceneState: SceneState
   private let isForCollapsedSidebar: Bool
 
   private lazy var collectionView: UICollectionView = {
@@ -76,7 +78,8 @@ final class HomeListViewController: UIViewController, UICollectionViewDelegate, 
     }
   }()
 
-  init(isForCollapsedSidebar: Bool) {
+  init(sceneState: SceneState, isForCollapsedSidebar: Bool) {
+    self.sceneState = sceneState
     self.isForCollapsedSidebar = isForCollapsedSidebar
 
     self.headerRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, _, title in
@@ -116,6 +119,26 @@ final class HomeListViewController: UIViewController, UICollectionViewDelegate, 
     collectionView.allowsMultipleSelectionDuringEditing = true
 
     collectionView.dataSource = dataSource
+  }
+
+  func updateEmptyState(hasSearchQuery: Bool) {
+    if dataSource.snapshot().numberOfItems > 0 {
+      contentUnavailableConfiguration = nil
+    } else {
+      let config = update(UIContentUnavailableConfiguration.empty()) {
+        $0.text = "Home-List-NoDocsetsHint-title".boltLocalized
+        $0.image = UIImage(systemName: "books.vertical.fill")
+        if !hasSearchQuery {
+          $0.button = update(UIButton.Configuration.tinted()) {
+            $0.title = "Home-List-NoDocsetsHint-installButtonTitle".boltLocalized
+          }
+          $0.buttonProperties.primaryAction = UIAction { [weak self] _ in
+            self?.sceneState.dispatch(action: .onPresentLibrary)
+          }
+        }
+      }
+      contentUnavailableConfiguration = config
+    }
   }
 
   @available(*, unavailable)

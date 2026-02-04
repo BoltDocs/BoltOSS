@@ -100,7 +100,10 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
   }
 
   private lazy var listViewController: HomeListViewController = {
-    HomeListViewController(isForCollapsedSidebar: isForCollapsedSidebar)
+    HomeListViewController(
+      sceneState: sceneState,
+      isForCollapsedSidebar: isForCollapsedSidebar
+    )
   }()
 
   private func setupToolbar() {
@@ -321,6 +324,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
 
     // TODO: build favorites and history section
     dataSource.apply(dataSourceSnapshot)
+    listViewController.updateEmptyState(hasSearchQuery: false)
 
     libraryDocsetsManager.installedDocsetsPublisher
       .asInfallible()
@@ -345,20 +349,24 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
       }
     }
     .map { docsets in
-      update(NSDiffableDataSourceSectionSnapshot<DocsetsListModel>()) {
+      var snapshot = NSDiffableDataSourceSectionSnapshot<DocsetsListModel>()
+      if !docsets.isEmpty {
         let headerDocsetsListModel = DocsetsListModel.header(.docsets)
-        $0.append([headerDocsetsListModel])
+        snapshot.append([headerDocsetsListModel])
 
         let symbolDocsetsListModelArray = docsets.map {
           DocsetsListModel.docset(HomeListItemViewModel(queryResult: $0))
         }
-        $0.append(symbolDocsetsListModelArray, to: headerDocsetsListModel)
+        snapshot.append(symbolDocsetsListModelArray, to: headerDocsetsListModel)
 
-        $0.expand([headerDocsetsListModel])
+        snapshot.expand([headerDocsetsListModel])
       }
+      return snapshot
     }
-    .drive { [dataSource] snapshot in
-      dataSource.apply(snapshot, to: HomeListSection.docsets, animatingDifferences: true)
+    .drive(with: self) { owner, snapshot in
+      let hasSearchQuery = owner.searchBar.text?.isEmpty == false
+      owner.dataSource.apply(snapshot, to: HomeListSection.docsets, animatingDifferences: true)
+      owner.listViewController.updateEmptyState(hasSearchQuery: hasSearchQuery)
     }
     .disposed(by: disposeBag)
 
