@@ -41,6 +41,24 @@ public extension FileManager {
     return (fileExists, isDirectory.boolValue)
   }
 
+  func nextAvailableFileName(for fileName: String, in directory: URL) -> URL {
+    let fileURL = URL(fileURLWithPath: fileName)
+    let fileNameWithoutExtension = fileURL.deletingPathExtension().lastPathComponent
+    let fileExtension = fileURL.pathExtension
+
+    var destURL = directory.appendingPathComponent(fileName)
+
+    var retryCount = 0
+    while fileExists(atPath: destURL.path) {
+      retryCount += 1
+      let extensionSuffix = fileExtension.isEmpty ? "" : ".\(fileExtension)"
+      let newFileName = "\(fileNameWithoutExtension) (\(retryCount))\(extensionSuffix)"
+      destURL = directory.appendingPathComponent(newFileName)
+    }
+
+    return destURL
+  }
+
   static func directoryByteSize(at url: URL) async -> Int64? {
     // declared as static here due to FileManager is not sendable
     return await withCheckedContinuation { continuation in

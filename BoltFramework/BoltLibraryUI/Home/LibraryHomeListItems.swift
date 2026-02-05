@@ -32,16 +32,14 @@ extension LibraryHomeListViewModel {
         itemType: .customFeeds
       ),
     ]
-    if !RuntimeEnvironment.hidesUnfinishedFeatures {
-      items.append(
-        Section.Item(
-          name: "Library-Home-Items-importFeedsTitle".boltLocalized,
-          icon: BoltImageResource(named: "overview-icons/local", in: Bundle.module),
-          description: "Library-Home-Items-importFeedsDescription".boltLocalized,
-          itemType: .transfer
-        )
+    items.append(
+      Section.Item(
+        name: "Library-Home-Items-importFeedsTitle".boltLocalized,
+        icon: BoltImageResource(named: "overview-icons/local", in: Bundle.module),
+        description: "Library-Home-Items-importFeedsDescription".boltLocalized,
+        itemType: .transfer
       )
-    }
+    )
     return [
       Section(
         id: "local",

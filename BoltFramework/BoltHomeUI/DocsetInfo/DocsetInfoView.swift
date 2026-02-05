@@ -131,6 +131,8 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
       return "Library-Home-Items-userContributedTitle".boltLocalized
     case .custom:
       return "Library-Home-Items-customFeedsTitle".boltLocalized
+    case .local:
+      return "Library-Home-Items-localFeedsTitle".boltLocalized
     case let repository:
       reportIssue("Unhandled repository type: \(repository)")
       return "Home-DocsetInfo-InstalledFrom-unknown".boltLocalized

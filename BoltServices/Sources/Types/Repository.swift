@@ -25,6 +25,7 @@ public struct RepositoryIdentifier: Sendable, Codable, RawRepresentable, Hashabl
     case cheatsheet
     case userContributed = "user_contributed"
     case custom
+    case local
   }
 
   public func encode(to encoder: Encoder) throws {
@@ -52,6 +53,7 @@ public struct RepositoryIdentifier: Sendable, Codable, RawRepresentable, Hashabl
   public static var cheatsheet: Self { return Self(rawValue: Repository.cheatsheet.rawValue)! }
   public static var userContributed: Self { return Self(rawValue: Repository.userContributed.rawValue)! }
   public static var custom: Self { return Self(rawValue: Repository.custom.rawValue)! }
+  public static var local: Self { return Self(rawValue: Repository.local.rawValue)! }
 
 }
 

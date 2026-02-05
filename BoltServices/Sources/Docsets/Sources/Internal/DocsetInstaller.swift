@@ -51,23 +51,7 @@ struct DocsetInstaller: LoggerProvider {
           return nil
         }
         .tryMap { docsetPath in
-          do {
-            try Self.removeWALFiles(forDocsetPath: docsetPath)
-          } catch {
-            Self.logger.error("DocsetInstaller: removeWALFiles failed with error: \(error)")
-          }
-          try LibraryDocsetsFileSystemBridge.writeMetadata(
-            ofEntry: entry,
-            toDocsetPath: docsetPath
-          )
-          let docsetInstallation = DocsetInstallation(
-            uuid: uuid,
-            name: entry.feed.id,
-            version: entry.version,
-            installedAsLatestVersion: entry.isTrackedAsLatest,
-            repository: entry.feed.repository
-          )
-          try LibraryDatabase.shared.insertDocsetInstallation(docsetInstallation)
+          try installDocset(forEntry: entry, docsetPath: docsetPath, uuid: uuid)
         }
         .sink(receiveCompletion: { completion in
           switch completion {
@@ -79,6 +63,30 @@ struct DocsetInstaller: LoggerProvider {
         }, receiveValue: { _ in })
     }
     .eraseToAnyPublisher()
+  }
+
+  func installDocset(
+    forEntry entry: FeedEntry,
+    docsetPath: String,
+    uuid: UUID
+  ) throws {
+    do {
+      try Self.removeWALFiles(forDocsetPath: docsetPath)
+    } catch {
+      Self.logger.error("DocsetInstaller: removeWALFiles failed with error: \(error)")
+    }
+    try LibraryDocsetsFileSystemBridge.writeMetadata(
+      ofEntry: entry,
+      toDocsetPath: docsetPath
+    )
+    let docsetInstallation = DocsetInstallation(
+      uuid: uuid,
+      name: entry.feed.id,
+      version: entry.version,
+      installedAsLatestVersion: entry.isTrackedAsLatest,
+      repository: entry.feed.repository
+    )
+    try LibraryDatabase.shared.insertDocsetInstallation(docsetInstallation)
   }
 
   private static func removeWALFiles(forDocsetPath docsetPath: String) throws {
