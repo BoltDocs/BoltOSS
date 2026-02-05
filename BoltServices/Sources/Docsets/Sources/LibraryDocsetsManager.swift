@@ -64,6 +64,8 @@ public protocol LibraryDocsetsManager {
 
   func installOrUpdateDocset(forEntry entry: FeedEntry, usingTarix: Bool) -> AnyPublisher<InstallationProgress, Error>
 
+  func installLocalDocset(forFeedEntry feedEntry: FeedEntry, atPath docsetPath: String) throws
+
   func uninstallDocset(forRecord record: LibraryRecord) throws
 
   func updateDocsetInstallation(_ update: DocsetInstallationUpdate) throws
@@ -148,6 +150,33 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
       }
     }
     return DocsetInstaller.shared.installDocset(forEntry: entry, usingTarix: usingTarix)
+  }
+
+  func installLocalDocset(
+    forFeedEntry feedEntry: FeedEntry,
+    atPath docsetPath: String
+  ) throws {
+    let uuid = UUID()
+
+    let fileManager = FileManager.default
+
+    let newDocsetName = feedEntry.feed.id.appendingPathExtension("docset")
+
+    let containerPath = LocalFileSystem.docsetsAbsolutePath
+      .appendingPathComponent(uuid.uuidString)
+
+    try fileManager.createDirectory(atPath: containerPath, withIntermediateDirectories: true)
+
+    let destPath = containerPath
+      .appendingPathComponent(newDocsetName)
+
+    try fileManager.moveItem(atPath: docsetPath, toPath: destPath)
+
+    try DocsetInstaller.shared.installDocset(
+      forEntry: feedEntry,
+      docsetPath: destPath,
+      uuid: uuid
+    )
   }
 
   // MARK: - Uninstall

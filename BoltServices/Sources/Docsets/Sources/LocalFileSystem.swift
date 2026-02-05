@@ -25,6 +25,10 @@ public extension LocalFileSystem {
     return URL(fileURLWithPath: docsetsAbsolutePath)
   }
 
+  static var applicationDocumentsURL: URL {
+    return URL(fileURLWithPath: applicationDocumentsAbsolutePath)
+  }
+
   static var docsetsAbsolutePath: String {
     return applicationLibraryAbsolutePath.appendingPathComponent("Docsets")
   }
