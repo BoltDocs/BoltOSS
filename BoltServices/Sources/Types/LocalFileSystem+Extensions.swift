@@ -27,7 +27,11 @@ public extension LocalFileSystem {
   }()
 
   static let applicationDocumentsAbsolutePath: String = {
+    #if targetEnvironment(macCatalyst)
     return LocalFileSystem.documentsAbsolutePath.appendingPathComponent(applicationPathPrefix)
+    #else
+    return LocalFileSystem.documentsAbsolutePath
+    #endif
   }()
 
   static let applicationLibraryAbsolutePath: String = {
