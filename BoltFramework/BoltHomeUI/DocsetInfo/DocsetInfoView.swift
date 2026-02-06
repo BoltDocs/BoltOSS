@@ -116,6 +116,8 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
 
   var iconImage: UIImage? { docset.iconImageForInfo }
 
+  var docsetPath: String { docset.path }
+
   var repository: String {
     switch docset.repository {
     case .main:
@@ -225,37 +227,39 @@ private struct DocsetInfoListView: View {
           }
           .frame(maxWidth: .infinity)
         }
-        .listRowSeparator(.hidden)
-        // basic info
-        Section {
+        .listSectionSeparator(.hidden)
+        Section("Home-DocsetInfo-SectionTitles-information".boltLocalized) {
+          // version
           ListItemView("Home-DocsetInfo-SectionTitles-version".boltLocalized) {
             ListItemStringContentView(
               content: $viewModel.version,
               editable: viewModel.isDiagnosticsModeOn
             )
           }
+          // auto updates
           ListItemView("Home-DocsetInfo-SectionTitles-autoUpdates".boltLocalized) {
             ListItemBoolContentView(
               value: $viewModel.installedAsLatestVersion,
               editable: viewModel.isDiagnosticsModeOn
             )
           }
-        }
-        // feed
-        Section {
+          // feed
           ListItemView("Home-DocsetInfo-SectionTitles-installedFrom".boltLocalized) {
             Text(viewModel.repository)
           }
-        }
-        // diagnostics
-        Section {
+          // diagnostics
           if viewModel.isDiagnosticsModeOn {
             // identifier
             ListItemView("Home-DocsetInfo-SectionTitles-identifier".boltLocalized) {
               Text(viewModel.identifier)
             }
+            // docset path
+            ListItemView("Home-DocsetInfo-SectionTitles-location".boltLocalized) {
+              Text(viewModel.docsetPath)
+            }
           }
         }
+        .listSectionSeparator(.visible)
       }
       .listStyle(.plain)
       if RuntimeEnvironment.isInternalBuild {
