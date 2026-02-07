@@ -19,7 +19,7 @@ import Foundation
 public extension FileManager {
 
   func contentsOfDirectory(atPath path: String, ofExtension expectedExtension: String, caseSensitive: Bool = false) -> [String] {
-    guard let paths = try? self.contentsOfDirectory(atPath: path) else {
+    guard let paths = try? contentsOfDirectory(atPath: path) else {
       return []
     }
 
@@ -37,8 +37,38 @@ public extension FileManager {
 
   func fileExistsAndIsDirectory(atPath path: String) -> (Bool, isDirectory: Bool) {
     var isDirectory: ObjCBool = false
-    let fileExists = self.fileExists(atPath: path, isDirectory: &isDirectory)
+    let fileExists = fileExists(atPath: path, isDirectory: &isDirectory)
     return (fileExists, isDirectory.boolValue)
+  }
+
+  static func directoryByteSize(at url: URL) async -> Int64? {
+    // declared as static here due to FileManager is not sendable
+    return await withCheckedContinuation { continuation in
+      DispatchQueue.global(qos: .background).async {
+        var totalSize: Int64 = 0
+
+        guard let enumerator = FileManager.default.enumerator(
+          at: url,
+          includingPropertiesForKeys: [.fileSizeKey, .isRegularFileKey]
+        ) else {
+          continuation.resume(with: .success(nil))
+          return
+        }
+
+        let allItems = Array(enumerator)
+
+        for case let fileURL as URL in allItems {
+          guard let resourceValues = try? fileURL.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]) else {
+            continue
+          }
+          if resourceValues.isRegularFile == true {
+            totalSize += Int64(resourceValues.fileSize ?? 0)
+          }
+        }
+
+        continuation.resume(with: .success(totalSize))
+      }
+    }
   }
 
 }
