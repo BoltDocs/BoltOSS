@@ -20,9 +20,9 @@ import Factory
 import Overture
 
 import BoltLocalizations
+import BoltModuleExports
 import BoltRxSwift
 import BoltServices
-import BoltModuleExports
 import BoltUIFoundation
 
 final class HomeListCollectionViewItemCell: UICollectionViewListCell {
