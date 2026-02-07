@@ -62,6 +62,7 @@
 		6B0DC7322AEE77F4004280C7 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		6B0DC7332AEE77F4004280C7 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
 		6B11970E28C5107300E5F710 /* Manual */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Manual; path = Thirdparty/LicensePlist/Manual; sourceTree = "<group>"; };
+		6B1C87BC2F37627A00ECC414 /* Info_catalyst.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info_catalyst.plist; sourceTree = "<group>"; };
 		6B311D2C2BBE68E500A9756C /* BoltCombineExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltCombineExtensions; sourceTree = "<group>"; };
 		6B593CBB2B6DEED20042E688 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		6B73D7942AEE7D1300CC98AB /* BuildScripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BuildScripts; sourceTree = "<group>"; };
@@ -219,6 +220,7 @@
 				712FC48F2517185700C31537 /* BoltDebug.entitlements */,
 				71CA68B024B8B04300EA9E0A /* BoltRelease.entitlements */,
 				715F6A37247B65FA00AB1300 /* Info.plist */,
+				6B1C87BC2F37627A00ECC414 /* Info_catalyst.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
