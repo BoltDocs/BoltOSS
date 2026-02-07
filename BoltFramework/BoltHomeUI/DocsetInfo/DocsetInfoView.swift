@@ -98,6 +98,7 @@ private struct ListItemBoolContentView: View {
 
 }
 
+@MainActor
 public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
 
   @Injected(\.libraryDocsetsManager)
@@ -109,6 +110,8 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
 
   @Published var version: String
   @Published var installedAsLatestVersion: Bool
+
+  @Published var docsetSize: String?
 
   var identifier: String { docset.name }
 
@@ -138,6 +141,17 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
     self.docset = docset
     self.version = docset.version
     self.installedAsLatestVersion = docset.installedAsLatestVersion
+  }
+
+  func calculateDocsetSize() async {
+    docsetSize = nil
+    let url = URL(fileURLWithPath: docsetPath)
+    if let byteSize = await FileManager.directoryByteSize(at: url) {
+      let size = String.formatBytes(bytes: Double(byteSize))
+      docsetSize = size
+    } else {
+      docsetSize = "Home-DocsetInfo-SectionTitles-unknown".boltLocalized
+    }
   }
 
   func toggleDiagnosticsMode() {
@@ -236,6 +250,15 @@ private struct DocsetInfoListView: View {
               editable: viewModel.isDiagnosticsModeOn
             )
           }
+          // size
+          ListItemView("Home-DocsetInfo-SectionTitles-size".boltLocalized) {
+            if let docsetSize = viewModel.docsetSize {
+              Text(docsetSize)
+            } else {
+              ProgressView()
+                .progressViewStyle(.circular)
+            }
+          }
           // auto updates
           ListItemView("Home-DocsetInfo-SectionTitles-autoUpdates".boltLocalized) {
             ListItemBoolContentView(
@@ -262,6 +285,9 @@ private struct DocsetInfoListView: View {
         .listSectionSeparator(.visible)
       }
       .listStyle(.plain)
+      .task {
+        await viewModel.calculateDocsetSize()
+      }
       if RuntimeEnvironment.isInternalBuild {
         Button("Localizations-General-diagnostics".boltLocalized) {
           viewModel.toggleDiagnosticsMode()
