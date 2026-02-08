@@ -22,6 +22,13 @@ import PackageDescription
 
 let libraryTargets: [Target] = [
   .target(
+    name: "BoltAppKitBridge",
+    dependencies: [
+      "Factory",
+    ],
+    path: "./BoltAppKitBridge"
+  ),
+  .target(
     name: "BoltBrowserUI",
     dependencies: [
       "SnapKit",
@@ -61,6 +68,7 @@ let libraryTargets: [Target] = [
   .target(
     name: "BoltLibraryUI",
     dependencies: [
+      "BoltAppKitBridge",
       "BoltModuleExports",
       "BoltServices",
       "BoltUIFoundation",
@@ -147,6 +155,7 @@ let package = Package(
   platforms: [
     .iOS(.v18),
     .macCatalyst(.v26),
+    .macOS(.v26),
   ],
   products: [
     .library(
@@ -154,8 +163,14 @@ let package = Package(
       type: .dynamic,
       targets: ["BoltFramework"]
     ),
+    .library(
+      name: "BoltAppKitBridge",
+      type: .static,
+      targets: ["BoltAppKitBridge"]
+    ),
   ],
   dependencies: [
+    .package(url: "https://github.com/hmlongco/Factory.git", revision: "2.4.3"),
     .package(url: "https://github.com/SnapKit/SnapKit.git", exact: "5.7.1"),
     .package(url: "https://github.com/yhirano/LicensePlistViewController.git", exact: "2.3.0"),
     .package(url: "https://github.com/stleamist/BetterSafariView.git", exact: "2.4.2"),
