@@ -17,6 +17,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+import BoltAppKitBridge
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
@@ -45,6 +46,9 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
   @LazyInjected(\.libraryDocsetsManager)
   private var docsetManager: LibraryDocsetsManager
 
+  @LazyInjected(\.appKitBridge)
+  private var appKitBridge: AppKitBridgeProtocol?
+
   @Published var docsetItems = [ListItem]()
 
   func refresh() {
@@ -58,6 +62,9 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
       let fileName = URL(fileURLWithPath: path).lastPathComponent
       return ListItem(docsetPath: docsetPath, docsetFileName: fileName)
     }
+  }
+
+  func showFileImporterForCatalyst() {
   }
 
   func installDocset(forItem item: ListItem) {
@@ -164,7 +171,11 @@ struct LibraryTransferView: View {
       }
       Section("Library-Transfer-SectionTitles-importNewDocsets".boltLocalized) {
         Button {
+          #if targetEnvironment(macCatalyst)
+          viewModel.showFileImporterForCatalyst()
+          #else
           showFileImporter = true
+          #endif
         } label: {
           Label(
             "Library-Transfer-ImportSection-selectFromFiles".boltLocalized,
@@ -187,6 +198,7 @@ struct LibraryTransferView: View {
         .labelStyle(.toolbar)
       }
     }
+    #if !targetEnvironment(macCatalyst)
     .fileImporter(
       isPresented: $showFileImporter,
       allowedContentTypes: [UTType.docset],
@@ -202,6 +214,7 @@ struct LibraryTransferView: View {
         viewModel.showError(nestedError: error)
       }
     }
+    #endif
   }
 
 }
