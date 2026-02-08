@@ -16,11 +16,32 @@
 
 import AppKit
 import Foundation
+import UniformTypeIdentifiers
 
 #if canImport(BoltAppKitBridge)
 import BoltAppKitBridge
 #endif
 
 public final class AppKitBridge: NSObject, AppKitBridgeProtocol {
+
+  public func showOpenPanel(
+    allowedContentTypes: [UTType],
+    canChooseFiles: Bool,
+    canChooseDirectories: Bool,
+    allowsMultipleSelection: Bool
+  ) -> [URL]? { // swiftlint:disable:this discouraged_optional_collection
+    let openPanel = NSOpenPanel()
+    openPanel.canChooseFiles = canChooseFiles
+    openPanel.canChooseDirectories = canChooseDirectories
+    openPanel.allowsMultipleSelection = allowsMultipleSelection
+    openPanel.allowedContentTypes = allowedContentTypes
+
+    let response = openPanel.runModal()
+    if response == .OK {
+      return openPanel.urls
+    }
+
+    return nil
+  }
 
 }

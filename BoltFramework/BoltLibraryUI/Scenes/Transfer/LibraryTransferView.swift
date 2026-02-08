@@ -65,6 +65,15 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
   }
 
   func showFileImporterForCatalyst() {
+    let urls = appKitBridge?.showOpenPanel(
+      allowedContentTypes: [.docset],
+      canChooseFiles: true,
+      canChooseDirectories: false,
+      allowsMultipleSelection: false
+    )
+    if let url = urls?.first {
+      handleImportedDocsetFile(url)
+    }
   }
 
   func installDocset(forItem item: ListItem) {
