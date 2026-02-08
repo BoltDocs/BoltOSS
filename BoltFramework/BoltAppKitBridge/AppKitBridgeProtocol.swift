@@ -15,10 +15,18 @@
 //
 
 import Foundation
+import UniformTypeIdentifiers
 
 @objc(BLTAppKitBridgeProtocol) // swiftlint:disable:next attributes
 public protocol AppKitBridgeProtocol: NSObjectProtocol {
 
   init()
+
+  func showOpenPanel(
+    allowedContentTypes: [UTType],
+    canChooseFiles: Bool,
+    canChooseDirectories: Bool,
+    allowsMultipleSelection: Bool
+  ) -> [URL]? // swiftlint:disable:this discouraged_optional_collection
 
 }

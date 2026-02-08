@@ -18,6 +18,13 @@ import UniformTypeIdentifiers
 
 public extension UTType {
 
-  static let docset = UTType(exportedAs: "app.boltdocs.docset")
+  static let docset = {
+    #if targetEnvironment(macCatalyst)
+    return UTType(filenameExtension: "docset", conformingTo: .package) ??
+      UTType(exportedAs: "com.apple.xcode.docset")
+    #else
+    return UTType(exportedAs: "app.boltdocs.docset")
+    #endif
+  }()
 
 }
