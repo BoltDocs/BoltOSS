@@ -16,17 +16,9 @@
 
 import Foundation
 
-import Factory
-
 @objc(BLTAppKitBridgeProtocol) // swiftlint:disable:next attributes
 public protocol AppKitBridgeProtocol: NSObjectProtocol {
 
   init()
-
-}
-
-public extension Container {
-
-  var appKitBridge: Factory<AppKitBridgeProtocol?> { self { nil } }
 
 }

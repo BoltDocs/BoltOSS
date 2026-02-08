@@ -14,13 +14,10 @@
 // limitations under the License.
 //
 
-import AppKit
-import Foundation
+import Factory
 
-#if canImport(BoltAppKitBridge)
-import BoltAppKitBridge
-#endif
+public extension Container {
 
-public final class AppKitBridge: NSObject, AppKitBridgeProtocol {
+  var appKitBridge: Factory<AppKitBridgeProtocol?> { self { nil } }
 
 }
