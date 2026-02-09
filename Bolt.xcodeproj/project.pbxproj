@@ -362,7 +362,6 @@
 			);
 			dependencies = (
 				6B7332812F30675F00D3B39D /* PBXTargetDependency */,
-				6B2056002B62B4A200F90415 /* PBXTargetDependency */,
 				716E2A1E26DB29A8002DE710 /* PBXTargetDependency */,
 			);
 			name = Bolt;
@@ -559,10 +558,6 @@
 			isa = PBXTargetDependency;
 			productRef = 6B04F22A2F38837D005F56E7 /* BoltAppKitBridge */;
 		};
-		6B2056002B62B4A200F90415 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = 6B2055FF2B62B4A200F90415 /* ValidateStringsPlugin */;
-		};
 		6B7332812F30675F00D3B39D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			platformFilter = maccatalyst;
@@ -744,10 +739,6 @@
 		6B04F22A2F38837D005F56E7 /* BoltAppKitBridge */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = BoltAppKitBridge;
-		};
-		6B2055FF2B62B4A200F90415 /* ValidateStringsPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = "plugin:ValidateStringsPlugin";
 		};
 		6BC640492D0EF64A00E51A09 /* SnapshottingTests */ = {
 			isa = XCSwiftPackageProductDependency;
