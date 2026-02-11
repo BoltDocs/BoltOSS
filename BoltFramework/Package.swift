@@ -102,7 +102,6 @@ let libraryTargets: [Target] = [
       "BoltServices",
       "BoltUIFoundation",
       "LicensePlistViewController",
-      "BetterSafariView",
     ],
     path: "./BoltPreferencesUI",
     swiftSettings: [
@@ -113,6 +112,7 @@ let libraryTargets: [Target] = [
     name: "BoltUIFoundation",
     dependencies: [
       "BoltRxSwift",
+      "BetterSafariView",
       .product(name: "Overture", package: "swift-overture"),
       "GSMessages",
       "BoltServices",
