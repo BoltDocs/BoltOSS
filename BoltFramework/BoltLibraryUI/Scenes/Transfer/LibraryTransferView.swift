@@ -51,6 +51,25 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
 
   @Published var docsetItems = [ListItem]()
 
+  private lazy var folderMonitor: FolderMonitor = {
+    return FolderMonitor(
+      url: LocalFileSystem.applicationDocumentsURL
+    ) { [weak self] in
+      guard let self = self else {
+        return
+      }
+      Task { @MainActor in
+        Self.logger.debug("folder monitor received change")
+        self.refresh()
+      }
+    }
+  }()
+
+  func startFolderMonitoring() {
+    Self.logger.debug("start folder monitor at url: \(self.folderMonitor.url)")
+    folderMonitor.startMonitoring()
+  }
+
   func refresh() {
     let documentsPath = LocalFileSystem.applicationDocumentsAbsolutePath
     let paths = FileManager.default.contentsOfDirectory(
@@ -103,13 +122,11 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
       Self.logger.error("failed to install local docset: \(docsetPath), error: \(error.localizedDescription)")
       showError(nestedError: error)
     }
-    refresh()
   }
 
   func removeDocset(forItem item: ListItem) {
     do {
       try FileManager.default.removeItem(atPath: item.docsetPath)
-      refresh()
     } catch {
       Self.logger.error("failed to remove local docset at path: \(item.docsetPath)")
     }
@@ -147,6 +164,9 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
 }
 
 struct LibraryTransferView: View {
+
+  @Environment(\.dismissCurrentSheetModal)
+  private var dismissCurrentSheetModal: DismissAction?
 
   @StateObject private var viewModel = LibraryTransferViewModel()
 
@@ -198,13 +218,21 @@ struct LibraryTransferView: View {
     .navigationBarTitleDisplayMode(.inline)
     .onAppear {
       viewModel.refresh()
+      viewModel.startFolderMonitoring()
     }
     .toolbar {
-      ToolbarItem(placement: .topBarTrailing) {
-        Button(UIKitLocalizations.refresh, systemImage: "arrow.clockwise") {
-          viewModel.refresh()
+      if RuntimeEnvironment.isOS26UIEnabled {
+        ToolbarItem(placement: .topBarTrailing) {
+          Button(UIKitLocalizations.close, systemImage: "xmark") {
+            dismissCurrentSheetModal?()
+          }
         }
-        .labelStyle(.toolbar)
+      } else {
+        ToolbarItem(placement: .confirmationAction) {
+          Button(UIKitLocalizations.done) {
+            dismissCurrentSheetModal?()
+          }
+        }
       }
     }
     #if !targetEnvironment(macCatalyst)
