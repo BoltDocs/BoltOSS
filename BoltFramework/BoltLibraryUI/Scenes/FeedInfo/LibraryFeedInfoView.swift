@@ -29,10 +29,17 @@ import BoltUtils
 
 struct LibraryFeedInfoView: View {
 
-  struct InfoSection: View {
-    private var feed: Feed
+  @State private var safariSheetURL: URL?
 
-    init(feed: Feed) { self.feed = feed }
+  struct InfoSection: View {
+
+    private var feed: Feed
+    @Binding var safariSheetURL: URL?
+
+    init(feed: Feed, safariSheetURL: Binding<URL?>) {
+      self.feed = feed
+      self._safariSheetURL = safariSheetURL
+    }
 
     var body: some View {
       Section("Library-FeedInfo-SectionTitles-Docset".boltLocalized) {
@@ -42,8 +49,27 @@ struct LibraryFeedInfoView: View {
           title: feed.displayName,
           lineLimit: 2
         )
+        if let author = feed.author {
+          Button {
+            safariSheetURL = URL(string: author.link)
+          } label: {
+            HStack {
+              Text("Library-FeedInfo-InfoSection-contributor")
+                .layoutPriority(1)
+              Spacer()
+              Text(author.name)
+                .foregroundStyle(.secondary)
+              Image(systemName: "chevron.right")
+                .font(.footnote)
+                .fontWeight(.semibold)
+                .foregroundStyle(.tertiary)
+            }
+          }
+          .tint(Color.primary)
+        }
       }
     }
+
   }
 
   typealias VersionsSection = LibraryFeedInfoVersionsSection
@@ -86,7 +112,7 @@ struct LibraryFeedInfoView: View {
     NavigationStack {
       Form {
         if !isPlaceHolder {
-          InfoSection(feed: feed)
+          InfoSection(feed: feed, safariSheetURL: $safariSheetURL)
           VersionsSection(feed: feed)
         } else {
           Text(placeHolderMessage)
@@ -110,6 +136,7 @@ struct LibraryFeedInfoView: View {
           }
         }
       }
+      .safariSheet(url: $safariSheetURL)
     }
   }
 

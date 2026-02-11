@@ -21,6 +21,18 @@ public enum UnavailableMessage {
   case message(_: String)
 }
 
+public struct FeedAuthor: Equatable {
+
+  public private(set) var name: String
+  public private(set) var link: String
+
+  public init(name: String, link: String) {
+    self.name = name
+    self.link = link
+  }
+
+}
+
 public protocol Feed: EntryIconProvider {
 
   var repository: RepositoryIdentifier { get }
@@ -28,6 +40,7 @@ public protocol Feed: EntryIconProvider {
   var id: String { get }
   var displayName: String { get }
   var aliases: [String] { get }
+  var author: FeedAuthor? { get }
 
   var supportsArchiveIndex: Bool { get }
 

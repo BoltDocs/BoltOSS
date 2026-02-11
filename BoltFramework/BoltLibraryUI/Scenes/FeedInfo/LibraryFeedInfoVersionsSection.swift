@@ -321,6 +321,7 @@ final class LibraryFeedInfoVersionsStubbedSectionModel: FeedInfoVersionsSectionM
     id: "RxSwift",
     displayName: "RxSwift",
     aliases: [],
+    author: nil,
     shouldHideVersions: false,
     supportsArchiveIndex: false,
     icon: EntryIcon.providerDefault

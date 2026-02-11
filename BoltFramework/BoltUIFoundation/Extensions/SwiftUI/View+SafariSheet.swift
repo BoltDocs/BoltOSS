@@ -18,6 +18,18 @@ import SwiftUI
 
 import BetterSafariView
 
+@ViewBuilder
+private func safariViewContent(url: URL) -> some View {
+  SafariView(
+    url: url,
+    configuration: SafariView.Configuration(
+      entersReaderIfAvailable: false,
+      barCollapsingEnabled: true
+    )
+  )
+  .dismissButtonStyle(.done)
+}
+
 private struct SafariSheetModifier: ViewModifier {
 
   let url: URL
@@ -39,14 +51,30 @@ private struct SafariSheetModifier: ViewModifier {
     #else
     content
       .sheet(isPresented: $isPresented) {
-        SafariView(
-          url: url,
-          configuration: SafariView.Configuration(
-            entersReaderIfAvailable: false,
-            barCollapsingEnabled: true
-          )
-        )
-        .dismissButtonStyle(.done)
+        safariViewContent(url: url)
+      }
+    #endif
+  }
+
+}
+
+private struct SafariSheetURLModifier: ViewModifier {
+
+  @Binding var url: URL?
+
+  func body(content: Content) -> some View {
+    #if targetEnvironment(macCatalyst)
+    content
+      .onChange(of: url) { _, newValue in
+        if let newValue {
+          UIApplication.shared.open(newValue)
+          url = nil
+        }
+      }
+    #else
+    content
+      .sheet(item: $url) {
+        safariViewContent(url: $0)
       }
     #endif
   }
@@ -57,6 +85,10 @@ public extension View {
 
   func safariSheet(url: URL, isPresented: Binding<Bool>) -> some View {
     modifier(SafariSheetModifier(url: url, isPresented: isPresented))
+  }
+
+  func safariSheet(url: Binding<URL?>) -> some View {
+    modifier(SafariSheetURLModifier(url: url))
   }
 
 }

@@ -141,6 +141,7 @@ final class DownloadManagerTests: XCTestCase {
         id: "Bash",
         displayName: "Bash",
         aliases: ["bash shell", "terminal"],
+        author: nil,
         shouldHideVersions: true,
         supportsArchiveIndex: false,
         icon: EntryIcon.bundled(.docsetIcon(.vim))
