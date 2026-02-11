@@ -25,6 +25,7 @@ public struct StubFeed: Feed {
   public var id: String
   public var displayName: String
   public var aliases: [String]
+  public var author: FeedAuthor?
 
   public var shouldHideVersions: Bool
   public var supportsArchiveIndex: Bool
@@ -47,6 +48,7 @@ public struct StubFeed: Feed {
     id: String,
     displayName: String,
     aliases: [String],
+    author: FeedAuthor?,
     shouldHideVersions: Bool,
     supportsArchiveIndex: Bool,
     icon: EntryIcon,
@@ -57,6 +59,7 @@ public struct StubFeed: Feed {
     self.id = id
     self.displayName = displayName
     self.aliases = aliases
+    self.author = author
     self.shouldHideVersions = shouldHideVersions
     self.supportsArchiveIndex = supportsArchiveIndex
     self.icon = icon

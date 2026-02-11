@@ -54,6 +54,7 @@ final class DocsetInstallerTests: XCTestCase {
             id: "Flask",
             displayName: "Flask",
             aliases: [],
+            author: nil,
             shouldHideVersions: false,
             supportsArchiveIndex: false,
             icon: EntryIcon.bundled(.docsetIcon(.flask))

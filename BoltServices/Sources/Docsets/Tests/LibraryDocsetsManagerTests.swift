@@ -63,6 +63,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
             id: "Vim",
             displayName: "Vim",
             aliases: [],
+            author: nil,
             shouldHideVersions: false,
             supportsArchiveIndex: false,
             icon: EntryIcon.bundled(.docsetIcon(.vim))
@@ -103,6 +104,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
             id: "Vim",
             displayName: "Vim",
             aliases: [],
+            author: nil,
             shouldHideVersions: false,
             supportsArchiveIndex: false,
             icon: EntryIcon.bundled(.docsetIcon(.vim))
@@ -170,6 +172,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
             id: "Bash",
             displayName: "Bash",
             aliases: [],
+            author: nil,
             shouldHideVersions: true,
             supportsArchiveIndex: true,
             icon: EntryIcon.bundled(.docsetIcon(.bash))

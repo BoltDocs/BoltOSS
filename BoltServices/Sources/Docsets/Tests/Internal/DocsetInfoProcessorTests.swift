@@ -79,6 +79,7 @@ final class DocsetInfoProcessorTests: XCTestCase {
           id: "RxSwift",
           displayName: "RxSwift",
           aliases: [],
+          author: nil,
           shouldHideVersions: false,
           supportsArchiveIndex: false,
           icon: EntryIcon.providerDefault

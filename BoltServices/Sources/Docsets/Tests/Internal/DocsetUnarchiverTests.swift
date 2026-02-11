@@ -39,6 +39,7 @@ final class TarUnarchiverTests: XCTestCase {
             id: "Vim",
             displayName: "Vim",
             aliases: [],
+            author: nil,
             shouldHideVersions: false,
             supportsArchiveIndex: false,
             icon: EntryIcon.bundled(.docsetIcon(.vim))
@@ -80,6 +81,7 @@ final class TarUnarchiverTests: XCTestCase {
             id: "Vim",
             displayName: "Vim",
             aliases: [],
+            author: nil,
             shouldHideVersions: false,
             supportsArchiveIndex: true,
             icon: EntryIcon.bundled(.docsetIcon(.vim))
@@ -120,6 +122,7 @@ final class TarUnarchiverTests: XCTestCase {
             id: "MultipleExtensions",
             displayName: "MultipleExtensions",
             aliases: [],
+            author: nil,
             shouldHideVersions: false,
             supportsArchiveIndex: false,
             icon: EntryIcon.bundled(.docsetIcon(.vim))

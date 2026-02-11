@@ -56,6 +56,8 @@ public struct LocalFeed: Feed, Identifiable, Equatable {
 
   public var aliases = [String]()
 
+  public var author: FeedAuthor? { nil }
+
   public var shouldHideVersions = false
   public var supportsArchiveIndex = false
 
