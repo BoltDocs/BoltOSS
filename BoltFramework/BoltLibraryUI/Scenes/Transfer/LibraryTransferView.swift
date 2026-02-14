@@ -72,13 +72,19 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
 
   func refresh() {
     let documentsPath = LocalFileSystem.applicationDocumentsAbsolutePath
-    let paths = FileManager.default.contentsOfDirectory(
+    let pathAndFileNames = FileManager.default.contentsOfDirectory(
       atPath: documentsPath,
       ofExtension: "docset"
     )
-    docsetItems = paths.map { path in
+    .map { path -> (String, String) in
       let docsetPath = documentsPath.appendingPathComponent(path)
       let fileName = URL(fileURLWithPath: path).lastPathComponent
+      return (docsetPath, fileName)
+    }
+    .sorted { lhs, rhs in
+      return lhs.1.caseInsensitiveCompare(rhs.1) == .orderedDescending
+    }
+    docsetItems = pathAndFileNames.map { docsetPath, fileName in
       return ListItem(docsetPath: docsetPath, docsetFileName: fileName)
     }
   }
