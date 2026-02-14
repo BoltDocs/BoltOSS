@@ -29,6 +29,8 @@ public struct LibraryHomeListView: View {
 
   private let models = LibraryHomeListViewModel.defaultItems
 
+  @State private var safariSheetURL: URL?
+
   public init() { }
 
   @ViewBuilder
@@ -52,6 +54,10 @@ public struct LibraryHomeListView: View {
             footer: Group {
               if let footer = section.footer {
                 Text(footer)
+                  .environment(\.openURL, OpenURLAction { url in
+                    safariSheetURL = url
+                    return .handled
+                  })
               }
             }
           ) {
@@ -66,6 +72,7 @@ public struct LibraryHomeListView: View {
       .listStyle(.insetGrouped)
       .navigationTitle("Library-Home-title".boltLocalized)
       .navigationBarTitleDisplayMode(.large)
+      .safariSheet(url: $safariSheetURL)
       .toolbar {
         if RuntimeEnvironment.isOS26UIEnabled {
           ToolbarItem(placement: .topBarTrailing) {
