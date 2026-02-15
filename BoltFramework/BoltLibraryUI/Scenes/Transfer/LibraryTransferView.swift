@@ -198,6 +198,12 @@ struct LibraryTransferView: View {
               )
             }
             .tint(Color.primary)
+            .swipeActions {
+              Button(UIKitLocalizations.delete) {
+                viewModel.removeDocset(forItem: docsetItem)
+              }
+              .tint(.red)
+            }
           }
         } else {
           Text("Library-Transfer-LocalDocsetsSection-noDocsetHint".boltLocalized)
