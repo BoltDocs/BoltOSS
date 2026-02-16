@@ -51,6 +51,8 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
 
   @Published var docsetItems = [ListItem]()
 
+  @Published var safariSheetURL: URL?
+
   private lazy var folderMonitor: FolderMonitor = {
     return FolderMonitor(
       url: LocalFileSystem.applicationDocumentsURL
@@ -161,6 +163,12 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
     }
   }
 
+  func openUserGuide(_ guideLocation: UserGuideLocation) {
+    if let guideURL = Container.shared.userGuideURLResolver()?(guideLocation) {
+      safariSheetURL = guideURL
+    }
+  }
+
   func showError(nestedError: Error? = nil) {
     GlobalUI.showMessageToast(
       withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.importDocsetFailed, nestedError: nestedError)
@@ -219,20 +227,50 @@ struct LibraryTransferView: View {
           #endif
         } label: {
           Label(
-            "Library-Transfer-ImportSection-selectFromFiles".boltLocalized,
-            systemImage: "folder.badge.plus"
+            "Library-Transfer-ImportSection-importFromFiles".boltLocalized,
+            systemImage: "folder"
           )
         }
+        #if !targetEnvironment(macCatalyst)
+        Button {
+          let guideLocation = UserGuideLocation(
+            path: "transferring-local-docsets",
+            fragment: "transfer-docsets-from-finder"
+          )
+          viewModel.openUserGuide(guideLocation)
+        } label: {
+          Label(
+            "Library-Transfer-ImportSection-transferFromMac".boltLocalized,
+            systemImage: "arrow.forward.folder"
+          )
+        }
+        #endif
       }
     }
     .formStyle(.grouped)
     .navigationTitle("Library-Transfer-title".boltLocalized)
     .navigationBarTitleDisplayMode(.inline)
+    .safariSheet(url: $viewModel.safariSheetURL)
     .onAppear {
       viewModel.refresh()
       viewModel.startFolderMonitoring()
     }
     .toolbar {
+      ToolbarItem(placement: .topBarTrailing) {
+        Button(action: {
+          let guideLocation = UserGuideLocation(path: "transferring-local-docsets")
+          viewModel.openUserGuide(guideLocation)
+        }, label: {
+          Label(
+            "Library-FeedList-ToolBar-guideButtonTitle".boltLocalized,
+            systemImage: "questionmark.circle"
+          )
+        })
+        .labelStyle(.iconOnly)
+      }
+      if #available (iOS 26.0, *) {
+        ToolbarSpacer(.fixed, placement: .topBarTrailing)
+      }
       if RuntimeEnvironment.isOS26UIEnabled {
         ToolbarItem(placement: .topBarTrailing) {
           Button(UIKitLocalizations.close, systemImage: "xmark") {

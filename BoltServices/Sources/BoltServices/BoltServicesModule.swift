@@ -32,6 +32,15 @@ public struct ServicesModule {
     Container.shared.repositoryModuleInitializer()()
     Container.shared.docsetsModuleInitializer()()
     Container.shared.searchModuleInitializer()()
+    Container.shared.userGuideURLResolver.register {
+      return { location in
+        var str = "https://github.com/BoltDocs/bolt-user-guides/blob/main/contents/\(location.path).md"
+        if let fragment = location.fragment, !fragment.isEmpty {
+          str += "#\(fragment)"
+        }
+        return URL(string: str)
+      }
+    }
     return {}
   }()
 
