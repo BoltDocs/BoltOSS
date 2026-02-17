@@ -22,6 +22,31 @@ import BoltServices
 import BoltUIFoundation
 import BoltUtils
 
+public struct LibraryFeedListUserGuide {
+
+  public enum Icon {
+    case info, question
+  }
+
+  public var location: UserGuideLocation
+  public var icon: Icon
+
+  public init(location: UserGuideLocation, icon: Icon) {
+    self.location = location
+    self.icon = icon
+  }
+
+  public var iconImageName: String {
+    switch icon {
+    case .info:
+      return "info.circle"
+    case .question:
+      return "questionmark.circle"
+    }
+  }
+
+}
+
 protocol LibraryFeedListViewModel: ObservableObject, SendableMetatype {
 
   init()
@@ -29,6 +54,7 @@ protocol LibraryFeedListViewModel: ObservableObject, SendableMetatype {
   static var title: String { get }
   static var emptyStateImage: UIImage { get }
   static var allowsRefresh: Bool { get }
+  static var userGuide: LibraryFeedListUserGuide? { get }
 
   var feeds: [Feed] { get }
 

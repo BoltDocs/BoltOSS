@@ -16,6 +16,8 @@
 
 import SwiftUI
 
+import Factory
+
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
@@ -65,6 +67,8 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
   @StateObject private var model = Model()
   @StateObject private var actionPerformer = RefreshActionPerformer()
 
+  @State var safariSheetURL: URL?
+
   @MainActor
   func refreshAction() async throws(ServiceError) {
     do {
@@ -80,7 +84,26 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
     LibraryFeedListView(model: model, actionPerformer: actionPerformer)
       .navigationTitle(Model.title)
       .navigationBarTitleDisplayMode(.large)
+      .safariSheet(url: $safariSheetURL)
       .toolbar {
+        if let userGuide = Model.userGuide {
+          ToolbarItem(placement: .topBarTrailing) {
+            Button(action: {
+              if let guideURL = Container.shared.userGuideURLResolver()?(userGuide.location) {
+                safariSheetURL = guideURL
+              }
+            }, label: {
+              Label(
+                "Library-FeedList-ToolBar-guideButtonTitle".boltLocalized,
+                systemImage: userGuide.iconImageName
+              )
+            })
+            .labelStyle(.iconOnly)
+          }
+          if #available (iOS 26.0, *) {
+            ToolbarSpacer(.fixed, placement: .topBarTrailing)
+          }
+        }
         if RuntimeEnvironment.isOS26UIEnabled {
           ToolbarItem(placement: .topBarTrailing) {
             Button(UIKitLocalizations.close, systemImage: "xmark") {

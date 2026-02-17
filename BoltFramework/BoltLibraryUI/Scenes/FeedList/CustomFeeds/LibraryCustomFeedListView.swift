@@ -32,6 +32,8 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
 
   @Published var feeds = [CustomFeed]()
 
+  @Published var safariSheetURL: URL?
+
   private var cancellables = Set<AnyCancellable>()
 
   init() {
@@ -43,6 +45,12 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
         }
       }
       .assign(to: &$feeds)
+  }
+
+  func openUserGuide(_ guideLocation: UserGuideLocation) {
+    if let guideURL = Container.shared.userGuideURLResolver()?(guideLocation) {
+      safariSheetURL = guideURL
+    }
   }
 
   func onConfirmRenameFeed(_ feed: CustomFeed, newName: String) throws {
@@ -66,7 +74,7 @@ struct LibraryCustomFeedListView: View {
   @Environment(\.dismissCurrentSheetModal)
   private var dismissCurrentSheetModal: DismissAction?
 
-  @ObservedObject private var model = LibraryCustomFeedListViewModel()
+  @StateObject private var model = LibraryCustomFeedListViewModel()
 
   @State private var showsImportFeedSheet = false
   @State private var feedForFeedInfoSheet: CustomFeed?
@@ -146,7 +154,23 @@ struct LibraryCustomFeedListView: View {
     .background(Color.systemGroupedBackground)
     .navigationTitle("Library-ImportedFeeds-List-title".boltLocalized)
     .navigationBarTitleDisplayMode(.large)
+    .safariSheet(url: $model.safariSheetURL)
     .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        Button(action: {
+          let guideLocation = UserGuideLocation(path: "importing-docsets-from-feeds")
+          model.openUserGuide(guideLocation)
+        }, label: {
+          Label(
+            "Library-FeedList-ToolBar-guideButtonTitle".boltLocalized,
+            systemImage: "questionmark.circle"
+          )
+        })
+        .labelStyle(.iconOnly)
+      } // ToolbarItem
+      if #available (iOS 26.0, *) {
+        ToolbarSpacer(.fixed, placement: .primaryAction)
+      } // if
       ToolbarItem(placement: .confirmationAction) {
         Button(UIKitLocalizations.done, systemImage: "checkmark") {
           dismissCurrentSheetModal?()
