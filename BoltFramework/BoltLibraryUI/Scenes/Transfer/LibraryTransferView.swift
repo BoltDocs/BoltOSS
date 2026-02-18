@@ -46,6 +46,9 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
   @LazyInjected(\.libraryDocsetsManager)
   private var docsetManager: LibraryDocsetsManager
 
+  @LazyInjected(\.localDocsetImporter)
+  private var docsetImporter: LocalDocsetImporter
+
   @LazyInjected(\.appKitBridge)
   private var appKitBridge: AppKitBridgeProtocol?
 
@@ -141,24 +144,10 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
   }
 
   func handleImportedDocsetFile(_ url: URL) {
-    guard url.startAccessingSecurityScopedResource() else {
-      return
-    }
-
-    defer {
-      url.stopAccessingSecurityScopedResource()
-    }
-
-    let fileManager = FileManager.default
-
-    let destDirectory = LocalFileSystem.applicationDocumentsURL
-    let destURL = fileManager.nextAvailableFileName(for: url.lastPathComponent, in: destDirectory)
-
     do {
-      try fileManager.copyItem(at: url, to: destURL)
-      refresh()
+      try docsetImporter.importLocalDocsetFile(withURL: url)
     } catch {
-      Self.logger.error("failed to copy docset file, error: \(error.localizedDescription)")
+      Self.logger.error("failed to import local docset file, error: \(error.localizedDescription)")
       showError(nestedError: error)
     }
   }
@@ -177,7 +166,7 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
 
 }
 
-struct LibraryTransferView: View {
+public struct LibraryTransferView: View {
 
   @Environment(\.dismissCurrentSheetModal)
   private var dismissCurrentSheetModal: DismissAction?
@@ -186,7 +175,9 @@ struct LibraryTransferView: View {
 
   @State private var showFileImporter = false
 
-  var body: some View {
+  public init() { }
+
+  public var body: some View {
     Form {
       Section("Library-Transfer-SectionTitles-localDocsets".boltLocalized) {
         if !viewModel.docsetItems.isEmpty {
