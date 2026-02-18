@@ -14,15 +14,42 @@
 // limitations under the License.
 //
 
+import SwiftUI
 import UIKit
 
 import Factory
 import IssueReporting
+import ObjectAssociationHelper
 
+import BoltDocsets
 import BoltFramework
+import BoltLibraryUI
 import BoltModuleExports
+import BoltUIFoundation
 import BoltURLSchemes
 import BoltUtils
+
+private var urlContextsKey = "urlContextsKey"
+private var didBecomeActiveOnceKey = "didBecomeActiveOnceKey"
+
+private extension UIScene {
+
+  // swiftlint:disable:next discouraged_optional_collection
+  var cachedOpenURLContexts: Set<UIOpenURLContext>? {
+    get { associatedOptionalStruct(key: &urlContextsKey) }
+    set { associateOptionalStruct(key: &urlContextsKey, value: newValue) }
+  }
+
+  var didBecomeActiveOnce: Bool {
+    get {
+      // swiftlint:disable:next discouraged_optional_boolean
+      let boolValue: Bool? = associatedOptionalStruct(key: &didBecomeActiveOnceKey)
+      return boolValue ?? false
+    }
+    set { associateOptionalStruct(key: &didBecomeActiveOnceKey, value: newValue) }
+  }
+
+}
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
 
@@ -33,8 +60,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
   @LazyInjected(\.schemeService)
   private var schemeService: SchemeService
 
-  // swiftlint:disable:next discouraged_optional_collection
-  private var urlContextsOnSceneSessionConnect: Set<UIOpenURLContext>?
+  @LazyInjected(\.localDocsetImporter)
+  private var localDocsetImporter: LocalDocsetImporter
 
   func scene(
     _ scene: UIScene,
@@ -54,7 +81,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
     }
     #endif
 
-    urlContextsOnSceneSessionConnect = connectionOptions.urlContexts
+    scene.cachedOpenURLContexts = connectionOptions.urlContexts
 
     sceneManager = SceneManager(window)
   }
@@ -70,17 +97,16 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
     // Called when the scene has moved from an inactive state to an active state.
     // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
 
+    if !scene.didBecomeActiveOnce {
+      scene.didBecomeActiveOnce = true
+    }
+
     if
       let windowScene = scene as? UIWindowScene,
-      let urlContexts = urlContextsOnSceneSessionConnect
+      let urlContexts = scene.cachedOpenURLContexts
     {
-      urlContextsOnSceneSessionConnect = nil
-      if !urlContexts.isEmpty {
-        schemeService.matchToHandle(
-          withURLs: urlContexts.map { $0.url },
-          forScene: windowScene
-        )
-      }
+      scene.cachedOpenURLContexts = nil
+      handleOpenURLContexts(urlContexts, forScene: windowScene)
     }
 
     checkForDocsetUpdatesIfNeeded()
@@ -126,6 +152,22 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
     }
   }
 
+  private func handleOpenURLContexts(
+    _ urlContexts: Set<UIOpenURLContext>,
+    forScene scene: UIWindowScene
+  ) {
+    if !urlContexts.isEmpty {
+      for urlContext in urlContexts {
+        let url = urlContext.url
+        if url.isFileURL {
+          handleLocalDocsetImport(withURL: url, scene: scene)
+        } else {
+          schemeService.matchToHandle(withURL: url, forScene: scene)
+        }
+      }
+    }
+  }
+
 }
 
 // MARK: - URL Scheme Handling
@@ -133,8 +175,37 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
 extension SceneDelegate {
 
   func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
-    if let scene = scene as? UIWindowScene, !urlContexts.isEmpty {
-      schemeService.matchToHandle(withURLs: urlContexts.map { $0.url }, forScene: scene)
+    if
+      let scene = scene as? UIWindowScene,
+      scene.didBecomeActiveOnce
+    {
+      handleOpenURLContexts(urlContexts, forScene: scene)
+    } else {
+      scene.cachedOpenURLContexts = urlContexts
+    }
+  }
+
+  func handleLocalDocsetImport(withURL url: URL, scene: UIWindowScene) {
+    do {
+      try localDocsetImporter.importLocalDocsetFile(withURL: url)
+
+      let docsetTransferViewController = UIHostingController(
+        rootView: SheetContainer {
+          NavigationView {
+            LibraryTransferView()
+          }
+        }
+      )
+
+      GlobalUI.dismissAllModals(forScene: scene) {
+        GlobalUI.presentModal(
+          docsetTransferViewController,
+          forScene: scene,
+          completionHandler: nil
+        )
+      }
+    } catch {
+      Self.logger.error("failed to import local docset file, error: \(error.localizedDescription)")
     }
   }
 
