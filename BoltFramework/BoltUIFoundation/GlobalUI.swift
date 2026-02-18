@@ -78,9 +78,12 @@ public struct GlobalUI {
     }
   }
 
-  public static func dismissAllModals(completionHandler: (() -> Void)?) {
+  public static func dismissAllModals(
+    forScene scene: UIWindowScene,
+    completionHandler: (() -> Void)?
+  ) {
     if
-      let keyWindow = UIApplication.shared.keyWindowOfActiveScene,
+      let keyWindow = scene.keyWindow,
       let rootViewController = keyWindow.rootViewController
     {
       rootViewController.dismiss(animated: true, completion: completionHandler)
@@ -89,9 +92,13 @@ public struct GlobalUI {
     }
   }
 
-  public static func presentModal(_ controller: UIViewController, completionHandler: (() -> Void)?) {
+  public static func presentModal(
+    _ controller: UIViewController,
+    forScene scene: UIWindowScene,
+    completionHandler: (() -> Void)?
+  ) {
     if
-      let keyWindow = UIApplication.shared.keyWindowOfActiveScene,
+      let keyWindow = scene.keyWindow,
       let rootViewController = keyWindow.rootViewController
     {
       rootViewController.present(controller, animated: true, completion: completionHandler)

@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import UIKit
 
 import Factory
 
@@ -26,14 +27,20 @@ public final class SchemeServiceImp: SchemeService {
     schemeHandlers.append(schemeHandler)
   }
 
-  public func matchToHandle(withURL url: URL) -> Bool {
-    return matchToHandle(withURLs: [url])
+  public func matchToHandle(
+    withURL url: URL,
+    forScene scene: UIWindowScene
+  ) -> Bool {
+    return matchToHandle(withURLs: [url], forScene: scene)
   }
 
-  public func matchToHandle(withURLs urls: [URL]) -> Bool {
+  public func matchToHandle(
+    withURLs urls: [URL],
+    forScene scene: UIWindowScene
+  ) -> Bool {
     return schemeHandlers.contains { handler in
       return urls.contains { url in
-        return handler.matchToHandle(withURL: url)
+        return handler.matchToHandle(withURL: url, forScene: scene)
       }
     }
   }

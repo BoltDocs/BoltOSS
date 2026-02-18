@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import UIKit
 
 public protocol SchemeService {
 
@@ -22,10 +23,10 @@ public protocol SchemeService {
 
   @MainActor
   @discardableResult
-  func matchToHandle(withURL url: URL) -> Bool
+  func matchToHandle(withURL url: URL, forScene scene: UIWindowScene) -> Bool
 
   @MainActor
   @discardableResult
-  func matchToHandle(withURLs urls: [URL]) -> Bool
+  func matchToHandle(withURLs urls: [URL], forScene scene: UIWindowScene) -> Bool
 
 }
