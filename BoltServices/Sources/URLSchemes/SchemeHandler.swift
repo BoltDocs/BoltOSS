@@ -15,10 +15,11 @@
 //
 
 import Foundation
+import UIKit
 
 public protocol SchemeHandler {
 
   @MainActor
-  func matchToHandle(withURL url: URL) -> Bool
+  func matchToHandle(withURL url: URL, forScene scene: UIWindowScene) -> Bool
 
 }

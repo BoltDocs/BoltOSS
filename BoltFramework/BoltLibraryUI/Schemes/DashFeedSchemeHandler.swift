@@ -25,14 +25,14 @@ public struct DashFeedSchemeHandler: SchemeHandler {
 
   public init() { }
 
-  public func matchToHandle(withURL url: URL) -> Bool {
+  public func matchToHandle(withURL url: URL, forScene scene: UIWindowScene) -> Bool {
     guard
       url.scheme == DashFeedURLScheme.scheme,
       let scheme = DashFeedURLScheme(url: url)
     else {
       return false
     }
-    GlobalUI.dismissAllModals {
+    GlobalUI.dismissAllModals(forScene: scene) {
       let feedImportViewController = UIHostingController(
         rootView: SheetContainer {
           NavigationView {
@@ -40,7 +40,11 @@ public struct DashFeedSchemeHandler: SchemeHandler {
           }
         }
       )
-      GlobalUI.presentModal(feedImportViewController, completionHandler: nil)
+      GlobalUI.presentModal(
+        feedImportViewController,
+        forScene: scene,
+        completionHandler: nil
+      )
     }
     return true
   }

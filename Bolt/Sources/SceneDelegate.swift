@@ -70,10 +70,16 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
     // Called when the scene has moved from an inactive state to an active state.
     // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
 
-    if let urlContexts = urlContextsOnSceneSessionConnect {
+    if
+      let windowScene = scene as? UIWindowScene,
+      let urlContexts = urlContextsOnSceneSessionConnect
+    {
       urlContextsOnSceneSessionConnect = nil
       if !urlContexts.isEmpty {
-        schemeService.matchToHandle(withURLs: urlContexts.map { $0.url })
+        schemeService.matchToHandle(
+          withURLs: urlContexts.map { $0.url },
+          forScene: windowScene
+        )
       }
     }
 
@@ -127,8 +133,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, LoggerProvider {
 extension SceneDelegate {
 
   func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
-    if !urlContexts.isEmpty {
-      schemeService.matchToHandle(withURLs: urlContexts.map { $0.url })
+    if let scene = scene as? UIWindowScene, !urlContexts.isEmpty {
+      schemeService.matchToHandle(withURLs: urlContexts.map { $0.url }, forScene: scene)
     }
   }
 
