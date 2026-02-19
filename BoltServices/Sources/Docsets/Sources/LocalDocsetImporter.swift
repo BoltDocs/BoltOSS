@@ -45,7 +45,7 @@ final class LocalDocsetImporterImp: LocalDocsetImporter, LoggerProvider {
 
     let fileManager = FileManager.default
 
-    let (exists, isDirectory) = fileManager.fileExistsAndIsDirectory(atPath: url.path())
+    let (exists, isDirectory) = fileManager.fileExistsAndIsDirectory(atPath: url.path(percentEncoded: false))
 
     guard exists && isDirectory && url.pathExtension.lowercased() == "docset" else {
       Self.logger.error("importLocalDocsetFile(withURL:): skipping invalid docset at URL: \(url)")
