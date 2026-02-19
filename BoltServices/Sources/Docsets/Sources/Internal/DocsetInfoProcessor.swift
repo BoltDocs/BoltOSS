@@ -22,8 +22,6 @@ import BoltUtils
 
 import Factory
 
-typealias InfoDictionary = [String: Any]
-
 enum DocsetInfoKey: String, CaseIterable {
 
   case bundleIdentifier = "CFBundleIdentifier"

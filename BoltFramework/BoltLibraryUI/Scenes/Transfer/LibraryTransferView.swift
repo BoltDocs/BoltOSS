@@ -25,6 +25,28 @@ import BoltUtils
 
 import Factory
 
+private enum UnsupportedLocalDocsetPlatformFamily: String {
+
+  case manPages
+  case apple
+  case stackOverflowOnline = "soonline"
+  case stackOverflowOffline = "sooffline"
+
+  var displayName: String {
+    switch self {
+    case .manPages:
+      return "Man Pages"
+    case .apple:
+      return "Apple API References"
+    case .stackOverflowOnline:
+      return "Online Stack Overflow"
+    case .stackOverflowOffline:
+      return "Offline Stack Overflow"
+    }
+  }
+
+}
+
 private extension ErrorMessageEntity {
 
   static let importDocsetFailed = ErrorMessageEntity(description: "Failed to import docset")
@@ -108,12 +130,47 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
 
   func installDocset(forItem item: ListItem) {
     let docsetPath = item.docsetPath
-    let docsetFileName = item.docsetFileName
-    guard let feedEntry = FeedEntry.localFeedEntryFromDocsetFile(docsetPath) else {
+
+    guard let docsetInfo = DocsetInfo.fromLocalDocsetFile(docsetPath) else {
+      return
+    }
+
+    if let unsupportedFamily = UnsupportedLocalDocsetPlatformFamily(
+      rawValue: docsetInfo.platformFamily.rawValue
+    ) {
+      GlobalUI.presentAlertController(
+        UIAlertController.alert(
+          withTitle: "Library-Transfer-UnsupportedDosestAlert-title".boltLocalized,
+          message: "Library-Transfer-UnsupportedDosestAlert-message".boltLocalized(unsupportedFamily.displayName),
+          confirmAction: (
+            UIKitLocalizations.ok,
+            UIAlertAction.Style.default,
+            { [weak self] in
+              self?.proceedInstallDocset(forItem: item, docsetPath: docsetPath, docsetInfo: docsetInfo)
+            }
+          ),
+          cancelAction: (UIKitLocalizations.cancel, nil)
+        )
+      )
+    } else {
+      proceedInstallDocset(forItem: item, docsetPath: docsetPath, docsetInfo: docsetInfo)
+    }
+  }
+
+  private func proceedInstallDocset(
+    forItem item: ListItem,
+    docsetPath: String,
+    docsetInfo: DocsetInfo
+  ) {
+    guard
+      let feedEntry = FeedEntry.localFeedEntryFromDocsetFile(
+        docsetPath: docsetPath,
+        docsetInfo: docsetInfo
+      ) else {
       GlobalUI.presentAlertController(
         UIAlertController.alert(
           withTitle: "Library-Transfer-UnrecognizableDocsetAlert-title".boltLocalized,
-          message: "Library-Transfer-UnrecognizableDocsetAlert-message".boltLocalized(docsetFileName),
+          message: "Library-Transfer-UnrecognizableDocsetAlert-message".boltLocalized(item.docsetFileName),
           confirmAction: (
             BoltLocalizations.confirm,
             UIAlertAction.Style.default,
@@ -126,6 +183,7 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
       )
       return
     }
+
     do {
       Self.logger.info("start installing local docset: \(docsetPath)")
       try docsetManager.installLocalDocset(forFeedEntry: feedEntry, atPath: docsetPath)

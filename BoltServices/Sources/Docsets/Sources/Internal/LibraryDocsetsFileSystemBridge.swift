@@ -69,6 +69,21 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
     return nil
   }
 
+  static func infoPlistPath(forDocsetPath docsetPath: String) -> String {
+    return docsetPath.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
+  }
+
+  static func infoDictionary(forDocsetPath docsetPath: String) -> InfoDictionary? {
+    let infoPlistPath = infoPlistPath(forDocsetPath: docsetPath)
+
+    guard let infoDict = NSDictionary(contentsOfFile: infoPlistPath) as? InfoDictionary else {
+      Self.logger.warning("Docset Info.plist not found for path: \(docsetPath)")
+      return nil
+    }
+
+    return infoDict
+  }
+
   static func docset(withInstallation installation: DocsetInstallation) -> Docset? {
     guard let docsetFileName = docsetFileName(forInstallationId: installation.uuidString) else {
       Self.logger.warning("No docset found under installation: \(installation)")
@@ -79,7 +94,7 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
       .appendingPathComponent(installation.uuidString)
       .appendingPathComponent(docsetFileName)
 
-    let infoPlistPath = docsetPath.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
+    let infoPlistPath = infoPlistPath(forDocsetPath: docsetPath)
 
     return docset(
       fromDocsetPath: docsetPath,
@@ -90,8 +105,8 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
 
   // override the Info.plist values of the docset with infomations from the feed entry
   static func writeMetadata(ofEntry entry: FeedEntry, toDocsetPath path: String) throws {
-    let infoPlistPath = path.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
-    guard let infoPlistDict = NSDictionary(contentsOfFile: infoPlistPath) as? [String: Any] else {
+    let infoPlistPath = infoPlistPath(forDocsetPath: path)
+    guard let infoPlistDict = NSDictionary(contentsOfFile: infoPlistPath) as? InfoDictionary else {
       Self.logger.warning("No Info.plist found at `\(infoPlistPath)` for feed: `\(entry.feed.id)`.")
       throw LibraryDocsetsManagerError.noInfoPlistFound
     }
@@ -102,14 +117,17 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
   }
 
   static func feedEntryFromLocalDocset(_ docsetPath: String) -> FeedEntry? {
-    let infoPlistPath = docsetPath.appendingPathComponent("Contents").appendingPathComponent("Info.plist")
-
-    guard let infoDict = NSDictionary(contentsOfFile: infoPlistPath) as? InfoDictionary else {
-      Self.logger.warning("Docset Info.plist not found for path: \(docsetPath)")
+    guard let infoDict = infoDictionary(forDocsetPath: docsetPath) else {
       return nil
     }
-
     let docsetInfo = Container.shared.docsetInfoProcessor().docsetInfo(forInfoDictionary: infoDict)
+    return feedEntryFromLocalDocset(docsetPath: docsetPath, docsetInfo: docsetInfo)
+  }
+
+  static func feedEntryFromLocalDocset(
+    docsetPath: String,
+    docsetInfo: DocsetInfo
+  ) -> FeedEntry? {
 
     let id = docsetInfo.bundleIdentifier
 
