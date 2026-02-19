@@ -20,17 +20,13 @@ import BoltTypes
 
 import Factory
 
-public extension FeedEntry {
+public extension DocsetInfo {
 
-  static func localFeedEntryFromDocsetFile(_ docsetPath: String) -> Self? {
-    return LibraryDocsetsFileSystemBridge.feedEntryFromLocalDocset(docsetPath)
-  }
-
-  static func localFeedEntryFromDocsetFile(
-    docsetPath: String,
-    docsetInfo: DocsetInfo
-  ) -> FeedEntry? {
-    return LibraryDocsetsFileSystemBridge.feedEntryFromLocalDocset(docsetPath: docsetPath, docsetInfo: docsetInfo)
+  static func fromLocalDocsetFile(_ docsetPath: String) -> Self? {
+    if let infoDictionary = LibraryDocsetsFileSystemBridge.infoDictionary(forDocsetPath: docsetPath) {
+      return Container.shared.docsetInfoProcessor().docsetInfo(forInfoDictionary: infoDictionary)
+    }
+    return nil
   }
 
 }

@@ -16,21 +16,4 @@
 
 import Foundation
 
-import BoltTypes
-
-import Factory
-
-public extension FeedEntry {
-
-  static func localFeedEntryFromDocsetFile(_ docsetPath: String) -> Self? {
-    return LibraryDocsetsFileSystemBridge.feedEntryFromLocalDocset(docsetPath)
-  }
-
-  static func localFeedEntryFromDocsetFile(
-    docsetPath: String,
-    docsetInfo: DocsetInfo
-  ) -> FeedEntry? {
-    return LibraryDocsetsFileSystemBridge.feedEntryFromLocalDocset(docsetPath: docsetPath, docsetInfo: docsetInfo)
-  }
-
-}
+public typealias InfoDictionary = [String: Any]
