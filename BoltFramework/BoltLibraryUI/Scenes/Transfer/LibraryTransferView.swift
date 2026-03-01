@@ -298,7 +298,7 @@ public struct LibraryTransferView: View {
     }
     .formStyle(.grouped)
     .navigationTitle("Library-Transfer-title".boltLocalized)
-    .navigationBarTitleDisplayMode(.inline)
+    .navigationBarTitleDisplayMode(.large)
     .safariSheet(url: $viewModel.safariSheetURL)
     .onAppear {
       viewModel.refresh()
