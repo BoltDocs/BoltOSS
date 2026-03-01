@@ -135,7 +135,7 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
       return
     }
 
-    if let unsupportedFamily = UnsupportedLocalDocsetPlatformFamily(
+    if RuntimeEnvironment.hidesUnfinishedFeatures, let unsupportedFamily = UnsupportedLocalDocsetPlatformFamily(
       rawValue: docsetInfo.platformFamily.rawValue
     ) {
       GlobalUI.presentAlertController(
