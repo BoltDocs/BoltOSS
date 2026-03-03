@@ -140,8 +140,8 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
     ) {
       GlobalUI.presentAlertController(
         UIAlertController.alert(
-          withTitle: "Library-Transfer-UnsupportedDosestAlert-title".boltLocalized,
-          message: "Library-Transfer-UnsupportedDosestAlert-message".boltLocalized(unsupportedFamily.displayName),
+          withTitle: "Library-Transfer-UnsupportedDocsetAlert-title".boltLocalized,
+          message: "Library-Transfer-UnsupportedDocsetAlert-message".boltLocalized(unsupportedFamily.displayName),
           confirmAction: (
             UIKitLocalizations.ok,
             UIAlertAction.Style.default,
