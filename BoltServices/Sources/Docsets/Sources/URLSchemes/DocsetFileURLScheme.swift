@@ -28,26 +28,36 @@ public struct DocsetFileURLScheme: URLScheme {
   public static var scheme = "bolt-doc-file"
 
   public var url: URL? {
-    return URL(string: "\(Self.scheme)://\(docsetUUID)/\(path)")
+    var components = URLComponents()
+    components.scheme = Self.scheme
+    components.host = docsetUUID
+
+    var componentsPath = path
+    if !componentsPath.isEmpty, !componentsPath.starts(with: "/") {
+      componentsPath = "/" + componentsPath
+    }
+
+    components.path = componentsPath
+
+    return components.url
   }
 
-  public init?(docsetUUID: String, path: String) {
+  public init(docsetUUID: String, path: String) {
     self.docsetUUID = docsetUUID
     self.docsetFileName = ""
     self.path = path
   }
 
   public init?(url: URL) {
-    // bolt-tarix://UUID/xxxxxx.html
+    // bolt-doc-file://UUID/xxxxxx.html
     guard
-      let scheme = url.scheme,
-      scheme == Self.scheme,
-      let id = url.host,
+      let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+      components.scheme == Self.scheme,
+      let id = components.host,
       let docsetFileName = LibraryDocsetsFileSystemBridge.docsetFileName(forInstallationId: id)
     else {
       return nil
     }
-
     self.docsetUUID = id
     self.docsetFileName = docsetFileName
     self.path = url.path
