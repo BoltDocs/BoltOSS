@@ -28,10 +28,17 @@ To checkout and build, use the following commands:
 
 ```sh
 mkdir Bolt
-git clone git@github.com:BoltDocs/BoltOSS.git Bolt
-cd Bolt
+
+git clone git@github.com:BoltDocs/BoltOSS.git Bolt && cd Bolt
+
 git submodule update --init --recursive
+
+# configure the code signing settings (team ID, organization, etc.)
 sh developer-setup.sh
+
+# optionally, build the frontend modules
+sh ./Frontend/build-frontend.sh
+
 open Bolt.xcodeproj
 ```
 

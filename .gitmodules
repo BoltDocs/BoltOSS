@@ -1,3 +1,6 @@
 [submodule "BoltLocalizations"]
 	path = BoltLocalizations
 	url = git@github.com:BoltDocs/BoltLocalizations.git
+[submodule "Frontend/swift-docc-render"]
+	path = Frontend/swift-docc-render
+	url = git@github.com:BoltDocs/swift-docc-render.git
