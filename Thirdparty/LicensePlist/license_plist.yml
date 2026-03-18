@@ -1,3 +1,6 @@
+manual:
+  - name: "swift-docc-render"
+    file: "./Manual/LICENSE-swift-docc-render.txt"
 exclude:
   - ObjectAssociationHelper
   - BoltLocalizations
