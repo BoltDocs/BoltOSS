@@ -21,86 +21,24 @@ import BoltArchives
 import BoltServices
 import BoltUtils
 
-enum WebErrors: Error {
-  case RequestFailedError
-}
-
 // - SeeAlso: https://stackoverflow.com/questions/69216563/how-to-enable-wkurlschemehandler-to-do-work-off-main-thread
 
-public class TarixURLSchemeHandler: NSObject, WKURLSchemeHandler {
+public class TarixURLSchemeHandler: BaseURLSchemeHandler<DocsetFileURLScheme> {
 
   static let queue = DispatchQueue(label: "app.BoltDocs.Bolt.TarixURLSchemeHandler", qos: .userInitiated)
 
-  private var stoppedRequests: [URLRequest] = []
-
-  public func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-    let request = urlSchemeTask.request
-    guard
-      let url = urlSchemeTask.request.url,
-      url.scheme == DocsetFileURLScheme.scheme,
-      let scheme = DocsetFileURLScheme(url: url)
-    else {
-      urlSchemeTask.didFailWithError(WebErrors.RequestFailedError)
-      return
+  override public func parseScheme(from url: URL) -> DocsetFileURLScheme? {
+    guard url.scheme == DocsetFileURLScheme.scheme else {
+      return nil
     }
+    return DocsetFileURLScheme(url: url)
+  }
 
-    Task.detached(priority: .userInitiated) { [weak self] in
-      guard let self else {
-        return
-      }
-
-      let response = URLResponse(url: url, mimeType: url.mimeType(), expectedContentLength: -1, textEncodingName: nil)
-
-      if let data = await Self.loadTarix(fromScheme: scheme) {
-        await postResponse(to: urlSchemeTask, response: response)
-        await postResponse(to: urlSchemeTask, data: data)
-        await postFinished(to: urlSchemeTask)
-      } else if let data = Self.loadFile(fromScheme: scheme) {
-        await postResponse(to: urlSchemeTask, response: response)
-        await postResponse(to: urlSchemeTask, data: data)
-        await postFinished(to: urlSchemeTask)
-      } else {
-        await postFailed(to: urlSchemeTask, error: WebErrors.RequestFailedError)
-      }
+  override public func loadData(for scheme: DocsetFileURLScheme) async -> Data? {
+    if let data = await Self.loadTarix(fromScheme: scheme) {
+      return data
     }
-
-    // remove the task from the list of stopped tasks (if it is there)
-    // since we're done with it anyway
-    stoppedRequests = stoppedRequests.filter { $0 != request }
-  }
-
-  public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-    if !isTaskStopped(urlSchemeTask) {
-      stoppedRequests.append(urlSchemeTask.request)
-    }
-  }
-
-  // MARK: - Private
-
-  private func isTaskStopped(_ urlSchemeTask: WKURLSchemeTask) -> Bool {
-    return stoppedRequests.contains { $0 == urlSchemeTask.request }
-  }
-
-  private nonisolated func postResponse(to urlSchemeTask: WKURLSchemeTask, response: URLResponse) async {
-    await post(to: urlSchemeTask) { urlSchemeTask.didReceive(response) }
-  }
-
-  private nonisolated func postResponse(to urlSchemeTask: WKURLSchemeTask, data: Data) async {
-    await post(to: urlSchemeTask) { urlSchemeTask.didReceive(data) }
-  }
-
-  private nonisolated func postFinished(to urlSchemeTask: WKURLSchemeTask) async {
-    await post(to: urlSchemeTask) { urlSchemeTask.didFinish() }
-  }
-
-  private nonisolated func postFailed(to urlSchemeTask: WKURLSchemeTask, error: Error) async {
-    await post(to: urlSchemeTask) { urlSchemeTask.didFailWithError(error) }
-  }
-
-  private nonisolated func post(to urlSchemeTask: WKURLSchemeTask, action: @escaping () -> Void) async {
-    if await isTaskStopped(urlSchemeTask) == false {
-      action()
-    }
+    return Self.loadFile(fromScheme: scheme)
   }
 
 }
