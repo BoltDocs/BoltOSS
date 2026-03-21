@@ -27,18 +27,27 @@ public class TarixURLSchemeHandler: BaseURLSchemeHandler<DocsetFileURLScheme> {
 
   static let queue = DispatchQueue(label: "app.BoltDocs.Bolt.TarixURLSchemeHandler", qos: .userInitiated)
 
-  override public func parseScheme(from url: URL) -> DocsetFileURLScheme? {
+  override public func parseScheme(fromURL url: URL) -> DocsetFileURLScheme? {
     guard url.scheme == DocsetFileURLScheme.scheme else {
       return nil
     }
     return DocsetFileURLScheme(url: url)
   }
 
-  override public func loadData(for scheme: DocsetFileURLScheme) async -> Data? {
+  override public func load(forURL url: URL, scheme: DocsetFileURLScheme) async -> (URLResponse, Data)? {
+    let mimeType = url.mimeType() ?? "text/html"
+    let response = URLResponse(
+      url: url,
+      mimeType: mimeType,
+      expectedContentLength: -1,
+      textEncodingName: nil
+    )
     if let data = await Self.loadTarix(fromScheme: scheme) {
-      return data
+      return (response, data)
+    } else if let data = Self.loadFile(fromScheme: scheme) {
+      return (response, data)
     }
-    return Self.loadFile(fromScheme: scheme)
+    return nil
   }
 
 }

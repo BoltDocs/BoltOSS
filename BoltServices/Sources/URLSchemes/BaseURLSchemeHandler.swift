@@ -32,7 +32,7 @@ open class BaseURLSchemeHandler<URLScheme>: NSObject, WKURLSchemeHandler {
   public final func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
     let request = urlSchemeTask.request
 
-    guard let url = urlSchemeTask.request.url, let scheme = parseScheme(from: url) else {
+    guard let url = urlSchemeTask.request.url, let scheme = parseScheme(fromURL: url) else {
       urlSchemeTask.didFailWithError(URLSchemeHandlerError.requestFailed)
       return
     }
@@ -42,9 +42,7 @@ open class BaseURLSchemeHandler<URLScheme>: NSObject, WKURLSchemeHandler {
         return
       }
 
-      let response = URLResponse(url: url, mimeType: url.mimeType(), expectedContentLength: -1, textEncodingName: nil)
-
-      if let data = await loadData(for: scheme) {
+      if let (response, data) = await load(forURL: url, scheme: scheme) {
         await postResponse(to: urlSchemeTask, response: response)
         await postResponse(to: urlSchemeTask, data: data)
         await postFinished(to: urlSchemeTask)
@@ -64,13 +62,13 @@ open class BaseURLSchemeHandler<URLScheme>: NSObject, WKURLSchemeHandler {
     }
   }
 
-  open func parseScheme(from url: URL) -> URLScheme? {
+  open func parseScheme(fromURL url: URL) -> URLScheme? {
     reportIssue("Subclasses must override parseScheme(from:)")
     return nil
   }
 
   // swiftlint:disable:next async_without_await
-  open func loadData(for scheme: URLScheme) async -> Data? {
+  open func load(forURL url: URL, scheme: URLScheme) async -> (URLResponse, Data)? {
     reportIssue("Subclasses must override loadData(for:)")
     return nil
   }
