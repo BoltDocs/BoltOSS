@@ -18,8 +18,6 @@ import Foundation
 
 struct MimeTypes {
 
-  static let `default` = "application/octet-stream"
-
   private static let mimeTypes = [
     "html": "text/html",
     "htm": "text/html",
@@ -133,19 +131,22 @@ struct MimeTypes {
     "avi": "video/x-msvideo",
   ]
 
-  static func mimeType(forExtension ext: String?) -> String {
-    if ext != nil && mimeTypes.contains(where: { $0.key == ext!.lowercased() }) {
-      return mimeTypes[ext!.lowercased()]!
+  static func mimeType(forExtension ext: String) -> String? {
+    guard !ext.isEmpty else {
+      return nil
     }
-    return Self.default
+    if let mimeType = mimeTypes.first(where: { $0.key == ext.lowercased() })?.value {
+      return mimeType
+    }
+    return "application/octet-stream"
   }
 
 }
 
 public extension URL {
 
-  func mimeType() -> String {
-    return MimeTypes.mimeType(forExtension: self.pathExtension)
+  func mimeType() -> String? {
+    return MimeTypes.mimeType(forExtension: pathExtension)
   }
 
 }
