@@ -21,8 +21,8 @@ import BoltUtils
 
 protocol FindInPageMessageHandlerDelegate: AnyObject {
 
-  func findInPageHelper(_: FindInPageMessageHandler, didUpdateCurrentResult: Int)
-  func findInPageHelper(_: FindInPageMessageHandler, didUpdateTotalResults: Int)
+  func findInPageHandler(_: FindInPageMessageHandler, didUpdateCurrentResult: Int)
+  func findInPageHandler(_: FindInPageMessageHandler, didUpdateTotalResults: Int)
 
 }
 
@@ -34,6 +34,7 @@ final class FindInPageMessageHandler: NSObject, WKScriptMessageHandler, LoggerPr
 
   init(delegate: FindInPageMessageHandlerDelegate) {
     self.delegate = delegate
+    super.init()
   }
 
   func userContentController(
@@ -46,11 +47,11 @@ final class FindInPageMessageHandler: NSObject, WKScriptMessageHandler, LoggerPr
     }
 
     if let currentResult = data["currentResult"] {
-      delegate?.findInPageHelper(self, didUpdateCurrentResult: currentResult)
+      delegate?.findInPageHandler(self, didUpdateCurrentResult: currentResult)
     }
 
     if let totalResults = data["totalResults"] {
-      delegate?.findInPageHelper(self, didUpdateTotalResults: totalResults)
+      delegate?.findInPageHandler(self, didUpdateTotalResults: totalResults)
     }
   }
 

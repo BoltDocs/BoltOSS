@@ -170,14 +170,14 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
 
 extension BrowserView: FindInPageMessageHandlerDelegate {
 
-  func findInPageHelper(
+  func findInPageHandler(
     _: FindInPageMessageHandler,
     didUpdateCurrentResult currentResult: Int
   ) {
     findInPageCurrentIndexSubject.accept(currentResult)
   }
 
-  func findInPageHelper(
+  func findInPageHandler(
     _: FindInPageMessageHandler,
     didUpdateTotalResults totalResults: Int
   ) {
