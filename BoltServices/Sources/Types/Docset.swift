@@ -168,6 +168,8 @@ public struct Docset: LibraryRecord, Sendable {
   public var indexPagePath: String? { docsetInfo.indexPagePath }
   public var keyword: DocsetInfo.Keyword { docsetInfo.keyword }
 
+  public var isAppleAPIDocset: Bool { docsetInfo.platformFamily.name == "apple" }
+
   public init(
     installation: DocsetInstallation,
     path: String,

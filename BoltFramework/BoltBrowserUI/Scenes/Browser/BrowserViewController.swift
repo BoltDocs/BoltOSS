@@ -78,7 +78,8 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
           owner.docset = docset
           owner.setupBrowserView(
             initialURL: docset.indexPageURL ?? URL.blank,
-            enablesJavaScript: docset.isJavaScriptEnabled
+            enablesJavaScript: docset.isJavaScriptEnabled,
+            isAppleAPIDocset: docset.isAppleAPIDocset
           )
         case .history:
           break
@@ -107,10 +108,18 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
       .disposed(by: disposeBag)
   }
 
-  private func setupBrowserView(initialURL: URL, enablesJavaScript: Bool) {
+  private func setupBrowserView(
+    initialURL: URL,
+    enablesJavaScript: Bool,
+    isAppleAPIDocset: Bool
+  ) {
     browserView?.removeFromSuperview()
 
-    browserView = BrowserView(initialURL: initialURL, enablesJavaScript: enablesJavaScript)
+    browserView = BrowserView(
+      initialURL: initialURL,
+      enablesJavaScript: enablesJavaScript,
+      isAppleAPIDocset: isAppleAPIDocset
+    )
 
     browserView.title
       .drive(titleRelay)

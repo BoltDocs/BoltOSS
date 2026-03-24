@@ -72,7 +72,11 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
     }
   }
 
-  init(initialURL: URL, enablesJavaScript: Bool) {
+  init(
+    initialURL: URL,
+    enablesJavaScript: Bool,
+    isAppleAPIDocset: Bool
+  ) {
     super.init(frame: .zero)
 
     let configuration = update(WKWebViewConfiguration()) {
