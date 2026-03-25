@@ -93,7 +93,7 @@ final class DocsetInfoProcessorImp: DocsetInfoProcessor, LoggerProvider {
   }
 
   private static func isPlatformJavaScriptEnabled(forPlatformFamily platformFamily: DocsetInfo.PlatformFamily, generatorFamily: String?) -> Bool {
-    let doxygenFamily = ["doxy", "doxygen"]
+    let doxygenFamily = ["apple", "doxy", "doxygen"]
     return
       doxygenFamily.contains(platformFamily.rawValue) ||
       doxygenFamily.contains { $0 == generatorFamily }
