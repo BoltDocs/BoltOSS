@@ -22,8 +22,21 @@ import BoltURLSchemes
 public extension Docset {
 
   func url(forPagePath pagePath: String) -> URL? {
-    if let url = DocsetFileURLScheme(docsetUUID: uuidString, path: pagePath).url {
+    if let url = URL(string: pagePath), let scheme = url.scheme, !scheme.isEmpty {
+      if
+        let dashAppleAPIScheme = DashAppleAPIURLScheme(url: url),
+        let docPath = dashAppleAPIScheme.docPath,
+        !docPath.isEmpty
+      {
+        return AppleDocURLScheme(
+          docsetUUID: uuidString,
+          path: docPath,
+          hash: dashAppleAPIScheme.hash
+        ).url
+      }
       return url
+    } else if let docsetFileURL = DocsetFileURLScheme(docsetUUID: uuidString, path: pagePath).url {
+      return docsetFileURL
     }
     return nil
   }

@@ -72,12 +72,22 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
     }
   }
 
+  private var isAppleAPIDocset: Bool
+
   init(
     initialURL: URL,
     enablesJavaScript: Bool,
     isAppleAPIDocset: Bool
   ) {
+    self.isAppleAPIDocset = isAppleAPIDocset
+
     super.init(frame: .zero)
+
+    setupWebView(initialURL: initialURL, enablesJavaScript: enablesJavaScript)
+  }
+
+  private func setupWebView(initialURL: URL, enablesJavaScript: Bool) {
+    let isAppleAPIDocset = isAppleAPIDocset
 
     let configuration = update(WKWebViewConfiguration()) {
       let pagePreferences = update(WKWebpagePreferences()) {
@@ -105,6 +115,9 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
       $0.websiteDataStore = UserDefaults.standard.disablesPrivateBrowsing ? .default() : .nonPersistent()
       $0.defaultWebpagePreferences = pagePreferences
       $0.setURLSchemeHandler(TarixURLSchemeHandler(), forURLScheme: DocsetFileURLScheme.scheme)
+      if isAppleAPIDocset {
+        $0.setURLSchemeHandler(AppleDocURLSchemeHandler(), forURLScheme: AppleDocURLScheme.scheme)
+      }
       $0.userContentController = userContentController
     }
 

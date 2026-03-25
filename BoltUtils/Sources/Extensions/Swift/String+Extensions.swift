@@ -34,6 +34,10 @@ public extension String {
     return (self as NSString).deletingPathExtension
   }
 
+  var standardizingPath: String {
+    return (self as NSString).standardizingPath
+  }
+
   func replacingPrefix(_ prefix: String, with replacement: String) -> String {
     if hasPrefix(prefix) {
       return replacement + dropFirst(prefix.count)

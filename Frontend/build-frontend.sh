@@ -15,6 +15,8 @@ nvm use || { echo "error: nvm use failed" >&2; exit 1; }
 
 npm install
 
+BASE_URL="/" \
+VUE_APP_TARGET="ide" \
 npm run build
 
 rsync -a --delete dist/ "$DEST_DIR"
