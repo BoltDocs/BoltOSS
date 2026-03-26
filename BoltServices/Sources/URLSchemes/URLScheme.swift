@@ -16,7 +16,7 @@
 
 import Foundation
 
-public protocol URLScheme {
+public protocol URLScheme: CustomStringConvertible {
 
   static var scheme: String { get }
 
@@ -24,5 +24,13 @@ public protocol URLScheme {
 
   init?(url: URL)
   init?(urlString: String)
+
+}
+
+public extension URLScheme {
+
+  var description: String {
+    return url?.absoluteString ?? "\(Self.scheme)://"
+  }
 
 }

@@ -34,6 +34,10 @@ public extension String {
     return (self as NSString).deletingPathExtension
   }
 
+  var pathExtension: String {
+    return (self as NSString).pathExtension
+  }
+
   var standardizingPath: String {
     return (self as NSString).standardizingPath
   }

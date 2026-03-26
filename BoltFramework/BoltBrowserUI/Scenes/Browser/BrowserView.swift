@@ -110,6 +110,10 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
         }
         let findInPageHandler = FindInPageMessageHandler(delegate: self)
         $0.add(findInPageHandler, name: findInPageHandler.name)
+        if isAppleAPIDocset {
+          let appleDocMessageHandler = AppleDocMessageHandler(delegate: self)
+          $0.add(appleDocMessageHandler, name: appleDocMessageHandler.name)
+        }
       }
 
       $0.websiteDataStore = UserDefaults.standard.disablesPrivateBrowsing ? .default() : .nonPersistent()
@@ -200,5 +204,13 @@ extension BrowserView: FindInPageMessageHandlerDelegate {
   ) {
     findInPageTotalResultsSubject.accept(totalResults)
   }
+
+}
+
+extension BrowserView: AppleDocMessageHandlerDelegate {
+
+  func appleDocMessageHandlerDidRender(_: AppleDocMessageHandler) { }
+
+  func appleDocMessageHandlerDidRequestCodeColors(_: AppleDocMessageHandler) { }
 
 }
