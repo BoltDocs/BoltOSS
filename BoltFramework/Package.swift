@@ -32,6 +32,7 @@ let libraryTargets: [Target] = [
     name: "BoltBrowserUI",
     dependencies: [
       "SnapKit",
+      "BoltAppleDocumentation",
       "BoltModuleExports",
       "BoltServices",
       "BoltUIFoundation",
@@ -177,6 +178,7 @@ let package = Package(
     .package(url: "https://github.com/wxxsw/GSMessages.git", revision: "88d895a"),
     .package(url: "https://github.com/pointfreeco/swift-overture.git", revision: "0.5.0"),
     .package(url: "https://github.com/BoltDocs/RoutableNavigation.git", revision: "9981883"),
+    .package(path: "../BoltAppleDocumentation"),
     .package(path: "../BoltRxSwift"),
     .package(path: "../BoltLocalizations"),
     .package(path: "../BoltServices"),

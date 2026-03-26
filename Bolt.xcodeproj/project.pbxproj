@@ -83,6 +83,7 @@
 		6B11970E28C5107300E5F710 /* Manual */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Manual; path = Thirdparty/LicensePlist/Manual; sourceTree = "<group>"; };
 		6B1C87BC2F37627A00ECC414 /* Info_catalyst.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info_catalyst.plist; sourceTree = "<group>"; };
 		6B311D2C2BBE68E500A9756C /* BoltCombineExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltCombineExtensions; sourceTree = "<group>"; };
+		6B4B00EB2F715567002A156C /* BoltAppleDocumentation */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BoltAppleDocumentation; sourceTree = "<group>"; };
 		6B593CBB2B6DEED20042E688 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		6B7332492F3043C200D3B39D /* BoltAppKitBridgeRuntime.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BoltAppKitBridgeRuntime.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B73325F2F304A1200D3B39D /* BoltAppKitBridgeRuntime.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = BoltAppKitBridgeRuntime.xcconfig; sourceTree = "<group>"; };
@@ -215,6 +216,7 @@
 				6B87A8112765CE35003731CD /* BoltLocalizations */,
 				6BCE13DE2B63F20C008C5285 /* BoltUtils */,
 				6BDA6C2E2827D30700D932FD /* BoltServices */,
+				6B4B00EB2F715567002A156C /* BoltAppleDocumentation */,
 				71799FC026DB28F6001A2811 /* BoltFramework */,
 				715F6A28247B65F700AB1300 /* Bolt */,
 				6B73324F2F3043F900D3B39D /* BoltAppKitBridgeRuntime */,

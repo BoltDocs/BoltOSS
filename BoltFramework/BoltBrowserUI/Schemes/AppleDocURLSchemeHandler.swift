@@ -41,7 +41,6 @@ public class AppleDocURLSchemeHandler: BaseURLSchemeHandler<AppleDocURLScheme>, 
     return AppleDocURLScheme(url: url)
   }
 
-  // swiftlint:disable:next async_without_await
   override public func load(forURL url: URL, scheme: AppleDocURLScheme) async -> (URLResponse, Data)? {
     let path = scheme.path
 
@@ -56,6 +55,24 @@ public class AppleDocURLSchemeHandler: BaseURLSchemeHandler<AppleDocURLScheme>, 
         Self.logger.debug("AppleDocURLSchemeHandler: serving file for path: \(path)")
         return (response, data)
       }
+    }
+
+    do {
+      // FIXME: add support for switching source language
+      if let documentationData = try await AppleAPIDocumentationLoader.loadAppleDocumentationContent(
+        scheme: scheme,
+        language: .swift
+      ) {
+        let response = URLResponse(
+          url: url,
+          mimeType: url.mimeType(),
+          expectedContentLength: -1,
+          textEncodingName: nil
+        )
+        return (response, documentationData)
+      }
+    } catch {
+      Self.logger.error("AppleDocURLSchemeHandler: failed to load content from scheme: \(scheme), error: \(error)")
     }
 
     guard let indexPageData = fileDataForRenderAsset(atPath: "index.html") else {
