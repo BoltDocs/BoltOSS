@@ -18,6 +18,6 @@ import Factory
 
 public extension Container {
 
-  var appKitBridge: Factory<AppKitBridgeProtocol?> { self { nil } }
+  var appKitBridge: Factory<AppKitBridgeProtocol?> { self { nil }.cached }
 
 }

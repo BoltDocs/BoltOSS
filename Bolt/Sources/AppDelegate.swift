@@ -19,7 +19,6 @@ import UIKit
 import Factory
 import IssueReporting
 
-import BoltAppKitBridge
 import BoltFramework
 import BoltModuleExports
 import BoltUtils
@@ -42,48 +41,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, LoggerProvider {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? // swiftlint:disable:this discouraged_optional_collection
   ) -> Bool {
-    #if targetEnvironment(macCatalyst)
-    if let appKitBridge = loadAppKitBridgeFromBundle() {
-      Container.shared.appKitBridge.register { appKitBridge }
-    } else {
-      reportIssue("failed to initialize appkit bridge bundle")
-    }
-    #endif
     let _ = boltFramework
     return true
   }
-
-#if targetEnvironment(macCatalyst)
-
-  private func loadAppKitBridgeFromBundle() -> AppKitBridgeProtocol? {
-    guard let bundleURL = Bundle.main.builtInPlugInsURL?.appendingPathComponent("BoltAppKitBridgeRuntime.bundle") else {
-      return nil
-    }
-
-    guard let bundle = Bundle(url: bundleURL) else {
-      Self.logger.error("failed to initialize appkit bridge bundle at url: \(bundleURL)")
-      return nil
-    }
-
-    do {
-      try bundle.loadAndReturnError()
-    } catch {
-      Self.logger.error("failed to load appkit bridge bundle: \(bundle) at url: \(bundleURL), error: \(error)")
-      return nil
-    }
-
-    guard
-      let AppKitBridge = bundle.classNamed("BoltAppKitBridgeRuntime.AppKitBridge") as? AppKitBridgeProtocol.Type
-    else {
-      Self.logger.error("failed to load appkit bridge class at bundle: \(bundle) url: \(bundleURL)")
-      return nil
-    }
-
-    // swiftlint:disable:next explicit_init
-    return AppKitBridge.init()
-  }
-
-#endif
 
 }
 

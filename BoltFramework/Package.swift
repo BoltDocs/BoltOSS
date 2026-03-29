@@ -131,6 +131,7 @@ let libraryTargets: [Target] = [
 
 let frameworkTarget: Target = {
   let dependencies: [Target.Dependency] = [
+    "BoltAppKitBridge",
     "BoltUIFoundation",
     "BoltHomeUI",
     "BoltLookupUI",
