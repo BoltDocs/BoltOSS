@@ -15,7 +15,8 @@
 //
 
 import Foundation
-import struct os.Logger
+
+import Logging
 
 public protocol LoggerProvider {
 
@@ -51,7 +52,7 @@ public struct Loggers {
     if let logger = loggers[category] {
       return logger
     }
-    let newLogger = Logger(category: category)
+    let newLogger = Logger(label: category)
     loggers[category] = newLogger
     return newLogger
   }

@@ -26,6 +26,10 @@ public extension String {
     return (self as NSString).deletingLastPathComponent
   }
 
+  var lastPathComponent: String {
+    return (self as NSString).lastPathComponent
+  }
+
   func appendingPathExtension(_ pathExtension: String) -> String {
     return (self as NSString).appendingPathExtension(pathExtension) ?? self + pathExtension
   }

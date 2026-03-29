@@ -17,6 +17,7 @@
 import Foundation
 
 import Factory
+import Logging
 
 import BoltDocsets
 import BoltRepository
@@ -27,6 +28,7 @@ import BoltUtils
 public struct ServicesModule {
 
   public static var initialize: PerformOnce = {
+    setupLogging()
     setupRxSwiftResourceTracing()
     LocalFileSystem.setupApplicationDirectories()
     Container.shared.repositoryModuleInitializer()()
@@ -43,6 +45,10 @@ public struct ServicesModule {
     }
     return {}
   }()
+
+  private static func setupLogging() {
+    LoggingSystem.bootstrap(LoggingOSLog.init)
+  }
 
   private static func setupRxSwiftResourceTracing() {
     if Configurations.Debugging.enableRxSwiftResourceTracing {
