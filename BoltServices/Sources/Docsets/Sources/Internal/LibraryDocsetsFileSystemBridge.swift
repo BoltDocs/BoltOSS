@@ -15,7 +15,6 @@
 //
 
 import Foundation
-import struct os.Logger
 
 import BoltRepository
 import BoltTypes

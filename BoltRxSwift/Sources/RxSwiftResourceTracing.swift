@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-import struct os.Logger
 import Dispatch
 import Foundation
 
+import Logging
 import RxSwift
 
 import BoltUtils

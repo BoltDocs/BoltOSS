@@ -14,8 +14,7 @@
 // limitations under the License.
 //
 
-import struct os.Logger
-
+import Logging
 import RxCocoa
 import RxSwift
 
