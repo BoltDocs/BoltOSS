@@ -33,7 +33,7 @@ public class BoltFramework {
     let _ = Container.shared.appearanceService()
 
     let _ = Container.shared.crashesService()
-    let _ = Container.shared.crashesService()
+    let _ = Container.shared.distributionService()
     let _ = Container.shared.analyticsService()
 
     Container.shared.schemeService().registerSchemeHandler(DashFeedSchemeHandler())
