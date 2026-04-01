@@ -26,18 +26,18 @@ import BoltServices
 import BoltUtils
 import RoutableNavigation
 
-public struct LookupRouteElement: RouteElement {
+struct LookupRouteElement: RouteElement {
 
-  public enum RoutingType {
+  enum RoutingType {
     case initial
     case types(docset: Docset, type: EntryType)
     case entries(docset: Docset)
   }
 
-  public let routingType: RoutingType
-  public let routeHash: String
+  let routingType: RoutingType
+  let routeHash: String
 
-  public init(type: RoutingType) {
+  init(type: RoutingType) {
     self.routingType = type
     self.routeHash = UUID().uuidString
   }

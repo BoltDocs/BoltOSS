@@ -36,7 +36,7 @@ private struct SearchTextFieldTextPreservation {
 
 }
 
-public final class LookupSearchController: UISearchController, HasDisposeBag {
+final class LookupSearchController: UISearchController, HasDisposeBag {
 
   private let sceneState: SceneState
 
@@ -64,7 +64,7 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
     return inputView
   }()
 
-  public init(sceneState: SceneState) {
+  init(sceneState: SceneState) {
     self.sceneState = sceneState
     self.state = LookupRoutingState(sceneState: sceneState)
     resultsController = LookupSearchResultsController(
@@ -75,11 +75,11 @@ public final class LookupSearchController: UISearchController, HasDisposeBag {
   }
 
   @available(*, unavailable)
-  public required init?(coder: NSCoder) {
+  required init?(coder: NSCoder) {
     fatalError("\(#function) has not been implemented")
   }
 
-  override public func viewDidLoad() {
+  override func viewDidLoad() {
     super.viewDidLoad()
 
     showsSearchResultsController = true
@@ -218,7 +218,7 @@ private extension LookupSearchController {
 
 extension LookupSearchController: UITextFieldDelegate {
 
-  public func textFieldDidChangeSelection(_ textField: UITextField) {
+  func textFieldDidChangeSelection(_ textField: UITextField) {
     // prevent selecting tokens
     guard
       let textField = textField as? UISearchTextField,
@@ -241,7 +241,7 @@ extension LookupSearchController: UITextFieldDelegate {
     }
   }
 
-  public func textField(
+  func textField(
     _ textField: UITextField,
     shouldChangeCharactersIn range: NSRange,
     replacementString string: String
@@ -259,7 +259,7 @@ extension LookupSearchController: UITextFieldDelegate {
 
 extension LookupSearchController: UISearchBarDelegate {
 
-  public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange index: Int) {
+  func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange index: Int) {
     guard let selectedScope = SearchScope(index: index) else {
       reportIssue("unknown search scope index: \(index)")
       return
@@ -267,7 +267,7 @@ extension LookupSearchController: UISearchBarDelegate {
     state.selectSearchScope(selectedScope)
   }
 
-  public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+  func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
     preserveSearchFieldText()
   }
 

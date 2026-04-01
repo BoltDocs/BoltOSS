@@ -22,7 +22,7 @@ import RxSwift
 import BoltServices
 import BoltUIFoundation
 
-public struct LookupListCellViewModel {
+struct LookupListCellViewModel {
   let name: String
   let prompt: String?
   let shouldShowDisclosureIndicator: Bool
@@ -30,7 +30,7 @@ public struct LookupListCellViewModel {
   let typeIcon: UIImage?
 }
 
-public protocol LookupListCellItem {
+protocol LookupListCellItem {
 
   var viewModel: LookupListCellViewModel { get }
 

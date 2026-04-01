@@ -24,11 +24,11 @@ import BoltSearch
 import BoltUIFoundation
 import BoltUtils
 
-public final class LookupSearchUnavailableUIView: UIView {
+final class LookupSearchUnavailableUIView: UIView {
 
   private var hostingController: UIHostingController<LookupSearchUnavailableView>
 
-  public init(searchIndex: DocsetSearchIndex) {
+  init(searchIndex: DocsetSearchIndex) {
     hostingController = UIHostingController(
       rootView: LookupSearchUnavailableView(
         searchIndex: searchIndex
