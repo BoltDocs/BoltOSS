@@ -35,6 +35,7 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
   }()
 
   private let sceneState: SceneState
+  private let routingState: LookupRoutingState
 
   private let browserViewController: BrowserViewController
   private let lookupSearchController: LookupSearchController
@@ -51,8 +52,13 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
   public init(sceneState: SceneState) {
     self.sceneState = sceneState
+    self.routingState = LookupRoutingState(sceneState: sceneState)
+
     browserViewController = BrowserViewController(sceneState: sceneState)
-    lookupSearchController = LookupSearchController(sceneState: sceneState)
+    lookupSearchController = LookupSearchController(
+      sceneState: sceneState,
+      routingState: routingState
+    )
 
     super.init(nibName: nil, bundle: nil)
 

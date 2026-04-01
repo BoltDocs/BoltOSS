@@ -64,9 +64,12 @@ final class LookupSearchController: UISearchController, HasDisposeBag {
     return inputView
   }()
 
-  init(sceneState: SceneState) {
+  init(
+    sceneState: SceneState,
+    routingState: LookupRoutingState
+  ) {
     self.sceneState = sceneState
-    self.state = LookupRoutingState(sceneState: sceneState)
+    self.state = routingState
     resultsController = LookupSearchResultsController(
       sceneState: sceneState,
       routingState: state
