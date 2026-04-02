@@ -47,7 +47,15 @@ public struct ServicesModule {
   }()
 
   private static func setupLogging() {
-    LoggingSystem.bootstrap(LoggingOSLog.init)
+    LoggingSystem.bootstrap { label in
+      let logLevel: Logger.Level
+      #if DEBUG
+      logLevel = .trace
+      #else
+      logLevel = .info
+      #endif
+      return LoggingOSLog(label: label, logLevel: logLevel)
+    }
   }
 
   private static func setupRxSwiftResourceTracing() {

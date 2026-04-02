@@ -30,20 +30,22 @@ import struct Logging.Logger
 
 public struct LoggingOSLog: LogHandler {
 
-  public var logLevel: Logger.Level = .info
+  public var logLevel: Logger.Level
   public let label: String
 
   private let oslogger: OSLog
 
-  public init(label: String) {
+  public init(label: String, logLevel: Logger.Level = .info) {
     self.label = label
+    self.logLevel = logLevel
     let subsystem = Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName
     self.oslogger = OSLog(subsystem: subsystem, category: label)
   }
 
-  public init(label: String, log: OSLog) {
-    self.label = label
+  public init(log: OSLog, label: String, logLevel: Logger.Level = .info) {
     self.oslogger = log
+    self.label = label
+    self.logLevel = logLevel
   }
 
   // swiftlint:disable:next function_parameter_count
