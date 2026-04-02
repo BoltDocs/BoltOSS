@@ -42,8 +42,6 @@ final class LookupSearchController: UISearchController, HasDisposeBag {
 
   private let state: LookupRoutingState
 
-  private let resultsController: LookupSearchResultsController
-
   private var preservedSearchFieldText: SearchTextFieldTextPreservation?
 
   private lazy var searchInputAccessoryToolbar: SearchInputAccessoryToolbar = {
@@ -70,11 +68,7 @@ final class LookupSearchController: UISearchController, HasDisposeBag {
   ) {
     self.sceneState = sceneState
     self.state = routingState
-    resultsController = LookupSearchResultsController(
-      sceneState: sceneState,
-      routingState: state
-    )
-    super.init(searchResultsController: resultsController)
+    super.init(searchResultsController: nil)
   }
 
   @available(*, unavailable)
@@ -85,17 +79,14 @@ final class LookupSearchController: UISearchController, HasDisposeBag {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    showsSearchResultsController = true
     automaticallyShowsCancelButton = true
     hidesNavigationBarDuringPresentation = true
     obscuresBackgroundDuringPresentation = false
-    scopeBarActivation = .onSearchActivation
 
     with(searchBar) {
       $0.delegate = self
       $0.placeholder = UIKitLocalizations.search
       $0.inputAccessoryView = searchInputAccessoryView
-      $0.scopeButtonTitles = LookupSearchScope.allCases.map { $0.displayTitle }
       with($0.searchTextField) {
         $0.delegate = self
         $0.autocorrectionType = .no
@@ -116,27 +107,7 @@ final class LookupSearchController: UISearchController, HasDisposeBag {
 
     state.presentsLookupListDriver
       .drive(with: self) { owner, presentsLookupList in
-        owner.showsSearchResultsController = presentsLookupList
         owner.searchInputAccessoryToolbar.scope = presentsLookupList ? .types : .docPage
-      }
-      .disposed(by: disposeBag)
-
-    state.searchScope
-      .map { $0.index }
-      .drive(searchBar.rx.selectedScopeButtonIndex)
-      .disposed(by: disposeBag)
-
-    state.hasTableOfContents
-      .drive(with: self) { owner, hasTableOfContents in
-        owner.searchBar.scopeButtonTitles = hasTableOfContents ? [
-          LookupSearchScope.types.displayTitle,
-          LookupSearchScope.docPage.displayTitle,
-          LookupSearchScope.tableOfContents.displayTitle,
-        ] : [
-          LookupSearchScope.types.displayTitle,
-          LookupSearchScope.docPage.displayTitle,
-        ]
-        owner.scopeBarSetNeedsLayout()
       }
       .disposed(by: disposeBag)
 
@@ -181,17 +152,6 @@ final class LookupSearchController: UISearchController, HasDisposeBag {
 
   func onDismiss(animated: Bool) {
     restoreSearchFieldText()
-  }
-
-  // MARK: Private
-
-  private func scopeBarSetNeedsLayout() {
-    if let containerView = searchBar.scopeBar?.superview {
-      #if DEBUG
-      assert(String(describing: type(of: containerView)) == "_UISearchBarScopeContainerView")
-      #endif
-      containerView.setNeedsLayout()
-    }
   }
 
 }
@@ -261,14 +221,6 @@ extension LookupSearchController: UITextFieldDelegate {
 }
 
 extension LookupSearchController: UISearchBarDelegate {
-
-  func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange index: Int) {
-    guard let selectedScope = SearchScope(index: index) else {
-      reportIssue("unknown search scope index: \(index)")
-      return
-    }
-    state.selectSearchScope(selectedScope)
-  }
 
   func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
     preserveSearchFieldText()
