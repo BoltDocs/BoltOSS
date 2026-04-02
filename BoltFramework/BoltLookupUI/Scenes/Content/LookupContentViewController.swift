@@ -38,6 +38,10 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
   private let routingState: LookupRoutingState
 
   private let browserViewController: BrowserViewController
+  private let searchResultsController: LookupSearchResultsController
+
+  private let scopeBar: LookupSearchScopeBar
+
   private let lookupSearchController: LookupSearchController
 
   private var toolbarManager: ToolbarManager!
@@ -54,7 +58,12 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     self.sceneState = sceneState
     self.routingState = LookupRoutingState(sceneState: sceneState)
 
+    scopeBar = LookupSearchScopeBar()
+    scopeBar.titles = LookupSearchScope.allCases.map { $0.displayTitle }
+
     browserViewController = BrowserViewController(sceneState: sceneState)
+    searchResultsController = LookupSearchResultsController(sceneState: sceneState, routingState: routingState)
+
     lookupSearchController = LookupSearchController(
       sceneState: sceneState,
       routingState: routingState
@@ -87,19 +96,39 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       $0.preferredSearchBarPlacement = .stacked
     }
 
+    view.addSubview(scopeBar)
+    scopeBar.snp.makeConstraints {
+      $0.top.equalTo(view.safeAreaLayoutGuide)
+      $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+    }
+
     addChild(browserViewController) {
       view.addSubview($0)
-      if RuntimeEnvironment.isOS26UIEnabled {
-        $0.snp.makeConstraints {
-          $0.top.equalTo(view.safeAreaLayoutGuide)
-          $0.leading.trailing.bottom.equalToSuperview()
-        }
-      } else {
-        $0.snp.makeConstraints {
-          $0.edges.equalToSuperview()
-        }
+      $0.snp.makeConstraints {
+        $0.top.equalTo(view.safeAreaLayoutGuide)
+        $0.leading.trailing.bottom.equalToSuperview()
       }
     }
+
+    addChild(searchResultsController) {
+      view.insertSubview($0, aboveSubview: browserViewController.view)
+      $0.snp.makeConstraints {
+        $0.top.equalTo(scopeBar.snp.bottom)
+        $0.leading.trailing.bottom.equalToSuperview()
+      }
+    }
+
+    updateScopeBarVisible(false)
+    updateSearchResultsVisible(false)
+
+    scopeBar.selectedIndexDidChange
+      .emit(with: self) { owner, index in
+        guard let selectedScope = SearchScope(index: index) else {
+          return
+        }
+        owner.routingState.selectSearchScope(selectedScope)
+      }
+      .disposed(by: disposeBag)
 
     browserViewController.canGoBackDriver
       .drive(toolbarManager.backButtonEnabled)
@@ -112,6 +141,30 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     browserViewController.currentURLDriver
       .drive(with: self) { owner, currentURL in
         owner.sceneState.dispatch(action: .updateDocPageCurrentURL(currentURL))
+      }
+      .disposed(by: disposeBag)
+
+    routingState.presentsLookupListDriver
+      .drive(with: self) { owner, presentsLookupList in
+        owner.updateSearchResultsVisible(presentsLookupList)
+      }
+      .disposed(by: disposeBag)
+
+    routingState.searchScope
+      .map { $0.index }
+      .drive(scopeBar.selectedItemIndex)
+      .disposed(by: disposeBag)
+
+    routingState.hasTableOfContents
+      .drive(with: self) { owner, hasTableOfContents in
+        owner.scopeBar.titles = hasTableOfContents ? [
+          LookupSearchScope.types.displayTitle,
+          LookupSearchScope.docPage.displayTitle,
+          LookupSearchScope.tableOfContents.displayTitle,
+        ] : [
+          LookupSearchScope.types.displayTitle,
+          LookupSearchScope.docPage.displayTitle,
+        ]
       }
       .disposed(by: disposeBag)
 
@@ -133,7 +186,6 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     }
     .drive(with: self) { owner, canResolveOnlineURL in
       owner.sceneState.dispatch(action: .updateCanShareCurrentDocPage(canResolveOnlineURL))
-
     }
     .disposed(by: disposeBag)
 
@@ -148,6 +200,12 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
         #endif
       }
     }
+
+    sceneState.lookupListVisible
+      .drive(with: self) { owner, lookupListVisible in
+        owner.updateScopeBarVisible(lookupListVisible)
+      }
+      .disposed(by: disposeBag)
 
     Driver.combineLatest(
       sceneState.lookupListVisible,
@@ -203,6 +261,25 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
   }
 
   // MARK: - Private
+
+  func updateScopeBarVisible(_ visible: Bool) {
+    scopeBar.isHidden = !visible
+    for childView in [browserViewController.view, searchResultsController.view] {
+      childView?.snp.remakeConstraints { make in
+        if visible {
+          make.top.equalTo(scopeBar.snp.bottom)
+        } else {
+          make.top.equalTo(view.safeAreaLayoutGuide)
+        }
+        make.leading.trailing.bottom.equalToSuperview()
+      }
+    }
+  }
+
+  private func updateSearchResultsVisible(_ visible: Bool) {
+    searchResultsController.view.isHidden = !visible
+    browserViewController.view.isHidden = visible
+  }
 
   private func updateNavigationBarAppearance(
     forLookupListVisible lookupVisible: Bool,
