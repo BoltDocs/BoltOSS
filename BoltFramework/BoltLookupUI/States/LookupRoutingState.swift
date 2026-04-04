@@ -29,9 +29,22 @@ import RoutableNavigation
 struct LookupRouteElement: RouteElement {
 
   enum RoutingType {
+
     case initial
     case types(docset: Docset, type: EntryType)
     case entries(docset: Docset)
+
+    var hash: String {
+      switch self {
+      case .initial:
+        return "initial"
+      case let .types(docset: docset, type: type):
+        return "types_\(docset.identifier)_\(type.singular)"
+      case let .entries(docset: docset):
+        return "entries_\(docset.identifier)"
+      }
+    }
+
   }
 
   let routingType: RoutingType
@@ -39,7 +52,7 @@ struct LookupRouteElement: RouteElement {
 
   init(type: RoutingType) {
     self.routingType = type
-    self.routeHash = UUID().uuidString
+    self.routeHash = type.hash
   }
 
 }
