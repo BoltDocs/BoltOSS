@@ -30,6 +30,11 @@ import BoltUtils
 
 public final class BrowserViewController: UIViewController, HasDisposeBag {
 
+  public enum InitialPage {
+    case indexPage(title: String)
+    case url(_: URL)
+  }
+
   private var browserView: BrowserView!
   private var progressView: UIProgressView!
 
@@ -75,9 +80,15 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
         }
         switch scope {
         case let .docset(docset):
+          let initialPage: BrowserViewController.InitialPage
+          if let indexPageURL = docset.indexPageURL {
+            initialPage = .url(indexPageURL)
+          } else {
+            initialPage = .indexPage(title: docset.displayName)
+          }
           owner.docset = docset
           owner.setupBrowserView(
-            initialURL: docset.indexPageURL ?? URL.blank,
+            initialPage: initialPage,
             enablesJavaScript: docset.isJavaScriptEnabled,
             isAppleAPIDocset: docset.isAppleAPIDocset
           )
@@ -109,14 +120,16 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
   }
 
   private func setupBrowserView(
-    initialURL: URL,
+    initialPage: InitialPage,
     enablesJavaScript: Bool,
     isAppleAPIDocset: Bool
   ) {
     browserView?.removeFromSuperview()
 
+    let initialPage = Self.webContent(forInitialPage: initialPage)
+
     browserView = BrowserView(
-      initialURL: initialURL,
+      initialPage: initialPage,
       enablesJavaScript: enablesJavaScript,
       isAppleAPIDocset: isAppleAPIDocset
     )
@@ -169,10 +182,6 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
     }
   }
 
-}
-
-extension BrowserViewController {
-
   private func setupProgressView() {
     progressView = UIProgressView(progressViewStyle: .bar)
     view.addSubview(progressView)
@@ -182,19 +191,43 @@ extension BrowserViewController {
     }
   }
 
-  public func goBack() {
+  private static func webContent(forInitialPage initialPage: InitialPage) -> BrowserView.WebContent {
+    switch initialPage {
+    case let .indexPage(title):
+      guard
+        let htmlPath = Bundle.module.path(forResource: "Assets/indexPage", ofType: "html"),
+        let template = try? String(contentsOfFile: htmlPath, encoding: .utf8) else
+      {
+        return .url(.blank)
+      }
+      let localeString = Locale.current.identifier(.bcp47)
+      let htmlString = template
+        .replacingOccurrences(of: "{{LANG}}", with: localeString)
+        .replacingOccurrences(of: "{{TITLE}}", with: title)
+        .replacingOccurrences(of: "{{HINT}}", with: "Browser-BrowserController-indexPageHint".boltLocalized)
+      return .html(htmlString)
+    case let .url(url):
+      return .url(url)
+    }
+  }
+
+}
+
+public extension BrowserViewController {
+
+  func goBack() {
     browserView.goBack()
   }
 
-  public func goForward() {
+  func goForward() {
     browserView.goForward()
   }
 
-  public func zoomIn() {
+  func zoomIn() {
     browserView.zoomIn()
   }
 
-  public func zoomOut() {
+  func zoomOut() {
     browserView.zoomOut()
   }
 
