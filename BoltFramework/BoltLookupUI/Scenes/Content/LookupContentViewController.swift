@@ -98,8 +98,7 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
     view.addSubview(scopeBar)
     scopeBar.snp.makeConstraints {
-      $0.top.equalTo(view.safeAreaLayoutGuide)
-      $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+      $0.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
     }
 
     addChild(browserViewController) {
@@ -111,9 +110,9 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     }
 
     addChild(searchResultsController) {
-      view.insertSubview($0, aboveSubview: browserViewController.view)
+      view.addSubview($0)
       $0.snp.makeConstraints {
-        $0.top.equalTo(scopeBar.snp.bottom)
+        $0.top.equalTo(view.safeAreaLayoutGuide)
         $0.leading.trailing.bottom.equalToSuperview()
       }
     }

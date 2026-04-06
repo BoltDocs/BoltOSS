@@ -73,9 +73,9 @@ final class LookupSearchScopeBar: UIView {
 
     addSubview(segmentedControl)
     segmentedControl.snp.makeConstraints {
-      $0.height.equalTo(38)
+      $0.height.equalTo(30)
       $0.horizontalEdges.equalToSuperview().inset(32)
-      $0.verticalEdges.equalToSuperview().inset(8)
+      $0.verticalEdges.equalToSuperview().inset(12)
     }
   }
 
