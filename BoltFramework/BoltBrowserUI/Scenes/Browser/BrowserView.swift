@@ -28,6 +28,11 @@ import BoltUtils
 
 final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
 
+  enum WebContent {
+    case url(_: URL)
+    case html(_: String)
+  }
+
   lazy var url: Binder<URL> = {
     Binder<URL>(webView) { target, url in
       target.load(URLRequest(url: url))
@@ -75,7 +80,7 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
   private var isAppleAPIDocset: Bool
 
   init(
-    initialURL: URL,
+    initialPage: WebContent,
     enablesJavaScript: Bool,
     isAppleAPIDocset: Bool
   ) {
@@ -83,10 +88,10 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
 
     super.init(frame: .zero)
 
-    setupWebView(initialURL: initialURL, enablesJavaScript: enablesJavaScript)
+    setupWebView(initialPage: initialPage, enablesJavaScript: enablesJavaScript)
   }
 
-  private func setupWebView(initialURL: URL, enablesJavaScript: Bool) {
+  private func setupWebView(initialPage: WebContent, enablesJavaScript: Bool) {
     let isAppleAPIDocset = isAppleAPIDocset
 
     let configuration = update(WKWebViewConfiguration()) {
@@ -141,7 +146,13 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
       $0.edges.equalTo(self)
     }
 
-    webView.load(URLRequest(url: initialURL))
+    switch initialPage {
+    case let .url(url):
+      webView.load(URLRequest(url: url))
+    case let .html(htmlString):
+      webView.loadHTMLString(htmlString, baseURL: nil)
+    }
+
   }
 
   @available(*, unavailable)

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="{{LANG}}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{{TITLE}}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: -apple-system-background;
+      }
+
+      #hint {
+        color: -apple-system-secondary-label;
+        font: -apple-system-title3;
+        font-weight: 500;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="hint">{{HINT}}</p>
+  </body>
+</html>
