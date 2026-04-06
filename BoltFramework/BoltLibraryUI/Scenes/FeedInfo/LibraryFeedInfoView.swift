@@ -54,7 +54,7 @@ struct LibraryFeedInfoView: View {
             safariSheetURL = URL(string: author.link)
           } label: {
             HStack {
-              Text("Library-FeedInfo-InfoSection-contributor")
+              Text("Library-FeedInfo-InfoSection-contributor".boltLocalized)
                 .layoutPriority(1)
               Spacer()
               Text(author.name)
