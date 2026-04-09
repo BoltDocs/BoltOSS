@@ -13,19 +13,22 @@
       }
 
       body {
-        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
         background-color: -apple-system-background;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        -webkit-user-select: none;
+        user-select: none;
       }
 
       #hint {
         color: -apple-system-secondary-label;
         font: -apple-system-title3;
         font-weight: 500;
-        -webkit-user-select: none;
-        user-select: none;
       }
     </style>
   </head>
