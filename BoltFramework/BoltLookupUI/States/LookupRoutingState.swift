@@ -28,7 +28,7 @@ import RoutableNavigation
 
 struct LookupRouteElement: RouteElement {
 
-  enum RoutingType {
+  enum RoutingType: Equatable {
 
     case initial
     case types(docset: Docset, type: EntryType)
@@ -149,9 +149,9 @@ final class LookupRoutingState: HasDisposeBag {
   }()
 
   lazy var searchTokens: Driver<[UISearchToken]> = {
-    let routeTokens = routingCoordinator.currentRoute
-      .map {
-        return $0.elements.compactMap { element -> UISearchToken? in
+    return Driver.combineLatest(sceneState.lookupSearchScope, routingCoordinator.currentRoute)
+      .map { searchScope, currentRoute -> [UISearchToken] in
+        let routeTokens = currentRoute.elements.compactMap { element -> UISearchToken? in
           switch element.routingType {
           case .initial:
             return nil
@@ -163,27 +163,20 @@ final class LookupRoutingState: HasDisposeBag {
             return UISearchToken(icon: image, text: type.plural)
           }
         }
-      }
-
-    let pageTokens = sceneState.lookupSearchScope
-      .map { searchScope -> [UISearchToken] in
-        switch searchScope {
-        case .docPage:
-          let tokenImage = UIImage(systemName: "doc.text")!
-            .withTintColor(UIColor.white)
-          return [UISearchToken.imageOnlyToken(withImage: tokenImage)]
-        case .tableOfContents:
-          let tokenImage = UIImage(systemName: "list.bullet")!
-            .withTintColor(UIColor.white)
-          return [UISearchToken.imageOnlyToken(withImage: tokenImage)]
-        default:
-          return []
-        }
-      }
-
-    return Driver.combineLatest(routeTokens, pageTokens)
-      .map { val1, val2 in
-        return val1 + val2
+        let scopeToken = { () -> UISearchToken? in
+          switch searchScope {
+          case .types:
+            if UIDevice.isPad, routeTokens.isEmpty {
+              return UISearchToken.token(withSymbolName: "house")
+            }
+            return nil
+          case .docPage:
+            return UISearchToken.token(withSymbolName: "doc.text")
+          case .tableOfContents:
+            return UISearchToken.token(withSymbolName: "list.bullet")
+          }
+        }()
+        return [scopeToken].compactMap { $0 } + routeTokens
       }
   }()
 
@@ -240,6 +233,20 @@ final class LookupRoutingState: HasDisposeBag {
     dismissSearchSubject.onNext(())
     sceneState.dispatch(action: .lookupListVisibilityChange(false))
     sceneState.dispatch(action: .updateLookupSearchScope(.types))
+  }
+
+}
+
+private extension UISearchToken {
+
+  static func token(withSymbolName symbolName: String) -> Self? {
+    guard
+      let tokenImage = UIImage(systemName: symbolName)?
+        .withTintColor(UIColor.white)
+    else {
+      return nil
+    }
+    return imageOnlyToken(withImage: tokenImage)
   }
 
 }
