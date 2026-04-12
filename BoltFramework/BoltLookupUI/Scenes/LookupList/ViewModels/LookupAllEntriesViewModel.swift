@@ -131,8 +131,4 @@ final class LookupAllEntriesViewModel: LookupListViewModel {
     .disposed(by: disposeBag)
   }
 
-  func onClickCancel() {
-    routingState.dismissSearch()
-  }
-
 }

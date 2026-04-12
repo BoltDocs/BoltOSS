@@ -133,8 +133,4 @@ final class LookupTableOfContentsViewModel: LookupListViewModel, HasDisposeBag, 
       .disposed(by: disposeBag)
   }
 
-  func onClickCancel() {
-    routingState.dismissSearch()
-  }
-
 }

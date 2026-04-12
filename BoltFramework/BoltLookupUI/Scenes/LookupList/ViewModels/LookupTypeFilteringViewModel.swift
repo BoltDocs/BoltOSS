@@ -127,8 +127,4 @@ final class LookupTypeFilteringViewModel: LookupListViewModel {
     .disposed(by: disposeBag)
   }
 
-  func onClickCancel() {
-    routingState.dismissSearch()
-  }
-
 }

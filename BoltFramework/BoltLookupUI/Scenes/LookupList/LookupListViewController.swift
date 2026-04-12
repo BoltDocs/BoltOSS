@@ -55,25 +55,7 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     return barButtonItem
   }()
 
-  private lazy var cancelBarButtonItem: UIBarButtonItem = {
-    return update(UIBarButtonItem()) {
-      if #available(iOS 26.0, *) {
-        $0.hidesSharedBackground = true
-      }
-      $0.primaryAction = UIAction(
-        title: UIKitLocalizations.cancel,
-      ) { [weak self] _ in
-        guard let self = self else {
-          return
-        }
-        viewModel.onClickCancel()
-      }
-    }
-  }()
-
   private let currentError = BehaviorRelay<Error?>(value: nil)
-
-  private let showsCancelButton = BehaviorRelay<Bool>(value: false)
 
   private lazy var contentUnavailableView = BoltContentUnavailableUIView(
     configuration: BoltContentUnavailableViewConfiguration(
@@ -116,49 +98,19 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
       make.edges.equalToSuperview()
     }
 
-    // FIXME: .distinctUntilChanged() should be used
-
-    if RuntimeEnvironment.isOS26UIEnabled {
-      if UIDevice.isPad {
-        let horizontalSizeClass: Observable<UIUserInterfaceSizeClass> = rx.traitChanges(traits: [UITraitHorizontalSizeClass.self])
-          .map { $0.horizontalSizeClass }
-          .startWith(traitCollection.horizontalSizeClass)
-
-        Observable.combineLatest(
-          horizontalSizeClass,
-          viewModel.hasSearchConstraints.asObservable()
-        )
-        .map { sizeClass, hasSearchConstraints in
-          return sizeClass == .regular && !hasSearchConstraints
-        }
-        .bind(to: showsCancelButton)
-        .disposed(by: disposeBag)
-      }
-    }
-
     viewModel.title
       .drive(navigationItem.rx.title)
       .disposed(by: disposeBag)
 
-    Observable.combineLatest(
-      viewModel.showsLoadingIndicator.asObservable(),
-      showsCancelButton
-    )
-    .map { [weak self] showsLoadingIndicator, showsCancelButton in
-      guard let self = self else {
-        return []
+    viewModel.showsLoadingIndicator.asObservable()
+      .map { [weak self] showsLoadingIndicator -> [UIBarButtonItem] in
+        guard let self = self else {
+          return []
+        }
+        return showsLoadingIndicator ? [activityIndicatorBarButtonItem] : []
       }
-      var items = [UIBarButtonItem]()
-      if showsLoadingIndicator {
-        items.append(activityIndicatorBarButtonItem)
-      }
-      if showsCancelButton {
-        items.append(cancelBarButtonItem)
-      }
-      return items
-    }
-    .bind(to: navigationItem.rx.rightBarButtonItems)
-    .disposed(by: disposeBag)
+      .bind(to: navigationItem.rx.rightBarButtonItems)
+      .disposed(by: disposeBag)
 
     viewModel.results
       .map { result -> [LookupListCellItem] in
@@ -275,10 +227,6 @@ private final class StubbedLookupListViewModel: LookupListViewModel {
   init(entryItems: Result<[LookupListStubbedEntryItem], Error>) {
     self.entryItems = entryItems
   }
-
-  // MARK: - Actions
-
-  func onClickCancel() { }
 
 }
 
