@@ -109,14 +109,6 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       }
     }
 
-    addChild(searchResultsController) {
-      view.addSubview($0)
-      $0.snp.makeConstraints {
-        $0.top.equalTo(view.safeAreaLayoutGuide)
-        $0.leading.trailing.bottom.equalToSuperview()
-      }
-    }
-
     updateScopeBarVisible(false)
     updateSearchResultsVisible(false)
 
@@ -263,7 +255,7 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
   func updateScopeBarVisible(_ visible: Bool) {
     scopeBar.isHidden = !visible
-    for childView in [browserViewController.view, searchResultsController.view] {
+    for childView in [browserViewController.view] {
       childView?.snp.remakeConstraints { make in
         if visible {
           make.top.equalTo(scopeBar.snp.bottom)
@@ -276,8 +268,19 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
   }
 
   private func updateSearchResultsVisible(_ visible: Bool) {
-    searchResultsController.view.isHidden = !visible
-    browserViewController.view.isHidden = visible
+    if visible {
+      addChild(searchResultsController) {
+        view.addSubview($0)
+        $0.snp.makeConstraints {
+          $0.top.equalTo(view.safeAreaLayoutGuide)
+          $0.leading.trailing.bottom.equalToSuperview()
+        }
+      }
+    } else {
+      removeChild(searchResultsController) {
+        $0.removeFromSuperview()
+      }
+    }
   }
 
   private func updateNavigationBarAppearance(
