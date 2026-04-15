@@ -30,4 +30,6 @@ protocol LookupListViewModel {
 
   var itemSelected: PublishRelay<LookupListCellItem> { get }
 
+  func onClickCancel()
+
 }
