@@ -124,12 +124,8 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
           .map { $0.horizontalSizeClass }
           .startWith(traitCollection.horizontalSizeClass)
 
-        Observable.combineLatest(
-          horizontalSizeClass,
-          viewModel.hasSearchConstraints.asObservable()
-        )
-        .map { sizeClass, hasSearchConstraints in
-          return sizeClass == .regular && !hasSearchConstraints
+        horizontalSizeClass.map { sizeClass in
+          return sizeClass == .regular
         }
         .bind(to: showsCancelButton)
         .disposed(by: disposeBag)
