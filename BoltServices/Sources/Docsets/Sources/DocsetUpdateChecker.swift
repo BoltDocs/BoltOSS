@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+import Combine
+
 import Factory
 
 import BoltRepository
@@ -46,6 +48,30 @@ final class DocsetUpdateCheckerImp: DocsetUpdateChecker, LoggerProvider {
 
   // swiftlint:disable:next discouraged_optional_collection
   private var cachedEntriesRelay = Atomic<[UpdatableEntry]?>(nil)
+
+  private var cancellables = Set<AnyCancellable>()
+
+  init() {
+    libraryDocsetsManager.installedRecordsPublisher
+      .sink { [cachedEntriesRelay] records in
+        cachedEntriesRelay.syncedModify { cachedEntries in
+          guard var cachedEntries = cachedEntries else {
+            return nil
+          }
+          cachedEntries.removeAll { entry in
+            let updatable = records.contains { record in
+              record.installedAsLatestVersion &&
+              record.name == entry.feedEntry.feed.id &&
+              record.repository == entry.feedEntry.feed.repository &&
+              record.version != entry.feedEntry.version
+            }
+            return !updatable
+          }
+          return cachedEntries
+        }
+      }
+      .store(in: &cancellables)
+  }
 
   func fetchDocsetUpdates(useCachedEntries: Bool) async -> [UpdatableEntry] {
     if useCachedEntries {

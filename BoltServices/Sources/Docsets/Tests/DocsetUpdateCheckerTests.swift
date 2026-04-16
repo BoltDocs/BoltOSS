@@ -51,7 +51,7 @@ final class DocsetUpdateCheckerTests: XCTestCase {
   }
 
   func testFetchDocsetUpdates() async throws {
-    try await installFixtureDocset()
+    try await installFixtureDocset(version: "9.0")
 
     try await Task.sleep(for: .milliseconds(1000))
 
@@ -76,14 +76,75 @@ final class DocsetUpdateCheckerTests: XCTestCase {
     XCTAssertEqual(updates.first?.feedEntry.version, "10.0")
   }
 
-  private func installFixtureDocset() async throws {
+  func testRemoveCachedUpdatableEntriesAfterUninstall() async throws {
+    try await installFixtureDocset(version: "9.0")
+
+    try await Task.sleep(for: .milliseconds(1000))
+
+    stubbedMainRepository.feeds = [
+      StubFeed(
+        repository: .main,
+        id: "Vim",
+        displayName: "Vim",
+        aliases: [],
+        author: nil,
+        shouldHideVersions: false,
+        supportsArchiveIndex: false,
+        icon: EntryIcon.bundled(.docsetIcon(.vim)),
+        latestVersion: "10.0"
+      ),
+    ]
+
+    let updates = await docsetUpdateChecker.fetchDocsetUpdates(useCachedEntries: false)
+    XCTAssertEqual(updates.count, 1)
+
+    let installedRecord = try XCTUnwrap(libraryDocsetsManager.installedDocsets.first).record
+    try libraryDocsetsManager.uninstallDocset(forRecord: installedRecord)
+
+    try await Task.sleep(for: .milliseconds(1000))
+
+    let newUpdates = await docsetUpdateChecker.fetchDocsetUpdates(useCachedEntries: true)
+    XCTAssertEqual(newUpdates.count, 0)
+  }
+
+  func testRemoveCachedUpdatableEntriesAfterUpdate() async throws {
+    try await installFixtureDocset(version: "9.0")
+
+    try await Task.sleep(for: .milliseconds(1000))
+
+    stubbedMainRepository.feeds = [
+      StubFeed(
+        repository: .main,
+        id: "Vim",
+        displayName: "Vim",
+        aliases: [],
+        author: nil,
+        shouldHideVersions: false,
+        supportsArchiveIndex: false,
+        icon: EntryIcon.bundled(.docsetIcon(.vim)),
+        latestVersion: "10.0"
+      ),
+    ]
+
+    let updates = await docsetUpdateChecker.fetchDocsetUpdates(useCachedEntries: false)
+    XCTAssertEqual(updates.count, 1)
+
+    try await installFixtureDocset(version: "10.0")
+
+    try await Task.sleep(for: .milliseconds(1000))
+
+    let newUpdates = await docsetUpdateChecker.fetchDocsetUpdates(useCachedEntries: true)
+    XCTAssertEqual(newUpdates.count, 0)
+  }
+
+  private func installFixtureDocset(version: String) async throws {
     let fileManager = FileManager.default
 
     let downloadsPath = LocalFileSystem.downloadsAbsolutePath
 
     try fileManager.copyItem(
       atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!,
-      toPath: downloadsPath.appendingPathComponent("Vim-9.0-latest-main.tgz")
+      toPath: downloadsPath.appendingPathComponent("Vim-\(version)-latest-main.tgz")
     )
 
     let _ = try await awaitPublisher(
@@ -99,7 +160,7 @@ final class DocsetUpdateCheckerTests: XCTestCase {
             supportsArchiveIndex: false,
             icon: EntryIcon.bundled(.docsetIcon(.vim))
           ),
-          version: "9.0",
+          version: version,
           isTrackedAsLatest: true,
           isDocsetBundle: false,
           docsetLocation: ResourceLocations.stubbed
