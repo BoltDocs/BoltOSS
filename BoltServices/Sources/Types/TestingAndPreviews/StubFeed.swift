@@ -35,8 +35,34 @@ public struct StubFeed: Feed {
   public var isUnavailable = false
   public var unavailableMessage: UnavailableMessage?
 
+  public var latestVersion: String?
+  public var versions = [String]()
+
   public func fetchEntries() throws -> FeedEntries {
-    return FeedEntries()
+    var entries = [FeedEntry]()
+    if let latestVersion = latestVersion {
+      entries.append(
+        FeedEntry(
+          feed: self,
+          version: latestVersion,
+          isTrackedAsLatest: true,
+          isDocsetBundle: false,
+          docsetLocation: ResourceLocations.stubbed
+        )
+      )
+    }
+    for version in versions {
+      entries.append(
+        FeedEntry(
+          feed: self,
+          version: version,
+          isTrackedAsLatest: false,
+          isDocsetBundle: false,
+          docsetLocation: ResourceLocations.stubbed
+        )
+      )
+    }
+    return FeedEntries(items: entries, shouldHideVersions: shouldHideVersions)
   }
 
   public static var defaultIconImage: IdentifiableImage {
@@ -53,7 +79,9 @@ public struct StubFeed: Feed {
     supportsArchiveIndex: Bool,
     icon: EntryIcon,
     isUnavailable: Bool = false,
-    unavailableMessage: UnavailableMessage? = nil
+    unavailableMessage: UnavailableMessage? = nil,
+    latestVersion: String? = nil,
+    versions: [String] = []
   ) {
     self.repository = repository
     self.id = id
@@ -65,6 +93,8 @@ public struct StubFeed: Feed {
     self.icon = icon
     self.isUnavailable = isUnavailable
     self.unavailableMessage = unavailableMessage
+    self.latestVersion = latestVersion
+    self.versions = versions
   }
 
 }
