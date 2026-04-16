@@ -27,6 +27,8 @@ public protocol AtomicProtocol {
   @discardableResult
   mutating func synced<U>(_ f: (inout T) throws -> U) rethrows -> U
 
+  mutating func syncedModify(_ f: (T) throws -> T?) rethrows
+
 }
 
 public final class Atomic<T>: AtomicProtocol, @unchecked Sendable {
@@ -55,9 +57,21 @@ public final class Atomic<T>: AtomicProtocol, @unchecked Sendable {
   @discardableResult
   public func synced<U>(_ f: (inout T) throws -> U) rethrows -> U {
     lock.lock()
+    defer {
+      lock.unlock()
+    }
     let e = try f(&_value)
-    lock.unlock()
     return e
+  }
+
+  public func syncedModify(_ f: (T) throws -> T?) rethrows {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    if let newValue = try f(_value) {
+      _value = newValue
+    }
   }
 
 }
