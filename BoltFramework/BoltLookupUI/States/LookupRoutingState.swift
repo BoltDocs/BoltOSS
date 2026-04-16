@@ -176,7 +176,7 @@ final class LookupRoutingState: HasDisposeBag {
             return UISearchToken.token(withSymbolName: "list.bullet")
           }
         }()
-        return [scopeToken].compactMap { $0 } + routeTokens
+        return routeTokens + [scopeToken].compactMap { $0 }
       }
   }()
 
