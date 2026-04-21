@@ -23,18 +23,15 @@ import BoltUtils
 
 public extension Container {
 
-  private static var initializer = Initializer {
-    let repositoryRegistry = Container.shared.repositoryRegistry()
-    repositoryRegistry.registerRepository(CustomFeedRepository(), forIdentifier: .custom)
-    repositoryRegistry.registerRepository(LocalFeedRepository(), forIdentifier: .local)
-    let _ = Container.shared.feedsService.resolve()
-  }
-
-  var repositoryModuleInitializer: Factory<() -> Void> {
-    return self { {
-      Self.initializer()
-      // swiftlint:disable:next closure_end_indentation
-    } }
+  var repositoryModuleInitializer: Factory<Initializer> {
+    return self {
+      Initializer {
+        let repositoryRegistry = Container.shared.repositoryRegistry()
+        repositoryRegistry.registerRepository(CustomFeedRepository(), forIdentifier: .custom)
+        repositoryRegistry.registerRepository(LocalFeedRepository(), forIdentifier: .local)
+        let _ = Container.shared.feedsService.resolve()
+      }
+    }.cached
   }
 
 }

@@ -20,15 +20,12 @@ import BoltUtils
 
 public extension Container {
 
-  private static var initializer = Initializer {
-    let _ = Container.shared.searchService.resolve()
-  }
-
-  var searchModuleInitializer: Factory<() -> Void> {
-    return self { {
-      Self.initializer()
-      // swiftlint:disable:next closure_end_indentation
-    } }
+  var searchModuleInitializer: Factory<Initializer> {
+    return self {
+      Initializer {
+        let _ = Container.shared.searchService.resolve()
+      }
+    }
   }
 
 }

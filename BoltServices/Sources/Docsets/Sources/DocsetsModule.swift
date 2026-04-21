@@ -34,17 +34,14 @@ private struct DocsetsModule {
 
 public extension Container {
 
-  private static let initializer = Initializer {
-    DocsetsModule.setupLocalStorage()
-    let _ = Container.shared.downloadManager()
-    let _ = Container.shared.libraryDocsetsManager()
-  }
-
-  var docsetsModuleInitializer: Factory<() -> Void> {
-    return self { {
-      Self.initializer()
-      // swiftlint:disable:next closure_end_indentation
-    } }
+  var docsetsModuleInitializer: Factory<Initializer> {
+    return self {
+      Initializer {
+        DocsetsModule.setupLocalStorage()
+        let _ = Container.shared.downloadManager()
+        let _ = Container.shared.libraryDocsetsManager()
+      }
+    }.cached
   }
 
 }
