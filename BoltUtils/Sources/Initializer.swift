@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2025 Bolt Contributors
+// Copyright (C) 2026 Bolt Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,21 +14,28 @@
 // limitations under the License.
 //
 
-import Factory
+import Foundation
 
-import BoltUtils
+public final class Initializer: Sendable {
 
-public extension Container {
+  private let isInitialized = Atomic<Bool>(false)
+  private let body: @Sendable () -> Void
 
-  private static var initializer = Initializer {
-    let _ = Container.shared.searchService.resolve()
+  public init(_ body: @Sendable @escaping () -> Void) {
+    self.body = body
   }
 
-  var searchModuleInitializer: Factory<() -> Void> {
-    return self { {
-      Self.initializer()
-      // swiftlint:disable:next closure_end_indentation
-    } }
+  public func callAsFunction() {
+    var shouldInitialize = false
+    isInitialized.synced { value in
+      if !value {
+        value = true
+        shouldInitialize = true
+      }
+    }
+    if shouldInitialize {
+      body()
+    }
   }
 
 }

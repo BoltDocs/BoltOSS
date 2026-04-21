@@ -23,17 +23,16 @@ import BoltUtils
 
 public extension Container {
 
-  private static var initialize: PerformOnce = {
+  private static var initializer = Initializer {
     let repositoryRegistry = Container.shared.repositoryRegistry()
     repositoryRegistry.registerRepository(CustomFeedRepository(), forIdentifier: .custom)
     repositoryRegistry.registerRepository(LocalFeedRepository(), forIdentifier: .local)
     let _ = Container.shared.feedsService.resolve()
-    return {}
-  }()
+  }
 
   var repositoryModuleInitializer: Factory<() -> Void> {
     return self { {
-      Self.initialize()
+      Self.initializer()
       // swiftlint:disable:next closure_end_indentation
     } }
   }
