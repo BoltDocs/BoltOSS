@@ -30,6 +30,9 @@ struct DocsetInstaller: LoggerProvider {
 
   static let shared = Self()
 
+  @Injected(\.libraryDatabase)
+  private var libraryDatabase: LibraryDatabase
+
   func installDocset(
     forEntry entry: FeedEntry,
     usingTarix: Bool
@@ -86,7 +89,7 @@ struct DocsetInstaller: LoggerProvider {
       installedAsLatestVersion: entry.isTrackedAsLatest,
       repository: entry.feed.repository
     )
-    try LibraryDatabase.shared.insertDocsetInstallation(docsetInstallation)
+    try libraryDatabase.insertDocsetInstallation(docsetInstallation)
   }
 
   private static func removeWALFiles(forDocsetPath docsetPath: String) throws {

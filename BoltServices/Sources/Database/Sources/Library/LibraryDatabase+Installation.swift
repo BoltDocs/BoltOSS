@@ -20,7 +20,7 @@ import GRDB
 
 import BoltTypes
 
-public extension LibraryDatabase {
+extension LibraryDatabaseImp {
 
   func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws {
     try dbPool.write { db in

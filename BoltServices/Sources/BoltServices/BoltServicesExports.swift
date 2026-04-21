@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+@_exported import BoltDatabase
 @_exported import BoltDocsets
 @_exported import BoltRepository
 @_exported import BoltSearch

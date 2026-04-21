@@ -28,7 +28,7 @@ struct MigrationTests {
   @Test func migrationAddOrderIndexForInstallations() async throws {
     let dbQueue = try DatabaseQueue()
 
-    let migrator = LibraryDatabase.createMigrator()
+    let migrator = LibraryDatabaseImp.createMigrator()
     try migrator.migrate(dbQueue, upTo: "Create Initial Tables")
 
     try await dbQueue.write { db in

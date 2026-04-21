@@ -22,7 +22,7 @@ import BoltTypes
 
 extension HomeViewController {
 
-  static func createDiagnosticsMenu() -> UIMenu {
+  static func createDiagnosticsMenu(libraryDatabase: LibraryDatabase) -> UIMenu {
     return UIMenu(
       title: "Localizations-General-diagnostics".boltLocalized,
       image: UIImage(systemName: "ladybug"),
@@ -31,13 +31,13 @@ extension HomeViewController {
           title: "Mock Orphan Record",
           image: UIImage(systemName: "play")
         ) { _ in
-          mockOrphanRecord()
+          mockOrphanRecord(libraryDatabase: libraryDatabase)
         },
       ]
     )
   }
 
-  private static func mockOrphanRecord() {
+  private static func mockOrphanRecord(libraryDatabase: LibraryDatabase) {
     let docsetInstallation = DocsetInstallation(
       uuid: UUID(),
       name: "Bash",
@@ -45,7 +45,7 @@ extension HomeViewController {
       installedAsLatestVersion: false,
       repository: .main
     )
-    try? LibraryDatabase.shared.insertDocsetInstallation(docsetInstallation)
+    try? libraryDatabase.insertDocsetInstallation(docsetInstallation)
   }
 
 }

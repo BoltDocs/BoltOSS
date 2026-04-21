@@ -16,7 +16,7 @@
 
 import GRDB
 
-extension LibraryDatabase {
+extension LibraryDatabaseImp {
 
   class func createMigrator() -> DatabaseMigrator {
     var migrator = DatabaseMigrator()

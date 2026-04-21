@@ -20,7 +20,7 @@ import GRDB
 
 import BoltTypes
 
-public extension LibraryDatabase {
+extension LibraryDatabaseImp {
 
   func insertCustomFeed(_ feed: CustomFeedEntity) throws {
     try dbPool.write { db in

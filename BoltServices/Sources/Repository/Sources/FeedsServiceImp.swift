@@ -29,6 +29,9 @@ import BoltUtils
 
 final class FeedsServiceImp: FeedsServiceInternal {
 
+  @Injected(\.libraryDatabase)
+  private var libraryDatabase: LibraryDatabase
+
   @Injected(\.networking)
   private var networking: Networking
 
@@ -43,7 +46,7 @@ final class FeedsServiceImp: FeedsServiceInternal {
 
   init() {
     // - SeeAlso: https://github.com/groue/GRDB.swift/pull/1248
-    LibraryDatabase.shared.allCustomFeeds
+    libraryDatabase.allCustomFeeds
       .map { return $0.map { CustomFeed(entity: $0) } }
       .assign(to: \.value, on: customFeedsRelay)
       .store(in: &cancellableBag)
@@ -82,15 +85,15 @@ final class FeedsServiceImp: FeedsServiceInternal {
   }
 
   func insertCustomFeed(_ feed: CustomFeed) throws {
-    try LibraryDatabase.shared.insertCustomFeed(feed.customFeedEntity)
+    try libraryDatabase.insertCustomFeed(feed.customFeedEntity)
   }
 
   func updateCustomFeed(_ feed: CustomFeed) throws {
-    try LibraryDatabase.shared.updateCustomFeed(feed.customFeedEntity)
+    try libraryDatabase.updateCustomFeed(feed.customFeedEntity)
   }
 
   func deleteCustomFeeds(_ feed: CustomFeed) throws {
-    try LibraryDatabase.shared.deleteCustomFeed(feed.customFeedEntity)
+    try libraryDatabase.deleteCustomFeed(feed.customFeedEntity)
   }
 
   func fetchEntries(forCustomFeed feed: CustomFeed) async throws -> FeedEntries {

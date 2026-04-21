@@ -17,21 +17,70 @@
 import Combine
 import Foundation
 
+import Factory
 import GRDB
 
 import BoltCombineExtensions
 import BoltTypes
 import BoltUtils
 
-public final class LibraryDatabase: LoggerProvider {
+public extension Container {
 
-  public static var shared = LibraryDatabase()
+  var libraryDatabase: Factory<LibraryDatabase> { self { LibraryDatabaseImp() }.cached }
+
+}
+
+public protocol LibraryDatabase {
+
+  var allDocsetInstallations: AnyPublisher<[DocsetInstallation], Never> { get }
+
+  var allCustomFeeds: AnyPublisher<[CustomFeedEntity], Never> { get }
+
+  var allDownloadTasks: AnyPublisher<[DownloadTaskEntity], Never> { get }
+
+  // MARK: LibraryDatabase+DownloadTask
+
+  func fetchAllDownloadTasks() throws -> [DownloadTaskEntity]
+
+  func insertDownloadTask(_ task: DownloadTaskEntity) throws
+
+  func updateDownloadMarkComplete(forBackingTaskID id: String) throws
+
+  func deleteDownloadTask(forIdentifier id: String) throws
+
+  func deleteDownloadTask(forBackingTaskID id: String) throws
+
+  func deleteIncompleteDownloadTask(keepBackingTaskIDs ids: [String]) throws
+
+  func deleteAllOngoingTasks() throws
+
+  // MARK: LibraryDatabase+Installation
+
+  func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws
+
+  func deleteDocsetInstallation(withUUID uuid: UUID) throws
+
+  func updateDocsetInstallation(_ update: DocsetInstallationUpdate) throws
+
+  func updateDocsetInstallationOrder(_ records: [LibraryRecord]) throws
+
+  // MARK: LibraryDatabase+CustomFeed
+
+  func insertCustomFeed(_ feed: CustomFeedEntity) throws
+
+  func updateCustomFeed(_ feed: CustomFeedEntity) throws
+
+  func deleteCustomFeed(_ feed: CustomFeedEntity) throws
+
+}
+
+final class LibraryDatabaseImp: LibraryDatabase, LoggerProvider {
 
   let dbPool: DatabasePool
 
   private var migrator = createMigrator()
 
-  private init() {
+  fileprivate init() {
     do {
       var configuration = Configuration()
       #if DEBUG
@@ -57,7 +106,7 @@ public final class LibraryDatabase: LoggerProvider {
 
   // TODO: Check if we really need `.immediate` here
 
-  public lazy var allDocsetInstallations: AnyPublisher<[DocsetInstallation], Never> = ValueObservation
+  lazy var allDocsetInstallations: AnyPublisher<[DocsetInstallation], Never> = ValueObservation
     .trackingConstantRegion { db in
       let request = DocsetInstallation
         .all()
@@ -74,7 +123,7 @@ public final class LibraryDatabase: LoggerProvider {
     .share(replay: 1)
     .ignoreFailure()
 
-  public lazy var allCustomFeeds: AnyPublisher<[CustomFeedEntity], Never> = ValueObservation
+  lazy var allCustomFeeds: AnyPublisher<[CustomFeedEntity], Never> = ValueObservation
     .trackingConstantRegion(CustomFeedEntity.fetchAll)
     .publisher(in: dbPool, scheduling: .immediate)
     // swiftlint:disable:next trailing_closure
@@ -86,7 +135,7 @@ public final class LibraryDatabase: LoggerProvider {
     .share(replay: 1)
     .ignoreFailure()
 
-  public lazy var allDownloadTasks: AnyPublisher<[DownloadTaskEntity], Never> = ValueObservation
+  lazy var allDownloadTasks: AnyPublisher<[DownloadTaskEntity], Never> = ValueObservation
     .trackingConstantRegion(DownloadTaskEntity.fetchAll)
     .publisher(in: dbPool, scheduling: .immediate)
     // swiftlint:disable:next trailing_closure

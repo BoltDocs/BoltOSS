@@ -78,6 +78,9 @@ public protocol LibraryDocsetsManager {
 
 final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
 
+  @Injected(\.libraryDatabase)
+  private var libraryDatabase: LibraryDatabase
+
   private var cancellables = Set<AnyCancellable>()
 
   private lazy var _installedDocsets = CurrentValueSubject<[LibraryInstallationQueryResult], Never>([])
@@ -118,7 +121,7 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
   }
 
   init() {
-    LibraryDatabase.shared.allDocsetInstallations
+    libraryDatabase.allDocsetInstallations
       .map { array in
         array.compactMap { installation -> LibraryInstallationQueryResult in
           if let docset = LibraryDocsetsFileSystemBridge.docset(withInstallation: installation) {
@@ -182,22 +185,22 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
   // MARK: - Uninstall
 
   func uninstallDocset(forRecord record: LibraryRecord) throws {
-    try LibraryDatabase.shared.deleteDocsetInstallation(withUUID: record.uuid)
+    try libraryDatabase.deleteDocsetInstallation(withUUID: record.uuid)
     try FileManager.default.removeItem(
       atPath: LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(record.uuidString)
     )
   }
 
   func updateDocsetInstallation(_ update: DocsetInstallationUpdate) throws {
-    try LibraryDatabase.shared.updateDocsetInstallation(update)
+    try libraryDatabase.updateDocsetInstallation(update)
   }
 
   func updateInstalledDocsetsOrder(_ records: [LibraryRecord]) throws {
-    try LibraryDatabase.shared.updateDocsetInstallationOrder(records)
+    try libraryDatabase.updateDocsetInstallationOrder(records)
   }
 
   func updateDocsetLatestVersion(_ version: String, record: LibraryRecord) throws {
-    try LibraryDatabase.shared.updateDocsetInstallation(
+    try libraryDatabase.updateDocsetInstallation(
       DocsetInstallationUpdate(uuid: record.uuid, latestVersion: version)
     )
   }

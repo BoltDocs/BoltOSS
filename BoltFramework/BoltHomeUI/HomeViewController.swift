@@ -65,6 +65,9 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
   @Injected(\.libraryDocsetsManager)
   private var libraryDocsetsManager: LibraryDocsetsManager
 
+  @Injected(\.libraryDatabase)
+  private var libraryDatabase: LibraryDatabase
+
   private let sceneState: SceneState
   private let isForCollapsedSidebar: Bool
 
@@ -148,9 +151,12 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
                   self?.isEditingRelay.accept(true)
                 },
               ]
-            ) {
+            ) { [weak self] in
+              guard let self = self else {
+                return
+              }
               if RuntimeEnvironment.isInternalBuild {
-                $0.append(Self.createDiagnosticsMenu())
+                $0.append(Self.createDiagnosticsMenu(libraryDatabase: libraryDatabase))
               }
             }
           )

@@ -77,6 +77,9 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
   @Injected(\.feedsService)
   private var feedsService: FeedsService
 
+  @Injected(\.libraryDatabase)
+  private var libraryDatabase: LibraryDatabase
+
   typealias IdentifierMap = [String: BackgroundDownloader.SessionTaskIdentifier]
 
   private var taskIdentifierMap = Atomic<IdentifierMap>([:])
@@ -100,11 +103,11 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
   }()
 
   init() {
-    LibraryDatabase.shared.allDownloadTasks
+    libraryDatabase.allDownloadTasks
       .assign(to: \.value, on: taskEntities)
       .store(in: &cancellables)
 
-    if let tasks: [DownloadTaskEntity] = try? LibraryDatabase.shared.fetchAllDownloadTasks() {
+    if let tasks: [DownloadTaskEntity] = try? libraryDatabase.fetchAllDownloadTasks() {
       taskIdentifierMap.value = Dictionary(
         uniqueKeysWithValues: tasks
           .filter { $0.isDownloading }
@@ -155,7 +158,7 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
 
     // async-await
     do {
-      try LibraryDatabase.shared.insertDownloadTask(
+      try libraryDatabase.insertDownloadTask(
         DownloadTaskEntity(
           name: entry.feed.id,
           displayName: entry.feed.displayName,
@@ -242,7 +245,7 @@ final class DownloadManagerImp: DownloadManager, LoggerProvider {
 
   private func removeTask(forIdentifier id: String) {
     do {
-      try LibraryDatabase.shared.deleteDownloadTask(forIdentifier: id)
+      try libraryDatabase.deleteDownloadTask(forIdentifier: id)
       taskIdentifierMap.synced { identifierMap in
         identifierMap.removeValue(forKey: id)
       }
@@ -257,7 +260,7 @@ extension DownloadManagerImp: BackgroundDownloaderProgressDelegate {
 
   func downloaderDidUpdateSessionIDs(sessionIDs: [BackgroundDownloader.SessionTaskIdentifier]) {
     do {
-      try LibraryDatabase.shared.deleteIncompleteDownloadTask(keepBackingTaskIDs: sessionIDs.map { String($0) })
+      try libraryDatabase.deleteIncompleteDownloadTask(keepBackingTaskIDs: sessionIDs.map { String($0) })
       taskIdentifierMap.synced { identifierMap in
         identifierMap = identifierMap.filter { sessionIDs.contains($0.value) }
       }
@@ -268,7 +271,7 @@ extension DownloadManagerImp: BackgroundDownloaderProgressDelegate {
 
   func downloaderDidFinishDownload(forSessionID sessionID: BackgroundDownloader.SessionTaskIdentifier) {
     do {
-      try LibraryDatabase.shared.updateDownloadMarkComplete(forBackingTaskID: String(sessionID))
+      try libraryDatabase.updateDownloadMarkComplete(forBackingTaskID: String(sessionID))
       taskIdentifierMap.synced { identifierMap in
         identifierMap = identifierMap.filter { $0.value != sessionID }
       }
@@ -279,7 +282,7 @@ extension DownloadManagerImp: BackgroundDownloaderProgressDelegate {
 
   func downloaderRemoveTask(forSessionID sessionID: BackgroundDownloader.SessionTaskIdentifier) {
     do {
-      try LibraryDatabase.shared.deleteDownloadTask(forBackingTaskID: String(sessionID))
+      try libraryDatabase.deleteDownloadTask(forBackingTaskID: String(sessionID))
       taskIdentifierMap.synced { identifierMap in
         identifierMap = identifierMap.filter { $0.value != sessionID }
       }
@@ -290,7 +293,7 @@ extension DownloadManagerImp: BackgroundDownloaderProgressDelegate {
 
   func downloaderRemoveAllTasks() {
     do {
-      try LibraryDatabase.shared.deleteAllOngoingTasks()
+      try libraryDatabase.deleteAllOngoingTasks()
       taskIdentifierMap.value = [:]
     } catch {
       Self.logger.error("Failed to delete all ongoing tasks, error: \(error.localizedDescription).")

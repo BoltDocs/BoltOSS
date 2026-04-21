@@ -18,7 +18,7 @@ import Foundation
 
 import GRDB
 
-public extension LibraryDatabase {
+extension LibraryDatabaseImp {
 
   func fetchAllDownloadTasks() throws -> [DownloadTaskEntity] {
     return try dbPool.read { db in
