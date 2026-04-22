@@ -71,7 +71,7 @@ class BackgroundDownloader: NSObject, LoggerProvider {
 
   var backgroundDownloadCompletionHandler: (() -> Void)?
 
-  private let dataSource: BackgroundDownloaderDelegate!
+  private weak var dataSource: BackgroundDownloaderDelegate?
 
   private lazy var sessionProgressesRelay = CurrentValueRelay<[SessionTaskIdentifier: Progress]>([:])
 
@@ -94,6 +94,7 @@ class BackgroundDownloader: NSObject, LoggerProvider {
 
   init(dataSource: BackgroundDownloaderDelegate) {
     self.dataSource = dataSource
+
     super.init()
 
     // Remove unneeded tasks
@@ -104,7 +105,7 @@ class BackgroundDownloader: NSObject, LoggerProvider {
 
       let sessionIDs = tasks.map { $0.taskIdentifier }
 
-      self.dataSource.downloaderDidUpdateSessionIDs(sessionIDs: sessionIDs)
+      self.dataSource?.downloaderDidUpdateSessionIDs(sessionIDs: sessionIDs)
 
       var sessionProgresses = self.sessionProgressesRelay.value
       for identifier in sessionIDs where sessionProgresses[identifier] == nil {
@@ -143,7 +144,7 @@ class BackgroundDownloader: NSObject, LoggerProvider {
     if let task = (await urlSession.allTasks).first(where: { $0.taskIdentifier == sessionID }) {
       task.cancel()
     }
-    self.dataSource.downloaderRemoveTask(forSessionID: sessionID)
+    self.dataSource?.downloaderRemoveTask(forSessionID: sessionID)
   }
 
   func progress(forSessionID sessionID: SessionTaskIdentifier) -> AnyPublisher<Progress?, Never> {
@@ -158,7 +159,7 @@ class BackgroundDownloader: NSObject, LoggerProvider {
 
   func stopAllTasks() async {
     await urlSession.stopAllTasks()
-    dataSource.downloaderRemoveAllTasks()
+    dataSource?.downloaderRemoveAllTasks()
     sessionProgressesRelay.accept([:])
   }
 
@@ -225,7 +226,7 @@ extension BackgroundDownloader: URLSessionDelegate, URLSessionDownloadDelegate {
 
     do {
       let fileManager = FileManager.default
-      guard let path = dataSource.downloaderGetDestinationPath(forSessionID: downloadTask.taskIdentifier) else {
+      guard let path = dataSource?.downloaderGetDestinationPath(forSessionID: downloadTask.taskIdentifier) else {
         Self.logger.warning("task: \(downloadTask) (identifier: \(downloadTask.taskIdentifier)) has no trakced identifier")
         throw Errors.undeterminedDestinationPath(sessionID: downloadTask.taskIdentifier)
       }
@@ -239,7 +240,7 @@ extension BackgroundDownloader: URLSessionDelegate, URLSessionDownloadDelegate {
       try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
       try fileManager.moveItem(at: location, to: destination)
 
-      dataSource.downloaderDidFinishDownload(forSessionID: downloadTask.taskIdentifier)
+      dataSource?.downloaderDidFinishDownload(forSessionID: downloadTask.taskIdentifier)
 
       progresses[identifier] = nil
     } catch {

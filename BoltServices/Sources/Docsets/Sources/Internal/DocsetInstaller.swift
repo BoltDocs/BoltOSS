@@ -30,7 +30,7 @@ struct DocsetInstaller: LoggerProvider {
 
   static let shared = Self()
 
-  @Injected(\.libraryDatabase)
+  @DynamicInjected(\.libraryDatabase)
   private var libraryDatabase: LibraryDatabase
 
   func installDocset(
@@ -89,6 +89,8 @@ struct DocsetInstaller: LoggerProvider {
       installedAsLatestVersion: entry.isTrackedAsLatest,
       repository: entry.feed.repository
     )
+    // swiftlint:disable:next no_direct_standard_out_logs
+    print("~~~ insertDocsetInstallation: \(docsetInstallation)")
     try libraryDatabase.insertDocsetInstallation(docsetInstallation)
   }
 

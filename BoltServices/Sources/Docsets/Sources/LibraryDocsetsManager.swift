@@ -50,7 +50,9 @@ public enum LibraryInstallationQueryResult: Hashable {
 
 public extension Container {
 
-  var libraryDocsetsManager: Factory<LibraryDocsetsManager> { self { LibraryDocsetsManagerImp() }.cached }
+  var libraryDocsetsManager: Factory<LibraryDocsetsManager> { self {
+    LibraryDocsetsManagerImp()
+  }.cached }
 
 }
 
@@ -133,6 +135,11 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
       }
       .assign(to: \.value, on: _installedDocsets)
       .store(in: &cancellables)
+  }
+
+  deinit {
+    // swiftlint:disable:next no_direct_standard_out_logs
+    print("~~~ LibraryDocsetsManagerImp deinit")
   }
 
   func installOrUpdateDocset(forEntry entry: FeedEntry, usingTarix: Bool) -> AnyPublisher<InstallationProgress, Error> {

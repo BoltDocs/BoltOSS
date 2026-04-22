@@ -94,6 +94,8 @@ final class LibraryDatabaseImp: LibraryDatabase, LoggerProvider {
       } else {
         path = LocalFileSystem.libraryDatabaseURL.absoluteString
       }
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("~~~ setup db with path: \(path)")
       dbPool = try DatabasePool(
         path: path,
         configuration: configuration
@@ -104,14 +106,24 @@ final class LibraryDatabaseImp: LibraryDatabase, LoggerProvider {
     }
   }
 
+  deinit {
+    // swiftlint:disable:next no_direct_standard_out_logs
+    print("~~~ deinit")
+  }
+
   // TODO: Check if we really need `.immediate` here
 
   lazy var allDocsetInstallations: AnyPublisher<[DocsetInstallation], Never> = ValueObservation
     .trackingConstantRegion { db in
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("~~~ receivedDocsetInstallations change")
       let request = DocsetInstallation
         .all()
         .order([Column(DocsetInstallation.CodingKeys.orderIndex), Column.rowID])
-      return try request.fetchAll(db)
+      let res = try request.fetchAll(db)
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("~~~ receivedDocsetInstallations change, res: \(res)")
+      return res
     }
     .publisher(in: dbPool, scheduling: .immediate)
     // swiftlint:disable:next trailing_closure

@@ -82,6 +82,9 @@ final class DocsetUpdateCheckerImp: DocsetUpdateChecker, LoggerProvider {
 
     var repoInstallationMap = [RepositoryIdentifier: [LibraryRecord]]()
 
+    // swiftlint:disable:next no_direct_standard_out_logs
+    print("~~~ installedRecords: \(installedRecords)")
+
     for record in installedRecords {
       guard record.installedAsLatestVersion else {
         continue
@@ -97,7 +100,11 @@ final class DocsetUpdateCheckerImp: DocsetUpdateChecker, LoggerProvider {
     for (repositoryIdentifier, records) in repoInstallationMap {
       let feeds: [Feed]
       do {
+        // swiftlint:disable:next no_direct_standard_out_logs
+        print("~~~ fetch entries for repository: \(repositoryIdentifier)")
         feeds = try await feedsService.fetchAllFeeds(forRepository: repositoryIdentifier, cacheIfPossible: true)
+        // swiftlint:disable:next no_direct_standard_out_logs
+        print("~~~ fetched feeds for repository: \(repositoryIdentifier), feeds: \(feeds)")
       } catch {
         Self.logger.error("Failed to fetch feeds for repository: \(repositoryIdentifier.rawValue)")
         continue
