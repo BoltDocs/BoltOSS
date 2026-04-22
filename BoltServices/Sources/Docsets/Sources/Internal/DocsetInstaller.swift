@@ -30,7 +30,9 @@ struct DocsetInstaller: LoggerProvider {
 
   static let shared = Self()
 
-  @Injected(\.libraryDatabase)
+  // FIXME: manage DocsetInstaller instance with Factory
+
+  @DynamicInjected(\.libraryDatabase)
   private var libraryDatabase: LibraryDatabase
 
   func installDocset(

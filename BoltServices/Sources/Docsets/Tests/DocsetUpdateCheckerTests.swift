@@ -26,16 +26,18 @@ import BoltUtils
 
 final class DocsetUpdateCheckerTests: XCTestCase {
 
-  @LazyInjected(\.docsetUpdateChecker)
+  @DynamicInjected(\.docsetUpdateChecker)
   private var docsetUpdateChecker: DocsetUpdateChecker
 
-  @LazyInjected(\.libraryDocsetsManager)
+  @DynamicInjected(\.libraryDocsetsManager)
   private var libraryDocsetsManager: LibraryDocsetsManager
 
   private let stubbedMainRepository = StubFeedRepository()
 
   override func setUpWithError() throws {
     try super.setUpWithError()
+
+    Container.shared.manager.push()
 
     Container.shared.docsetsModuleInitializer()()
     Container.shared.searchModuleInitializer()()
@@ -47,6 +49,7 @@ final class DocsetUpdateCheckerTests: XCTestCase {
 
   override func tearDownWithError() throws {
     try super.tearDownWithError()
+    Container.shared.manager.pop()
     try FileManager.default.removeItem(atPath: LocalFileSystem.downloadsAbsolutePath)
   }
 
