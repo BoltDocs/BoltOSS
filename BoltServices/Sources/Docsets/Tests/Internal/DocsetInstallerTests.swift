@@ -19,6 +19,8 @@ import XCTest
 import BoltTypes
 import BoltUtils
 
+import Factory
+
 @testable import BoltDocsets
 
 // swiftlint:disable:next balanced_xctest_lifecycle
@@ -47,7 +49,7 @@ final class DocsetInstallerTests: XCTestCase {
     )
 
     let _ = try await awaitPublisher(
-      DocsetInstaller.shared.installDocset(
+      Container.shared.docsetInstaller().installDocset(
         forEntry: FeedEntry(
           feed: StubFeed(
             repository: .main,

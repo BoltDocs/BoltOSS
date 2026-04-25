@@ -81,6 +81,9 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
   @Injected(\.libraryDatabase)
   private var libraryDatabase: LibraryDatabase
 
+  @Injected(\.docsetInstaller)
+  private var docsetInstaller: DocsetInstaller
+
   private var cancellables = Set<AnyCancellable>()
 
   private lazy var _installedDocsets = CurrentValueSubject<[LibraryInstallationQueryResult], Never>([])
@@ -152,7 +155,7 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
         }
       }
     }
-    return DocsetInstaller.shared.installDocset(forEntry: entry, usingTarix: usingTarix)
+    return docsetInstaller.installDocset(forEntry: entry, usingTarix: usingTarix)
   }
 
   func installLocalDocset(
@@ -175,7 +178,7 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
 
     try fileManager.moveItem(atPath: docsetPath, toPath: destPath)
 
-    try DocsetInstaller.shared.installDocset(
+    try docsetInstaller.installDocset(
       forEntry: feedEntry,
       docsetPath: destPath,
       uuid: uuid

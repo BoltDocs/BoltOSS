@@ -26,13 +26,22 @@ import BoltDatabase
 import BoltTypes
 import BoltUtils
 
-struct DocsetInstaller: LoggerProvider {
+extension Container {
 
-  static let shared = Self()
+  var docsetInstaller: Factory<DocsetInstaller> { self { DocsetInstallerImp() }.cached }
 
-  // FIXME: manage DocsetInstaller instance with Factory
+}
 
-  @DynamicInjected(\.libraryDatabase)
+protocol DocsetInstaller {
+
+  func installDocset(forEntry entry: FeedEntry, usingTarix: Bool) -> AnyPublisher<InstallationProgress, Error>
+  func installDocset(forEntry entry: FeedEntry, docsetPath: String, uuid: UUID) throws
+
+}
+
+struct DocsetInstallerImp: DocsetInstaller, LoggerProvider {
+
+  @Injected(\.libraryDatabase)
   private var libraryDatabase: LibraryDatabase
 
   func installDocset(
