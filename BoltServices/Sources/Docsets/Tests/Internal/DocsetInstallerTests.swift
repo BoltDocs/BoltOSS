@@ -16,6 +16,7 @@
 
 import XCTest
 
+import BoltTestingUtils
 import BoltTypes
 import BoltUtils
 
@@ -23,13 +24,18 @@ import Factory
 
 @testable import BoltDocsets
 
-// swiftlint:disable:next balanced_xctest_lifecycle
 final class DocsetInstallerTests: XCTestCase {
 
   override func setUp() {
     super.setUp()
+    Container.shared.manager.push()
     try? FileManager.default.createDirectory(at: LocalFileSystem.downloadsURL, withIntermediateDirectories: true)
     try? FileManager.default.createDirectory(at: LocalFileSystem.docsetsURL, withIntermediateDirectories: true)
+  }
+
+  override func tearDown() {
+    super.tearDown()
+    Container.shared.manager.pop()
   }
 
   func testInstallDocset_removesWALFiles() async throws {
