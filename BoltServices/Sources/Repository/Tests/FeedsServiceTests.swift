@@ -32,25 +32,18 @@ final class FeedsServiceTests: NetworkingStubbedTestCase {
   @LazyInjected(\.feedsService)
   private var feedsService: FeedsService
 
-  func testFetchCustomFeeds() throws {
+  func testFetchCustomFeeds() async throws {
     let testFeed = CustomFeed(entity: CustomFeedEntity(name: "Test1", urlString: "https://boltdocs.app/feed"))
 
     try feedsService.insertCustomFeed(testFeed)
 
-    let expectation = XCTestExpectation()
+    try await Task.sleep(for: .milliseconds(500))
 
-    DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .microseconds(500))) {
-      Task {
-        let fetchedFeeds = try await self.feedsService.fetchAllFeeds(forRepository: .custom, cacheIfPossible: true)
-        XCTAssertEqual(try XCTUnwrap(fetchedFeeds as? [CustomFeed]), [testFeed])
-        expectation.fulfill()
-      }
-    }
-
-    wait(for: [expectation], timeout: 5)
+    let fetchedFeeds = try await self.feedsService.fetchAllFeeds(forRepository: .custom, cacheIfPossible: true)
+    XCTAssertEqual(try XCTUnwrap(fetchedFeeds as? [CustomFeed]), [testFeed])
   }
 
-  func testCustomFeedsOperations() throws {
+  func testCustomFeedsOperations() async throws {
     var cancellableBag = Set<AnyCancellable>()
 
     let expectation = XCTestExpectation()
@@ -84,7 +77,7 @@ final class FeedsServiceTests: NetworkingStubbedTestCase {
       XCTFail("error thrown: \(error)")
     }
 
-    wait(for: [expectation], timeout: 5)
+    await fulfillment(of: [expectation], timeout: 0.5)
   }
 
 }
