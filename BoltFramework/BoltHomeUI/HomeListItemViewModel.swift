@@ -64,9 +64,13 @@ struct HomeListItemViewModel {
       image = docset.iconImageForList
     case let .broken(installation):
       title = installation.name
-      if installation.installedAsLatestVersion {
-        subTitle = installation.version
-      }
+      subTitle = { () -> String in
+        if installation.installedAsLatestVersion {
+          return "Home-List-Items-latest".boltLocalized
+        } else {
+          return installation.version
+        }
+      }()
       let symbolName = "text.book.closed"
       if let uiImage = UIImage(systemName: symbolName) {
         image = IdentifiableImage(image: uiImage, id: symbolName)
