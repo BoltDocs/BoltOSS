@@ -96,7 +96,7 @@ struct DocsetInstallerImp: DocsetInstaller, LoggerProvider {
     let docsetInstallation = DocsetInstallation(
       uuid: uuid,
       name: entry.feed.id,
-      version: entry.version,
+      version: DocsetVersion(rawValue: entry.version),
       installedAsLatestVersion: entry.isTrackedAsLatest,
       repository: entry.feed.repository
     )

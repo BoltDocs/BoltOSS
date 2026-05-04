@@ -20,11 +20,11 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
 
   public let uuid: UUID
   public let name: String
-  public let version: String
+  public let version: DocsetVersion
   public let installedAsLatestVersion: Bool
   public let repository: RepositoryIdentifier
   public var orderIndex: Int
-  public let latestVersion: String?
+  public let latestVersion: DocsetVersion?
 
   public let uuidString: String
   public let identifier: String
@@ -46,11 +46,11 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
   public init(
     uuid: UUID = UUID(),
     name: String,
-    version: String,
+    version: DocsetVersion,
     installedAsLatestVersion: Bool,
     repository: RepositoryIdentifier,
     orderIndex: Int = 0,
-    latestVersion: String? = nil
+    latestVersion: DocsetVersion? = nil
   ) {
     self.uuid = uuid
     self.name = name
@@ -73,11 +73,11 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
     let container = try decoder.container(keyedBy: CodingKeys.self)
     uuid = try container.decode(UUID.self, forKey: .uuid)
     name = try container.decode(String.self, forKey: .name)
-    version = try container.decode(String.self, forKey: .version)
+    version = try container.decode(DocsetVersion.self, forKey: .version)
     installedAsLatestVersion = try container.decode(Bool.self, forKey: .installedAsLatestVersion)
     repository = try container.decode(RepositoryIdentifier.self, forKey: .repository)
     orderIndex = try container.decode(Int.self, forKey: .orderIndex)
-    latestVersion = try container.decode(String?.self, forKey: .latestVersion)
+    latestVersion = try container.decode(DocsetVersion?.self, forKey: .latestVersion)
 
     uuidString = uuid.uuidString
     identifier = InstallationIdentifier.fromName(

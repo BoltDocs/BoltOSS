@@ -93,7 +93,7 @@ public struct DownloadTaskEntity: Codable, TableRecord, PersistableRecord, Fetch
     self.status = status
     self.identifier = InstallationIdentifier.fromName(
       name,
-      version: version,
+      version: DocsetVersion(rawValue: version),
       installedAsLatestVersion: installedAsLatestVersion,
       repository: repository
     )

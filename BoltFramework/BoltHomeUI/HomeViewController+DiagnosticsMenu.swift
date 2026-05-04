@@ -41,7 +41,7 @@ extension HomeViewController {
     let docsetInstallation = DocsetInstallation(
       uuid: UUID(),
       name: "Bash",
-      version: "1.0",
+      version: DocsetVersion(rawValue: "1.0"),
       installedAsLatestVersion: false,
       repository: .main
     )

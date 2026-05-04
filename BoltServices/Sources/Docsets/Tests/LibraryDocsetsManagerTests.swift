@@ -134,7 +134,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
       result.record.name == "Bash"
     }
     XCTAssertEqual(docsetsBeforeUpdate.count, 1)
-    XCTAssertEqual(docsetsBeforeUpdate.first?.record.version, "/8")
+    XCTAssertEqual(docsetsBeforeUpdate.first?.record.version.rawValue, "/8")
 
     try await installDocsetTrackedAsLatest(version: "/9")
 
@@ -145,7 +145,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     }
 
     XCTAssertEqual(docsetsAfterUpdate.count, 1)
-    XCTAssertEqual(docsetsAfterUpdate.first?.record.version, "/9")
+    XCTAssertEqual(docsetsAfterUpdate.first?.record.version.rawValue, "/9")
   }
 
   private func installDocsetTrackedAsLatest(version: String) async throws {

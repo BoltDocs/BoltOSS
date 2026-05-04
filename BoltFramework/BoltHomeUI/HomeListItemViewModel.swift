@@ -58,7 +58,7 @@ struct HomeListItemViewModel {
         if docset.installedAsLatestVersion {
           return "Home-List-Items-latest".boltLocalized
         } else {
-          return docset.version
+          return docset.version.displayVersion
         }
       }()
       image = docset.iconImageForList
@@ -68,7 +68,7 @@ struct HomeListItemViewModel {
         if installation.installedAsLatestVersion {
           return "Home-List-Items-latest".boltLocalized
         } else {
-          return installation.version
+          return installation.version.displayVersion
         }
       }()
       let symbolName = "text.book.closed"

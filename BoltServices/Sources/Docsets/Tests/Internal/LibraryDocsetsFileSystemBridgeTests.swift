@@ -34,7 +34,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
         fromDocsetPath: "",
         installation: DocsetInstallation(
           name: "foobar",
-          version: "1.0",
+          version: DocsetVersion(rawValue: "1.0"),
           installedAsLatestVersion: false,
           repository: .main
         ),
@@ -52,7 +52,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
         fromDocsetPath: "",
         installation: DocsetInstallation(
           name: "cpp",
-          version: "1.0",
+          version: DocsetVersion(rawValue: "1.0"),
           installedAsLatestVersion: false,
           repository: .main
         ),
@@ -72,7 +72,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
         fromDocsetPath: Bundle.module.path(forResource: "TestResources/CustomIcon.docset")!,
         installation: DocsetInstallation(
           name: "cpp",
-          version: "1.0",
+          version: DocsetVersion(rawValue: "1.0"),
           installedAsLatestVersion: false,
           repository: .main
         ),
@@ -90,7 +90,7 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
         fromDocsetPath: "",
         installation: DocsetInstallation(
           name: "foobar",
-          version: "1.0",
+          version: DocsetVersion(rawValue: "1.0"),
           installedAsLatestVersion: false,
           repository: .main
         ),

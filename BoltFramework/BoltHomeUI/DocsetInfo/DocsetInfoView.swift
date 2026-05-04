@@ -141,7 +141,7 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
 
   public init(docset: Docset) {
     self.docset = docset
-    self.version = docset.version
+    self.version = docset.version.rawValue
     self.installedAsLatestVersion = docset.installedAsLatestVersion
   }
 

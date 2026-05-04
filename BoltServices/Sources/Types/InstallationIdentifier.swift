@@ -20,11 +20,11 @@ public struct InstallationIdentifier {
 
   public static func fromName(
     _ name: String,
-    version: String,
+    version: DocsetVersion,
     installedAsLatestVersion: Bool,
     repository: RepositoryIdentifier
   ) -> String {
-    return "\(name)-\(version.replacingOccurrences(of: "/", with: "_"))\(installedAsLatestVersion ? "-latest" : "")-\(repository.rawValue)"
+    return "\(name)-\(version.identifierString)\(installedAsLatestVersion ? "-latest" : "")-\(repository.rawValue)"
   }
 
 }
