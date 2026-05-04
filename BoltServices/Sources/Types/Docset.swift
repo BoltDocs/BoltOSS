@@ -144,9 +144,9 @@ public struct Docset: LibraryRecord, Sendable {
   public var uuid: UUID
   public var uuidString: String
   public var name: String
-  public var version: String
+  public var version: DocsetVersion
   public var installedAsLatestVersion: Bool
-  public var latestVersion: String?
+  public var latestVersion: DocsetVersion?
   public var repository: RepositoryIdentifier
   public var identifier: String
 

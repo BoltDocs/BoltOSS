@@ -144,7 +144,7 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
         return
           record.repository == entry.feed.repository &&
           record.name == entry.feed.id &&
-          record.version != entry.version
+          record.version.rawValue != entry.version
       }
       for record in outdatedRecords {
         Self.logger.info("DocsetUninstaller: uninstalling outdated record: \(record.identifier)")

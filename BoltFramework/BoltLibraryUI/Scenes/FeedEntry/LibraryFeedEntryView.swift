@@ -101,7 +101,7 @@ private final class DataSource: ObservableObject {
       .map { installations in
         return installations.contains { installation in
           return installation.name == entry.feed.id &&
-            installation.version == entry.version &&
+            installation.version.rawValue == entry.version &&
             installation.installedAsLatestVersion == entry.isTrackedAsLatest
         }
       }

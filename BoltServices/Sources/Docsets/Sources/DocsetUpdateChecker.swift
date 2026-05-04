@@ -63,7 +63,7 @@ final class DocsetUpdateCheckerImp: DocsetUpdateChecker, LoggerProvider {
               record.installedAsLatestVersion &&
               record.name == entry.feedEntry.feed.id &&
               record.repository == entry.feedEntry.feed.repository &&
-              record.version != entry.feedEntry.version
+              record.version.rawValue != entry.feedEntry.version
             }
             return !updatable
           }
@@ -113,7 +113,7 @@ final class DocsetUpdateCheckerImp: DocsetUpdateChecker, LoggerProvider {
           }
           for entry in entries.items where entry.isTrackedAsLatest {
             let latestVersion = entry.version
-            if latestVersion != record.version {
+            if latestVersion != record.version.rawValue {
               updatableEntries.append(
                 UpdatableEntry(feedEntry: entry)
               )

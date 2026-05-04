@@ -26,11 +26,11 @@ public protocol LibraryRecord {
 
   var repository: RepositoryIdentifier { get }
 
-  var version: String { get }
+  var version: DocsetVersion { get }
 
   var installedAsLatestVersion: Bool { get }
 
-  var latestVersion: String? { get }
+  var latestVersion: DocsetVersion? { get }
 
   var identifier: String { get }
 

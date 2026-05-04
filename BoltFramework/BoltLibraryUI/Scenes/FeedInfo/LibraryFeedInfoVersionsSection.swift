@@ -106,16 +106,16 @@ final class LibraryFeedInfoVersionsSectionModelImp: FeedInfoVersionsSectionModel
           if entry.isTrackedAsLatest {
             // FIXME: may contain multiple matching records here
             if let record = records.first(where: { $0.installedAsLatestVersion == true }) {
-              if record.version == entry.version {
+              if record.version.rawValue == entry.version {
                 installableStatus = .latest
               } else {
-                installableStatus = .updateAvailable(currentVersion: record.version)
+                installableStatus = .updateAvailable(currentVersion: record.version.rawValue)
               }
             } else {
               installableStatus = .installable
             }
           } else {
-            if records.contains(where: { $0.version == entry.version && $0.installedAsLatestVersion == false }) {
+            if records.contains(where: { $0.version.rawValue == entry.version && $0.installedAsLatestVersion == false }) {
               installableStatus = .installed
             } else {
               installableStatus = .installable

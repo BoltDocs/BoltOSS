@@ -51,7 +51,7 @@ public struct FeedEntry: Identifiable {
   public var id: String {
     return InstallationIdentifier.fromName(
       feed.id,
-      version: version,
+      version: DocsetVersion(rawValue: version),
       installedAsLatestVersion: isTrackedAsLatest,
       repository: feed.repository
     )
