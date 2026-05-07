@@ -108,7 +108,8 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
 
   @Published private(set) var isDiagnosticsModeOn: Bool = false
 
-  @Published var version: String
+  @Published var version: DocsetVersion
+  @Published var editableVersion: String
   @Published var installedAsLatestVersion: Bool
 
   @Published var docsetSize: String?
@@ -141,7 +142,8 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
 
   public init(docset: Docset) {
     self.docset = docset
-    self.version = docset.version.rawValue
+    self.version = docset.version
+    self.editableVersion = docset.version.rawValue
     self.installedAsLatestVersion = docset.installedAsLatestVersion
   }
 
@@ -161,11 +163,12 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
     if !isDiagnosticsModeOn {
       let update = DocsetInstallationUpdate(
         uuid: docset.uuid,
-        version: version,
+        version: editableVersion,
         installedAsLatestVersion: installedAsLatestVersion
       )
       do {
         try libraryDocsetManager.updateDocsetInstallation(update)
+        version = DocsetVersion(rawValue: editableVersion)
       } catch {
         Self.logger.error("failed to save docset update, error: \(error)")
       }
@@ -246,11 +249,23 @@ private struct DocsetInfoListView: View {
         .listSectionSeparator(.hidden)
         Section("Home-DocsetInfo-SectionTitles-information".boltLocalized) {
           // version
-          ListItemView("Home-DocsetInfo-SectionTitles-version".boltLocalized) {
-            ListItemStringContentView(
-              content: $viewModel.version,
-              editable: viewModel.isDiagnosticsModeOn
-            )
+          if !viewModel.isDiagnosticsModeOn {
+            let displayVersion = viewModel.version.displayVersion
+            if !displayVersion.isEmpty {
+              ListItemView("Home-DocsetInfo-SectionTitles-version".boltLocalized) {
+                ListItemStringContentView(
+                  content: .constant(displayVersion),
+                  editable: false
+                )
+              }
+            }
+          } else {
+            ListItemView("Home-DocsetInfo-SectionTitles-version".boltLocalized) {
+              ListItemStringContentView(
+                content: $viewModel.editableVersion,
+                editable: viewModel.isDiagnosticsModeOn
+              )
+            }
           }
           // size
           ListItemView("Home-DocsetInfo-SectionTitles-size".boltLocalized) {
