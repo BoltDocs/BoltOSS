@@ -308,7 +308,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
         .compactMap { listModel -> LibraryRecord? in
           switch listModel {
           case let .docset(viewModel):
-            return viewModel.record
+            return viewModel.queryInstallation()?.record
           case .header:
             reportIssue("docset reordering: unexpected listModel type")
             return nil
@@ -385,7 +385,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
               if let item = docsetsSecctionSnapshot.items.first(where: { listModel in
                 switch listModel {
                 case .docset(let viewModel):
-                  return viewModel.docset?.uuid == docset.uuid
+                  return viewModel.uuid == docset.uuid
                 default:
                   return false
                 }
@@ -409,10 +409,11 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
         case .header:
           break
         case .docset(let viewModel):
-          if let docset = viewModel.docset {
+          let queryResult = viewModel.queryInstallation()
+          switch queryResult {
+          case let .docset(docset):
             owner.sceneState.dispatch(action: .updateCurrentScope(.docset(docset)))
-          } else {
-            let installation = viewModel.record
+          case let .broken(installation):
             GlobalUI.presentAlertController(
               UIAlertController.alert(
                 withTitle: "Home-List-RemoveDamagedDocsetAlert-title".boltLocalized,
@@ -427,6 +428,8 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
                 cancelAction: (UIKitLocalizations.cancel, nil)
               )
             )
+          case .none:
+            break
           }
         }
       }
