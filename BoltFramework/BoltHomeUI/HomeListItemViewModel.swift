@@ -30,27 +30,10 @@ struct HomeListItemViewModel {
   var subTitle: String?
   var image: IdentifiableImage?
 
-  var uuid: UUID {
-    return queryResult.record.uuid
-  }
-
-  var record: LibraryRecord {
-    return queryResult.record
-  }
-
-  var docset: Docset? {
-    switch queryResult {
-    case let .docset(docset):
-      return docset
-    case .broken:
-      return nil
-    }
-  }
-
-  private var queryResult: LibraryInstallationQueryResult
+  var uuid: UUID
 
   init(queryResult: LibraryInstallationQueryResult) {
-    self.queryResult = queryResult
+    uuid = queryResult.record.uuid
     switch queryResult {
     case let .docset(docset):
       title = docset.displayName
@@ -78,8 +61,24 @@ struct HomeListItemViewModel {
     }
   }
 
+  func queryInstallation() -> LibraryInstallationQueryResult? {
+    return libraryDocsetsManager.installedDocsets.first { $0.record.uuid == uuid }
+  }
+
+  func queryDocset() -> Docset? {
+    guard let installation = queryInstallation(), case let .docset(docset) = installation else {
+      return nil
+    }
+    return docset
+  }
+
+  // MARK: - Actions
+
   func deleteItem() {
-    try? libraryDocsetsManager.uninstallDocset(forRecord: queryResult.record)
+    guard let record = libraryDocsetsManager.installedRecords.first(where: { $0.uuid == uuid }) else {
+      return
+    }
+    try? libraryDocsetsManager.uninstallDocset(forRecord: record)
   }
 
 }

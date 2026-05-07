@@ -300,7 +300,7 @@ final class HomeListViewController: UIViewController, UICollectionViewDelegate, 
 
   @discardableResult
   private func onGetInfo(viewModel: HomeListItemViewModel?) -> Bool {
-    if let docset = viewModel?.docset {
+    if let docset = viewModel?.queryDocset() {
       BoltHomeNavigator.presentDocsetInfo(docset)
       return true
     }
