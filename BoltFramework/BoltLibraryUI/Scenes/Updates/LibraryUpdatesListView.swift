@@ -59,10 +59,15 @@ public struct LibraryUpdatesListView: View {
           NavigationLink(
             destination: DeferredView { LibraryFeedEntryView(entry) }
           ) {
+            let subtitle = {
+              let displayVersion = DocsetVersion(rawValue: entry.version).displayVersion
+              return !displayVersion.isEmpty ? "Library-Updates-Items-updateAvailableWithVersion".boltLocalized(displayVersion)
+                                             : "Library-Updates-Items-updateAvailable".boltLocalized
+            }()
             DownloadProgressListItemView(
               identifier: entry.id,
               title: entry.feed.displayName,
-              subtitle: entry.isTrackedAsLatest ? "Library-Updates-Items-latest".boltLocalized : entry.version,
+              subtitle: subtitle,
               preventsHighlight: true
             )
           }
