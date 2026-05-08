@@ -212,11 +212,17 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
           NavigationLink(
             destination: DeferredView { LibraryFeedEntryView(entry) }
           ) {
-            // versions for docsets marked 'latest' should be hidden to the user
+            let subtitle = { () -> String? in
+              guard !shouldHideVersions, entry.isTrackedAsLatest else {
+                return nil
+              }
+              let entryDisplayVersion = DocsetVersion(rawValue: entry.version).displayVersion
+              return !entryDisplayVersion.isEmpty ? entryDisplayVersion : nil
+            }()
             DownloadProgressListItemView(
               identifier: entry.id,
               title: entry.isTrackedAsLatest ? "Library-FeedInfo-Versions-latest".boltLocalized : entry.version,
-              subtitle: nil, // (!entry.feed.shouldHideVersions && entry.isTrackedAsLatest) ? entry.version : nil,
+              subtitle: subtitle,
               preventsHighlight: true
             )
           }
@@ -228,11 +234,19 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
             destination: DeferredView { LibraryFeedEntryView(entry) }
           ) {
             let subtitle = {
-              var res = "Library-FeedInfo-Versions-updateAvailable".boltLocalized
-              if RuntimeEnvironment.isInternalBuild {
-                res += " (\(entry.version) / \(currentVersion))"
+              let entryDisplayVersion = DocsetVersion(rawValue: entry.version).displayVersion
+              let currentDisplayVersion = DocsetVersion(rawValue: currentVersion).displayVersion
+              if !entryDisplayVersion.isEmpty {
+                let versionStr: String
+                if !currentDisplayVersion.isEmpty {
+                  versionStr = "\(currentDisplayVersion) → \(entryDisplayVersion)"
+                } else {
+                  versionStr = entryDisplayVersion
+                }
+                return "Library-FeedInfo-Versions-updateAvailableWithVersion".boltLocalized(versionStr)
+              } else {
+                return "Library-FeedInfo-Versions-updateAvailable".boltLocalized
               }
-              return res
             }()
             DownloadProgressListItemView(
               identifier: entry.id,
