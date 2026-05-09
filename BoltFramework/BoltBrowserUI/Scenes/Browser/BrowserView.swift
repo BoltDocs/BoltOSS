@@ -141,6 +141,21 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
 
     webView.allowsBackForwardNavigationGestures = false
 
+    webView.evaluateJavaScript("navigator.userAgent") { [weak self] result, error in
+      if let error = error {
+        Self.logger.error("evaluateJavaScript(navigator.userAgent) failed: \(error)")
+        return
+      }
+      guard
+        let self = self,
+        let userAgent = result as? String,
+        let customUserAgent = customUserAgent(forUserAgent: userAgent)
+      else {
+        return
+      }
+      webView.customUserAgent = customUserAgent
+    }
+
     addSubview(webView)
     webView.snp.makeConstraints {
       $0.edges.equalTo(self)
@@ -190,6 +205,16 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
 
   func findNextInPage() {
     webView.evaluateJavaScript("window.__bolt__.findNext()")
+  }
+
+  // MARK: - Private
+
+  private func customUserAgent(forUserAgent userAgent: String) -> String? {
+    let appVersion = InfoValues.appVersion
+    guard !userAgent.isEmpty, !appVersion.isEmpty else {
+      return nil
+    }
+    return userAgent + " Bolt/\(appVersion)"
   }
 
   private func updatePageZoom(_ scaleFactor: CGFloat) {
