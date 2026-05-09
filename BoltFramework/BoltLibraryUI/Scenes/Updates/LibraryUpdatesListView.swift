@@ -61,8 +61,9 @@ public struct LibraryUpdatesListView: View {
           ) {
             let subtitle = {
               let displayVersion = DocsetVersion(rawValue: entry.version).displayVersion
-              return !displayVersion.isEmpty ? "Library-Updates-Items-updateAvailableWithVersion".boltLocalized(displayVersion)
-                                             : "Library-Updates-Items-updateAvailable".boltLocalized
+              return !displayVersion.isEmpty
+                ? "Library-Updates-Items-updateAvailableWithVersion".boltLocalized(displayVersion)
+                : "Library-Updates-Items-updateAvailable".boltLocalized
             }()
             DownloadProgressListItemView(
               identifier: entry.id,
