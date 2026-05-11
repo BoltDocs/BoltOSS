@@ -11,6 +11,7 @@ cd "$DOCC_FRONTEND_DIR"
 export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
+nvm install || { echo "error: nvm install failed" >&2; exit 1; }
 nvm use || { echo "error: nvm use failed" >&2; exit 1; }
 
 npm install
