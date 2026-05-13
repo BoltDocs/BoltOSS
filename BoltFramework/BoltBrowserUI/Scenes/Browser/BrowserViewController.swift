@@ -26,6 +26,7 @@ import BoltLocalizations
 import BoltModuleExports
 import BoltRxSwift
 import BoltServices
+import BoltTypes
 import BoltUtils
 
 public final class BrowserViewController: UIViewController, HasDisposeBag {
@@ -191,7 +192,7 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
     }
   }
 
-  private static func webContent(forInitialPage initialPage: InitialPage) -> BrowserView.WebContent {
+  private static func webContent(forInitialPage initialPage: InitialPage) -> WebContent {
     switch initialPage {
     case let .indexPage(title):
       guard

@@ -24,14 +24,10 @@ import SnapKit
 
 import BoltRxSwift
 import BoltServices
+import BoltTypes
 import BoltUtils
 
 final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
-
-  enum WebContent {
-    case url(_: URL)
-    case html(_: String)
-  }
 
   lazy var url: Binder<URL> = {
     Binder<URL>(webView) { target, url in
@@ -164,6 +160,8 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
     switch initialPage {
     case let .url(url):
       webView.load(URLRequest(url: url))
+    case let .fileURL(url, baseURL):
+      webView.loadFileURL(url, allowingReadAccessTo: baseURL)
     case let .html(htmlString):
       webView.loadHTMLString(htmlString, baseURL: nil)
     }
