@@ -124,6 +124,11 @@ let moduleTargets: [Target] = [
     ]
   ),
   .target(
+    name: "BoltUserGuide",
+    dependencies: ["Factory", "BoltTypes"],
+    path: "./Sources/UserGuide"
+  ),
+  .target(
     name: "BoltServices",
     dependencies: [
       "BoltUtils",
@@ -135,6 +140,7 @@ let moduleTargets: [Target] = [
       "BoltSearch",
       "BoltTypes",
       "BoltURLSchemes",
+      "BoltUserGuide",
     ],
     path: "./Sources/BoltServices",
     swiftSettings: [

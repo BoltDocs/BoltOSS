@@ -23,6 +23,7 @@ import Overture
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
+import BoltUserGuide
 import BoltUtils
 
 private final class LibraryCustomFeedListViewModel: ObservableObject {

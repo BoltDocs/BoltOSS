@@ -21,6 +21,7 @@ import BoltAppKitBridge
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
+import BoltUserGuide
 import BoltUtils
 
 import Factory

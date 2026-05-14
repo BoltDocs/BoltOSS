@@ -20,6 +20,7 @@ import Factory
 
 import BoltServices
 import BoltUIFoundation
+import BoltUserGuide
 import BoltUtils
 
 public struct LibraryFeedListUserGuide {

@@ -127,6 +127,14 @@ let libraryTargets: [Target] = [
       .swiftLanguageMode(.v5)
     ]
   ),
+  .target(
+    name: "BoltUserGuideUI",
+    dependencies: [
+      "BoltServices",
+      "BoltUIFoundation",
+    ],
+    path: "./BoltUserGuideUI"
+  ),
 ]
 
 let frameworkTarget: Target = {
@@ -137,6 +145,7 @@ let frameworkTarget: Target = {
     "BoltLookupUI",
     "BoltLibraryUI",
     "BoltPreferencesUI",
+    "BoltUserGuideUI",
   ]
 
   return .target(

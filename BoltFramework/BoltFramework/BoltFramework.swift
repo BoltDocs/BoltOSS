@@ -22,6 +22,7 @@ import BoltModuleExports
 import BoltServices
 import BoltUIFoundation
 import BoltURLSchemes
+import BoltUserGuideUI
 import BoltUtils
 
 import Factory
@@ -33,6 +34,8 @@ public class BoltFramework: LoggerProvider {
 
   private init() {
     ServicesModule.initialize()
+
+    Container.shared.userGuideUIModuleInitializer()()
 
     let _ = Container.shared.appearanceService()
 
