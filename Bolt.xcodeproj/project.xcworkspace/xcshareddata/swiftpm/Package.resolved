@@ -1,5 +1,5 @@
 {
-  "originHash" : "59d3d9e0a7e2f4d28b2c1fc085a8ead31d2c539e29d202d0b3f12025776e11e9",
+  "originHash" : "89b73ffec0dc0e4c3c0a32417966e2249e161452b17ee3af50aa5a67d82cca20",
   "pins" : [
     {
       "identity" : "accessibilitysnapshot",
@@ -134,6 +134,15 @@
       "state" : {
         "branch" : "6.8.0",
         "revision" : "c7c7d2cf50a3211fe2843f76869c698e4e417930"
+      }
+    },
+    {
+      "identity" : "rxwebkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RxSwiftCommunity/RxWebKit",
+      "state" : {
+        "branch" : "6225dd5",
+        "revision" : "6225dd5792fc8010d2399814c89a3683a4c87ec6"
       }
     },
     {

@@ -36,6 +36,7 @@ let package = Package(
     .package(url: "https://github.com/ReactiveX/RxSwift.git", revision: "6.8.0"),
     .package(url: "https://github.com/CombineCommunity/RxCombine.git", revision: "2.0.1"),
     .package(url: "https://github.com/BoltDocs/ObjectAssociationHelper.git", revision: "1.0.0"),
+    .package(url: "https://github.com/RxSwiftCommunity/RxWebKit", revision: "6225dd5"),
     .package(name: "BoltUtils", path: "../BoltUtils"),
   ],
   targets: [
@@ -46,6 +47,7 @@ let package = Package(
         .product(name: "RxSwift", package: "RxSwift"),
         .product(name: "RxCocoa", package: "RxSwift"),
         .product(name: "RxCombine", package: "RxCombine"),
+        .product(name: "RxWebKit", package: "RxWebKit"),
         .product(name: "BoltUtils", package: "BoltUtils"),
       ],
       path: "./Sources"

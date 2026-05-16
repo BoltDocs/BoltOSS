@@ -20,6 +20,7 @@ import WebKit
 import Overture
 import RxCocoa
 import RxSwift
+import RxWebKit
 import SnapKit
 
 import BoltRxSwift
@@ -36,11 +37,11 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
   }()
 
   lazy var canGoBack: Driver<Bool> = {
-    return webView.rx.canGoBack
+    return webView.rx.canGoBack.asDriverOnErrorJustIgnore()
   }()
 
   lazy var canGoForward: Driver<Bool> = {
-    return webView.rx.canGoForward
+    return webView.rx.canGoForward.asDriverOnErrorJustIgnore()
   }()
 
   var currentURL: URL? {
@@ -48,16 +49,18 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
   }
 
   lazy var currentURLDriver: Driver<URL?> = {
-    return webView.rx.currentURL
+    return webView.rx.url.asDriverOnErrorJustIgnore()
   }()
 
   lazy var title: Driver<String> = {
     return webView.rx.title
       .map { return $0 ?? "" }
+      .asDriverOnErrorJustIgnore()
   }()
 
   lazy var estimatedProgress: Driver<Double> = {
-    return webView.rx.estimatedProgressObservable
+    return webView.rx.estimatedProgress
+      .asDriverOnErrorJustIgnore()
   }()
 
   private let findInPageCurrentIndexSubject = PublishRelay<Int>()
