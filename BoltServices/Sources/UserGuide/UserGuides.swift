@@ -20,10 +20,10 @@ import Factory
 
 import BoltTypes
 
-public typealias UserGuideURLResolver = (UserGuideLocation) -> URL?
+public typealias UserGuideOnlineURLResolver = (UserGuideLocation) -> URL?
 
 public extension Container {
 
-  var userGuideURLResolver: Factory<UserGuideURLResolver?> { self { nil } }
+  var userGuideOnlineURLResolver: Factory<UserGuideOnlineURLResolver?> { self { nil } }
 
 }

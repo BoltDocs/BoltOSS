@@ -73,6 +73,7 @@ let libraryTargets: [Target] = [
       "BoltModuleExports",
       "BoltServices",
       "BoltUIFoundation",
+      "BoltUserGuideUI",
     ],
     path: "./BoltLibraryUI",
     resources: [
