@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import UIKit
 import WebKit
 
 import Factory
@@ -30,7 +31,7 @@ import BoltUtils
 private struct WebViewRepresentable: UIViewRepresentable {
 
   enum Actions {
-    case goBack, goForward
+    case goBack, goForward, openOnlinePage
   }
 
   final class Coordinator {
@@ -83,18 +84,30 @@ private struct WebViewRepresentable: UIViewRepresentable {
 
     actionStream
       .subscribe { [weak webView] action in
+        guard let webView = webView else {
+          return
+        }
         switch action {
         case .goBack:
-          webView?.goBack()
+          webView.goBack()
         case .goForward:
-          webView?.goForward()
+          webView.goForward()
+        case .openOnlinePage:
+          guard let url = webView.url else {
+            return
+          }
+          if url.isFileURL {
+            if let onlineURL = Container.shared.userGuideOnlineURLResolver()?(location) {
+              UIApplication.shared.open(onlineURL)
+            }
+          } else {
+            UIApplication.shared.open(url)
+          }
         }
       }
       .disposed(by: coordinator.disposeBag)
 
-    if let url = Container.shared.userGuideOnlineURLResolver()?(location) {
-      webView.load(URLRequest(url: url))
-    }
+    loadUserGuide(forWebView: webView, location: location)
 
     return webView
   }
@@ -104,6 +117,29 @@ private struct WebViewRepresentable: UIViewRepresentable {
   }
 
   func updateUIView(_ webView: WKWebView, context: Context) { }
+
+  private func loadUserGuide(
+    forWebView webView: WKWebView,
+    location: UserGuideLocation
+  ) {
+    guard let resourceURL = Bundle.module.resourceURL else {
+      return
+    }
+
+    let baseURL = resourceURL.appendingPathComponent("user-guides")
+
+    guard var urlComponents = URLComponents(
+      string: baseURL.appendingPathComponent("user-guides/\(location.path)/index.html").absoluteString,
+    ) else {
+      return
+    }
+
+    urlComponents.fragment = location.fragment
+
+    if let url = urlComponents.url {
+      webView.loadFileURL(url, allowingReadAccessTo: baseURL)
+    }
+  }
 
 }
 
@@ -142,6 +178,14 @@ struct UserGuideView: View {
           })
           .disabled(!canGoForward)
         }
+        if #available(iOS 26.0, *) {
+          ToolbarSpacer(.fixed, placement: .topBarLeading)
+        }
+        ToolbarItem(placement: .topBarLeading) {
+          Button(action: { openOnlinePage() }, label: {
+            Image(systemName: "safari")
+          })
+        }
         if RuntimeEnvironment.isOS26UIEnabled {
           ToolbarItem(placement: .topBarTrailing) {
             Button(UIKitLocalizations.close, systemImage: "xmark") {
@@ -166,6 +210,10 @@ struct UserGuideView: View {
 
   private func goForward() {
     actionsRelay.accept(.goForward)
+  }
+
+  private func openOnlinePage() {
+    actionsRelay.accept(.openOnlinePage)
   }
 
 }

@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@config "./tailwind.config.js";
+
+@theme {
+  --breakpoint-3xl: 48rem;
+  --breakpoint-6xl: 72rem;
+  --color-link: #0578e3;
+}
