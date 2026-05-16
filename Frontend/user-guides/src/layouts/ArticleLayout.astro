@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "@/components/BaseHead.astro";
+
+type Props = CollectionEntry<"userGuides">["data"];
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body>
+    <main>
+      <article class="prose 3xl:mx-auto mx-4 my-8 max-w-3xl">
+        <div class="not-prose leading-none text-(--tw-prose-body)">
+          <h1 class="text-3xl font-bold text-(--tw-prose-headings)">{title}</h1>
+          <hr class="my-6 text-(--tw-prose-hr)" />
+        </div>
+        <slot />
+      </article>
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+</style>

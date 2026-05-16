@@ -7,3 +7,6 @@
 [submodule "BoltAppleDocumentation"]
 	path = BoltAppleDocumentation
 	url = git@github.com:BoltDocs/BoltAppleDocumentation.git
+[submodule "Frontend/user-guides/user-guides"]
+	path = Frontend/user-guides/user-guides
+	url = https://github.com/BoltDocs/bolt-user-guides.git

@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+pnpm-lock.yaml
+
+# build outputs
+dist/
+.astro/
+
+# environment files
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# markdown files
+*.md
+*.mdx

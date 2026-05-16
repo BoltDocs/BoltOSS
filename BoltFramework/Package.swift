@@ -134,7 +134,10 @@ let libraryTargets: [Target] = [
       "BoltServices",
       "BoltUIFoundation",
     ],
-    path: "./BoltUserGuideUI"
+    path: "./BoltUserGuideUI",
+    resources: [
+      .copy("./Resources/user-guides"),
+    ]
   ),
 ]
 
