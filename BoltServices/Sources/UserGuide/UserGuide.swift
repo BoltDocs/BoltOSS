@@ -16,10 +16,12 @@
 
 import Foundation
 
-public struct UserGuideLocation {
+public struct UserGuideLocation: Hashable, Identifiable {
 
   public var path: String
   public var fragment: String?
+
+  public var id: Self { self }
 
   public init(path: String, fragment: String? = nil) {
     self.path = path

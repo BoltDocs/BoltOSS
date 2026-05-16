@@ -26,7 +26,7 @@ public extension Container {
   var userGuideUIModuleInitializer: Factory<Initializer> {
     return self {
       Initializer {
-        Container.shared.userGuideURLResolver.register {
+        Container.shared.userGuideOnlineURLResolver.register {
           return { location in
             var str = "https://github.com/BoltDocs/bolt-user-guides/blob/main/contents/\(location.path).md"
             if let fragment = location.fragment, !fragment.isEmpty {

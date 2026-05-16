@@ -24,6 +24,7 @@ import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
 import BoltUserGuide
+import BoltUserGuideUI
 import BoltUtils
 
 private final class LibraryCustomFeedListViewModel: ObservableObject {
@@ -33,7 +34,7 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
 
   @Published var feeds = [CustomFeed]()
 
-  @Published var safariSheetURL: URL?
+  @Published var userGuideLocation: UserGuideLocation?
 
   private var cancellables = Set<AnyCancellable>()
 
@@ -46,12 +47,6 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
         }
       }
       .assign(to: &$feeds)
-  }
-
-  func openUserGuide(_ guideLocation: UserGuideLocation) {
-    if let guideURL = Container.shared.userGuideURLResolver()?(guideLocation) {
-      safariSheetURL = guideURL
-    }
   }
 
   func onConfirmRenameFeed(_ feed: CustomFeed, newName: String) throws {
@@ -155,12 +150,11 @@ struct LibraryCustomFeedListView: View {
     .background(Color.systemGroupedBackground)
     .navigationTitle("Library-ImportedFeeds-List-title".boltLocalized)
     .navigationBarTitleDisplayMode(.large)
-    .safariSheet(url: $model.safariSheetURL)
+    .userGuideSheet(location: $model.userGuideLocation)
     .toolbar {
       ToolbarItem(placement: .primaryAction) {
         Button(action: {
-          let guideLocation = UserGuideLocation(path: "importing-docsets-from-feeds")
-          model.openUserGuide(guideLocation)
+          model.userGuideLocation = UserGuideLocation(path: "importing-docsets-from-feeds")
         }, label: {
           Label(
             "Library-FeedList-ToolBar-guideButtonTitle".boltLocalized,

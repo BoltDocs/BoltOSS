@@ -22,6 +22,7 @@ import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
 import BoltUserGuide
+import BoltUserGuideUI
 import BoltUtils
 
 import Factory
@@ -77,7 +78,7 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
 
   @Published var docsetItems = [ListItem]()
 
-  @Published var safariSheetURL: URL?
+  @Published var userGuideLocation: UserGuideLocation?
 
   private lazy var folderMonitor: FolderMonitor = {
     return FolderMonitor(
@@ -211,12 +212,6 @@ private final class LibraryTransferViewModel: ObservableObject, LoggerProvider {
     }
   }
 
-  func openUserGuide(_ guideLocation: UserGuideLocation) {
-    if let guideURL = Container.shared.userGuideURLResolver()?(guideLocation) {
-      safariSheetURL = guideURL
-    }
-  }
-
   func showError(nestedError: Error? = nil) {
     GlobalUI.showMessageToast(
       withErrorMessage: ErrorMessage(entity: ErrorMessageEntity.importDocsetFailed, nestedError: nestedError)
@@ -283,11 +278,10 @@ public struct LibraryTransferView: View {
         }
         #if !targetEnvironment(macCatalyst)
         Button {
-          let guideLocation = UserGuideLocation(
+          viewModel.userGuideLocation = UserGuideLocation(
             path: "transferring-local-docsets",
             fragment: "transfer-docsets-from-finder"
           )
-          viewModel.openUserGuide(guideLocation)
         } label: {
           Label(
             "Library-Transfer-ImportSection-transferFromMac".boltLocalized,
@@ -300,7 +294,7 @@ public struct LibraryTransferView: View {
     .formStyle(.grouped)
     .navigationTitle("Library-Transfer-title".boltLocalized)
     .navigationBarTitleDisplayMode(.large)
-    .safariSheet(url: $viewModel.safariSheetURL)
+    .userGuideSheet(location: $viewModel.userGuideLocation)
     .onAppear {
       viewModel.refresh()
       viewModel.startFolderMonitoring()
@@ -308,8 +302,7 @@ public struct LibraryTransferView: View {
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
         Button(action: {
-          let guideLocation = UserGuideLocation(path: "transferring-local-docsets")
-          viewModel.openUserGuide(guideLocation)
+          viewModel.userGuideLocation = UserGuideLocation(path: "transferring-local-docsets")
         }, label: {
           Label(
             "Library-FeedList-ToolBar-guideButtonTitle".boltLocalized,

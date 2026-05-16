@@ -21,6 +21,8 @@ import Factory
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
+import BoltUserGuide
+import BoltUserGuideUI
 import BoltUtils
 
 class RefreshActionPerformer: ObservableObject {
@@ -67,7 +69,7 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
   @StateObject private var model = Model()
   @StateObject private var actionPerformer = RefreshActionPerformer()
 
-  @State var safariSheetURL: URL?
+  @State var userGuideLocation: UserGuideLocation?
 
   @MainActor
   func refreshAction() async throws(ServiceError) {
@@ -84,14 +86,12 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
     LibraryFeedListView(model: model, actionPerformer: actionPerformer)
       .navigationTitle(Model.title)
       .navigationBarTitleDisplayMode(.large)
-      .safariSheet(url: $safariSheetURL)
+      .userGuideSheet(location: $userGuideLocation)
       .toolbar {
         if let userGuide = Model.userGuide {
           ToolbarItem(placement: .topBarTrailing) {
             Button(action: {
-              if let guideURL = Container.shared.userGuideURLResolver()?(userGuide.location) {
-                safariSheetURL = guideURL
-              }
+              userGuideLocation = userGuide.location
             }, label: {
               Label(
                 "Library-FeedList-ToolBar-guideButtonTitle".boltLocalized,
