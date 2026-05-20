@@ -183,7 +183,7 @@ struct UserGuideView: View {
         }
         ToolbarItem(placement: .topBarLeading) {
           Button(action: { openOnlinePage() }, label: {
-            Image(systemName: "safari")
+            Image(systemName: "globe")
           })
         }
         if RuntimeEnvironment.isOS26UIEnabled {

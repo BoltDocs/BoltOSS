@@ -7,3 +7,12 @@
   --breakpoint-6xl: 72rem;
   --color-link: #0578e3;
 }
+
+@layer theme {
+  :root,
+  :host {
+    @variant dark {
+      --color-link: #5ac8f5;
+    }
+  }
+}

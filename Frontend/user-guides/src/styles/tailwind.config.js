@@ -9,9 +9,19 @@ export default {
             "--tw-prose-bullets": "var(--tw-prose-body)",
             "--tw-prose-headings": "var(--tw-prose-body)",
             "--tw-prose-links": "var(--color-link)",
+            "--tw-prose-invert-body": "currentColor",
+            "--tw-prose-invert-bullets": "var(--tw-prose-invert-body)",
+            "--tw-prose-invert-headings": "var(--tw-prose-invert-body)",
+            "--tw-prose-invert-links": "var(--color-link)",
             a: {
-              textDecoration: "underline dotted",
               fontWeight: "inherit",
+              textDecoration: "none",
+            },
+            "a:hover": {
+              textDecoration: "underline",
+            },
+            "a[href^='#']": {
+              color: "inherit",
             },
             "code::before": {
               content: "none",
