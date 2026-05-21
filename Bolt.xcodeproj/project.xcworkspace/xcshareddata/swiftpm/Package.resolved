@@ -1,5 +1,5 @@
 {
-  "originHash" : "89b73ffec0dc0e4c3c0a32417966e2249e161452b17ee3af50aa5a67d82cca20",
+  "originHash" : "ccf4e5b0d0660218793125911b5e641fbf9b77f02a9f95d93b6b0caa29997720",
   "pins" : [
     {
       "identity" : "accessibilitysnapshot",
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/BoltDocs/RoutableNavigation.git",
       "state" : {
-        "branch" : "de5abe3",
-        "revision" : "de5abe324ca1a860c79ec196f667283557fc49d2"
+        "branch" : "59c5459",
+        "revision" : "59c54592183f6e83381824bd1884a4f1aabc4581"
       }
     },
     {
