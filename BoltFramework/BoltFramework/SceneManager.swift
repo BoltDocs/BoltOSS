@@ -48,6 +48,11 @@ private class SecondaryNavigationController: UIViewController {
     }
   }
 
+  override func didMove(toParent parent: UIViewController?) {
+    super.didMove(toParent: parent)
+    navigationController?.isNavigationBarHidden = true
+  }
+
 }
 
 public final class SceneManager {
