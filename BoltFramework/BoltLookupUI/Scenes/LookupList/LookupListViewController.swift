@@ -145,11 +145,11 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
         return []
       }
       var items = [UIBarButtonItem]()
-      if showsLoadingIndicator {
-        items.append(activityIndicatorBarButtonItem)
-      }
       if showsCancelButton {
         items.append(cancelBarButtonItem)
+      }
+      if showsLoadingIndicator {
+        items.append(activityIndicatorBarButtonItem)
       }
       return items
     }
