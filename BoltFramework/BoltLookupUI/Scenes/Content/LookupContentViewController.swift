@@ -272,7 +272,7 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       addChild(searchResultsController) {
         view.addSubview($0)
         $0.snp.makeConstraints {
-          $0.top.equalTo(view.safeAreaLayoutGuide)
+          $0.top.equalTo(scopeBar.snp.bottom)
           $0.leading.trailing.bottom.equalToSuperview()
         }
       }
