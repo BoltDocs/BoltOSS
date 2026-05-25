@@ -213,7 +213,12 @@ final class LookupRoutingState: HasDisposeBag {
   func deselectEntryOrPop() {
     switch sceneState.lookupSearchScopeValue {
     case .types:
-      routingCoordinator.pop()
+      let routeElements = routingCoordinator.currentRouteValue.elements
+      if let lastElement = routeElements.last {
+        if case .entries = lastElement.routingType { } else {
+          routingCoordinator.pop()
+        }
+      }
     case .docPage, .tableOfContents:
       sceneState.dispatch(action: .updateLookupSearchScope(.types))
       updateSearchTextRelay.accept(preservedSearchQuery)
