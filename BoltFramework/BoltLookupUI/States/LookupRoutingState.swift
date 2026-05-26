@@ -195,7 +195,14 @@ final class LookupRoutingState: HasDisposeBag {
   }
 
   func selectSearchScope(_ searchScope: SearchScope) {
-    sceneState.dispatch(action: .updateLookupSearchScope(searchScope))
+    switch searchScope {
+    case .types:
+      sceneState.dispatch(action: .updateLookupSearchScope(.types))
+      restoreSearchQuery()
+    case .docPage, .tableOfContents:
+      preserveSearchQuery()
+      sceneState.dispatch(action: .updateLookupSearchScope(searchScope))
+    }
   }
 
   func selectEntry(docset: Docset, entry: Entry) {
@@ -203,8 +210,7 @@ final class LookupRoutingState: HasDisposeBag {
       return
     }
 
-    preservedSearchQuery = searchQueryRelay.value
-    updateSearchTextRelay.accept("")
+    preserveSearchQuery()
 
     sceneState.dispatch(action: .docPageLoadURL(url))
     sceneState.dispatch(action: .updateLookupSearchScope(.docPage))
@@ -221,8 +227,7 @@ final class LookupRoutingState: HasDisposeBag {
       }
     case .docPage, .tableOfContents:
       sceneState.dispatch(action: .updateLookupSearchScope(.types))
-      updateSearchTextRelay.accept(preservedSearchQuery)
-      preservedSearchQuery = ""
+      restoreSearchQuery()
     }
   }
 
@@ -238,6 +243,16 @@ final class LookupRoutingState: HasDisposeBag {
     dismissSearchSubject.onNext(())
     sceneState.dispatch(action: .lookupListVisibilityChange(false))
     sceneState.dispatch(action: .updateLookupSearchScope(.types))
+  }
+
+  private func preserveSearchQuery() {
+    preservedSearchQuery = searchQueryRelay.value
+    updateSearchTextRelay.accept("")
+  }
+
+  private func restoreSearchQuery() {
+    updateSearchTextRelay.accept(preservedSearchQuery)
+    preservedSearchQuery = ""
   }
 
 }
