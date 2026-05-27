@@ -90,4 +90,13 @@ public extension UserDefaults {
     }
   }
 
+  @objc dynamic var showsHomeSearchToken: Bool {
+    get {
+      return bool(forKey: "showsHomeSearchToken")
+    }
+    set {
+      setValue(newValue, forKey: "showsHomeSearchToken")
+    }
+  }
+
 }

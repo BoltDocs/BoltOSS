@@ -80,6 +80,7 @@ private class PreferencesHomeViewModel: ObservableObject {
   @Published var enablesDesktopMode = false
   @Published var updateCheckingFrequency = UpdateCheckingFrequency.never
   @Published var webViewInspectable = false
+  @Published var showsHomeSearchToken = false
 
   @Injected(\.docsetUpdateChecker)
   private var docsetUpdateChecker: DocsetUpdateChecker
@@ -99,6 +100,8 @@ private class PreferencesHomeViewModel: ObservableObject {
 
     UserDefaults.standard.publisher(for: \.webViewInspectable)
       .assign(to: &$webViewInspectable)
+    UserDefaults.standard.publisher(for: \.showsHomeSearchToken)
+      .assign(to: &$showsHomeSearchToken)
   }
 
   func checkForDocsetUpdates() {
@@ -257,6 +260,14 @@ public struct PreferencesHomeView: View {
               )
             ) {
               Text("Preferences-Home-InternalDiagnostics-webViewInspector".boltLocalized)
+            }
+            BoltToggle(
+              isOn: Binding(
+                get: { viewModel.showsHomeSearchToken },
+                set: { UserDefaults.standard.showsHomeSearchToken = $0 }
+              )
+            ) {
+              Text("Show Home Token on Search")
             }
             Button("Preferences-Home-InternalDiagnostics-resetData".boltLocalized) {
               if isCacheClearing {
