@@ -247,11 +247,13 @@ final class LookupRoutingState: HasDisposeBag {
 
   private func preserveSearchQuery() {
     preservedSearchQuery = searchQueryRelay.value
+    searchQueryRelay.accept("")
     updateSearchTextRelay.accept("")
   }
 
   private func restoreSearchQuery() {
     updateSearchTextRelay.accept(preservedSearchQuery)
+    searchQueryRelay.accept(preservedSearchQuery)
     preservedSearchQuery = ""
   }
 
