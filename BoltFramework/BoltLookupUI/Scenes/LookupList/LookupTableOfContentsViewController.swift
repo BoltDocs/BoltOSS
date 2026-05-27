@@ -54,6 +54,7 @@ final class LookupTableOfContentsViewController: UINavigationController, HasDisp
               docset: docset
             )
           )
+          listViewController.loadViewIfNeeded()
           owner.viewControllers = [listViewController]
           owner.listViewController = listViewController
         case .history:

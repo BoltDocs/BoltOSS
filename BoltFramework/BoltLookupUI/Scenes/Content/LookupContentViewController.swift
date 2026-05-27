@@ -96,7 +96,7 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       $0.preferredSearchBarPlacement = .stacked
     }
 
-    let _ = lookupSearchController.view
+    lookupSearchController.loadViewIfNeeded()
 
     view.addSubview(scopeBar)
     scopeBar.snp.makeConstraints {
