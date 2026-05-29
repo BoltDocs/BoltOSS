@@ -149,6 +149,9 @@ public struct PreferencesHomeView: View {
   @Injected(\.crashesService)
   private var crashesService: CrashesService?
 
+  @Injected(\.purchasesService)
+  private var purchasesService: PurchasesService?
+
   @State private var isTypeBrowserPresented = false
 
   @MainActor @State private var isCacheClearing = false {
@@ -173,6 +176,13 @@ public struct PreferencesHomeView: View {
   public var body: some View {
     NavigationView {
       List {
+        if let purchasesService = purchasesService {
+          Section {
+            Button("Preferences-Home-Purchases-purchaseBolt".boltLocalized) {
+              purchasesService.presentPayWall()
+            }
+          }
+        }
         if !RuntimeEnvironment.hidesUnfinishedFeatures {
           Section("Preferences-Home-Appearance-sectionTitle".boltLocalized) {
             NavigationLink(

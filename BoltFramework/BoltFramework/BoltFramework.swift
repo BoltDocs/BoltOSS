@@ -42,6 +42,7 @@ public class BoltFramework: LoggerProvider {
     let _ = Container.shared.crashesService()
     let _ = Container.shared.distributionService()
     let _ = Container.shared.analyticsService()
+    let _ = Container.shared.purchasesService()
 
     #if targetEnvironment(macCatalyst)
     Container.shared.appKitBridge.register {

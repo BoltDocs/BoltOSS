@@ -28,6 +28,7 @@ public extension Container {
   var distributionService: Factory<DistributionService?> { self { nil }.cached }
   var analyticsService: Factory<AnalyticsService?> { self { nil }.cached }
   var crashesService: Factory<CrashesService?> { self { nil }.cached }
+  var purchasesService: Factory<PurchasesService?> { self { nil }.cached }
 
 }
 
