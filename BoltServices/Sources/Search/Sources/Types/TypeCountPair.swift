@@ -26,8 +26,8 @@ public struct TypeCountPair: Codable, FetchableRecord {
     return EntryType.type(forNameOrAlias: typeName)
   }
 
-  public let typeName: String
-  public let count: Int
+  public var typeName: String
+  public var count: Int
 
   public enum CodingKeys: String, CodingKey {
     case typeName = "type"
@@ -60,6 +60,11 @@ public extension TypeCountPair {
                             ORDER BY type_index;
                             """
     // swiftlint:enable indentation_width
+    return SQLRequest<TypeCountPair>(literal: queryLiteral)
+  }
+
+  static func fetchUnsortedRawPairs() -> SQLRequest<TypeCountPair> {
+    let queryLiteral: SQL = "SELECT type, COUNT(type) AS 'count' FROM searchindex GROUP BY type"
     return SQLRequest<TypeCountPair>(literal: queryLiteral)
   }
 

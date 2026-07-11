@@ -15,25 +15,46 @@
 //
 
 import Dispatch
+import QuartzCore
 
 import GRDB
 
 import BoltTypes
 import BoltUtils
 
-struct DocsetSearcher {
+struct DocsetSearcher: LoggerProvider {
 
   static func typeList(forIndexDBQueue dbQueue: DatabaseQueue) async throws -> [TypeCountPair] {
-    return try await withCheckedThrowingContinuation { continuation in
+    let timeStamp = CACurrentMediaTime()
+    let result = try await withCheckedThrowingContinuation { continuation in
       do {
         try dbQueue.read { db in
-          let result = try TypeCountPair.fetchPairs().fetchAll(db)
+          var result = try TypeCountPair.fetchUnsortedRawPairs().fetchAll(db)
+          result = result.reduce(into: [TypeCountPair]()) { partialResult, pair in
+            guard let typeSingular = pair.type?.singular else {
+              return
+            }
+            if let index = partialResult.firstIndex(where: { $0.typeName == typeSingular }) {
+              partialResult[index].count += pair.count
+            } else {
+              partialResult.append(TypeCountPair(typeName: typeSingular, count: pair.count))
+            }
+          }
+          .sorted {
+            guard let lhsType = $0.type, let rhsType = $1.type else {
+              return true
+            }
+            return lhsType.sortingOrder < rhsType.sortingOrder
+          }
           continuation.resume(returning: result)
         }
       } catch {
         continuation.resume(throwing: error)
       }
     }
+    let timeElapsed = CACurrentMediaTime() - timeStamp
+    Self.logger.info("fetched \(result.count) type list entries in \(timeElapsed)s")
+    return result
   }
 
   static func allEntries(forIndexDBQueue dbQueue: DatabaseQueue, type: EntryType?) async throws -> [Entry] {
