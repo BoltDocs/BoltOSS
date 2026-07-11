@@ -29,8 +29,8 @@ final class SearchServiceTests: XCTestCase {
       try db.execute(
         sql: """
           INSERT INTO searchindex (name, type, path) VALUES
-          ('FunctionA', 'Function', '/docs/functionA'),
-          ('FunctionB', 'Function', '/docs/functionB'),
+          ('FunctionA', 'ffunc', '/docs/functionA'),
+          ('FunctionB', 'ffunc', '/docs/functionB'),
           ('FunctionC', 'func',     '/docs/functionC');
           """
       )
@@ -38,6 +38,7 @@ final class SearchServiceTests: XCTestCase {
 
     let result = try await DocsetSearcher.typeList(forIndexDBQueue: dbQueue)
     XCTAssertEqual(result.count, 1)
+    XCTAssertEqual(result[0].typeName, "Function")
     XCTAssertEqual(result[0].count, 3)
   }
 
