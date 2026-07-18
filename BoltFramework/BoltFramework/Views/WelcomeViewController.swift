@@ -31,7 +31,7 @@ private struct WelcomeView: View {
         .foregroundStyle(.secondary)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .ignoresSafeArea()
+    .edgesIgnoringSafeArea(.vertical)
   }
 
 }

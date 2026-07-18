@@ -29,31 +29,7 @@ import BoltLookupUI
 import BoltModuleExports
 import BoltUIFoundation
 
-private class SecondaryNavigationController: UIViewController {
-
-  private var managedNavigationController = UINavigationController()
-
-  var viewControllers: [UIViewController] = [] {
-    didSet {
-      managedNavigationController.viewControllers = viewControllers
-      if !viewControllers.isEmpty {
-        view.addSubview(managedNavigationController.view)
-        managedNavigationController.view.snp.makeConstraints {
-          $0.top.bottom.trailing.equalTo(view)
-          $0.leading.equalTo(view.safeAreaLayoutGuide)
-        }
-      } else {
-        managedNavigationController.view.removeFromSuperview()
-      }
-    }
-  }
-
-  override func didMove(toParent parent: UIViewController?) {
-    super.didMove(toParent: parent)
-    navigationController?.isNavigationBarHidden = true
-  }
-
-}
+private class SecondaryNavigationController: UINavigationController { }
 
 public final class SceneManager {
 
