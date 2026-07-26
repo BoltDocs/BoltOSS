@@ -36,13 +36,11 @@ public extension UIViewController {
 
   func removeChild(_ childController: UIViewController, with closure: (UIView) -> Void) {
     childController.willMove(toParent: nil)
-    childController.removeFromParent()
     closure(childController.view)
-    childController.didMove(toParent: nil)
+    childController.removeFromParent()
   }
 
   func addChild(_ childController: UIViewController, with closure: (UIView) -> Void) {
-    childController.willMove(toParent: self)
     addChild(childController)
     closure(childController.view)
     childController.didMove(toParent: self)
