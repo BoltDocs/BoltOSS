@@ -107,7 +107,8 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       view.addSubview($0)
       $0.snp.makeConstraints {
         $0.top.equalTo(view.safeAreaLayoutGuide)
-        $0.leading.trailing.bottom.equalToSuperview()
+        $0.bottom.equalToSuperview()
+        $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
       }
     }
 
@@ -257,15 +258,14 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
 
   func updateScopeBarVisible(_ visible: Bool) {
     scopeBar.isHidden = !visible
-    for childView in [browserViewController.view] {
-      childView?.snp.remakeConstraints { make in
-        if visible {
-          make.top.equalTo(scopeBar.snp.bottom)
-        } else {
-          make.top.equalTo(view.safeAreaLayoutGuide)
-        }
-        make.leading.trailing.bottom.equalToSuperview()
+    browserViewController.view.snp.remakeConstraints { make in
+      if visible {
+        make.top.equalTo(scopeBar.snp.bottom)
+      } else {
+        make.top.equalTo(view.safeAreaLayoutGuide)
       }
+      make.bottom.equalToSuperview()
+      make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
     }
   }
 
