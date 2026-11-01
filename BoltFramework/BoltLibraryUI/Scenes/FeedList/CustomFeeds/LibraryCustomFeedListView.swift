@@ -163,9 +163,7 @@ struct LibraryCustomFeedListView: View {
         })
         .labelStyle(.iconOnly)
       } // ToolbarItem
-      if #available (iOS 26.0, *) {
-        ToolbarSpacer(.fixed, placement: .primaryAction)
-      } // if
+      ToolbarSpacer(.fixed, placement: .primaryAction)
       ToolbarItem(placement: .confirmationAction) {
         Button(UIKitLocalizations.done, systemImage: "checkmark") {
           dismissCurrentSheetModal?()

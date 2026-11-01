@@ -137,17 +137,9 @@ public struct LibraryDownloadsListView: View {
       .navigationTitle("Library-Downloads-title".boltLocalized)
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        if RuntimeEnvironment.isOS26UIEnabled {
-          ToolbarItem(placement: .cancellationAction) {
-            Button(UIKitLocalizations.close, systemImage: "xmark") {
-              dismissCurrentSheetModal?()
-            }
-          }
-        } else {
-          ToolbarItem(placement: .confirmationAction) {
-            Button(UIKitLocalizations.done) {
-              dismissCurrentSheetModal?()
-            }
+        ToolbarItem(placement: .cancellationAction) {
+          Button(UIKitLocalizations.close, systemImage: "xmark") {
+            dismissCurrentSheetModal?()
           }
         }
       }

@@ -100,21 +100,11 @@ struct LibraryFeedListRefreshableListWrapper<Model>: View where Model: LibraryFe
             })
             .labelStyle(.iconOnly)
           }
-          if #available (iOS 26.0, *) {
-            ToolbarSpacer(.fixed, placement: .topBarTrailing)
-          }
+          ToolbarSpacer(.fixed, placement: .topBarTrailing)
         }
-        if RuntimeEnvironment.isOS26UIEnabled {
-          ToolbarItem(placement: .topBarTrailing) {
-            Button(UIKitLocalizations.close, systemImage: "xmark") {
-              dismissCurrentSheetModal?()
-            }
-          }
-        } else {
-          ToolbarItem(placement: .confirmationAction) {
-            Button(UIKitLocalizations.done) {
-              dismissCurrentSheetModal?()
-            }
+        ToolbarItem(placement: .topBarTrailing) {
+          Button(UIKitLocalizations.close, systemImage: "xmark") {
+            dismissCurrentSheetModal?()
           }
         }
       }

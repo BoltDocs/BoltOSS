@@ -18,11 +18,11 @@ Releases will be tagged or branched, but no binary artifacts will be provided.
 
 ## Build instructions
 
-We support building for up to the two most recent major versions of iOS and iPadOS and the most recent major version of Mac Catalyst, so currently it can be run on iOS 18, iPadOS 18, and Mac Catalyst 26 (macOS 26).
+We support building for up to the two most recent major versions of iOS and iPadOS and the most recent major version of Mac Catalyst, so currently it can be run on iOS 26, iPadOS 26, and Mac Catalyst 27 (macOS 27).
 
 Mac Catalyst builds are only for development and testing, so only major issues will be solved.
 
-Only the latest non-beta release of Xcode is supported. Build with the latest Xcode 26 if you encounter any issues.
+Only the latest non-beta release of Xcode is supported. Build with the latest Xcode 27 if you encounter any issues.
 
 To checkout and build, use the following commands:
 

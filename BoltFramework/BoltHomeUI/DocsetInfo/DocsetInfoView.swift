@@ -190,42 +190,16 @@ struct DocsetInfoView: View {
 
   var body: some View {
     let docsetInfoView = DocsetInfoListView(viewModel: viewModel)
-    if RuntimeEnvironment.isOS26UIEnabled {
-      NavigationStack {
-        docsetInfoView
-        .navigationTitle(viewModel.displayName)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-          ToolbarItem(placement: .cancellationAction) {
-            Button(UIKitLocalizations.close, systemImage: "xmark") {
-              dismissCurrentSheetModal?()
-            }
+    NavigationStack {
+      docsetInfoView
+      .navigationTitle(viewModel.displayName)
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .cancellationAction) {
+          Button(UIKitLocalizations.close, systemImage: "xmark") {
+            dismissCurrentSheetModal?()
           }
         }
-      }
-    } else {
-      VStack(spacing: 0) {
-        HStack {
-          Label {
-            Text(viewModel.displayName)
-              .font(.headline)
-          } icon: {
-            Image(uiImage: viewModel.iconImage ?? UIImage())
-              .resizable()
-          }
-          .labelStyle(ListItemLabelStyle(spacing: 8, iconSize: CGSize(width: 24, height: 24)))
-          Spacer()
-          Button(
-            action: { dismissCurrentSheetModal?() },
-            label: {
-              Image(systemName: "xmark.circle.fill")
-                .foregroundStyle(.gray.opacity(0.5))
-                .font(.title2)
-            }
-          )
-        }
-        .padding()
-        docsetInfoView
       }
     }
   }

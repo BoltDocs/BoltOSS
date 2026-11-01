@@ -50,7 +50,7 @@ final class LookupSearchController: UISearchController, HasDisposeBag {
   }()
 
   private lazy var searchInputAccessoryView: UIView = {
-    let toolbarBottomPadding: CGFloat = RuntimeEnvironment.isOS26UIEnabled ? 10 : 0
+    let toolbarBottomPadding: CGFloat = 10
     var bounds = CGRect(origin: .zero, size: searchInputAccessoryToolbar.bounds.size)
     bounds.size.height += toolbarBottomPadding
     let inputView = UIView(frame: bounds)
@@ -93,7 +93,7 @@ final class LookupSearchController: UISearchController, HasDisposeBag {
         $0.allowsCopyingTokens = false
         $0.allowsDeletingTokens = false
         $0.autocapitalizationType = .none
-        if RuntimeEnvironment.isOS26UIEnabled, UIDevice.isPadOrCatalyst {
+        if UIDevice.isPadOrCatalyst {
           $0.clearButtonMode = .whileEditing
         }
       }

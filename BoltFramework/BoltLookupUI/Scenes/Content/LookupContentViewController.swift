@@ -183,16 +183,14 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     }
     .disposed(by: disposeBag)
 
-    if RuntimeEnvironment.isOS26UIEnabled {
-      view.addSubview(toolbar)
-      toolbar.snp.makeConstraints {
-        $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
-        #if targetEnvironment(macCatalyst)
-        $0.bottom.equalToSuperview().inset(20)
-        #else
-        $0.bottom.equalTo(view.safeAreaLayoutGuide)
-        #endif
-      }
+    view.addSubview(toolbar)
+    toolbar.snp.makeConstraints {
+      $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+      #if targetEnvironment(macCatalyst)
+      $0.bottom.equalToSuperview().inset(20)
+      #else
+      $0.bottom.equalTo(view.safeAreaLayoutGuide)
+      #endif
     }
 
     sceneState.lookupListVisible
@@ -296,24 +294,13 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       navigationItem.scrollEdgeAppearance = UINavigationBarAppearance()
     }
 
-    if RuntimeEnvironment.isOS26UIEnabled {
-      if lookupVisible, !showsDocPage {
-        navigationItem.standardAppearance?.configureWithDefaultBackground()
-        navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
-      } else {
-        navigationItem.standardAppearance?.configureWithDefaultBackground()
-        navigationItem.standardAppearance?.shadowColor = systemNavigationBarShadowColor
-        navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
-      }
+    if lookupVisible, !showsDocPage {
+      navigationItem.standardAppearance?.configureWithDefaultBackground()
+      navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
     } else {
-      if lookupVisible, !showsDocPage {
-        navigationItem.standardAppearance?.configureWithOpaqueBackground()
-        navigationItem.scrollEdgeAppearance?.configureWithOpaqueBackground()
-      } else {
-        navigationItem.standardAppearance?.configureWithDefaultBackground()
-        navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
-        navigationItem.scrollEdgeAppearance?.shadowColor = .clear
-      }
+      navigationItem.standardAppearance?.configureWithDefaultBackground()
+      navigationItem.standardAppearance?.shadowColor = systemNavigationBarShadowColor
+      navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
     }
   }
 
@@ -369,10 +356,6 @@ extension LookupContentViewController: ToolbarManagerDelegate {
   }
 
   func toolbarManager(_ toolbarManager: ToolbarManager, updateToolbarItems items: [UIBarButtonItem]) {
-    guard RuntimeEnvironment.isOS26UIEnabled else {
-      toolbarItems = items
-      return
-    }
     if case .normal = toolbarMode {
       toolbarItems = items
       toolbar.items = []

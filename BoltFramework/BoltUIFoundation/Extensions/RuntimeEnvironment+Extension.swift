@@ -19,14 +19,6 @@ import BoltUtils
 
 public extension RuntimeEnvironment {
 
-  static let isOS26UIEnabled: Bool = {
-    if #available(iOS 26.0, *) {
-      return !InfoValues.uiDesignRequiresCompatibility
-    } else {
-      return false
-    }
-  }()
-
   static var hidesUnfinishedFeatures: Bool {
     return !isInternalBuild
   }

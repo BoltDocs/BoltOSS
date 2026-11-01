@@ -1,4 +1,4 @@
-// swift-tools-version:6.2
+// swift-tools-version:6.4
 //
 // Copyright (C) 2024 Bolt Contributors
 //
@@ -22,9 +22,9 @@ import PackageDescription
 let package = Package(
   name: "BoltUtils",
   platforms: [
-    .iOS(.v18),
-    .macCatalyst(.v26),
-    .macOS(.v26),
+    .iOS(.v26),
+    .macCatalyst(.v27),
+    .macOS(.v27),
   ],
   products: [
     .library(

@@ -23,12 +23,7 @@ import BoltUtils
 public struct ToolbarLabelStyle: LabelStyle {
 
   public func makeBody(configuration: Configuration) -> some View {
-    if RuntimeEnvironment.isOS26UIEnabled {
-      Label(configuration)
-    } else {
-      Label(configuration)
-        .labelStyle(.titleOnly)
-    }
+    Label(configuration)
   }
 
 }
