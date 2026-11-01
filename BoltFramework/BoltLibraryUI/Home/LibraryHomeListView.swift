@@ -74,17 +74,9 @@ public struct LibraryHomeListView: View {
       .navigationBarTitleDisplayMode(.large)
       .safariSheet(url: $safariSheetURL)
       .toolbar {
-        if RuntimeEnvironment.isOS26UIEnabled {
-          ToolbarItem(placement: .topBarTrailing) {
-            Button(UIKitLocalizations.close, systemImage: "xmark") {
-              dismissCurrentSheetModal?()
-            }
-          }
-        } else {
-          ToolbarItem(placement: .confirmationAction) {
-            Button(UIKitLocalizations.done) {
-              dismissCurrentSheetModal?()
-            }
+        ToolbarItem(placement: .topBarTrailing) {
+          Button(UIKitLocalizations.close, systemImage: "xmark") {
+            dismissCurrentSheetModal?()
           }
         }
       }

@@ -178,25 +178,15 @@ struct UserGuideView: View {
           })
           .disabled(!canGoForward)
         }
-        if #available(iOS 26.0, *) {
-          ToolbarSpacer(.fixed, placement: .topBarLeading)
-        }
+        ToolbarSpacer(.fixed, placement: .topBarLeading)
         ToolbarItem(placement: .topBarLeading) {
           Button(action: { openOnlinePage() }, label: {
             Image(systemName: "globe")
           })
         }
-        if RuntimeEnvironment.isOS26UIEnabled {
-          ToolbarItem(placement: .topBarTrailing) {
-            Button(UIKitLocalizations.close, systemImage: "xmark") {
-              dismissCurrentSheetModal?()
-            }
-          }
-        } else {
-          ToolbarItem(placement: .confirmationAction) {
-            Button(UIKitLocalizations.done) {
-              dismissCurrentSheetModal?()
-            }
+        ToolbarItem(placement: .topBarTrailing) {
+          Button(UIKitLocalizations.close, systemImage: "xmark") {
+            dismissCurrentSheetModal?()
           }
         }
       }

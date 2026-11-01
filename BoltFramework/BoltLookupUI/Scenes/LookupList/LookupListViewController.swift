@@ -49,17 +49,13 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     let activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
     activityIndicator.startAnimating()
     let barButtonItem = UIBarButtonItem(customView: activityIndicator)
-    if #available(iOS 26.0, *) {
-      barButtonItem.hidesSharedBackground = true
-    }
+    barButtonItem.hidesSharedBackground = true
     return barButtonItem
   }()
 
   private lazy var cancelBarButtonItem: UIBarButtonItem = {
     return update(UIBarButtonItem()) {
-      if #available(iOS 26.0, *) {
-        $0.hidesSharedBackground = true
-      }
+      $0.hidesSharedBackground = true
       $0.primaryAction = UIAction(
         title: UIKitLocalizations.cancel,
       ) { [weak self] _ in
@@ -118,18 +114,16 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
 
     // FIXME: .distinctUntilChanged() should be used
 
-    if RuntimeEnvironment.isOS26UIEnabled {
-      if UIDevice.isPad {
-        let horizontalSizeClass: Observable<UIUserInterfaceSizeClass> = rx.traitChanges(traits: [UITraitHorizontalSizeClass.self])
-          .map { $0.horizontalSizeClass }
-          .startWith(traitCollection.horizontalSizeClass)
+    if UIDevice.isPad {
+      let horizontalSizeClass: Observable<UIUserInterfaceSizeClass> = rx.traitChanges(traits: [UITraitHorizontalSizeClass.self])
+        .map { $0.horizontalSizeClass }
+        .startWith(traitCollection.horizontalSizeClass)
 
-        horizontalSizeClass.map { sizeClass in
-          return sizeClass == .regular
-        }
-        .bind(to: showsCancelButton)
-        .disposed(by: disposeBag)
+      horizontalSizeClass.map { sizeClass in
+        return sizeClass == .regular
       }
+      .bind(to: showsCancelButton)
+      .disposed(by: disposeBag)
     }
 
     viewModel.title

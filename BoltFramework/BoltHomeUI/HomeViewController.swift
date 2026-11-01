@@ -120,25 +120,15 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
             self?.isEditingRelay.accept(false)
           }
         )
-        if !RuntimeEnvironment.isOS26UIEnabled {
-          doneButtonItem.tintColor = UIColor.tintColor
-        }
-        if RuntimeEnvironment.isOS26UIEnabled, !isForCollapsedSidebar {
+        if !isForCollapsedSidebar {
           return BarButtonItems(leftItems: [doneButtonItem], rightItems: [])
         } else {
           return BarButtonItems(leftItems: [], rightItems: [doneButtonItem])
         }
       } else {
-        let moreButtonIconName = {
-          if RuntimeEnvironment.isOS26UIEnabled {
-            return "ellipsis"
-          } else {
-            return "ellipsis.circle"
-          }
-        }()
         let moreButtonItem = UIBarButtonItem(
           title: nil,
-          image: UIImage(systemName: moreButtonIconName),
+          image: UIImage(systemName: "ellipsis"),
           primaryAction: nil,
           menu: UIMenu(
             title: "",
@@ -161,9 +151,6 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
             }
           )
         )
-        if !RuntimeEnvironment.isOS26UIEnabled {
-          moreButtonItem.tintColor = UIColor.tintColor
-        }
         return BarButtonItems(leftItems: [], rightItems: [moreButtonItem])
       }
     }

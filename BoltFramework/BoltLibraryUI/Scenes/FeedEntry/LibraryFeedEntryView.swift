@@ -407,17 +407,9 @@ struct LibraryFeedEntryView: View {
     .navigationTitle(dataSource.entry.feed.displayName)
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
-      if RuntimeEnvironment.isOS26UIEnabled {
-        ToolbarItem(placement: .topBarTrailing) {
-          Button(UIKitLocalizations.close, systemImage: "xmark") {
-            dismissCurrentSheetModal?()
-          }
-        }
-      } else {
-        ToolbarItem(placement: .confirmationAction) {
-          Button(UIKitLocalizations.done) {
-            dismissCurrentSheetModal?()
-          }
+      ToolbarItem(placement: .topBarTrailing) {
+        Button(UIKitLocalizations.close, systemImage: "xmark") {
+          dismissCurrentSheetModal?()
         }
       }
     }

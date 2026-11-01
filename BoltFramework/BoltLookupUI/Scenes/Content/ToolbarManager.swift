@@ -181,7 +181,7 @@ final class ToolbarManager: HasDisposeBag {
     let containerView = UIView()
     containerView.addSubview(findInPageResultCountLabel)
     findInPageResultCountLabel.snp.makeConstraints { make in
-      make.leading.equalToSuperview().offset(RuntimeEnvironment.isOS26UIEnabled ? 12 : 6)
+      make.leading.equalToSuperview().offset(12)
       make.trailing.equalToSuperview().offset(-6)
       make.top.bottom.equalToSuperview()
     }
@@ -221,13 +221,7 @@ final class ToolbarManager: HasDisposeBag {
           shareButton,
           moreButton,
         ].compactMap { $0 }
-        if RuntimeEnvironment.isOS26UIEnabled {
-          return items
-        } else {
-          return items.enumerated().flatMap { index, item in
-            index < items.count - 1 ? [item, flexibleSpace] : [item]
-          }
-        }
+        return items
       case let .search(scope):
         var items = [UIBarButtonItem]()
         if scope == .docPage {
