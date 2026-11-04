@@ -115,7 +115,7 @@ let libraryTargets: [Target] = [
     dependencies: [
       "BoltRxSwift",
       "BetterSafariView",
-      .product(name: "Overture", package: "swift-overture"),
+      .product(name: "Overture", package: "BoltUtils"),
       "GSMessages",
       "BoltServices",
       "BoltLocalizations",
@@ -190,12 +190,12 @@ let package = Package(
     .package(url: "https://github.com/yhirano/LicensePlistViewController.git", exact: "2.3.0"),
     .package(url: "https://github.com/stleamist/BetterSafariView.git", exact: "2.4.2"),
     .package(url: "https://github.com/wxxsw/GSMessages.git", revision: "88d895a"),
-    .package(url: "https://github.com/pointfreeco/swift-overture.git", revision: "0.5.0"),
     .package(url: "https://github.com/BoltDocs/RoutableNavigation.git", revision: "9a2507d"),
     .package(path: "../BoltAppleDocumentation"),
     .package(path: "../BoltRxSwift"),
     .package(path: "../BoltLocalizations"),
     .package(path: "../BoltServices"),
+    .package(path: "../BoltUtils"),
   ],
   targets: libraryTargets + [frameworkTarget]
 )

@@ -39,7 +39,7 @@ struct Dependencies {
   }
 
   static var Overture: PackageDescription.Target.Dependency {
-    .product(name: "Overture", package: "swift-overture")
+    .product(name: "Overture", package: "BoltUtils")
   }
 
   static var UUIDShortener: PackageDescription.Target.Dependency {
@@ -225,7 +225,6 @@ let dependencies: [Package.Dependency] = [
   .package(url: "https://github.com/Alamofire/Alamofire.git", revision: "5.10.2"),
   .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", revision: "5.0.2"),
   .package(url: "https://github.com/yahoojapan/SwiftyXMLParser.git", revision: "5.6.0"),
-  .package(url: "https://github.com/pointfreeco/swift-overture.git", revision: "0.5.0"),
   .package(url: "https://github.com/Dean151/uuid-shortener", revision: "v1.0.0"),
 ]
 

@@ -35,6 +35,10 @@ let package = Package(
       name: "BoltUtilsTesting",
       targets: ["BoltUtilsTesting"]
     ),
+    .library(
+      name: "Overture",
+      targets: ["Overture"]
+    ),
   ],
   dependencies: [
     .package(url: "https://github.com/pointfreeco/swift-issue-reporting.git", revision: "1.4.3"),
@@ -48,11 +52,15 @@ let package = Package(
         .product(name: "Logging", package: "swift-log"),
       ],
       path: "./Sources",
-      exclude: ["Testing"]
+      exclude: ["Overture", "Testing"]
     ),
     .target(
       name: "BoltUtilsTesting",
       path: "./Sources/Testing"
+    ),
+    .target(
+      name: "Overture",
+      path: "./Sources/Overture"
     ),
   ]
 )
