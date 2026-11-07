@@ -14,6 +14,9 @@
 // limitations under the License.
 //
 
+import Foundation
+import UIKit
+
 import BoltServices
 import BoltUtils
 
@@ -21,6 +24,13 @@ public extension RuntimeEnvironment {
 
   static var hidesUnfinishedFeatures: Bool {
     return !isInternalBuild
+  }
+
+  static var showsHomeSearchToken: Bool {
+    if UIDevice.isPadOrCatalyst {
+      return true
+    }
+    return UserDefaults.standard.showsHomeSearchToken
   }
 
 }

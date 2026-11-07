@@ -166,7 +166,7 @@ final class LookupRoutingState: HasDisposeBag {
         let scopeToken = { () -> UISearchToken? in
           switch searchScope {
           case .types:
-            if UIDevice.isPad || UserDefaults.standard.showsHomeSearchToken, routeTokens.isEmpty {
+            if RuntimeEnvironment.showsHomeSearchToken, routeTokens.isEmpty {
               return UISearchToken.token(withSymbolName: "house")
             }
             return nil
