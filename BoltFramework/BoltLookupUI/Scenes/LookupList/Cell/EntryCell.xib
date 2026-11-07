@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19158" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="25408" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19141"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="25407"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -30,12 +30,10 @@
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="GXB-qu-YyD" secondAttribute="height" id="9BX-hr-xQ5"/>
                                     <constraint firstAttribute="height" constant="16" id="Qoq-0E-MqN"/>
+                                    <constraint firstAttribute="width" secondItem="GXB-qu-YyD" secondAttribute="height" id="SI7-GV-ugn"/>
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <constraints>
-                            <constraint firstItem="GXB-qu-YyD" firstAttribute="width" secondItem="GXB-qu-YyD" secondAttribute="height" id="SI7-GV-ugn"/>
-                        </constraints>
                     </stackView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Progress" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pgx-ye-yqU">
                         <rect key="frame" x="340" y="24" width="54" height="16"/>
@@ -55,8 +53,8 @@
                     <constraint firstItem="VoG-fC-CjY" firstAttribute="centerY" secondItem="KDa-XK-Gqx" secondAttribute="centerY" id="HZL-PZ-Kbd"/>
                     <constraint firstItem="pgx-ye-yqU" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="VoG-fC-CjY" secondAttribute="trailingMargin" constant="8" id="Lvl-fQ-O5K"/>
                     <constraint firstItem="VoG-fC-CjY" firstAttribute="leading" secondItem="u9r-jc-70J" secondAttribute="trailing" constant="12" id="U0S-ts-lbm"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="pgx-ye-yqU" secondAttribute="trailing" id="iQp-ZG-5wK"/>
-                    <constraint firstItem="u9r-jc-70J" firstAttribute="leading" secondItem="KDa-XK-Gqx" secondAttribute="leadingMargin" id="s8G-m8-hdk"/>
+                    <constraint firstAttribute="trailing" secondItem="pgx-ye-yqU" secondAttribute="trailing" constant="20" id="iQp-ZG-5wK"/>
+                    <constraint firstItem="u9r-jc-70J" firstAttribute="leading" secondItem="KDa-XK-Gqx" secondAttribute="leading" constant="20" id="s8G-m8-hdk"/>
                     <constraint firstItem="u9r-jc-70J" firstAttribute="centerY" secondItem="KDa-XK-Gqx" secondAttribute="centerY" id="sfx-nt-nGn"/>
                 </constraints>
                 <edgeInsets key="layoutMargins" top="0.0" left="12" bottom="0.0" right="12"/>
