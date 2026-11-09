@@ -27,37 +27,34 @@ struct HomeListItemViewModel {
   private var libraryDocsetsManager: LibraryDocsetsManager
 
   var title: String?
-  var subTitle: String?
+  var subtitle: String?
   var image: IdentifiableImage?
 
   var uuid: UUID
 
   init(queryResult: LibraryInstallationQueryResult) {
     uuid = queryResult.record.uuid
+    subtitle = Self.subtitle(forRecord: queryResult.record)
     switch queryResult {
     case let .docset(docset):
       title = docset.displayName
-      subTitle = { () -> String in
-        if docset.installedAsLatestVersion {
-          return "Home-List-Items-latest".boltLocalized
-        } else {
-          return docset.version.displayVersion
-        }
-      }()
       image = docset.iconImageForList
     case let .broken(installation):
       title = installation.name
-      subTitle = { () -> String in
-        if installation.installedAsLatestVersion {
-          return "Home-List-Items-latest".boltLocalized
-        } else {
-          return installation.version.displayVersion
-        }
-      }()
       let symbolName = "text.book.closed"
       if let uiImage = UIImage(systemName: symbolName) {
         image = IdentifiableImage(image: uiImage, id: symbolName)
       }
+    }
+  }
+
+  private static func subtitle(forRecord record: LibraryRecord) -> String {
+    if record.hasNewerVersion {
+      return "Home-List-Items-updateAvailable".boltLocalized
+    } else if record.installedAsLatestVersion {
+      return "Home-List-Items-latest".boltLocalized
+    } else {
+      return record.version.displayVersion
     }
   }
 
@@ -89,14 +86,14 @@ extension HomeListItemViewModel: Hashable {
     return
       lhs.uuid == rhs.uuid &&
       lhs.title == rhs.title &&
-      lhs.subTitle == rhs.subTitle &&
+      lhs.subtitle == rhs.subtitle &&
       lhs.image?.id == rhs.image?.id
   }
 
   func hash(into hasher: inout Hasher) {
     hasher.combine(uuid)
     hasher.combine(title)
-    hasher.combine(subTitle)
+    hasher.combine(subtitle)
     hasher.combine(image?.id)
   }
 
