@@ -60,7 +60,7 @@ final class HomeListCollectionViewItemCell: UICollectionViewListCell {
       )
 
       $0.attributedText = attributedTitle
-      $0.secondaryText = viewModel.subTitle
+      $0.secondaryText = viewModel.subtitle
       $0.image = viewModel.image?.image
     }
   }
