@@ -131,6 +131,7 @@ final class LookupSearchController: UISearchController, HasDisposeBag {
 
     state.dismissSearchDriver
       .emit(with: self) { owner, _ in
+        owner.preserveSearchFieldText()
         owner.isActive = false
       }
       .disposed(by: disposeBag)
