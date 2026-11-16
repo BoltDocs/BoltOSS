@@ -16,7 +16,7 @@
 
 import Foundation
 
-public struct UserGuideLocation: Hashable, Identifiable {
+public struct UserGuideLocation: Hashable, Identifiable, Sendable {
 
   public var path: String
   public var fragment: String?

@@ -67,6 +67,13 @@
         "identifier" : "BoltSearchTests",
         "name" : "BoltSearchTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:BoltFramework",
+        "identifier" : "BoltLibraryUITests",
+        "name" : "BoltLibraryUITests"
+      }
     }
   ],
   "version" : 1

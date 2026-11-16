@@ -23,9 +23,9 @@ import BoltUIFoundation
 import BoltUserGuide
 import BoltUtils
 
-public struct LibraryFeedListUserGuide {
+public struct LibraryFeedListUserGuide: Sendable {
 
-  public enum Icon {
+  public enum Icon: Sendable {
     case info, question
   }
 
@@ -67,11 +67,11 @@ protocol LibraryFeedListViewModel: ObservableObject, SendableMetatype {
 extension LibraryFeedListViewModel {
 
   func filteredFeeds(searchText: String) -> [Feed] {
+    let query = searchText.trimmingWhitespacesAndNewLines().lowercased()
     let result: [Feed]
-    if searchText.isEmpty {
+    if query.isEmpty {
       result = feeds
     } else {
-      let query = searchText.lowercased()
       result = feeds.filter { feed in
         return feed.displayName.lowercased().contains(query) ||
           feed.aliases.contains { $0.lowercased().contains(query) }
