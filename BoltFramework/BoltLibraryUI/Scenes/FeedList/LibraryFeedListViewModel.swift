@@ -63,3 +63,23 @@ protocol LibraryFeedListViewModel: ObservableObject, SendableMetatype {
   func refreshFeeds() async throws(FeedsServiceError)
 
 }
+
+extension LibraryFeedListViewModel {
+
+  func filteredFeeds(searchText: String) -> [Feed] {
+    let result: [Feed]
+    if searchText.isEmpty {
+      result = feeds
+    } else {
+      let query = searchText.lowercased()
+      result = feeds.filter { feed in
+        return feed.displayName.lowercased().contains(query) ||
+          feed.aliases.contains { $0.lowercased().contains(query) }
+      }
+    }
+    return result.sorted {
+      $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
+    }
+  }
+
+}
