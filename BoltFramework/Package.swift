@@ -76,6 +76,7 @@ let libraryTargets: [Target] = [
       "BoltUserGuideUI",
     ],
     path: "./BoltLibraryUI",
+    exclude: ["Tests"],
     resources: [
       .process("./Assets"),
     ],
@@ -141,6 +142,14 @@ let libraryTargets: [Target] = [
   ),
 ]
 
+let testTargets: [Target] = [
+  .testTarget(
+    name: "BoltLibraryUITests",
+    dependencies: ["BoltLibraryUI", "BoltServices"],
+    path: "./BoltLibraryUI/Tests"
+  ),
+]
+
 let frameworkTarget: Target = {
   let dependencies: [Target.Dependency] = [
     "BoltAppKitBridge",
@@ -197,7 +206,7 @@ let package = Package(
     .package(path: "../BoltServices"),
     .package(path: "../BoltUtils"),
   ],
-  targets: libraryTargets + [frameworkTarget]
+  targets: libraryTargets + [frameworkTarget] + testTargets
 )
 
 // swiftlint:enable prefixed_toplevel_constant

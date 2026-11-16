@@ -137,26 +137,10 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
 
   @State private var selectedFeed: IdentifiableFeed?
 
-  private var filteredFeeds: [Feed] {
-    let result: [Feed]
-    if searchText.isEmpty {
-      result = model.feeds
-    } else {
-      let query = searchText.lowercased()
-      result = model.feeds.filter { feed in
-        return feed.displayName.lowercased().contains(query) ||
-          feed.aliases.contains { $0.lowercased().contains(query) }
-      }
-    }
-    return result.sorted {
-      $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
-    }
-  }
-
   var body: some View {
     List {
       if actionPerformer.status == .success {
-        ForEach(filteredFeeds, id: \.id) { feed in
+        ForEach(model.filteredFeeds(searchText: searchText), id: \.id) { feed in
           Button {
             selectedFeed = IdentifiableFeed(feed: feed)
           } label: {
