@@ -21,8 +21,7 @@ final class LookupInitialViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    title = "Lookup"
-    view.backgroundColor = .white
+    view.backgroundColor = .systemBackground
   }
 
 }

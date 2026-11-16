@@ -50,26 +50,20 @@ final class LookupTypesViewController: RoutableNavigationController<LookupRouteE
   }
 
   override func viewController(forRouteElement element: LookupRouteElement) -> UIViewController? {
-    switch element.routingType {
-    case .initial:
-      return update(LookupInitialViewController()) {
-        $0?.routeHash = element.routeHash
-      }
-    case .entries(let docset):
-      return update(
-        LookupListViewController(
+    let controller: UIViewController = {
+      switch element.routingType {
+      case .initial:
+        return LookupInitialViewController()
+      case .entries(let docset):
+        return LookupListViewController(
           sceneState: sceneState,
           viewModel: LookupAllEntriesViewModel(
             routingState: routingState,
             docset: docset
           )
         )
-      ) {
-        $0.routeHash = element.routeHash
-      }
-    case let .types(docset, type):
-      return update(
-        LookupListViewController(
+      case let .types(docset, type):
+        return LookupListViewController(
           sceneState: sceneState,
           viewModel: LookupTypeFilteringViewModel(
             routingState: routingState,
@@ -77,9 +71,10 @@ final class LookupTypesViewController: RoutableNavigationController<LookupRouteE
             docset: docset
           )
         )
-      ) {
-        $0.routeHash = element.routeHash
       }
+    }()
+    return update(controller) {
+      $0.routeHash = element.routeHash
     }
   }
 
