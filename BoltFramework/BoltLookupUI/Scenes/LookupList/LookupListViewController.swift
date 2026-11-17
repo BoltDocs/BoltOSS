@@ -183,6 +183,9 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
   }
 
   private func setupTableView() {
+    tableView.rx.setDelegate(self)
+      .disposed(by: disposeBag)
+
     tableView.register(UINib(nibName: "EntryCell", bundle: .module), forCellReuseIdentifier: "EntryCell")
     tableView.contentInset = view.safeAreaInsets
 
@@ -209,6 +212,12 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     tableView.rx.modelSelected(LookupListCellItem.self)
       .bind(to: viewModel.itemSelected)
       .disposed(by: disposeBag)
+  }
+
+  // MARK: - UITableViewDelegate
+
+  func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+    return navigationController?.transitionCoordinator == nil ? indexPath : nil
   }
 
 }
