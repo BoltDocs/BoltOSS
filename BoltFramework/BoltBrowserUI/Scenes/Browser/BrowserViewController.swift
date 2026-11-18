@@ -73,31 +73,24 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
 
     setupProgressView()
 
-    sceneState.currentScope
-      .drive(with: self) { owner, scope in
+    sceneState.currentDocset
+      .drive(with: self) { owner, docset in
         owner.docset = nil
-        guard let scope = scope else {
+        guard let docset = docset else {
           return
         }
-        switch scope {
-        case let .docset(docset):
-          let initialPage: BrowserViewController.InitialPage
-          if let indexPageURL = docset.indexPageURL {
-            initialPage = .url(indexPageURL)
-          } else {
-            initialPage = .indexPage(title: docset.displayName)
-          }
-          owner.docset = docset
-          owner.setupBrowserView(
-            initialPage: initialPage,
-            enablesJavaScript: docset.isJavaScriptEnabled,
-            isAppleAPIDocset: docset.isAppleAPIDocset
-          )
-        case .history:
-          break
-        case .favorites:
-          break
+        let initialPage: BrowserViewController.InitialPage
+        if let indexPageURL = docset.indexPageURL {
+          initialPage = .url(indexPageURL)
+        } else {
+          initialPage = .indexPage(title: docset.displayName)
         }
+        owner.docset = docset
+        owner.setupBrowserView(
+          initialPage: initialPage,
+          enablesJavaScript: docset.isJavaScriptEnabled,
+          isAppleAPIDocset: docset.isAppleAPIDocset
+        )
       }
       .disposed(by: disposeBag)
 

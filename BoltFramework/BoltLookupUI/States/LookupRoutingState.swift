@@ -67,7 +67,7 @@ final class LookupRoutingState: HasDisposeBag {
   init(sceneState: SceneState) {
     self.sceneState = sceneState
 
-    sceneState.currentScope
+    sceneState.currentDocset
       .drive(with: self) { owner, _ in
         owner.clearRoutingState()
       }
@@ -82,17 +82,12 @@ final class LookupRoutingState: HasDisposeBag {
   }
 
   func setupScopeRouting() {
-    sceneState.currentScope
-      .drive(with: self) { owner, scope in
-        switch scope {
-        case .none:
-          owner.routingCoordinator.changeRoute([LookupRouteElement(type: .initial)])
-        case .docset(let docset):
+    sceneState.currentDocset
+      .drive(with: self) { owner, docset in
+        if let docset = docset {
           owner.routingCoordinator.changeRoute([LookupRouteElement(type: .entries(docset: docset))])
-        case .history:
-          break
-        case .favorites:
-          break
+        } else {
+          owner.routingCoordinator.changeRoute([LookupRouteElement(type: .initial)])
         }
       }
       .disposed(by: disposeBag)

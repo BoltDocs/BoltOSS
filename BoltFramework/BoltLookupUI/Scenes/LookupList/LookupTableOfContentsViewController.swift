@@ -41,26 +41,20 @@ final class LookupTableOfContentsViewController: UINavigationController, HasDisp
     super.viewDidLoad()
     configureNavigationBarAppearance(enforceLargeTitle: false)
 
-    sceneState.currentScope
-      .drive(with: self) { owner, scope in
-        switch scope {
-        case .none:
-          break
-        case let .docset(docset):
-          let listViewController = LookupListViewController<LookupTableOfContentsViewModel>(
-            sceneState: owner.sceneState,
-            viewModel: LookupTableOfContentsViewModel(
-              routingState: owner.routingState,
-              docset: docset
-            )
-          )
-          owner.viewControllers = [listViewController]
-          owner.listViewController = listViewController
-        case .history:
-          break
-        case .favorites:
-          break
+    sceneState.currentDocset
+      .drive(with: self) { owner, docset in
+        guard let docset = docset else {
+          return
         }
+        let listViewController = LookupListViewController<LookupTableOfContentsViewModel>(
+          sceneState: owner.sceneState,
+          viewModel: LookupTableOfContentsViewModel(
+            routingState: owner.routingState,
+            docset: docset
+          )
+        )
+        owner.viewControllers = [listViewController]
+        owner.listViewController = listViewController
       }
       .disposed(by: disposeBag)
   }

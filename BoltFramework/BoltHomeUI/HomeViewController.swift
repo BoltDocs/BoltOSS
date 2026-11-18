@@ -364,24 +364,25 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     .disposed(by: disposeBag)
 
     if !isForCollapsedSidebar {
-      sceneState.currentScope
-        .drive(with: self) { owner, scope in
-          let indexPath: IndexPath? = { scope in
-            if case let .docset(docset) = scope {
-              let docsetsSecctionSnapshot = owner.dataSource.snapshot(for: HomeListSection.docsets)
-              if let item = docsetsSecctionSnapshot.items.first(where: { listModel in
-                switch listModel {
-                case .docset(let viewModel):
-                  return viewModel.uuid == docset.uuid
-                default:
-                  return false
-                }
-              }) {
-                return owner.dataSource.indexPath(for: item)
+      sceneState.currentDocset
+        .drive(with: self) { owner, docset in
+          let indexPath: IndexPath? = {
+            guard let docset else {
+              return nil
+            }
+            let docsetsSecctionSnapshot = owner.dataSource.snapshot(for: HomeListSection.docsets)
+            if let item = docsetsSecctionSnapshot.items.first(where: { listModel in
+              switch listModel {
+              case .docset(let viewModel):
+                return viewModel.uuid == docset.uuid
+              default:
+                return false
               }
+            }) {
+              return owner.dataSource.indexPath(for: item)
             }
             return nil
-          }(scope)
+          }()
           owner.listViewController.selectItem(at: indexPath, animated: true, scrollPosition: .top)
         }
         .disposed(by: disposeBag)
@@ -399,7 +400,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
           let queryResult = viewModel.queryInstallation()
           switch queryResult {
           case let .docset(docset):
-            owner.sceneState.dispatch(action: .updateCurrentScope(.docset(docset)))
+            owner.sceneState.dispatch(action: .updateCurrentDocset(docset))
           case let .broken(installation):
             GlobalUI.presentAlertController(
               UIAlertController.alert(

@@ -95,12 +95,12 @@ public final class SceneManager {
       $0.setViewController(secondaryNavigationController, for: .secondary)
     }
 
-    state.currentScope
-      .drive(with: self) { owner, scope in
+    state.currentDocset
+      .drive(with: self) { owner, docset in
         if owner.doubleColumnSplitViewController.isCollapsed {
           owner.secondaryNavigationController.viewControllers = []
           // pushing new viewController, this requires animation.
-          if scope != nil {
+          if docset != nil {
             owner.homeCompactNavigationController.setViewControllers(
               [
                 owner.homeViewControllerCompact,
@@ -119,7 +119,7 @@ public final class SceneManager {
           }
         } else {
           owner.homeCompactNavigationController.viewControllers = [owner.homeViewControllerCompact]
-          if scope != nil {
+          if docset != nil {
             owner.secondaryNavigationController.viewControllers = [owner.lookupContentViewController]
           } else {
             owner.secondaryNavigationController.viewControllers = [owner.welcomeViewController]

@@ -163,17 +163,17 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       .disposed(by: disposeBag)
 
     Driver.combineLatest(
-      sceneState.currentScope,
+      sceneState.currentDocset,
       browserViewController.currentURLDriver
     )
-    .map { currentScope, currentURL -> Bool in
+    .map { currentDocset, currentURL -> Bool in
       guard let currentURL = currentURL else {
         return false
       }
       if currentURL.isHTTPURL {
         return true
       }
-      guard let currentScope = currentScope, case let .docset(docset) = currentScope else {
+      guard let docset = currentDocset else {
         return false
       }
       return docset.canResolveOnlineURL(forPathFragment: currentURL.pathFragment)
@@ -224,10 +224,10 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     Driver.combineLatest(
       browserViewController.titleDriver,
       browserViewController.currentURLDriver,
-      sceneState.currentScope
+      sceneState.currentDocset
     )
-    .map { pageTitle, currentURL, currentScope -> String in
-      guard case let .docset(docset) = currentScope else {
+    .map { pageTitle, currentURL, currentDocset -> String in
+      guard let docset = currentDocset else {
         return "Browser-BrowserController-defaultTitle".boltLocalized
       }
       guard let currentURL = currentURL else {
@@ -344,10 +344,7 @@ extension LookupContentViewController: ToolbarManagerDelegate {
       presentActivityViewController(forURL: currentURL)
       return
     }
-    guard
-      let currentScope = sceneState.currentScopeValue,
-      case let .docset(docset) = currentScope
-    else {
+    guard let docset = sceneState.currentDocsetValue else {
       return
     }
     if let onlinePageURL = docset.onlineURL(forPathFragment: currentURL.pathFragment) {
