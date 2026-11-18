@@ -67,16 +67,14 @@ final class LookupSearchResultsController: UIViewController {
 
     view.backgroundColor = .systemBackground
 
-    sceneState.currentScope
+    sceneState.currentDocset
       .distinctUntilChanged()
       .asObservable()
-      .asyncMap { [searchService] scope -> DocsetSearchIndex? in
-        switch scope {
-        case let .docset(docset):
-          return await searchService.searchIndex(forDocset: docset)
-        default:
+      .asyncMap { [searchService] docset -> DocsetSearchIndex? in
+        guard let docset = docset else {
           return nil
         }
+        return await searchService.searchIndex(forDocset: docset)
       }
       .asDriverOnErrorJustIgnore()
       .drive(currentSearchIndexRelay)

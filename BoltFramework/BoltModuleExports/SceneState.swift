@@ -38,12 +38,6 @@ public protocol DistributionService {
 
 }
 
-public enum LookupScope: Sendable, Hashable {
-  case docset(_: Docset)
-  case history
-  case favorites
-}
-
 public enum LookupSearchScope: Equatable {
   case types
   case docPage
@@ -54,7 +48,7 @@ public enum SceneAction {
 
   case lookupListVisibilityChange(_: Bool)
   case updateLookupSearchScope(_: LookupSearchScope)
-  case updateCurrentScope(_: LookupScope)
+  case updateCurrentDocset(_: Docset)
   case updateDocPageCurrentURL(_: URL?)
   case updateCanShareCurrentDocPage(_: Bool)
   case updateLookupSceneTitle(_: String)
@@ -96,9 +90,9 @@ public class SceneState: HasDisposeBag {
   public var lookupSearchScopeValue: LookupSearchScope { _lookupSearchScope.value }
   public lazy var lookupSearchScope: Driver<LookupSearchScope> = { _lookupSearchScope.asDriver() }()
 
-  private let _currentScope = BehaviorRelay<LookupScope?>(value: nil)
-  public var currentScopeValue: LookupScope? { _currentScope.value }
-  public lazy var currentScope: Driver<LookupScope?> = { _currentScope.asDriver() }()
+  private let _currentDocset = BehaviorRelay<Docset?>(value: nil)
+  public var currentDocsetValue: Docset? { _currentDocset.value }
+  public lazy var currentDocset: Driver<Docset?> = { _currentDocset.asDriver() }()
 
   private let _docPageCurrentURL = BehaviorRelay<URL?>(value: nil)
   public lazy var docPageCurrentURL: Driver<URL?> = { _docPageCurrentURL.asDriver() }()
@@ -138,8 +132,8 @@ public class SceneState: HasDisposeBag {
       _lookupListVisible.accept(visibility)
     case let .updateLookupSearchScope(value):
       _lookupSearchScope.accept(value)
-    case let .updateCurrentScope(scope):
-      _currentScope.accept(scope)
+    case let .updateCurrentDocset(docset):
+      _currentDocset.accept(docset)
     case let .updateDocPageCurrentURL(url):
       _docPageCurrentURL.accept(url)
     case let .updateCanShareCurrentDocPage(value):
