@@ -87,6 +87,10 @@ extension LibraryDatabaseImp {
       }
     }
 
+    migrator.registerMigration("Create Index on Order Index Column for Installations Table") { db in
+      try db.create(indexOn: "docset-installations", columns: ["orderIndex"], options: .ifNotExists)
+    }
+
     return migrator
   }
 
