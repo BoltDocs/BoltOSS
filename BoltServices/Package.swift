@@ -69,7 +69,7 @@ let moduleTargets: [Target] = [
   ),
   .target(
     name: "BoltDatabase",
-    dependencies: [Dependencies.GRDB, "BoltCombineExtensions", "BoltTypes"],
+    dependencies: [Dependencies.GRDB, Dependencies.Overture, "BoltCombineExtensions", "BoltTypes"],
     path: "./Sources/Database/Sources",
     swiftSettings: [
       .swiftLanguageMode(.v5)

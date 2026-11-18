@@ -17,6 +17,7 @@
 import Foundation
 
 import GRDB
+import Overture
 
 import BoltTypes
 
@@ -24,10 +25,13 @@ extension LibraryDatabaseImp {
 
   func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws {
     try dbPool.write { db in
-      try docsetInstallation.insert(db)
-      try DocsetInstallation
-        .filter(key: docsetInstallation.uuid)
-        .updateAll(db, [Column(DocsetInstallation.CodingKeys.orderIndex).set(to: Column.rowID)])
+      let lastIndex = try DocsetInstallation
+        .select(max(Column(DocsetInstallation.CodingKeys.orderIndex)), as: Int.self)
+        .fetchOne(db)
+      let newInstallation = update(docsetInstallation) {
+        $0.orderIndex = (lastIndex ?? -1) + 1
+      }
+      try newInstallation.insert(db)
     }
   }
 
