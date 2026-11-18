@@ -19,6 +19,7 @@ import UIKit
 
 import Overture
 
+import BoltLocalizations
 import BoltModuleExports
 import BoltRxSwift
 import BoltUIFoundation
@@ -31,6 +32,7 @@ protocol ToolbarManagerDelegate: AnyObject {
   func toolbarManagerDidTapTableOfContents(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapZoomIn(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapZoomOut(_ toolbarManager: ToolbarManager)
+  func toolbarManagerDidTapBookmark(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapShare(_ toolbarManager: ToolbarManager)
 
   func toolbarManager(_ toolbarManager: ToolbarManager, updateToolbarItems items: [UIBarButtonItem])
@@ -127,15 +129,12 @@ final class ToolbarManager: HasDisposeBag {
     action: #selector(tableOfContentsButtonTapped(_:))
   )
 
-  private lazy var bookmarkButton: UIBarButtonItem? = {
-    guard !RuntimeEnvironment.hidesUnfinishedFeatures else {
-      return nil
-    }
+  private lazy var bookmarkAndHistoryButton: UIBarButtonItem? = {
     return UIBarButtonItem(
-      image: UIImage(systemName: "bookmark"),
+      image: UIImage(systemName: "book"),
       style: .plain,
       target: self,
-      action: #selector(bookmarkButtonTapped(_:))
+      action: #selector(bookmarkAndHistoryButtonTapped(_:))
     )
   }()
 
@@ -146,28 +145,61 @@ final class ToolbarManager: HasDisposeBag {
     action: #selector(shareButtonTapped(_:))
   )
 
-  private lazy var moreButton: UIBarButtonItem = {
-    return UIBarButtonItem(
-      image: UIImage(systemName: "textformat.size"),
-      menu: UIMenu(
-        title: "",
-        children: [
-          UIAction(title: "Smaller Text", image: UIImage(systemName: "textformat.size.smaller")) { [weak self] _ in
-            guard let self = self else {
-              return
-            }
-            delegate?.toolbarManagerDidTapZoomOut(self)
-          },
-          UIAction(title: "Larger Text", image: UIImage(systemName: "textformat.size.larger")) { [weak self] _ in
-            guard let self = self else {
-              return
-            }
-            delegate?.toolbarManagerDidTapZoomIn(self)
-          },
-        ]
-      )
+  private lazy var moreButton = UIBarButtonItem(
+    image: UIImage(systemName: "ellipsis"),
+    menu: UIMenu(
+      title: "",
+      children: [
+        update(
+          UIMenu(
+            title: "",
+            options: [.displayInline],
+            children: [
+              UIAction(
+                title: "Lookup-Toolbar-smallerText".boltLocalized,
+                image: UIImage(systemName: "textformat.size.smaller")
+              ) { [weak self] _ in
+                guard let self = self else {
+                  return
+                }
+                delegate?.toolbarManagerDidTapZoomOut(self)
+              },
+              UIAction(
+                title: "Lookup-Toolbar-largerText".boltLocalized,
+                image: UIImage(systemName: "textformat.size.larger")
+              ) { [weak self] _ in
+                guard let self = self else {
+                  return
+                }
+                delegate?.toolbarManagerDidTapZoomIn(self)
+              },
+            ]
+          )
+        ) {
+          $0.preferredElementSize = .medium
+        },
+        UIDeferredMenuElement.uncached { [weak self] completion in
+          guard let self = self else {
+            return completion([])
+          }
+          completion([makeBookmarkAction()])
+        },
+      ]
     )
-  }()
+  )
+
+  private func makeBookmarkAction() -> UIAction {
+    let isBookmarked = false
+    return UIAction(
+      title: isBookmarked ? "Lookup-Toolbar-removeFromBookmarks".boltLocalized : "Lookup-Toolbar-addToBookmarks".boltLocalized,
+      image: isBookmarked ? UIImage(systemName: "bookmark.fill") : UIImage(systemName: "bookmark")
+    ) { [weak self] _ in
+      guard let self = self else {
+        return
+      }
+      delegate?.toolbarManagerDidTapBookmark(self)
+    }
+  }
 
   private lazy var findInPageResultCountLabel: UILabel = {
     let label = UILabel()
@@ -217,7 +249,7 @@ final class ToolbarManager: HasDisposeBag {
           backButton,
           forwardButton,
           tableOfContentsButton,
-          bookmarkButton,
+          bookmarkAndHistoryButton,
           shareButton,
           moreButton,
         ].compactMap { $0 }
@@ -250,7 +282,7 @@ final class ToolbarManager: HasDisposeBag {
     delegate?.toolbarManagerDidTapTableOfContents(self)
   }
 
-  @objc func bookmarkButtonTapped(_ sender: Any?) {
+  @objc func bookmarkAndHistoryButtonTapped(_ sender: Any?) {
 
   }
 
