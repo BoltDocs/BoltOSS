@@ -56,7 +56,8 @@ public protocol LibraryDatabase {
 
   // MARK: LibraryDatabase+Installation
 
-  func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws
+  @discardableResult
+  func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws -> DocsetInstallation
 
   func deleteDocsetInstallation(withUUID uuid: UUID) throws
 

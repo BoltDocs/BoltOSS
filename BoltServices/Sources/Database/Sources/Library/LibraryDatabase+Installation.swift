@@ -23,7 +23,8 @@ import BoltTypes
 
 extension LibraryDatabaseImp {
 
-  func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws {
+  @discardableResult
+  func insertDocsetInstallation(_ docsetInstallation: DocsetInstallation) throws -> DocsetInstallation {
     try dbPool.write { db in
       let lastIndex = try DocsetInstallation
         .select(max(Column(DocsetInstallation.CodingKeys.orderIndex)), as: Int.self)
@@ -32,6 +33,7 @@ extension LibraryDatabaseImp {
         $0.orderIndex = (lastIndex ?? -1) + 1
       }
       try newInstallation.insert(db)
+      return newInstallation
     }
   }
 
