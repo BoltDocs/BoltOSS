@@ -336,6 +336,10 @@ extension LookupContentViewController: ToolbarManagerDelegate {
     browserViewController.zoomOut()
   }
 
+  func toolbarManagerDidTapBookmark(_ toolbarManager: ToolbarManager) {
+
+  }
+
   func toolbarManagerDidTapShare(_ toolbarManager: ToolbarManager) {
     guard let currentURL = browserViewController.currentURL else {
       return
