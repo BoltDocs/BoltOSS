@@ -57,7 +57,7 @@ final class LookupBookmarkListViewModel: HasDisposeBag {
       bookmarkActionEnabled = false
     }
 
-    libraryDatabase.bookmarks(forDocsetID: context.docset.identifier)
+    libraryDatabase.bookmarks(forDocsetID: context.docset.versionIndependentIdentifier)
       .asInfallible()
       .asDriver()
       .drive(bookmarksRelay)

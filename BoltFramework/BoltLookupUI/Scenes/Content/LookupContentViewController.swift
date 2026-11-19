@@ -350,7 +350,7 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
       }
       return "Lookup-AddToBookMark-defaultTitle".boltLocalized
     }()
-    let bookmark = Bookmark(title: title, path: path, docsetID: docset.identifier)
+    let bookmark = Bookmark(title: title, path: path, docsetID: docset.versionIndependentIdentifier)
     _ = try? libraryDatabase.toggleBookmark(bookmark)
   }
 
@@ -410,7 +410,7 @@ extension LookupContentViewController: ToolbarManagerDelegate {
     else {
       return .disabled
     }
-    let isBookmarked = (try? libraryDatabase.containsBookmark(forPath: path, docsetID: docset.identifier)) ?? false
+    let isBookmarked = (try? libraryDatabase.containsBookmark(forPath: path, docsetID: docset.versionIndependentIdentifier)) ?? false
     return isBookmarked ? .selected : .normal
   }
 
