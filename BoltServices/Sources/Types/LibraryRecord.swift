@@ -34,6 +34,8 @@ public protocol LibraryRecord {
 
   var identifier: String { get }
 
+  var versionIndependentIdentifier: String { get }
+
 }
 
 public extension LibraryRecord {

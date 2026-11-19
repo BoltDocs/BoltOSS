@@ -27,4 +27,17 @@ public struct InstallationIdentifier {
     return "\(name)-\(version.identifierString)\(installedAsLatestVersion ? "-latest" : "")-\(repository.rawValue)"
   }
 
+  public static func versionIndependentFromName(
+    _ name: String,
+    version: DocsetVersion,
+    installedAsLatestVersion: Bool,
+    repository: RepositoryIdentifier
+  ) -> String {
+    if installedAsLatestVersion {
+      return "\(name)-latest-\(repository.rawValue)"
+    } else {
+      return "\(name)-\(version.identifierString)-\(repository.rawValue)"
+    }
+  }
+
 }

@@ -28,6 +28,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
 
   public let uuidString: String
   public let identifier: String
+  public let versionIndependentIdentifier: String
 
   public enum CodingKeys: String, CodingKey {
     case uuid
@@ -67,6 +68,12 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
       installedAsLatestVersion: installedAsLatestVersion,
       repository: repository
     )
+    versionIndependentIdentifier = InstallationIdentifier.versionIndependentFromName(
+      name,
+      version: version,
+      installedAsLatestVersion: installedAsLatestVersion,
+      repository: repository
+    )
   }
 
   public init(from decoder: any Decoder) throws {
@@ -81,6 +88,12 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
 
     uuidString = uuid.uuidString
     identifier = InstallationIdentifier.fromName(
+      name,
+      version: version,
+      installedAsLatestVersion: installedAsLatestVersion,
+      repository: repository
+    )
+    versionIndependentIdentifier = InstallationIdentifier.versionIndependentFromName(
       name,
       version: version,
       installedAsLatestVersion: installedAsLatestVersion,

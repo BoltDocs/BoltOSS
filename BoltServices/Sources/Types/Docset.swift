@@ -149,6 +149,7 @@ public struct Docset: LibraryRecord, Sendable {
   public var latestVersion: DocsetVersion?
   public var repository: RepositoryIdentifier
   public var identifier: String
+  public var versionIndependentIdentifier: String
 
   public let path: String
   public let icon: EntryIcon
@@ -184,6 +185,7 @@ public struct Docset: LibraryRecord, Sendable {
     self.latestVersion = installation.latestVersion
     self.repository = installation.repository
     self.identifier = installation.identifier
+    self.versionIndependentIdentifier = installation.versionIndependentIdentifier
 
     self.path = path
     self.docsetInfo = docsetInfo
