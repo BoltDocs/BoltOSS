@@ -91,6 +91,18 @@ extension LibraryDatabaseImp {
       try db.create(indexOn: "docset-installations", columns: ["orderIndex"], options: .ifNotExists)
     }
 
+    migrator.registerMigration("Create Bookmarks Table") { db in
+      try db.create(table: "bookmarks") { table in
+        table.autoIncrementedPrimaryKey("rowID")
+        table.column("title", .text).notNull()
+        table.column("path", .text).notNull().indexed()
+        table.column("docsetID", .text).notNull()
+        table.column("addedAt", .datetime).notNull().indexed()
+        table.column("orderIndex", .integer).notNull()
+      }
+      try db.create(indexOn: "bookmarks", columns: ["docsetID", "orderIndex"])
+    }
+
     return migrator
   }
 

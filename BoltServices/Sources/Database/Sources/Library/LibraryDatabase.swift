@@ -73,6 +73,22 @@ public protocol LibraryDatabase {
 
   func deleteCustomFeed(_ feed: CustomFeedEntity) throws
 
+  // MARK: LibraryDatabase+Bookmark
+
+  func fetchBookmarks(forDocsetID docsetID: String) throws -> [Bookmark]
+
+  func bookmarks(forDocsetID docsetID: String) -> AnyPublisher<[Bookmark], Never>
+
+  func containsBookmark(forPath path: String, docsetID: String) throws -> Bool
+
+  func insertBookmark(_ bookmark: Bookmark) throws -> Bookmark
+
+  func toggleBookmark(_ bookmark: Bookmark) throws -> Bookmark?
+
+  func deleteBookmarkById(_ bookmark: Bookmark) throws
+
+  func deleteBookmark(byPath path: String, docsetID: String) throws
+
 }
 
 final class LibraryDatabaseImp: LibraryDatabase, LoggerProvider {
