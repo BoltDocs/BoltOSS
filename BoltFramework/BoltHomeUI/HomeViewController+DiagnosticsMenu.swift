@@ -45,7 +45,7 @@ extension HomeViewController {
       installedAsLatestVersion: false,
       repository: .main
     )
-    try? libraryDatabase.insertDocsetInstallation(docsetInstallation)
+    _ = try? libraryDatabase.insertDocsetInstallation(docsetInstallation)
   }
 
 }
