@@ -410,7 +410,10 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
                   UIKitLocalizations.ok,
                   UIAlertAction.Style.default,
                   { [libraryDocsetsManager = owner.libraryDocsetsManager] in
-                    try? libraryDocsetsManager.uninstallDocset(forRecord: installation)
+                    try? libraryDocsetsManager.uninstallDocset(
+                      forRecord: installation,
+                      deleteBookmarksAndHistory: true
+                    )
                   }
                 ),
                 cancelAction: (UIKitLocalizations.cancel, nil)

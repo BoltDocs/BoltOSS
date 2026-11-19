@@ -102,7 +102,7 @@ final class DocsetUpdateCheckerTests: XCTestCase {
     XCTAssertEqual(updates.count, 1)
 
     let installedRecord = try XCTUnwrap(libraryDocsetsManager.installedDocsets.first).record
-    try libraryDocsetsManager.uninstallDocset(forRecord: installedRecord)
+    try libraryDocsetsManager.uninstallDocset(forRecord: installedRecord, deleteBookmarksAndHistory: true)
 
     try await Task.sleep(for: .milliseconds(1000))
 
