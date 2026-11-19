@@ -35,6 +35,8 @@ protocol ToolbarManagerDelegate: AnyObject {
   func toolbarManagerDidTapBookmark(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapShare(_ toolbarManager: ToolbarManager)
 
+  func toolbarManagerGetBookmarkItemStatus(_ toolbarManager: ToolbarManager) -> ToolbarItemStatus
+
   func toolbarManager(_ toolbarManager: ToolbarManager, updateToolbarItems items: [UIBarButtonItem])
 
 }
@@ -42,6 +44,10 @@ protocol ToolbarManagerDelegate: AnyObject {
 enum ToolbarMode: Equatable {
   case normal
   case search(scope: SearchScope)
+}
+
+enum ToolbarItemStatus {
+  case normal, selected, disabled
 }
 
 final class ToolbarManager: HasDisposeBag {
@@ -189,7 +195,15 @@ final class ToolbarManager: HasDisposeBag {
   )
 
   private func makeBookmarkAction() -> UIAction {
-    let isBookmarked = false
+    let status = delegate?.toolbarManagerGetBookmarkItemStatus(self) ?? .disabled
+    guard status != .disabled else {
+      return UIAction(
+        title: "Lookup-Toolbar-addToBookmarks".boltLocalized,
+        image: UIImage(systemName: "bookmark"),
+        attributes: [.disabled]
+      ) { _ in }
+    }
+    let isBookmarked = status == .selected
     return UIAction(
       title: isBookmarked ? "Lookup-Toolbar-removeFromBookmarks".boltLocalized : "Lookup-Toolbar-addToBookmarks".boltLocalized,
       image: isBookmarked ? UIImage(systemName: "bookmark.fill") : UIImage(systemName: "bookmark")

@@ -44,6 +44,7 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
   private var docset: Docset?
 
   private let titleRelay = BehaviorRelay<String>(value: "")
+  public var titleValue: String { titleRelay.value }
   public lazy var titleDriver: Driver<String> = { titleRelay.asDriver() }()
 
   private let currentURLRelay = BehaviorRelay<URL?>(value: nil)
