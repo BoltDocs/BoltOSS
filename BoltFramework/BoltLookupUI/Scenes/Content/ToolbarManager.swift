@@ -30,6 +30,7 @@ protocol ToolbarManagerDelegate: AnyObject {
   func toolbarManagerDidTapGoBack(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapGoForward(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapTableOfContents(_ toolbarManager: ToolbarManager)
+  func toolbarManagerDidTapBookmarkAndHistory(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapZoomIn(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapZoomOut(_ toolbarManager: ToolbarManager)
   func toolbarManagerDidTapBookmark(_ toolbarManager: ToolbarManager)
@@ -297,7 +298,7 @@ final class ToolbarManager: HasDisposeBag {
   }
 
   @objc func bookmarkAndHistoryButtonTapped(_ sender: Any?) {
-
+    delegate?.toolbarManagerDidTapBookmarkAndHistory(self)
   }
 
   @objc func shareButtonTapped(_ sender: Any?) {

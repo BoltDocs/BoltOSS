@@ -337,6 +337,23 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     return nil
   }
 
+  private func toggleCurrentPageBookmark() {
+    guard
+      let docset = sceneState.currentDocsetValue,
+      let path = currentPageBookmarkPath()
+    else {
+      return
+    }
+    let title = {
+      if !browserViewController.titleValue.isEmpty {
+        return browserViewController.titleValue
+      }
+      return "Lookup-AddToBookMark-defaultTitle".boltLocalized
+    }()
+    let bookmark = Bookmark(title: title, path: path, docsetID: docset.identifier)
+    _ = try? libraryDatabase.toggleBookmark(bookmark)
+  }
+
 }
 
 extension LookupContentViewController: ToolbarManagerDelegate {
@@ -353,6 +370,27 @@ extension LookupContentViewController: ToolbarManagerDelegate {
     lookupSearchController.presentTableOfContents()
   }
 
+  func toolbarManagerDidTapBookmarkAndHistory(_ toolbarManager: ToolbarManager) {
+    guard let docset = sceneState.currentDocsetValue else {
+      return
+    }
+
+    let context = LookupSheetContext(
+      docset: docset,
+      currentPage: {
+        guard let path = currentPageBookmarkPath() else {
+          return nil
+        }
+        return LookupSheetContext.CurrentPage(
+          path: path,
+          title: browserViewController.titleValue
+        )
+      }()
+    )
+
+    LookupSheetViewController.present(from: self, context: context, delegate: self)
+  }
+
   func toolbarManagerDidTapZoomIn(_ toolbarManager: ToolbarManager) {
     browserViewController.zoomIn()
   }
@@ -362,20 +400,7 @@ extension LookupContentViewController: ToolbarManagerDelegate {
   }
 
   func toolbarManagerDidTapBookmark(_ toolbarManager: ToolbarManager) {
-    guard
-      let docset = sceneState.currentDocsetValue,
-      let path = currentPageBookmarkPath()
-    else {
-      return
-    }
-    let title = {
-      if !browserViewController.titleValue.isEmpty {
-        return browserViewController.titleValue
-      }
-      return "Lookup-AddToBookMark-defaultTitle".boltLocalized
-    }()
-    let bookmark = Bookmark(title: title, path: path, docsetID: docset.identifier)
-    _ = try? libraryDatabase.toggleBookmark(bookmark)
+    toggleCurrentPageBookmark()
   }
 
   func toolbarManagerGetBookmarkItemStatus(_ toolbarManager: ToolbarManager) -> ToolbarItemStatus {
@@ -412,6 +437,23 @@ extension LookupContentViewController: ToolbarManagerDelegate {
     } else {
       toolbar.items = items
       toolbarItems = []
+    }
+  }
+
+}
+
+extension LookupContentViewController: LookupSheetViewControllerDelegate {
+
+  func lookupSheetViewControllerOnToggleBookmark(_ viewController: LookupSheetViewController) {
+    toggleCurrentPageBookmark()
+  }
+
+  func lookupSheetViewController(_ viewController: LookupSheetViewController, didSelectPageWithPath path: String) {
+    if
+      let docset = sceneState.currentDocsetValue,
+      let url = docPageURLConverter.url(forPagePath: path, docsetUUID: docset.uuidString)
+    {
+      sceneState.dispatch(action: .docPageLoadURL(url))
     }
   }
 
