@@ -28,18 +28,12 @@ public struct DocsetFileURLScheme: URLScheme {
   public static var scheme = "bolt-doc-file"
 
   public var url: URL? {
-    var components = URLComponents()
-    components.scheme = Self.scheme
-    components.host = docsetUUID
-
-    var componentsPath = path
-    if !componentsPath.isEmpty, !componentsPath.starts(with: "/") {
-      componentsPath = "/" + componentsPath
+    var urlPath = path
+    if !urlPath.isEmpty, !urlPath.starts(with: "/") {
+      urlPath = "/" + urlPath
     }
-
-    components.path = componentsPath
-
-    return components.url
+    let resURL = URL(string: "\(Self.scheme)://\(docsetUUID)\(urlPath)")
+    return resURL
   }
 
   public init(docsetUUID: String, path: String) {
