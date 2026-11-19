@@ -17,16 +17,26 @@
 import UIKit
 
 import BoltBrowserUI
+import BoltDatabase
+import BoltDocsets
 import BoltLocalizations
 import BoltModuleExports
 import BoltRxSwift
+import BoltTypes
 import BoltUIFoundation
 import BoltUtils
 
+import Factory
 import Overture
 import SnapKit
 
 public final class LookupContentViewController: UIViewController, HasDisposeBag {
+
+  @Injected(\.libraryDatabase)
+  private var libraryDatabase: LibraryDatabase
+
+  @Injected(\.docPageURLConverter)
+  private var docPageURLConverter: DocPageURLConverter
 
   private let systemNavigationBarShadowColor: UIColor? = {
     let appearance = UINavigationBarAppearance()
@@ -312,6 +322,21 @@ public final class LookupContentViewController: UIViewController, HasDisposeBag 
     present(activityViewController, animated: true)
   }
 
+  private func currentPageBookmarkPath() -> String? {
+    guard
+      let url = browserViewController.currentURL,
+      !url.isBlank
+    else {
+      return nil
+    }
+    if let path = docPageURLConverter.pagePath(forURL: url) {
+      return path
+    } else if url.isHTTPURL {
+      return url.absoluteString
+    }
+    return nil
+  }
+
 }
 
 extension LookupContentViewController: ToolbarManagerDelegate {
@@ -337,7 +362,31 @@ extension LookupContentViewController: ToolbarManagerDelegate {
   }
 
   func toolbarManagerDidTapBookmark(_ toolbarManager: ToolbarManager) {
+    guard
+      let docset = sceneState.currentDocsetValue,
+      let path = currentPageBookmarkPath()
+    else {
+      return
+    }
+    let title = {
+      if !browserViewController.titleValue.isEmpty {
+        return browserViewController.titleValue
+      }
+      return "Lookup-AddToBookMark-defaultTitle".boltLocalized
+    }()
+    let bookmark = Bookmark(title: title, path: path, docsetID: docset.identifier)
+    _ = try? libraryDatabase.toggleBookmark(bookmark)
+  }
 
+  func toolbarManagerGetBookmarkItemStatus(_ toolbarManager: ToolbarManager) -> ToolbarItemStatus {
+    guard
+      let docset = sceneState.currentDocsetValue,
+      let path = currentPageBookmarkPath()
+    else {
+      return .disabled
+    }
+    let isBookmarked = (try? libraryDatabase.containsBookmark(forPath: path, docsetID: docset.identifier)) ?? false
+    return isBookmarked ? .selected : .normal
   }
 
   func toolbarManagerDidTapShare(_ toolbarManager: ToolbarManager) {
