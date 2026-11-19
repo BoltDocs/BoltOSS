@@ -17,6 +17,7 @@
 import Foundation
 import UIKit
 
+import Factory
 import RxCocoa
 import RxSwift
 
@@ -58,6 +59,9 @@ struct LookupRouteElement: RouteElement {
 }
 
 final class LookupRoutingState: HasDisposeBag {
+
+  @Injected(\.docPageURLConverter)
+  private var docPageURLConverter: DocPageURLConverter
 
   private let sceneState: SceneState
   let routingCoordinator = NavigationRouteCoordinator<LookupRouteElement>()
@@ -201,7 +205,7 @@ final class LookupRoutingState: HasDisposeBag {
   }
 
   func selectEntry(docset: Docset, entry: Entry) {
-    guard let url = docset.url(forPagePath: entry.path) else {
+    guard let url = docPageURLConverter.url(forPagePath: entry.path, docsetUUID: docset.uuidString) else {
       return
     }
 
