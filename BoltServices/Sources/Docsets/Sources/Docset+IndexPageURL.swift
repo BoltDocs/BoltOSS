@@ -16,30 +16,12 @@
 
 import Foundation
 
+import Factory
+
 import BoltTypes
 import BoltURLSchemes
 
 public extension Docset {
-
-  func url(forPagePath pagePath: String) -> URL? {
-    if let url = URL(string: pagePath), let scheme = url.scheme, !scheme.isEmpty {
-      if
-        let dashAppleAPIScheme = DashAppleAPIURLScheme(url: url),
-        let docPath = dashAppleAPIScheme.docPath,
-        !docPath.isEmpty
-      {
-        return AppleDocURLScheme(
-          docsetUUID: uuidString,
-          path: docPath,
-          hash: dashAppleAPIScheme.hash
-        ).url
-      }
-      return url
-    } else if let docsetFileURL = DocsetFileURLScheme(docsetUUID: uuidString, path: pagePath).url {
-      return docsetFileURL
-    }
-    return nil
-  }
 
   var indexPageURL: URL? {
     // FIXME: resolution result should be cached
@@ -52,7 +34,7 @@ public extension Docset {
       if path.isHTTPURL() {
         return URL(string: path)
       } else {
-        return url(forPagePath: path)
+        return Container.shared.docPageURLConverter().url(forPagePath: path, docsetUUID: uuidString)
       }
     }
     return nil
