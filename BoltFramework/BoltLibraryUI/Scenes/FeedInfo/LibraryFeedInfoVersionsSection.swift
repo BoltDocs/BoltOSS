@@ -171,7 +171,7 @@ private struct FeedInfoStaticListItem: View {
         Text(title)
         if let subtitle = subtitle {
           Text(subtitle)
-            .foregroundColor(.secondary)
+            .foregroundStyle(.secondary)
             .font(.system(.caption))
         }
       }

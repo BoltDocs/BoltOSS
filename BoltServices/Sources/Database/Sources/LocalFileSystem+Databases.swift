@@ -22,7 +22,7 @@ import BoltUtils
 extension LocalFileSystem {
 
   static var libraryDatabaseURL: URL {
-    return URL(fileURLWithPath: applicationLibraryAbsolutePath).appendingPathComponent("bolt-library.db")
+    return URL(filePath: applicationLibraryAbsolutePath).appending(path: "bolt-library.db")
   }
 
 }

@@ -60,7 +60,7 @@ struct LibraryCustomFeedInfoView: View {
           copyURL(forFeed: feed)
         } label: {
           Text(feed.urlString)
-            .foregroundColor(.primary)
+            .foregroundStyle(.primary)
             .lineLimit(1)
         }
       }

@@ -97,14 +97,14 @@ struct PreferencesTintColorView: View {
             ZStack(alignment: .center) {
               Circle()
                 .frame(width: 40, height: 40)
-                .foregroundColor(Color(uiColor: item.color))
+                .foregroundStyle(Color(uiColor: item.color))
                 .onTapGesture {
                   viewModel.onTapItem(item.key)
                   dismiss()
                 }
               if item.key == viewModel.selectedKey {
                 Image(systemName: "checkmark")
-                  .foregroundColor(Color.white)
+                  .foregroundStyle(Color.white)
                   .frame(width: 24, height: 24)
               }
             }

@@ -62,7 +62,7 @@ struct NetworkingImpl: Networking {
     // swiftlint:disable:next trailing_closure
     let responseResult = await session.download(downloadURL, to: { _, _ in
       return (
-        URL(fileURLWithPath: downloadPath),
+        URL(filePath: downloadPath),
         [.createIntermediateDirectories, .removePreviousFile]
       )
     })

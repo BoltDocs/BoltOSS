@@ -237,7 +237,6 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
     let searchController = update(UISearchController()) {
       $0.showsSearchResultsController = false
       $0.obscuresBackgroundDuringPresentation = false
-      $0.automaticallyShowsScopeBar = false
     }
 
     navigationItem.searchController = searchController

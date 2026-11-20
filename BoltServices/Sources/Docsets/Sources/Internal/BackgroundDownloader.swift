@@ -230,7 +230,7 @@ extension BackgroundDownloader: URLSessionDelegate, URLSessionDownloadDelegate {
         throw Errors.undeterminedDestinationPath(sessionID: downloadTask.taskIdentifier)
       }
 
-      let destination = URL(fileURLWithPath: path)
+      let destination = URL(filePath: path)
 
       if fileManager.fileExists(atPath: destination.path) {
         try fileManager.removeItem(at: destination)

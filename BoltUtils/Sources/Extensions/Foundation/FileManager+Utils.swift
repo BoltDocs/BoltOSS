@@ -26,7 +26,7 @@ public extension FileManager {
     var extensions = expectedExtension.split(separator: ".").map { String($0) }
     return paths.filter { path in
       // For matching files like 'file.tar.gz'
-      var candidateExtensions = URL(fileURLWithPath: path).pathExtensions
+      var candidateExtensions = URL(filePath: path).pathExtensions
       if !caseSensitive {
         extensions = extensions.map { $0.lowercased() }
         candidateExtensions = candidateExtensions.map { $0.lowercased() }
@@ -42,18 +42,18 @@ public extension FileManager {
   }
 
   func nextAvailableFileName(for fileName: String, in directory: URL) -> URL {
-    let fileURL = URL(fileURLWithPath: fileName)
+    let fileURL = URL(filePath: fileName)
     let fileNameWithoutExtension = fileURL.deletingPathExtension().lastPathComponent
     let fileExtension = fileURL.pathExtension
 
-    var destURL = directory.appendingPathComponent(fileName)
+    var destURL = directory.appending(path: fileName)
 
     var retryCount = 0
     while fileExists(atPath: destURL.path) {
       retryCount += 1
       let extensionSuffix = fileExtension.isEmpty ? "" : ".\(fileExtension)"
       let newFileName = "\(fileNameWithoutExtension) (\(retryCount))\(extensionSuffix)"
-      destURL = directory.appendingPathComponent(newFileName)
+      destURL = directory.appending(path: newFileName)
     }
 
     return destURL

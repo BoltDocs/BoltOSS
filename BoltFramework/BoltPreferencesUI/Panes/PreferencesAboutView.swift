@@ -57,7 +57,7 @@ struct PreferencesAboutView: View {
                 #endif
               }
               .font(.system(size: 10))
-              .foregroundColor(Color.secondary)
+              .foregroundStyle(Color.secondary)
             }
           }
           .frame(maxWidth: .infinity)

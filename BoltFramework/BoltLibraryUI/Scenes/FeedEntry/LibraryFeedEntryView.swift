@@ -136,9 +136,7 @@ private final class DataSource: ObservableObject {
       .map { [archivePath] progress -> DownloadStatus in
         let localFileExists = {
           return FileManager.default.fileExists(
-            atPath: URL(
-              fileURLWithPath: archivePath
-            ).path
+            atPath: URL(filePath: archivePath).path
           )
         }
         if let progress = progress {
@@ -336,7 +334,7 @@ struct LibraryFeedEntryView: View {
               let expectedBytes = downloadProgress.expectedBytes
             {
               Text("\(String.formatBytes(bytes: Double(receivedBytes))) / \(String.formatBytes(bytes: Double(expectedBytes)))")
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
                 .font(.system(.caption))
             }
           }

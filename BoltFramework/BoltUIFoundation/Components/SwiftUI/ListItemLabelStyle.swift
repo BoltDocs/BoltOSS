@@ -31,7 +31,7 @@ public struct ListItemLabelStyle: LabelStyle {
   public func makeBody(configuration: Configuration) -> some View {
     HStack(alignment: .center, spacing: spacing) {
       configuration.icon
-        .foregroundColor(Color.primary)
+        .foregroundStyle(Color.primary)
         .if(iconSize != nil) {
           $0.frame(width: iconSize!.width, height: iconSize!.height)
         }

@@ -37,7 +37,7 @@ public struct TarUnarchiver: LoggerProvider {
       let cancellable = BooleanCancellable()
       queue.asyncSafe {
         do {
-          try performWithGunzippedFile(forSourceURL: URL(fileURLWithPath: sourcePath)) { tarURL in
+          try performWithGunzippedFile(forSourceURL: URL(filePath: sourcePath)) { tarURL in
             let fileHandle = try FileHandle(forReadingFrom: tarURL)
             defer {
               fileHandle.closeFile()
@@ -53,7 +53,7 @@ public struct TarUnarchiver: LoggerProvider {
                   continue
                 }
                 let info = entry.info
-                let targetURL = URL(fileURLWithPath: destPath.appendingPathComponent(info.name))
+                let targetURL = URL(filePath: destPath.appendingPathComponent(info.name))
                 let directoryURL = targetURL.deletingLastPathComponent()
                 do {
                   try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
@@ -137,10 +137,8 @@ public struct TarUnarchiver: LoggerProvider {
 
       try FileManager.default.createDirectory(atPath: tmpPath, withIntermediateDirectories: true)
 
-      let tarURL = URL(fileURLWithPath: tmpPath)
-        .appendingPathComponent(
-          "\(sourceURL.deletingPathExtension().lastPathComponent)_\(try UUID().shortened(using: .base62))"
-        )
+      let tarURL = URL(filePath: tmpPath)
+        .appending(path: "\(sourceURL.deletingPathExtension().lastPathComponent)_\(try UUID().shortened(using: .base62))")
         .appendingPathExtension("tar")
       try tarData.write(to: tarURL)
       return tarURL
