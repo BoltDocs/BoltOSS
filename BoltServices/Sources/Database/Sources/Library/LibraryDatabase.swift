@@ -85,9 +85,9 @@ public protocol LibraryDatabase {
 
   func toggleBookmark(_ bookmark: Bookmark) throws -> Bookmark?
 
-  func deleteBookmarkById(_ bookmark: Bookmark) throws
+  func deleteBookmark(byRowID rowID: Int64) throws
 
-  func deleteBookmark(byPath path: String, docsetID: String) throws
+  func deleteBookmarks(byDocsetID docsetID: String) throws
 
 }
 

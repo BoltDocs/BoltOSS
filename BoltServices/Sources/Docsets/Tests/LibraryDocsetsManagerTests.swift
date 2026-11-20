@@ -17,6 +17,7 @@
 import Foundation
 import XCTest
 
+import BoltDatabase
 import BoltSearch
 import BoltTestingUtils
 import BoltTypes
@@ -27,6 +28,9 @@ import Factory
 @testable import BoltDocsets
 
 final class LibraryDocsetsManagerTests: XCTestCase {
+
+  @LazyInjected(\.libraryDatabase)
+  private var libraryDatabase: LibraryDatabase
 
   @LazyInjected(\.libraryDocsetsManager)
   private var libraryDocsetsManager: LibraryDocsetsManager
@@ -125,6 +129,23 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     XCTAssertFalse(downloadsPathContents.contains("Vim-9.0-main.tgz.tarix"))
   }
 
+  func testUninstallDocsetDeletesBookmarkAndHistory() async throws {
+    try await installDocsetTrackedAsLatest(version: "/8")
+
+    try await Task.sleep(for: .milliseconds(1000))
+
+    let record = try XCTUnwrap(libraryDocsetsManager.installedRecords.first {
+      $0.name == "Bash"
+    })
+
+    let docsetID = record.versionIndependentIdentifier
+    _ = try libraryDatabase.insertBookmark(Bookmark(title: "Bash", path: "index.html", docsetID: docsetID))
+
+    try libraryDocsetsManager.uninstallDocset(forRecord: record, deleteBookmarksAndHistory: true)
+
+    XCTAssertTrue(try libraryDatabase.fetchBookmarks(forDocsetID: docsetID).isEmpty)
+  }
+
   func testUpdateExistingDocset() async throws {
     try await installDocsetTrackedAsLatest(version: "/8")
 
@@ -134,7 +155,12 @@ final class LibraryDocsetsManagerTests: XCTestCase {
       result.record.name == "Bash"
     }
     XCTAssertEqual(docsetsBeforeUpdate.count, 1)
-    XCTAssertEqual(docsetsBeforeUpdate.first?.record.version.rawValue, "/8")
+
+    let previousRecord = try XCTUnwrap(docsetsBeforeUpdate.first?.record)
+    XCTAssertEqual(previousRecord.version.rawValue, "/8")
+    let bookmark = try libraryDatabase.insertBookmark(
+      Bookmark(title: "Bash", path: "index.html", docsetID: previousRecord.versionIndependentIdentifier)
+    )
 
     try await installDocsetTrackedAsLatest(version: "/9")
 
@@ -145,7 +171,11 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     }
 
     XCTAssertEqual(docsetsAfterUpdate.count, 1)
-    XCTAssertEqual(docsetsAfterUpdate.first?.record.version.rawValue, "/9")
+
+    let updatedRecord = try XCTUnwrap(docsetsAfterUpdate.first?.record)
+    XCTAssertEqual(updatedRecord.version.rawValue, "/9")
+    let bookmarks = try libraryDatabase.fetchBookmarks(forDocsetID: updatedRecord.versionIndependentIdentifier)
+    XCTAssertTrue(bookmarks.contains(bookmark))
   }
 
   private func installDocsetTrackedAsLatest(version: String) async throws {

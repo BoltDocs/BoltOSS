@@ -75,7 +75,7 @@ struct HomeListItemViewModel {
     guard let record = libraryDocsetsManager.installedRecords.first(where: { $0.uuid == uuid }) else {
       return
     }
-    try? libraryDocsetsManager.uninstallDocset(forRecord: record)
+    try? libraryDocsetsManager.uninstallDocset(forRecord: record, deleteBookmarksAndHistory: true)
   }
 
 }
