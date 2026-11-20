@@ -74,17 +74,17 @@ public struct BoltContentUnavailableView: View {
               height: configuration.imageSize!.height
             )
         }
-        .foregroundColor(Color("overlay", bundle: kFoundationBundle))
+        .foregroundStyle(Color("overlay", bundle: kFoundationBundle))
       if configuration.showsMessage {
         HStack(spacing: 8) {
           Text(configuration.message)
-            .foregroundColor(.secondary)
+            .foregroundStyle(.secondary)
           if let detailAction = detailAction, configuration.showsDetailButton {
             Button {
               detailAction()
             } label: {
               Image(systemName: "info.circle")
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             }
           }
           if configuration.shouldDisplayIndicator {

@@ -26,7 +26,8 @@ let libraryTargets: [Target] = [
     dependencies: [
       "Factory",
     ],
-    path: "./BoltAppKitBridge"
+    path: "./BoltAppKitBridge",
+    swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
   ),
   .target(
     name: "BoltBrowserUI",
@@ -42,7 +43,8 @@ let libraryTargets: [Target] = [
       .copy("./Assets/."),
     ],
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -55,7 +57,8 @@ let libraryTargets: [Target] = [
     ],
     path: "./BoltHomeUI",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -64,7 +67,8 @@ let libraryTargets: [Target] = [
       "BoltRxSwift",
       "BoltServices",
     ],
-    path: "./BoltModuleExports"
+    path: "./BoltModuleExports",
+    swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
   ),
   .target(
     name: "BoltLibraryUI",
@@ -81,7 +85,8 @@ let libraryTargets: [Target] = [
       .process("./Assets"),
     ],
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -95,7 +100,8 @@ let libraryTargets: [Target] = [
     ],
     path: "./BoltLookupUI",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -108,7 +114,8 @@ let libraryTargets: [Target] = [
     ],
     path: "./BoltPreferencesUI",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -126,7 +133,8 @@ let libraryTargets: [Target] = [
       .process("./Assets"),
     ],
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -138,7 +146,8 @@ let libraryTargets: [Target] = [
     path: "./BoltUserGuideUI",
     resources: [
       .copy("./Resources/user-guides"),
-    ]
+    ],
+    swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
   ),
 ]
 
@@ -146,7 +155,8 @@ let testTargets: [Target] = [
   .testTarget(
     name: "BoltLibraryUITests",
     dependencies: ["BoltLibraryUI", "BoltServices"],
-    path: "./BoltLibraryUI/Tests"
+    path: "./BoltLibraryUI/Tests",
+    swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
   ),
 ]
 
@@ -169,7 +179,8 @@ let frameworkTarget: Target = {
       .process("./Assets"),
     ],
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   )
 }()

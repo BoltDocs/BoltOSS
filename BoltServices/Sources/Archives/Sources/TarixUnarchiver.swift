@@ -53,7 +53,7 @@ public struct TarixUnarchiver: LoggerProvider {
       return (blockLength, offset)
     }
     return try await TarUnarchiver.rawDataFromTarFile(
-      tarAbsoluteURL: URL(fileURLWithPath: tarPath),
+      tarAbsoluteURL: URL(filePath: tarPath),
       blockLength: blockLength,
       offset: offset,
       usingQueue: queue
@@ -80,13 +80,13 @@ public struct TarixUnarchiver: LoggerProvider {
               do {
                 if
                   let (filename, data) = try TarUnarchiver.rawDataFromTarFile(
-                    tarAbsoluteURL: URL(fileURLWithPath: tarPath),
+                    tarAbsoluteURL: URL(filePath: tarPath),
                     blockLength: blockLength,
                     offset: offset
                   ),
                   let data = data
                 {
-                  let destURL = URL(fileURLWithPath: destPath).appendingPathComponent(filename)
+                  let destURL = URL(filePath: destPath).appending(path: filename)
                   let directoryURL = destURL.deletingLastPathComponent()
                   try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
                   try data.write(to: destURL, options: .atomic)

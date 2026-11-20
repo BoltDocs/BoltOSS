@@ -112,7 +112,7 @@ struct LookupSearchUnavailableView: View {
                 .progressViewStyle(.circular)
               Text("Waiting for other docsets to finish indexing…")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             }
           }
         }

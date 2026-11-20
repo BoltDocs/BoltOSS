@@ -149,7 +149,7 @@ public class DocsetInfoViewModel: ObservableObject, LoggerProvider {
 
   func calculateDocsetSize() async {
     docsetSize = nil
-    let url = URL(fileURLWithPath: docsetPath)
+    let url = URL(filePath: docsetPath)
     if let byteSize = await FileManager.directoryByteSize(at: url) {
       let size = String.formatBytes(bytes: Double(byteSize))
       docsetSize = size

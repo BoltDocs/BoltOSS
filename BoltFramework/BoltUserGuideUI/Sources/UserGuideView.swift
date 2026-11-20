@@ -126,10 +126,10 @@ private struct WebViewRepresentable: UIViewRepresentable {
       return
     }
 
-    let baseURL = resourceURL.appendingPathComponent("user-guides")
+    let baseURL = resourceURL.appending(path: "user-guides")
 
     guard var urlComponents = URLComponents(
-      string: baseURL.appendingPathComponent("user-guides/\(location.path)/index.html").absoluteString,
+      string: baseURL.appending(path: "user-guides/\(location.path)/index.html").absoluteString,
     ) else {
       return
     }

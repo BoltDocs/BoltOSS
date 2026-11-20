@@ -43,7 +43,8 @@ let package = Package(
         "CombineExt",
         "BoltUtils",
       ],
-      path: "./Sources"
+      path: "./Sources",
+      swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
     ),
   ]
 )

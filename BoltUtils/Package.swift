@@ -52,15 +52,18 @@ let package = Package(
         .product(name: "Logging", package: "swift-log"),
       ],
       path: "./Sources",
-      exclude: ["Overture", "Testing"]
+      exclude: ["Overture", "Testing"],
+      swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
     ),
     .target(
       name: "BoltUtilsTesting",
-      path: "./Sources/Testing"
+      path: "./Sources/Testing",
+      swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
     ),
     .target(
       name: "Overture",
-      path: "./Sources/Overture"
+      path: "./Sources/Overture",
+      swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
     ),
   ]
 )

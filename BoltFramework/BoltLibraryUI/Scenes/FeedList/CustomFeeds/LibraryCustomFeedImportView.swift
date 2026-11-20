@@ -55,8 +55,8 @@ struct LibraryCustomFeedImportView: View {
           "Library-ImportedFeeds-Import-urlPlaceHolder".boltLocalized,
           text: $urlInput
         )
-        .autocapitalization(.none)
-        .disableAutocorrection(true)
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled(true)
         .textContentType(.URL)
         .keyboardType(.URL)
         TextField(

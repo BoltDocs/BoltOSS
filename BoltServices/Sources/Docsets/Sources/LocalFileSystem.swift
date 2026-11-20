@@ -22,11 +22,11 @@ import BoltUtils
 public extension LocalFileSystem {
 
   static var docsetsURL: URL {
-    return URL(fileURLWithPath: docsetsAbsolutePath)
+    return URL(filePath: docsetsAbsolutePath)
   }
 
   static var applicationDocumentsURL: URL {
-    return URL(fileURLWithPath: applicationDocumentsAbsolutePath)
+    return URL(filePath: applicationDocumentsAbsolutePath)
   }
 
   static var docsetsAbsolutePath: String {
@@ -34,7 +34,7 @@ public extension LocalFileSystem {
   }
 
   static var downloadsURL: URL {
-    return URL(fileURLWithPath: downloadsAbsolutePath)
+    return URL(filePath: downloadsAbsolutePath)
   }
 
   static var downloadsAbsolutePath: String {

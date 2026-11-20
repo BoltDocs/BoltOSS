@@ -137,7 +137,7 @@ public struct DownloadProgressListItemView<ViewModel: DownloadProgressListItemVi
         }
         if let subtitle = (model.progressSubtitle ?? subtitle) {
           Text(subtitle)
-            .foregroundColor(.secondary)
+            .foregroundStyle(.secondary)
             .font(.system(.caption))
         }
       }

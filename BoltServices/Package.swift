@@ -56,7 +56,8 @@ let moduleTargets: [Target] = [
     dependencies: [Dependencies.GRDB, Dependencies.GzipSwift, Dependencies.UUIDShortener, "BoltCombineExtensions", "SWCompressionTAR", "BoltTypes", "BoltUtils"],
     path: "./Sources/Archives/Sources",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -64,7 +65,8 @@ let moduleTargets: [Target] = [
     dependencies: ["Alamofire", "SwiftyJSON", "SwiftyXMLParser", "BoltTypes"],
     path: "./Sources/Networking/Sources",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -72,7 +74,8 @@ let moduleTargets: [Target] = [
     dependencies: [Dependencies.GRDB, Dependencies.Overture, "BoltCombineExtensions", "BoltTypes"],
     path: "./Sources/Database/Sources",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -80,7 +83,8 @@ let moduleTargets: [Target] = [
     dependencies: [Dependencies.GRDB, Dependencies.Overture, "BoltArchives", "BoltDatabase", "BoltRepository", "BoltURLSchemes", "BoltUtils"],
     path: "./Sources/Docsets/Sources",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -88,7 +92,8 @@ let moduleTargets: [Target] = [
     dependencies: ["SwiftyJSON", "BoltDatabase", "BoltNetworking", "BoltTypes", "BoltURLSchemes", "BoltUtils"],
     path: "./Sources/Repository/Sources",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -97,7 +102,8 @@ let moduleTargets: [Target] = [
     path: "./Sources/Types",
     exclude: ["Assets", "Resources"],
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -112,7 +118,8 @@ let moduleTargets: [Target] = [
     dependencies: [Dependencies.GRDB, Dependencies.Overture, "BoltCombineExtensions", "BoltDocsets", "BoltRxSwift", "BoltTypes"],
     path: "./Sources/Search/Sources",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -120,13 +127,15 @@ let moduleTargets: [Target] = [
     dependencies: ["BoltTypes"],
     path: "./Sources/URLSchemes",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
     name: "BoltUserGuide",
     dependencies: ["Factory", "BoltTypes"],
-    path: "./Sources/UserGuide"
+    path: "./Sources/UserGuide",
+    swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
   ),
   .target(
     name: "BoltServices",
@@ -144,6 +153,7 @@ let moduleTargets: [Target] = [
     ],
     path: "./Sources/BoltServices",
     swiftSettings: [
+      .unsafeFlags(["-warn-soft-deprecated"]),
       .swiftLanguageMode(.v5),
     ]
   ),
@@ -155,7 +165,8 @@ let testingUtils: [Target] = [
     dependencies: [Dependencies.BoltUtilsTesting, "BoltTypes"],
     path: "./Sources/Testing",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .target(
@@ -163,25 +174,39 @@ let testingUtils: [Target] = [
     dependencies: ["BoltUtils", "BoltNetworking"],
     path: "./Sources/Networking/TestStubs",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
 ]
 
 let testTargets: [Target] = [
-  .testTarget(name: "BoltArchivesTests", dependencies: ["BoltTestingUtils", "BoltArchives"], path: "./Sources/Archives/Tests", resources: [.copy("./TestResources")]),
+  .testTarget(
+    name: "BoltArchivesTests",
+    dependencies: ["BoltTestingUtils", "BoltArchives"],
+    path: "./Sources/Archives/Tests",
+    resources: [.copy("./TestResources")],
+    swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
+  ),
   .testTarget(
     name: "BoltDatabaseTests",
     dependencies: [Dependencies.GRDB, "BoltDatabase"],
-    path: "./Sources/Database/Tests"
+    path: "./Sources/Database/Tests",
+    swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
   ),
-  .testTarget(name: "BoltNetworkingTests", dependencies: ["BoltNetworking"], path: "./Sources/Networking/Tests"),
+  .testTarget(
+    name: "BoltNetworkingTests",
+    dependencies: ["BoltNetworking"],
+    path: "./Sources/Networking/Tests",
+    swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
+  ),
   .testTarget(
     name: "BoltRepositoryTests",
     dependencies: ["BoltRepository", "BoltTestingUtils", "BoltNetworkingTestStubs"],
     path: "./Sources/Repository/Tests",
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .testTarget(
@@ -195,7 +220,8 @@ let testTargets: [Target] = [
       .copy("./TestResources"),
     ],
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
   .testTarget(
@@ -209,7 +235,8 @@ let testTargets: [Target] = [
       .copy("./TestResources"),
     ],
     swiftSettings: [
-      .swiftLanguageMode(.v5)
+      .unsafeFlags(["-warn-soft-deprecated"]),
+      .swiftLanguageMode(.v5),
     ]
   ),
 ]

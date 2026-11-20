@@ -50,7 +50,8 @@ let package = Package(
         .product(name: "RxWebKit", package: "RxWebKit"),
         .product(name: "BoltUtils", package: "BoltUtils"),
       ],
-      path: "./Sources"
+      path: "./Sources",
+      swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
     ),
   ]
 )

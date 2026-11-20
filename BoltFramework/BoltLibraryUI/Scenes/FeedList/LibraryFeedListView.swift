@@ -157,7 +157,7 @@ private struct LibraryFeedListView<Model>: View where Model: LibraryFeedListView
     }
     .searchable(text: $searchText, prompt: UIKitLocalizations.search)
     .textInputAutocapitalization(.never)
-    .disableAutocorrection(true)
+    .autocorrectionDisabled(true)
     .overlay {
       if actionPerformer.status != .success {
         let message = actionPerformer.error == nil ?

@@ -74,8 +74,9 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
 
   static func infoDictionary(forDocsetPath docsetPath: String) -> InfoDictionary? {
     let infoPlistPath = infoPlistPath(forDocsetPath: docsetPath)
+    let infoPlistURL = URL(filePath: infoPlistPath)
 
-    guard let infoDict = NSDictionary(contentsOfFile: infoPlistPath) as? InfoDictionary else {
+    guard let infoDict = try? NSDictionary(contentsOf: infoPlistURL, error: ()) as? InfoDictionary else {
       Self.logger.warning("Docset Info.plist not found for path: \(docsetPath)")
       return nil
     }
@@ -105,14 +106,15 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
   // override the Info.plist values of the docset with infomations from the feed entry
   static func writeMetadata(ofEntry entry: FeedEntry, toDocsetPath path: String) throws {
     let infoPlistPath = infoPlistPath(forDocsetPath: path)
-    guard let infoPlistDict = NSDictionary(contentsOfFile: infoPlistPath) as? InfoDictionary else {
+    let infoPlistURL = URL(filePath: infoPlistPath)
+    guard let infoPlistDict = try? NSDictionary(contentsOf: infoPlistURL, error: ()) as? InfoDictionary else {
       Self.logger.warning("No Info.plist found at `\(infoPlistPath)` for feed: `\(entry.feed.id)`.")
       throw LibraryDocsetsManagerError.noInfoPlistFound
     }
 
     let newInfoDict = Container.shared.docsetInfoProcessor().processForInstallation(withInfoDictionary: infoPlistDict, forFeedEntry: entry)
 
-    try (newInfoDict as NSDictionary).write(to: URL(fileURLWithPath: infoPlistPath))
+    try (newInfoDict as NSDictionary).write(to: URL(filePath: infoPlistPath))
   }
 
   static func feedEntryFromLocalDocset(_ docsetPath: String) -> FeedEntry? {
@@ -146,7 +148,7 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
       version: docsetInfo.bundleVersion,
       isTrackedAsLatest: false,
       isDocsetBundle: false,
-      docsetLocation: ResourceLocations.URL(URL(fileURLWithPath: docsetPath))
+      docsetLocation: ResourceLocations.URL(URL(filePath: docsetPath))
     )
   }
 
@@ -155,7 +157,8 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
     installation: DocsetInstallation,
     infoDictionaryPath: String
   ) -> Docset? {
-    guard let infoDict = NSDictionary(contentsOfFile: infoDictionaryPath) as? InfoDictionary else {
+    let url = URL(filePath: infoDictionaryPath)
+    guard let infoDict = try? NSDictionary(contentsOf: url, error: ()) as? InfoDictionary else {
       Self.logger.warning("Docset Info.plist not found for path: \(docsetPath)")
       return nil
     }
@@ -184,7 +187,7 @@ package struct LibraryDocsetsFileSystemBridge: LoggerProvider {
     let localIconFies = ["icon@2x.png", "icon.png", "icon.tiff"]
     let dataAndPath: (Data, String)? = localIconFies.firstMap { file in
       let path = docsetPath.appendingPathComponent(file)
-      if let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+      if let data = try? Data(contentsOf: URL(filePath: path)) {
         return (data, path)
       }
       return nil

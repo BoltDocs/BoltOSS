@@ -87,7 +87,7 @@ private extension TarixURLSchemeHandler {
     guard FileManager.default.fileExists(atPath: filePath) else {
       return nil
     }
-    return try? Data(contentsOf: URL(fileURLWithPath: filePath))
+    return try? Data(contentsOf: URL(filePath: filePath))
   }
 
 }
