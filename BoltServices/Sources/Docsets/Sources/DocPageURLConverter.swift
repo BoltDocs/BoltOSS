@@ -55,10 +55,14 @@ final class DocPageURLConverterImp: DocPageURLConverter {
   }
 
   func pagePath(forURL url: URL) -> String? {
-    // FIXME: properly handle hash and queries and add related tests
-    if let docsetFileScheme = DocsetFileURLScheme(url: url) {
-      return docsetFileScheme.path
+    if DocsetFileURLScheme(url: url) != nil {
+      var path = url.path
+      if let fragment = url.fragment {
+        path += "#" + fragment
+      }
+      return path
     } else if let appleDocScheme = AppleDocURLScheme(url: url) {
+      // FIXME: properly handle fragments and add related tests
       return appleDocScheme.path
     }
     return nil
