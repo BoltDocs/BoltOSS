@@ -54,27 +54,31 @@ struct PreferencesContributionView: View {
         )
       }
       Section(
-        header: Text("Preferences-About-Contribute-openSourceRepositoryTitle".boltLocalized)
-      ) {
-        ContributionListItem(
-          title: "BoltOSS",
-          url: URL(string: "https://github.com/BoltDocs/BoltOSS")!
-        )
-      }
+        content: {
+          ContributionListItem(
+            title: "BoltOSS",
+            url: URL(string: "https://github.com/BoltDocs/BoltOSS")!
+          )
+        },
+        header: { Text("Preferences-About-Contribute-openSourceRepositoryTitle".boltLocalized) }
+      )
       Section(
-        header: Text("Preferences-About-Contribute-openSourceLibrariesTitle".boltLocalized),
-        footer: Text("Preferences-About-Contribute-openSourceFooter".boltLocalized)
-          .textCase(.none)
-      ) {
-        ContributionListItem(
-          title: "RoutableNavigation",
-          url: URL(string: "https://github.com/BoltDocs/RoutableNavigation")!
-        )
-        ContributionListItem(
-          title: "ObjectAssociationHelper",
-          url: URL(string: "https://github.com/BoltDocs/ObjectAssociationHelper")!
-        )
-      }
+        content: {
+          ContributionListItem(
+            title: "RoutableNavigation",
+            url: URL(string: "https://github.com/BoltDocs/RoutableNavigation")!
+          )
+          ContributionListItem(
+            title: "ObjectAssociationHelper",
+            url: URL(string: "https://github.com/BoltDocs/ObjectAssociationHelper")!
+          )
+        },
+        header: { Text("Preferences-About-Contribute-openSourceLibrariesTitle".boltLocalized) },
+        footer: {
+          Text("Preferences-About-Contribute-openSourceFooter".boltLocalized)
+            .textCase(.none)
+        }
+      )
     }
     .navigationTitle("Preferences-About-contributeTitle".boltLocalized)
     .navigationBarTitleDisplayMode(.inline)

@@ -46,12 +46,20 @@ public struct LibraryHomeListView: View {
   }
 
   public var body: some View {
-    NavigationView {
+    NavigationStack {
       List {
         ForEach(models) { section in
           Section(
-            header: Text(section.header),
-            footer: Group {
+            content: {
+              ForEach(section.items) { item in
+                NavigationLink(
+                  destination: { DeferredView { destinationView(for: item.itemType) } },
+                  label: { LibraryHomeListItemView(itemModel: item) }
+                )
+              }
+            },
+            header: { Text(section.header) },
+            footer: {
               if let footer = section.footer {
                 Text(footer)
                   .environment(\.openURL, OpenURLAction { url in
@@ -60,13 +68,7 @@ public struct LibraryHomeListView: View {
                   })
               }
             }
-          ) {
-            ForEach(section.items) { item in
-              NavigationLink(destination: DeferredView { destinationView(for: item.itemType) }) {
-                LibraryHomeListItemView(itemModel: item)
-              }
-            }
-          }
+          )
         }
       }
       .listStyle(.insetGrouped)
@@ -81,7 +83,6 @@ public struct LibraryHomeListView: View {
         }
       }
     }
-    .navigationViewStyle(.stack)
   }
 
 }

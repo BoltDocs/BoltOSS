@@ -43,18 +43,20 @@ struct LibraryCustomFeedInfoView: View {
   var body: some View {
     List {
       Section(
-        header:
+        content: {
+          TextField("", text: $feedName)
+            .onSubmit {
+              onTextFieldSubmit()
+            }
+        },
+        header: {
           VStack(alignment: .center, spacing: 12) {
             Image(uiImage: feed.iconImageForInfo ?? UIImage())
           }
           .frame(maxWidth: .infinity)
           .padding(.bottom, 12)
-      ) {
-        TextField("", text: $feedName)
-          .onSubmit {
-            onTextFieldSubmit()
-          }
-      }
+        }
+      )
       Section("Library-ImportedFeeds-Info-feedURLSectionTitle".boltLocalized) {
         Button {
           copyURL(forFeed: feed)

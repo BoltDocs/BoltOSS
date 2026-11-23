@@ -269,34 +269,37 @@ struct LibraryFeedEntryView: View {
   }
 
   private func tarixSection() -> some View {
-    Section(header: Text("Library-FeedEntry-SectionTitles-archiveIndex".boltLocalized)) {
-      HStack {
-        Label("\(dataSource.fileNameToDisplay).tarix", systemImage: "doc.text")
-          .labelStyle(ListItemLabelStyle())
-        Spacer()
-        switch dataSource.statusResult {
-        case .loading:
-          ProgressView()
-        case .result(let res):
-          if case .success = res {
-            Text(Image(systemName: "checkmark.circle"))
-          } else if case .failure = res {
+    Section(
+      content: {
+        HStack {
+          Label("\(dataSource.fileNameToDisplay).tarix", systemImage: "doc.text")
+            .labelStyle(ListItemLabelStyle())
+          Spacer()
+          switch dataSource.statusResult {
+          case .loading:
+            ProgressView()
+          case .result(let res):
+            if case .success = res {
+              Text(Image(systemName: "checkmark.circle"))
+            } else if case .failure = res {
+              Button(action: {
+                dataSource.downloadTarixTrigger = ()
+              }, label: {
+                Text(Image(systemName: "arrow.counterclockwise"))
+              })
+              .buttonStyle(.borderless)
+            }
+          case .idle:
             Button(action: {
               dataSource.downloadTarixTrigger = ()
             }, label: {
-              Text(Image(systemName: "arrow.counterclockwise"))
+              Text("arrow.down.circle")
             })
-            .buttonStyle(.borderless)
           }
-        case .idle:
-          Button(action: {
-            dataSource.downloadTarixTrigger = ()
-          }, label: {
-            Text("arrow.down.circle")
-          })
         }
-      }
-    }
+      },
+      header: { Text("Library-FeedEntry-SectionTitles-archiveIndex".boltLocalized) }
+    )
   }
 
   private func docsetSection() -> some View {
@@ -315,16 +318,7 @@ struct LibraryFeedEntryView: View {
 
   private func installSection() -> some View {
     Group {
-      Section(footer: Group {
-        let footerLines = dataSource.installSectionFooter
-        if !footerLines.isEmpty {
-          footerLines.enumerated().reduce(Text("")) { result, item in
-            let (index, line) = item
-            let lineText = Text("\(Image(systemName: line.icon)) \(line.text)")
-            return index == 0 ? Text("\n\(lineText)") : Text("\(result)\n\n\(lineText)")
-          }
-        }
-      }) {
+      Section {
         if case let .downloading(downloadProgress) = dataSource.downloadStatus {
           VStack(alignment: .leading, spacing: 8) {
             ProgressView(value: downloadProgress.progress)
@@ -365,6 +359,15 @@ struct LibraryFeedEntryView: View {
             Text("Library-FeedEntry-Install-retryDownloadButtonTitle".boltLocalized)
           }
         })
+      } footer: {
+        let footerLines = dataSource.installSectionFooter
+        if !footerLines.isEmpty {
+          footerLines.enumerated().reduce(Text("")) { result, item in
+            let (index, line) = item
+            let lineText = Text("\(Image(systemName: line.icon)) \(line.text)")
+            return index == 0 ? Text("\n\(lineText)") : Text("\(result)\n\n\(lineText)")
+          }
+        }
       }
       Section {
         if case .downloaded = dataSource.downloadStatus {

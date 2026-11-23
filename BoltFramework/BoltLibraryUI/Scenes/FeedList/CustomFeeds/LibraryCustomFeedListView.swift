@@ -187,14 +187,14 @@ struct LibraryCustomFeedListView: View {
     } // sheet
     .sheet(isPresented: $showsImportFeedSheet) {
       SheetContainer {
-        NavigationView {
+        NavigationStack {
           LibraryCustomFeedImportView()
         } // NavigationView
       } // SheetContainer
     } // sheet
     .sheet(item: $feedForFeedInfoSheet) { feed in
       SheetContainer {
-        NavigationView {
+        NavigationStack {
           LibraryCustomFeedInfoView(feed: feed)
         } // NavigationView
       } // SheetContainer

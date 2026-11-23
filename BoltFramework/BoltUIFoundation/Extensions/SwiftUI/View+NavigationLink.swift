@@ -26,7 +26,10 @@ public extension View {
     @ViewBuilder destination: () -> Destination
   ) -> some View {
     if condition {
-      NavigationLink(destination: destination()) { self }
+      NavigationLink(
+        destination: { destination() },
+        label: { self }
+      )
     } else {
       self
     }

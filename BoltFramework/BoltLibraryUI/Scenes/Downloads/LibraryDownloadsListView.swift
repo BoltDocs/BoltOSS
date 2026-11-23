@@ -84,7 +84,7 @@ public struct LibraryDownloadsListView: View {
   public init() { }
 
   public var body: some View {
-    NavigationView {
+    NavigationStack {
       VStack {
         Picker("", selection: $currentScope) {
           Text("Library-Downloads-scopeBarAll".boltLocalized).tag(Scope.all)
@@ -144,7 +144,6 @@ public struct LibraryDownloadsListView: View {
         }
       }
     }
-    .navigationViewStyle(.stack)
   }
 
 }
