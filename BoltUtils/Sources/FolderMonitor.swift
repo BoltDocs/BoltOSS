@@ -57,7 +57,7 @@ public final class FolderMonitor: Sendable {
     }
 
     // Open the directory referenced by URL for monitoring only.
-    let descriptor = open(url.path, O_EVTONLY)
+    let descriptor = open(url.path(percentEncoded: false), O_EVTONLY)
 
     if descriptor == -1 {
       return

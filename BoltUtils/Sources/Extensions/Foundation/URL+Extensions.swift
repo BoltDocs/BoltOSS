@@ -41,6 +41,7 @@ public extension URL {
   }
 
   var pathFragment: String {
+    let path = path(percentEncoded: false)
     if let fragment = fragment() {
       return "\(path)#\(fragment)"
     }

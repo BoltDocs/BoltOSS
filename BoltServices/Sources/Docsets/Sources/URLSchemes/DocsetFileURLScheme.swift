@@ -60,7 +60,7 @@ public struct DocsetFileURLScheme: URLScheme {
     }
     self.docsetUUID = id
     self.docsetFileName = docsetFileName
-    self.path = url.path
+    self.path = components.path
   }
 
   public init?(urlString: String) {

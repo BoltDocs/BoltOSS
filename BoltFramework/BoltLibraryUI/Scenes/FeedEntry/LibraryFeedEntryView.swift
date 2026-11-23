@@ -135,9 +135,7 @@ private final class DataSource: ObservableObject {
     downloadManager.progress(forIdentifier: entry.id)
       .map { [archivePath] progress -> DownloadStatus in
         let localFileExists = {
-          return FileManager.default.fileExists(
-            atPath: URL(filePath: archivePath).path
-          )
+          return FileManager.default.fileExists(atPath: archivePath)
         }
         if let progress = progress {
           switch progress {

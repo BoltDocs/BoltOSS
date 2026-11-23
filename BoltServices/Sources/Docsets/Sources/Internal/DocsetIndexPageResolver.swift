@@ -173,7 +173,7 @@ package struct DocsetIndexPageResolver: LoggerProvider {
         return indexPagePath
       }
       if let url = URL(string: indexPagePath) {
-        let path = url.path
+        let path = url.path(percentEncoded: false)
         if matcher.findFirstMatchInPaths([path]) != nil {
           return indexPagePath
         }

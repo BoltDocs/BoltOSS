@@ -35,7 +35,7 @@ public struct LocalFileSystem {
   }()
 
   private static let _tempAbsolutePath: String! = {
-    return FileManager.default.temporaryDirectory.path
+    return FileManager.default.temporaryDirectory.path(percentEncoded: false)
   }()
 
   public static let documentsAbsolutePath: String = {

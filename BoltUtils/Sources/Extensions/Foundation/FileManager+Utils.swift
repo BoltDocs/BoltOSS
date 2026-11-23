@@ -49,7 +49,7 @@ public extension FileManager {
     var destURL = directory.appending(path: fileName)
 
     var retryCount = 0
-    while fileExists(atPath: destURL.path) {
+    while fileExists(atPath: destURL.path(percentEncoded: false)) {
       retryCount += 1
       let extensionSuffix = fileExtension.isEmpty ? "" : ".\(fileExtension)"
       let newFileName = "\(fileNameWithoutExtension) (\(retryCount))\(extensionSuffix)"
