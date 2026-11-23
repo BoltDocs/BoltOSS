@@ -26,7 +26,21 @@ struct PreferencesAboutView: View {
   var body: some View {
     List {
       Section(
-        header:
+        content: {
+          Button("Preferences-About-websiteTitle".boltLocalized) {
+            UIApplication.shared.open(Constnats.websiteURL)
+          }
+          Button("Preferences-About-privacyPolicyTitle".boltLocalized) {
+            UIApplication.shared.open(Constnats.privacyPolicyURL)
+          }
+          NavigationLink("Preferences-About-acknowledgementsTitle".boltLocalized) {
+            DeferredView {
+              LicensePlistView()
+                .navigationTitle("Preferences-About-acknowledgementsTitle".boltLocalized)
+            }
+          }
+        },
+        header: {
           VStack(alignment: .center, spacing: 12) {
             let iconImage = Image(uiImage: InfoValues.iconImage ?? UIImage())
               .resizable()
@@ -63,20 +77,8 @@ struct PreferencesAboutView: View {
           .frame(maxWidth: .infinity)
           .padding(.bottom, 12)
           .textCase(.none)
-      ) {
-        Button("Preferences-About-websiteTitle".boltLocalized) {
-          UIApplication.shared.open(Constnats.websiteURL)
         }
-        Button("Preferences-About-privacyPolicyTitle".boltLocalized) {
-          UIApplication.shared.open(Constnats.privacyPolicyURL)
-        }
-        NavigationLink("Preferences-About-acknowledgementsTitle".boltLocalized) {
-          DeferredView {
-            LicensePlistView()
-              .navigationTitle("Preferences-About-acknowledgementsTitle".boltLocalized)
-          }
-        }
-      }
+      )
       Section {
         NavigationLink("Preferences-About-contributeTitle".boltLocalized) {
           DeferredView {

@@ -210,51 +210,53 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
       case .installable:
         return AnyView(
           NavigationLink(
-            destination: DeferredView { LibraryFeedEntryView(entry) }
-          ) {
-            let subtitle = { () -> String? in
-              guard !shouldHideVersions, entry.isTrackedAsLatest else {
-                return nil
-              }
-              let entryDisplayVersion = DocsetVersion(rawValue: entry.version).displayVersion
-              return !entryDisplayVersion.isEmpty ? entryDisplayVersion : nil
-            }()
-            DownloadProgressListItemView(
-              identifier: entry.id,
-              title: entry.isTrackedAsLatest ? "Library-FeedInfo-Versions-latest".boltLocalized : entry.version,
-              subtitle: subtitle,
-              preventsHighlight: true
-            )
-          }
+            destination: { DeferredView { LibraryFeedEntryView(entry) } },
+            label: {
+              let subtitle = { () -> String? in
+                guard !shouldHideVersions, entry.isTrackedAsLatest else {
+                  return nil
+                }
+                let entryDisplayVersion = DocsetVersion(rawValue: entry.version).displayVersion
+                return !entryDisplayVersion.isEmpty ? entryDisplayVersion : nil
+              }()
+              DownloadProgressListItemView(
+                identifier: entry.id,
+                title: entry.isTrackedAsLatest ? "Library-FeedInfo-Versions-latest".boltLocalized : entry.version,
+                subtitle: subtitle,
+                preventsHighlight: true
+              )
+            }
+          )
         )
       case let .updateAvailable(currentVersion):
         assert(entry.isTrackedAsLatest)
         return AnyView(
           NavigationLink(
-            destination: DeferredView { LibraryFeedEntryView(entry) }
-          ) {
-            let subtitle = {
-              let entryDisplayVersion = DocsetVersion(rawValue: entry.version).displayVersion
-              let currentDisplayVersion = DocsetVersion(rawValue: currentVersion).displayVersion
-              if !entryDisplayVersion.isEmpty {
-                let versionStr: String
-                if !currentDisplayVersion.isEmpty {
-                  versionStr = "\(currentDisplayVersion) → \(entryDisplayVersion)"
+            destination: { DeferredView { LibraryFeedEntryView(entry) } },
+            label: {
+              let subtitle = {
+                let entryDisplayVersion = DocsetVersion(rawValue: entry.version).displayVersion
+                let currentDisplayVersion = DocsetVersion(rawValue: currentVersion).displayVersion
+                if !entryDisplayVersion.isEmpty {
+                  let versionStr: String
+                  if !currentDisplayVersion.isEmpty {
+                    versionStr = "\(currentDisplayVersion) → \(entryDisplayVersion)"
+                  } else {
+                    versionStr = entryDisplayVersion
+                  }
+                  return "Library-FeedInfo-Versions-updateAvailableWithVersion".boltLocalized(versionStr)
                 } else {
-                  versionStr = entryDisplayVersion
+                  return "Library-FeedInfo-Versions-updateAvailable".boltLocalized
                 }
-                return "Library-FeedInfo-Versions-updateAvailableWithVersion".boltLocalized(versionStr)
-              } else {
-                return "Library-FeedInfo-Versions-updateAvailable".boltLocalized
-              }
-            }()
-            DownloadProgressListItemView(
-              identifier: entry.id,
-              title: "Library-FeedInfo-Versions-latest".boltLocalized,
-              subtitle: subtitle,
-              preventsHighlight: true
-            )
-          }
+              }()
+              DownloadProgressListItemView(
+                identifier: entry.id,
+                title: "Library-FeedInfo-Versions-latest".boltLocalized,
+                subtitle: subtitle,
+                preventsHighlight: true
+              )
+            }
+          )
         )
       case .installed:
         assert(!entry.isTrackedAsLatest)
@@ -280,33 +282,36 @@ struct LibraryFeedInfoVersionsSection<ViewModel: FeedInfoVersionsSectionModel>: 
   }
 
   var body: some View {
-    Section(header: Text("Library-FeedInfo-SectionTitles-Versions".boltLocalized)) {
-      if case .result(let result) = viewModel.statusResult {
-        if case .success(let listModel) = result {
-          if !listModel.shouldHideVersions {
-            BoltToggle(
-              "Library-FeedInfo-Versions-showAllVersions".boltLocalized,
-              isOn: $showsAllVersions
-            )
-          }
-          ForEach(listModel.items) { entry in
-            buildVersionsListItem(
-              entryListModel: entry,
-              shouldHideVersions: listModel.shouldHideVersions
-            )
+    Section(
+      content: {
+        if case .result(let result) = viewModel.statusResult {
+          if case .success(let listModel) = result {
+            if !listModel.shouldHideVersions {
+              BoltToggle(
+                "Library-FeedInfo-Versions-showAllVersions".boltLocalized,
+                isOn: $showsAllVersions
+              )
+            }
+            ForEach(listModel.items) { entry in
+              buildVersionsListItem(
+                entryListModel: entry,
+                shouldHideVersions: listModel.shouldHideVersions
+              )
+            }
+          } else {
+            Button(BoltLocalizations.retry) {
+              viewModel.refreshTrigger = ()
+            }
           }
         } else {
-          Button(BoltLocalizations.retry) {
-            viewModel.refreshTrigger = ()
+          HStack(spacing: 8) {
+            ProgressView()
+            Text("Library-FeedInfo-loadingVersionsHint".boltLocalized)
           }
         }
-      } else {
-        HStack(spacing: 8) {
-          ProgressView()
-          Text("Library-FeedInfo-loadingVersionsHint".boltLocalized)
-        }
-      }
-    }
+      },
+      header: { Text("Library-FeedInfo-SectionTitles-Versions".boltLocalized) }
+    )
   }
 
 }

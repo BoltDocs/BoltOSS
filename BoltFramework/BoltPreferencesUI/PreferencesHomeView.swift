@@ -171,14 +171,13 @@ public struct PreferencesHomeView: View {
   }
 
   public var body: some View {
-    NavigationView {
+    NavigationStack {
       List {
         if !RuntimeEnvironment.hidesUnfinishedFeatures {
           Section("Preferences-Home-Appearance-sectionTitle".boltLocalized) {
-            NavigationLink(
-              "Preferences-Home-Appearance-tintColorButtonTitle".boltLocalized,
-              destination: PreferencesTintColorView()
-            )
+            NavigationLink("Preferences-Home-Appearance-tintColorButtonTitle".boltLocalized) {
+              PreferencesTintColorView()
+            }
             Button("Preferences-Home-Appearance-changeIconButtonTitle".boltLocalized) {
               GlobalUI.showMessageToast(
                 withText: "Preferences-Home-Appearance-toastToBeImplemented".boltLocalized
@@ -233,10 +232,9 @@ public struct PreferencesHomeView: View {
         }
         Section("Preferences-Home-Help-sectionTitle".boltLocalized) {
           helpSectionItems
-          NavigationLink(
-            "Preferences-Home-Help-aboutButtonTitle".boltLocalized,
-            destination: PreferencesAboutView()
-          )
+          NavigationLink("Preferences-Home-Help-aboutButtonTitle".boltLocalized) {
+            PreferencesAboutView()
+          }
         }
         if RuntimeEnvironment.isInternalBuild {
           Section("Preferences-Home-InternalDiagnostics-sectionTitle".boltLocalized) {
@@ -303,7 +301,6 @@ public struct PreferencesHomeView: View {
         }
       }
     }
-    .navigationViewStyle(.stack)
   }
 
 }

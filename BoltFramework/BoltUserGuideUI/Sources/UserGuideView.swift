@@ -156,7 +156,7 @@ struct UserGuideView: View {
   @State private var actionsRelay = PublishRelay<WebViewRepresentable.Actions>()
 
   var body: some View {
-    NavigationView {
+    NavigationStack {
       WebViewRepresentable(
         location: location,
         canGoBack: $canGoBack,
@@ -191,7 +191,6 @@ struct UserGuideView: View {
         }
       }
     }
-    .navigationViewStyle(.stack)
   }
 
   private func goBack() {

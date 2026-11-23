@@ -35,7 +35,7 @@ public struct DashFeedSchemeHandler: SchemeHandler {
     GlobalUI.dismissAllModals(forScene: scene) {
       let feedImportViewController = UIHostingController(
         rootView: SheetContainer {
-          NavigationView {
+          NavigationStack {
             LibraryCustomFeedImportView(feedURL: scheme.feedURL)
           }
         }

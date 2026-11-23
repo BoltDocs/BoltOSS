@@ -53,25 +53,26 @@ public struct LibraryUpdatesListView: View {
   public init() { }
 
   public var body: some View {
-    NavigationView {
+    NavigationStack {
       List {
         ForEach(viewModel.updatableEntries, id: \.id) { entry in
           NavigationLink(
-            destination: DeferredView { LibraryFeedEntryView(entry) }
-          ) {
-            let subtitle = {
-              let displayVersion = DocsetVersion(rawValue: entry.version).displayVersion
-              return !displayVersion.isEmpty
-                ? "Library-Updates-Items-updateAvailableWithVersion".boltLocalized(displayVersion)
-                : "Library-Updates-Items-updateAvailable".boltLocalized
-            }()
-            DownloadProgressListItemView(
-              identifier: entry.id,
-              title: entry.feed.displayName,
-              subtitle: subtitle,
-              preventsHighlight: true
-            )
-          }
+            destination: { DeferredView { LibraryFeedEntryView(entry) } },
+            label: {
+              let subtitle = {
+                let displayVersion = DocsetVersion(rawValue: entry.version).displayVersion
+                return !displayVersion.isEmpty
+                  ? "Library-Updates-Items-updateAvailableWithVersion".boltLocalized(displayVersion)
+                  : "Library-Updates-Items-updateAvailable".boltLocalized
+              }()
+              DownloadProgressListItemView(
+                identifier: entry.id,
+                title: entry.feed.displayName,
+                subtitle: subtitle,
+                preventsHighlight: true
+              )
+            }
+          )
         }
       }
       .background(Color.systemGroupedBackground)
@@ -94,7 +95,6 @@ public struct LibraryUpdatesListView: View {
       .scrollContentBackground(.hidden)
       .background(Color.systemGroupedBackground)
     }
-    .navigationViewStyle(.stack)
     .overlay {
       if !viewModel.updatesFetched || viewModel.updatableEntries.isEmpty {
         ZStack {
