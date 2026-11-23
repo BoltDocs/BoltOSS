@@ -75,7 +75,7 @@ public struct DashFeedURLScheme: URLScheme {
     guard
       let scheme = dashFeedURL.scheme,
       scheme == Self.scheme,
-      let host = dashFeedURL.host,
+      let host = dashFeedURL.host(percentEncoded: false),
       let feedURL = URL(string: host)
     else {
       return nil

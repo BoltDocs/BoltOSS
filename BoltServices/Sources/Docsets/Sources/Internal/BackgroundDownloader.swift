@@ -225,16 +225,17 @@ extension BackgroundDownloader: URLSessionDelegate, URLSessionDownloadDelegate {
 
     do {
       let fileManager = FileManager.default
-      guard let path = dataSource?.downloaderGetDestinationPath(forSessionID: downloadTask.taskIdentifier) else {
+      guard let destinationPath = dataSource?.downloaderGetDestinationPath(forSessionID: downloadTask.taskIdentifier) else {
         Self.logger.warning("task: \(downloadTask) (identifier: \(downloadTask.taskIdentifier)) has no trakced identifier")
         throw Errors.undeterminedDestinationPath(sessionID: downloadTask.taskIdentifier)
       }
 
-      let destination = URL(filePath: path)
-
-      if fileManager.fileExists(atPath: destination.path) {
-        try fileManager.removeItem(at: destination)
+      if fileManager.fileExists(atPath: destinationPath) {
+        try fileManager.removeItem(atPath: destinationPath)
       }
+
+      let destination = URL(filePath: destinationPath)
+
       let directory = destination.deletingLastPathComponent()
       try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
       try fileManager.moveItem(at: location, to: destination)
