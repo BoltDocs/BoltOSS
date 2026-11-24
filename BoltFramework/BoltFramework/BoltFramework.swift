@@ -66,7 +66,7 @@ public class BoltFramework: LoggerProvider {
 #if targetEnvironment(macCatalyst)
 
   private static func loadAppKitBridgeFromBundle() -> AppKitBridgeProtocol? {
-    guard let bundleURL = Bundle.main.builtInPlugInsURL?.appendingPathComponent("BoltAppKitBridgeRuntime.bundle") else {
+    guard let bundleURL = Bundle.main.builtInPlugInsURL?.appending(path: "BoltAppKitBridgeRuntime.bundle") else {
       return nil
     }
 

@@ -45,7 +45,7 @@ struct TarixUnarchiverTests {
       let (path, data) = res!
       try #require(path == index.path)
 
-      let fileData = try Data(contentsOf: Bundle.module.resourceURL!.appendingPathComponent("TestResources").appendingPathComponent(path))
+      let fileData = try Data(contentsOf: Bundle.module.resourceURL!.appending(path: "TestResources").appending(path: path))
       try #require(data == fileData)
     }
   }
