@@ -41,7 +41,7 @@ final class NetworkingTests: XCTestCase {
       atLocation: ResourceLocations.URL(URL(string: "https://kapeli.com/feeds/Bash.tgz")!),
       toPath: NSTemporaryDirectory().appendingPathComponent("Bash.tgz")
     )
-    XCTAssertTrue(FileManager.default.fileExists(atPath: resultURL.path, isDirectory: nil))
+    XCTAssertTrue(FileManager.default.fileExists(atPath: resultURL.path(percentEncoded: false), isDirectory: nil))
   }
 
   func testDownloadTarixAtURLLocation() async throws {
@@ -49,7 +49,7 @@ final class NetworkingTests: XCTestCase {
       atLocation: ResourceLocations.URL(URL(string: "https://alamofire.github.io/Alamofire/docsets/Alamofire.tgz")!),
       toPath: NSTemporaryDirectory().appendingPathComponent("Alamofire.tgz")
     )
-    XCTAssertTrue(FileManager.default.fileExists(atPath: resultURL.path, isDirectory: nil))
+    XCTAssertTrue(FileManager.default.fileExists(atPath: resultURL.path(percentEncoded: false), isDirectory: nil))
   }
 
   func testGetFileSizeAtDashHostedLocation() async throws {
