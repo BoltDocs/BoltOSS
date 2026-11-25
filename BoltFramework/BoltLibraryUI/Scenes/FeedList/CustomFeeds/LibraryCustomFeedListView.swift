@@ -20,6 +20,7 @@ import SwiftUI
 import Factory
 import Overture
 
+import BoltLibraryUIResources
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
@@ -77,7 +78,7 @@ struct LibraryCustomFeedListView: View {
 
   @State private var selectedFeed: IdentifiableFeed?
 
-  static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/custom-feed", in: .module).platformImage!
+  static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/custom-feed", in: .boltLibraryUI).platformImage!
 
   var body: some View {
     List {

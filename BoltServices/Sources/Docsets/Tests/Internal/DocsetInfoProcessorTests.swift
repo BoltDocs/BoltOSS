@@ -20,6 +20,7 @@ import XCTest
 import Factory
 
 @testable import BoltDocsets
+import BoltDocsetsTestResources
 import BoltTestingUtils
 import BoltTypes
 
@@ -65,10 +66,10 @@ final class DocsetInfoProcessorTests: XCTestCase {
   func testProcessForInstallationWithRepoProcessor() throws {
     let docsetInfoProcessor = Container.shared.docsetInfoProcessor()
 
-    let dataBefore = try Data(contentsOf: Bundle.module.url(forResource: "TestResources/RxSwift/Info.plist")!)
+    let dataBefore = try Data(contentsOf: Bundle.boltDocsetsTests.url(forResource: "TestResources/RxSwift/Info.plist")!)
     let infoDictBefore = InfoDictionary(propertyListData: dataBefore)
 
-    let dataAfter = try Data(contentsOf: Bundle.module.url(forResource: "TestResources/RxSwift/Info_installed.plist")!)
+    let dataAfter = try Data(contentsOf: Bundle.boltDocsetsTests.url(forResource: "TestResources/RxSwift/Info_installed.plist")!)
     let infoDictExpected = InfoDictionary(propertyListData: dataAfter)
 
     let infoDictAfter = docsetInfoProcessor.processForInstallation(

@@ -19,6 +19,7 @@ import SwiftUI
 import Factory
 
 import BoltDocsets
+import BoltLibraryUIResources
 import BoltLocalizations
 import BoltTypes
 import BoltUIFoundation
@@ -48,7 +49,7 @@ public struct LibraryUpdatesListView: View {
 
   @StateObject private var viewModel = LibraryUpdatesListViewModel()
 
-  static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/upgrade", in: .module).platformImage!
+  static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/upgrade", in: .boltLibraryUI).platformImage!
 
   public init() { }
 

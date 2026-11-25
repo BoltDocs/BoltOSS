@@ -16,6 +16,7 @@
 
 import XCTest
 
+import BoltDocsetsTestResources
 import BoltTestingUtils
 import BoltTypes
 import BoltUtils
@@ -44,7 +45,7 @@ final class DocsetInstallerTests: XCTestCase {
     let downloadsPath = LocalFileSystem.downloadsAbsolutePath
 
     try fileManager.copyItem(
-      atPath: Bundle.module.path(forResource: "TestResources/Flask.tgz")!,
+      atPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Flask.tgz")!,
       toPath: downloadsPath.appendingPathComponent("Flask-3.1.0-main.tgz")
     )
 

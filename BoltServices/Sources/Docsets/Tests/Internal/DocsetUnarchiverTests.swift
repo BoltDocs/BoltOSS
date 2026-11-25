@@ -19,6 +19,7 @@ import XCTest
 
 @testable import BoltDocsets
 
+import BoltDocsetsTestResources
 import BoltRepository
 import BoltTestingUtils
 import BoltTypes
@@ -31,7 +32,7 @@ final class TarUnarchiverTests: XCTestCase {
 
     let resultProgress = try await awaitPublisher(
       DocsetUnarchiver.unarchiveDownloadedDocsetWithoutTarix(
-        downloadedTarPath: Bundle.module.path(forResource: "TestResources/Vim", ofType: "tgz")!,
+        downloadedTarPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim", ofType: "tgz")!,
         toPath: destPath,
         forFeedEntry: FeedEntry(
           feed: StubFeed(
@@ -62,7 +63,7 @@ final class TarUnarchiverTests: XCTestCase {
     XCTAssert(
       FileManager.default.contentsEqual(
         atPath: destPath.appendingPathComponent("Vim.docset"),
-        andPath: Bundle.module.path(forResource: "TestResources/Vim.docset")!
+        andPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim.docset")!
       )
     )
   }
@@ -72,8 +73,8 @@ final class TarUnarchiverTests: XCTestCase {
 
     let resultProgress = try await awaitPublisher(
       DocsetUnarchiver.unarchiveDownloadedDocsetUsingTarix(
-        downloadedTarPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!,
-        downloadedTarixPath: Bundle.module.path(forResource: "TestResources/Vim.tgz.tarix")!,
+        downloadedTarPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim.tgz")!,
+        downloadedTarixPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim.tgz.tarix")!,
         toPath: destPath,
         forFeedEntry: FeedEntry(
           feed: StubFeed(
@@ -104,7 +105,7 @@ final class TarUnarchiverTests: XCTestCase {
     XCTAssert(
       FileManager.default.contentsEqual(
         atPath: destPath.appendingPathComponent("Vim.docset"),
-        andPath: Bundle.module.path(forResource: "TestResources/Vim_tarix.docset")!
+        andPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim_tarix.docset")!
       )
     )
   }
@@ -114,7 +115,7 @@ final class TarUnarchiverTests: XCTestCase {
 
     let resultProgress = try await awaitPublisher(
       DocsetUnarchiver.unarchiveDownloadedDocsetWithoutTarix(
-        downloadedTarPath: Bundle.module.path(forResource: "TestResources/MultipleExtensions", ofType: "tgz")!,
+        downloadedTarPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/MultipleExtensions", ofType: "tgz")!,
         toPath: destPath,
         forFeedEntry: FeedEntry(
           feed: StubFeed(
@@ -145,7 +146,7 @@ final class TarUnarchiverTests: XCTestCase {
     XCTAssert(
       FileManager.default.contentsEqual(
         atPath: destPath.appendingPathComponent("MultipleExtensions.abc.docset"),
-        andPath: Bundle.module.path(forResource: "TestResources/MultipleExtensions.abc.docset")!
+        andPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/MultipleExtensions.abc.docset")!
       )
     )
   }

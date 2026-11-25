@@ -34,17 +34,24 @@ let libraryTargets: [Target] = [
     dependencies: [
       "SnapKit",
       "BoltAppleDocumentation",
+      "BoltBrowserUIResources",
       "BoltModuleExports",
       "BoltServices",
       "BoltUIFoundation",
     ],
     path: "./BoltBrowserUI",
-    resources: [
-      .copy("./Assets/."),
-    ],
+    exclude: ["Assets", "Bundle+BoltBrowserUI.swift"],
     swiftSettings: [
       .unsafeFlags(["-warn-soft-deprecated"]),
       .swiftLanguageMode(.v5),
+    ]
+  ),
+  .target(
+    name: "BoltBrowserUIResources",
+    path: "./BoltBrowserUI",
+    sources: ["Bundle+BoltBrowserUI.swift"],
+    resources: [
+      .copy("./Assets/."),
     ]
   ),
   .target(
@@ -74,19 +81,24 @@ let libraryTargets: [Target] = [
     name: "BoltLibraryUI",
     dependencies: [
       "BoltAppKitBridge",
+      "BoltLibraryUIResources",
       "BoltModuleExports",
       "BoltServices",
       "BoltUIFoundation",
       "BoltUserGuideUI",
     ],
     path: "./BoltLibraryUI",
-    exclude: ["Tests"],
-    resources: [
-      .process("./Assets"),
-    ],
+    exclude: ["Assets", "Tests"],
     swiftSettings: [
       .unsafeFlags(["-warn-soft-deprecated"]),
       .swiftLanguageMode(.v5),
+    ]
+  ),
+  .target(
+    name: "BoltLibraryUIResources",
+    path: "./BoltLibraryUI/Assets",
+    resources: [
+      .process("Assets.xcassets"),
     ]
   ),
   .target(
@@ -94,14 +106,24 @@ let libraryTargets: [Target] = [
     dependencies: [
       "SnapKit",
       "BoltBrowserUI",
+      "BoltLookupUIResources",
       "BoltUIFoundation",
       "BoltModuleExports",
       "RoutableNavigation",
     ],
     path: "./BoltLookupUI",
+    exclude: ["Bundle+BoltLookupUI.swift", "Scenes/LookupList/Cell/EntryCell.xib"],
     swiftSettings: [
       .unsafeFlags(["-warn-soft-deprecated"]),
       .swiftLanguageMode(.v5),
+    ]
+  ),
+  .target(
+    name: "BoltLookupUIResources",
+    path: "./BoltLookupUI",
+    sources: ["Bundle+BoltLookupUI.swift"],
+    resources: [
+      .process("Scenes/LookupList/Cell/EntryCell.xib"),
     ]
   ),
   .target(
@@ -127,14 +149,20 @@ let libraryTargets: [Target] = [
       "GSMessages",
       "BoltServices",
       "BoltLocalizations",
+      "BoltUIFoundationResources",
     ],
     path: "./BoltUIFoundation",
-    resources: [
-      .process("./Assets"),
-    ],
+    exclude: ["Assets"],
     swiftSettings: [
       .unsafeFlags(["-warn-soft-deprecated"]),
       .swiftLanguageMode(.v5),
+    ]
+  ),
+  .target(
+    name: "BoltUIFoundationResources",
+    path: "./BoltUIFoundation/Assets",
+    resources: [
+      .process("Assets.xcassets"),
     ]
   ),
   .target(
@@ -142,12 +170,17 @@ let libraryTargets: [Target] = [
     dependencies: [
       "BoltServices",
       "BoltUIFoundation",
+      "BoltUserGuideUIResources",
     ],
-    path: "./BoltUserGuideUI",
-    resources: [
-      .copy("./Resources/user-guides"),
-    ],
+    path: "./BoltUserGuideUI/Sources",
     swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
+  ),
+  .target(
+    name: "BoltUserGuideUIResources",
+    path: "./BoltUserGuideUI/Resources",
+    resources: [
+      .copy("./user-guides"),
+    ]
   ),
 ]
 
@@ -160,9 +193,10 @@ let testTargets: [Target] = [
   ),
 ]
 
-let frameworkTarget: Target = {
+let frameworkTargets: [Target] = {
   let dependencies: [Target.Dependency] = [
     "BoltAppKitBridge",
+    "BoltFrameworkResources",
     "BoltUIFoundation",
     "BoltHomeUI",
     "BoltLookupUI",
@@ -171,18 +205,25 @@ let frameworkTarget: Target = {
     "BoltUserGuideUI",
   ]
 
-  return .target(
-    name: "BoltFramework",
-    dependencies: dependencies,
-    path: "./BoltFramework",
-    resources: [
-      .process("./Assets"),
-    ],
-    swiftSettings: [
-      .unsafeFlags(["-warn-soft-deprecated"]),
-      .swiftLanguageMode(.v5),
-    ]
-  )
+  return [
+    .target(
+      name: "BoltFramework",
+      dependencies: dependencies,
+      path: "./BoltFramework",
+      exclude: ["Assets"],
+      swiftSettings: [
+        .unsafeFlags(["-warn-soft-deprecated"]),
+        .swiftLanguageMode(.v5),
+      ]
+    ),
+    .target(
+      name: "BoltFrameworkResources",
+      path: "./BoltFramework/Assets",
+      resources: [
+        .process("Assets.xcassets"),
+      ]
+    ),
+  ]
 }()
 
 let package = Package(
@@ -217,7 +258,7 @@ let package = Package(
     .package(path: "../BoltServices"),
     .package(path: "../BoltUtils"),
   ],
-  targets: libraryTargets + [frameworkTarget] + testTargets
+  targets: libraryTargets + frameworkTargets + testTargets
 )
 
 // swiftlint:enable prefixed_toplevel_constant

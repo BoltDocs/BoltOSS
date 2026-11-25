@@ -19,6 +19,7 @@ import XCTest
 
 import Factory
 
+import BoltDocsetsTestResources
 import BoltTypes
 import BoltUtils
 
@@ -146,7 +147,7 @@ final class DocsetUpdateCheckerTests: XCTestCase {
     let downloadsPath = LocalFileSystem.downloadsAbsolutePath
 
     try fileManager.copyItem(
-      atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!,
+      atPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim.tgz")!,
       toPath: downloadsPath.appendingPathComponent("Vim-\(version)-latest-main.tgz")
     )
 

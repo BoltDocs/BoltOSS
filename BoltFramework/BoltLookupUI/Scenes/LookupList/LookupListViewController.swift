@@ -22,6 +22,7 @@ import RxSwift
 import SnapKit
 
 import BoltLocalizations
+import BoltLookupUIResources
 import BoltModuleExports
 import BoltRxSwift
 import BoltUIFoundation
@@ -186,7 +187,7 @@ final class LookupListViewController<ListViewModel: LookupListViewModel>: BaseVi
     tableView.rx.setDelegate(self)
       .disposed(by: disposeBag)
 
-    tableView.register(UINib(nibName: "EntryCell", bundle: .module), forCellReuseIdentifier: "EntryCell")
+    tableView.register(UINib(nibName: "EntryCell", bundle: .boltLookupUI), forCellReuseIdentifier: "EntryCell")
     tableView.contentInset = view.safeAreaInsets
 
     tableView.backgroundColor = .systemBackground

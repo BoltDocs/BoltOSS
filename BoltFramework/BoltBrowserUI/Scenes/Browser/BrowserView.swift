@@ -23,6 +23,7 @@ import RxSwift
 import RxWebKit
 import SnapKit
 
+import BoltBrowserUIResources
 import BoltRxSwift
 import BoltServices
 import BoltTypes
@@ -101,7 +102,7 @@ final class BrowserView: UIView, LoggerProvider, HasDisposeBag {
 
       let userContentController = update(WKUserContentController()) {
         if
-          let scriptPath = Bundle.module.path(forResource: "Assets/FindInPage", ofType: "js"),
+          let scriptPath = Bundle.boltBrowserUI.path(forResource: "Assets/FindInPage", ofType: "js"),
           let script = try? String(contentsOfFile: scriptPath, encoding: .utf8)
         {
           $0.addUserScript(

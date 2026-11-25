@@ -19,6 +19,7 @@ import XCTest
 
 @testable import BoltDocsets
 
+import BoltDocsetsTestResources
 import BoltTypes
 
 import Factory
@@ -65,11 +66,11 @@ final class LibraryDocsetsFileSystemBridgeTests: XCTestCase {
       EntryIcon.bundled(.docsetIcon(.cpp))
     )
 
-    let iconURL = try XCTUnwrap(Bundle.module.url(forResource: "TestResources/CustomIcon.docset/icon@2x.png"))
+    let iconURL = try XCTUnwrap(Bundle.boltDocsetsTests.url(forResource: "TestResources/CustomIcon.docset/icon@2x.png"))
     let iconData = try Data(contentsOf: iconURL)
     XCTAssertEqual(
       LibraryDocsetsFileSystemBridge._docsetIcon(
-        fromDocsetPath: Bundle.module.path(forResource: "TestResources/CustomIcon.docset")!,
+        fromDocsetPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/CustomIcon.docset")!,
         installation: DocsetInstallation(
           name: "cpp",
           version: DocsetVersion(rawValue: "1.0"),

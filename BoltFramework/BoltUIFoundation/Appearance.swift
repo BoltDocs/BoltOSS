@@ -20,6 +20,7 @@ import UIKit
 import Factory
 
 import BoltServices
+import BoltUIFoundationResources
 
 public struct AppearanceTypes {
   public enum TintColorKey: String {
@@ -47,7 +48,7 @@ public protocol AppearanceService {
 class AppearanceServiceImp: AppearanceService {
 
   private let tintColorMap: [AppearanceTypes.TintColorKey: AppearanceTypes.TintColor] = [
-    .purple: AppearanceTypes.TintColor(name: "Purple", color: UIColor(named: "AccentPurple", in: Bundle.module, compatibleWith: nil)!),
+    .purple: AppearanceTypes.TintColor(name: "Purple", color: UIColor(named: "AccentPurple", in: Bundle.boltUIFoundation, compatibleWith: nil)!),
   ]
 
   private var selectedKey: AppearanceTypes.TintColorKey?
