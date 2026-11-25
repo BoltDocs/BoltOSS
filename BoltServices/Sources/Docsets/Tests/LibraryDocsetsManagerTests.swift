@@ -17,6 +17,7 @@
 import Foundation
 import XCTest
 
+import BoltDocsetsTestResources
 import BoltSearch
 import BoltTestingUtils
 import BoltTypes
@@ -51,7 +52,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     let downloadsPath = LocalFileSystem.downloadsAbsolutePath
 
     try fileManager.copyItem(
-      atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!,
+      atPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim.tgz")!,
       toPath: downloadsPath.appendingPathComponent("Vim-9.0-main.tgz")
     )
 
@@ -87,12 +88,12 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     let downloadsPath = LocalFileSystem.downloadsAbsolutePath
 
     try fileManager.copyItem(
-      atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz")!,
+      atPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim.tgz")!,
       toPath: downloadsPath.appendingPathComponent("Vim-9.0-main.tgz")
     )
 
     try fileManager.copyItem(
-      atPath: Bundle.module.path(forResource: "TestResources/Vim.tgz.tarix")!,
+      atPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim.tgz.tarix")!,
       toPath: downloadsPath.appendingPathComponent("Vim-9.0-main.tgz.tarix")
     )
 
@@ -155,12 +156,12 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     let identifier = "Bash-\(version.replacingOccurrences(of: "/", with: "_"))-latest-main"
 
     try fileManager.copyItem(
-      atPath: try XCTUnwrap(Bundle.module.path(forResource: "TestResources/Bash.tgz")),
+      atPath: try XCTUnwrap(Bundle.boltDocsetsTests.path(forResource: "TestResources/Bash.tgz")),
       toPath: downloadsPath.appendingPathComponent("\(identifier).tgz")
     )
 
     try fileManager.copyItem(
-      atPath: try XCTUnwrap(Bundle.module.path(forResource: "TestResources/Bash.tgz.tarix")),
+      atPath: try XCTUnwrap(Bundle.boltDocsetsTests.path(forResource: "TestResources/Bash.tgz.tarix")),
       toPath: downloadsPath.appendingPathComponent("\(identifier).tgz.tarix")
     )
 

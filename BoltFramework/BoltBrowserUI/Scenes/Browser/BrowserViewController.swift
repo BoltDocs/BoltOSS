@@ -22,6 +22,7 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+import BoltBrowserUIResources
 import BoltLocalizations
 import BoltModuleExports
 import BoltRxSwift
@@ -190,7 +191,7 @@ public final class BrowserViewController: UIViewController, HasDisposeBag {
     switch initialPage {
     case let .indexPage(title):
       guard
-        let htmlPath = Bundle.module.path(forResource: "Assets/indexPage", ofType: "html"),
+        let htmlPath = Bundle.boltBrowserUI.path(forResource: "Assets/indexPage", ofType: "html"),
         let template = try? String(contentsOfFile: htmlPath, encoding: .utf8) else
       {
         return .url(.blank)

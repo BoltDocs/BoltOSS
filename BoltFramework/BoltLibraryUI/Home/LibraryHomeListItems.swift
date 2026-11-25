@@ -17,6 +17,7 @@
 import Foundation
 import SwiftUI
 
+import BoltLibraryUIResources
 import BoltTypes
 import BoltUIFoundation
 import BoltUtils
@@ -27,7 +28,7 @@ extension LibraryHomeListViewModel {
     var items = [
       Section.Item(
         name: "Library-Home-Items-customFeedsTitle".boltLocalized,
-        icon: BoltImageResource(named: "overview-icons/custom-feed", in: .module),
+        icon: BoltImageResource(named: "overview-icons/custom-feed", in: .boltLibraryUI),
         description: "Library-Home-Items-customFeedsDescription".boltLocalized,
         itemType: .customFeeds
       ),
@@ -35,7 +36,7 @@ extension LibraryHomeListViewModel {
     items.append(
       Section.Item(
         name: "Library-Home-Items-importFeedsTitle".boltLocalized,
-        icon: BoltImageResource(named: "overview-icons/local", in: Bundle.module),
+        icon: BoltImageResource(named: "overview-icons/local", in: .boltLibraryUI),
         description: "Library-Home-Items-importFeedsDescription".boltLocalized,
         itemType: .transfer
       )

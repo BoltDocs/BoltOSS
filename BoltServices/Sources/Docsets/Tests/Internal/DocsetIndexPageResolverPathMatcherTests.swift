@@ -17,17 +17,19 @@
 import Foundation
 import XCTest
 
+import BoltDocsetsTestResources
+
 @testable import BoltDocsets
 
 final class DocsetIndexPageResolverPathMatcherTests: XCTestCase {
 
   func testFindFirstMatchInPaths() {
 
-    var matcher = DocsetIndexPageResolver.PathMatcher(docsetPath: Bundle.module.path(forResource: "TestResources/Vim.docset")!)
+    var matcher = DocsetIndexPageResolver.PathMatcher(docsetPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim.docset")!)
     var result = matcher.findFirstMatchInPaths(["builtin.html"])
     XCTAssertEqual(result, "builtin.html")
 
-    matcher = DocsetIndexPageResolver.PathMatcher(docsetPath: Bundle.module.path(forResource: "TestResources/Vim_tarix.docset")!)
+    matcher = DocsetIndexPageResolver.PathMatcher(docsetPath: Bundle.boltDocsetsTests.path(forResource: "TestResources/Vim_tarix.docset")!)
     result = matcher.findFirstMatchInPaths(["builtin.html"])
     XCTAssertEqual(result, "builtin.html")
   }

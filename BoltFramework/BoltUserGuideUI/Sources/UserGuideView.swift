@@ -26,6 +26,7 @@ import RxWebKit
 import BoltLocalizations
 import BoltUIFoundation
 import BoltUserGuide
+import BoltUserGuideUIResources
 import BoltUtils
 
 private struct WebViewRepresentable: UIViewRepresentable {
@@ -122,7 +123,7 @@ private struct WebViewRepresentable: UIViewRepresentable {
     forWebView webView: WKWebView,
     location: UserGuideLocation
   ) {
-    guard let resourceURL = Bundle.module.resourceURL else {
+    guard let resourceURL = Bundle.boltUserGuideUI.resourceURL else {
       return
     }
 

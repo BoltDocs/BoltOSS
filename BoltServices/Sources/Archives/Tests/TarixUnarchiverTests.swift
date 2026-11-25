@@ -19,6 +19,7 @@ import Testing
 
 import GRDB
 
+import BoltArchivesTestResources
 import BoltTestingUtils
 
 @testable import BoltArchives
@@ -26,7 +27,7 @@ import BoltTestingUtils
 struct TarixUnarchiverTests {
 
   @Test func dataFromIndexedTar() async throws {
-    let dbQueue = try DatabaseQueue(path: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tarix")!)
+    let dbQueue = try DatabaseQueue(path: Bundle.boltArchivesTests.path(forResource: "TestResources/Bash", ofType: "tarix")!)
     let indices = try await dbQueue.read { db -> [TarIndex] in
       let selectStatement = try db.cachedStatement(
         sql: "SELECT * FROM tarindex"
@@ -37,15 +38,15 @@ struct TarixUnarchiverTests {
 
     for index in indices {
       let res = try await TarixUnarchiver.dataFromIndexedTar(
-        tarFilePath: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tgz")!,
-        tarixDBPath: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tarix")!,
+        tarFilePath: Bundle.boltArchivesTests.path(forResource: "TestResources/Bash", ofType: "tgz")!,
+        tarixDBPath: Bundle.boltArchivesTests.path(forResource: "TestResources/Bash", ofType: "tarix")!,
         atPath: index.path
       )
       try #require(res != nil)
       let (path, data) = res!
       try #require(path == index.path)
 
-      let fileData = try Data(contentsOf: Bundle.module.resourceURL!.appending(path: "TestResources").appending(path: path))
+      let fileData = try Data(contentsOf: Bundle.boltArchivesTests.resourceURL!.appending(path: "TestResources").appending(path: path))
       try #require(data == fileData)
     }
   }
@@ -53,8 +54,8 @@ struct TarixUnarchiverTests {
   @Test func extractListedFiles() async throws{
     let destPath = NSTemporaryDirectory().appendingPathComponent(UUID().uuidString)
     let publisher = TarixUnarchiver.extractListedFiles(
-      forTarix: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tarix")!,
-      fromTarFile: Bundle.module.path(forResource: "TestResources/Bash", ofType: "tgz")!,
+      forTarix: Bundle.boltArchivesTests.path(forResource: "TestResources/Bash", ofType: "tarix")!,
+      fromTarFile: Bundle.boltArchivesTests.path(forResource: "TestResources/Bash", ofType: "tgz")!,
       toPath: destPath
     )
 
@@ -67,7 +68,7 @@ struct TarixUnarchiverTests {
 
     #expect(path == destPath)
 
-    #expect(FileManager.default.contentsEqual(atPath: path.appendingPathComponent("Bash.docset"), andPath: Bundle.module.path(forResource: "TestResources/Bash_with_tarix", ofType: "docset")!))
+    #expect(FileManager.default.contentsEqual(atPath: path.appendingPathComponent("Bash.docset"), andPath: Bundle.boltArchivesTests.path(forResource: "TestResources/Bash_with_tarix", ofType: "docset")!))
   }
 
 }

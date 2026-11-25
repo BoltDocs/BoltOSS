@@ -19,6 +19,7 @@ import XCTest
 import UUIDShortener
 
 import BoltRxSwift
+import BoltSearchTestResources
 import BoltTypes
 
 @testable import BoltSearch
@@ -40,7 +41,7 @@ final class DocsetIndexerTests: XCTestCase {
 
     for i in 0..<numberOfIndicesToQueue {
       try fileManager.copyItem(
-        atPath: XCTUnwrap(Bundle.module.path(forResource: "TestResources/Bash.docset")),
+        atPath: XCTUnwrap(Bundle.boltSearchTests.path(forResource: "TestResources/Bash.docset")),
         toPath: tmpDir.appendingPathComponent("Bash_\(i).docset")
       )
     }

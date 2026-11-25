@@ -16,12 +16,13 @@
 
 import Foundation
 
+import BoltArchivesTestResources
 import BoltUtils
 
 struct TestResources {
 
   static var tgzURL: URL {
-    return Bundle.module.url(forResource: "TestResources/Bash.tgz")!
+    return Bundle.boltArchivesTests.url(forResource: "TestResources/Bash.tgz")!
   }
 
   static var gunzippedTarData: Data {

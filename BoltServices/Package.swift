@@ -183,10 +183,16 @@ let testingUtils: [Target] = [
 let testTargets: [Target] = [
   .testTarget(
     name: "BoltArchivesTests",
-    dependencies: ["BoltTestingUtils", "BoltArchives"],
+    dependencies: ["BoltTestingUtils", "BoltArchives", "BoltArchivesTestResources"],
     path: "./Sources/Archives/Tests",
-    resources: [.copy("./TestResources")],
+    exclude: ["Bundle+BoltArchivesTests.swift", "TestResources"],
     swiftSettings: [.unsafeFlags(["-warn-soft-deprecated"])]
+  ),
+  .target(
+    name: "BoltArchivesTestResources",
+    path: "./Sources/Archives/Tests",
+    sources: ["Bundle+BoltArchivesTests.swift"],
+    resources: [.copy("./TestResources")]
   ),
   .testTarget(
     name: "BoltDatabaseTests",
@@ -211,33 +217,35 @@ let testTargets: [Target] = [
   ),
   .testTarget(
     name: "BoltDocsetsTests",
-    dependencies: ["BoltDocsets", "BoltSearch", "BoltTestingUtils"],
-    path: "./Sources/Docsets/",
-    sources: [
-      "./Tests"
-    ],
-    resources: [
-      .copy("./TestResources"),
-    ],
+    dependencies: ["BoltDocsets", "BoltDocsetsTestResources", "BoltSearch", "BoltTestingUtils"],
+    path: "./Sources/Docsets/Tests",
+    exclude: ["Bundle+BoltDocsetsTests.swift"],
     swiftSettings: [
       .unsafeFlags(["-warn-soft-deprecated"]),
       .swiftLanguageMode(.v5),
     ]
   ),
+  .target(
+    name: "BoltDocsetsTestResources",
+    path: "./Sources/Docsets",
+    sources: ["Tests/Bundle+BoltDocsetsTests.swift"],
+    resources: [.copy("./TestResources")]
+  ),
   .testTarget(
     name: "BoltSearchTests",
-    dependencies: ["BoltSearch", "BoltTestingUtils"],
-    path: "./Sources/Search",
-    sources: [
-      "./Tests"
-    ],
-    resources: [
-      .copy("./TestResources"),
-    ],
+    dependencies: ["BoltSearch", "BoltSearchTestResources", "BoltTestingUtils"],
+    path: "./Sources/Search/Tests",
+    exclude: ["Bundle+BoltSearchTests.swift"],
     swiftSettings: [
       .unsafeFlags(["-warn-soft-deprecated"]),
       .swiftLanguageMode(.v5),
     ]
+  ),
+  .target(
+    name: "BoltSearchTestResources",
+    path: "./Sources/Search",
+    sources: ["Tests/Bundle+BoltSearchTests.swift"],
+    resources: [.copy("./TestResources")]
   ),
 ]
 

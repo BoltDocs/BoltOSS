@@ -22,8 +22,9 @@ import Overture
 
 import BoltLocalizations
 import BoltServices
+import BoltUIFoundationResources
 
-public let kFoundationBundle = Bundle.module
+public let kFoundationBundle = Bundle.boltUIFoundation
 
 public struct ErrorMessageEntity {
 

@@ -17,6 +17,7 @@
 import Foundation
 import Testing
 
+import BoltArchivesTestResources
 import BoltTestingUtils
 
 @testable import BoltArchives
@@ -24,7 +25,7 @@ import BoltTestingUtils
 struct TarUnarchiverTests {
 
   @Test func extractGzippedTarFile() async throws {
-    let sourcePath = Bundle.module.path(forResource: "TestResources/Bash.tgz")!
+    let sourcePath = Bundle.boltArchivesTests.path(forResource: "TestResources/Bash.tgz")!
     let destPath = NSTemporaryDirectory().appendingPathComponent(UUID().uuidString)
     let result = try await awaitPublisherForSwiftTesting(
       TarUnarchiver.extractGzippedTarFile(fromSourcePath: sourcePath, toDestPath: destPath)
@@ -36,15 +37,15 @@ struct TarUnarchiverTests {
     #expect(
       FileManager.default.contentsEqual(
         atPath: path.appendingPathComponent("Bash.docset"),
-        andPath: Bundle.module.path(forResource: "TestResources/Bash.docset")!
+        andPath: Bundle.boltArchivesTests.path(forResource: "TestResources/Bash.docset")!
       )
     )
   }
 
   @Test func dataFromGippedIndexedTarFile() throws {
-    let tgzURL = Bundle.module.url(forResource: "TestResources/Bash.tgz")!
+    let tgzURL = Bundle.boltArchivesTests.url(forResource: "TestResources/Bash.tgz")!
 
-    let indexFileURL = Bundle.module.url(forResource: "TestResources/Bash.tarix.txt")!
+    let indexFileURL = Bundle.boltArchivesTests.url(forResource: "TestResources/Bash.tarix.txt")!
     let indexFileContent = try String(contentsOf: indexFileURL, encoding: .utf8)
     let indexLines = indexFileContent.components(separatedBy: "\n")
 
@@ -65,7 +66,7 @@ struct TarUnarchiverTests {
         return
       }
 
-      let localData = try Data(contentsOf: Bundle.module.url(forResource: "TestResources/" + path)!)
+      let localData = try Data(contentsOf: Bundle.boltArchivesTests.url(forResource: "TestResources/" + path)!)
       #expect(data == localData)
     }
   }

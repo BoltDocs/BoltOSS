@@ -19,6 +19,7 @@ import WebKit
 
 import IssueReporting
 
+import BoltBrowserUIResources
 import BoltDocsets
 import BoltURLSchemes
 import BoltUtils
@@ -26,7 +27,7 @@ import BoltUtils
 public class AppleDocURLSchemeHandler: BaseURLSchemeHandler<AppleDocURLScheme>, LoggerProvider {
 
   private let renderAssetsPath: String? = {
-    let path = Bundle.module.resourcePath?.appendingPathComponent("Assets/swift-docc-render")
+    let path = Bundle.boltBrowserUI.resourcePath?.appendingPathComponent("Assets/swift-docc-render")
     if path == nil || FileManager.default.fileExistsAndIsDirectory(atPath: path!).1 != true {
       reportIssue("AppleDocURLSchemeHandler: renderAssetsPath does not exist: \(path, default: "nil")")
       return nil

@@ -19,6 +19,7 @@ import SwiftUI
 import Factory
 
 import BoltDatabase
+import BoltLibraryUIResources
 import BoltLocalizations
 import BoltServices
 import BoltUIFoundation
@@ -79,7 +80,7 @@ public struct LibraryDownloadsListView: View {
 
   @StateObject private var model = LibraryDownloadsListViewModel()
 
-  static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/downloads", in: .module).platformImage!
+  static let emptyStateImage: UIImage = BoltImageResource(named: "overview-icons/downloads", in: .boltLibraryUI).platformImage!
 
   public init() { }
 

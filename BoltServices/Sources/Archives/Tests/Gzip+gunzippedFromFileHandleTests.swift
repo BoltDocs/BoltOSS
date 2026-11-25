@@ -19,6 +19,7 @@ import Testing
 
 import Gzip
 
+import BoltArchivesTestResources
 import BoltUtils
 
 @testable import BoltArchives
@@ -26,7 +27,7 @@ import BoltUtils
 struct GZipExtensionTests {
 
   @Test func gunzippedFromFileHandle() throws {
-    let indexFileURL = Bundle.module.url(forResource: "TestResources/Bash.tarix.txt")!
+    let indexFileURL = Bundle.boltArchivesTests.url(forResource: "TestResources/Bash.tarix.txt")!
     let indexFileContent = try String(contentsOf: indexFileURL, encoding: .utf8)
     let indexLines = indexFileContent.components(separatedBy: "\n")
 
@@ -176,7 +177,7 @@ struct GZipExtensionTests {
   }
 
   private func infoPlistIndexEntry() throws -> (blockStart: Int, offset: UInt64, blockLength: Int) {
-    let indexFileURL = Bundle.module.url(forResource: "TestResources/Bash.tarix.txt")!
+    let indexFileURL = Bundle.boltArchivesTests.url(forResource: "TestResources/Bash.tarix.txt")!
     let indexFileContent = try String(contentsOf: indexFileURL, encoding: .utf8)
     let indexLines = indexFileContent.components(separatedBy: "\n")
 
