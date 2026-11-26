@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+import Foundation
+
 import GRDB
 
 extension LibraryDatabaseImp {
@@ -101,6 +103,21 @@ extension LibraryDatabaseImp {
         table.column("orderIndex", .integer).notNull()
       }
       try db.create(indexOn: "bookmarks", columns: ["docsetID", "orderIndex"])
+    }
+
+    migrator.registerMigration("Store UUIDs as Uppercase Strings") { db in
+      for table in ["docset-installations", "custom-feeds"] {
+        let rows = try Row.fetchAll(db, sql: "SELECT rowid, uuid FROM \"\(table)\"")
+        for row in rows {
+          let rowID: Int64 = row["rowid"]
+          if let uuid = UUID.fromDatabaseValue(row["uuid"] as DatabaseValue) {
+            try db.execute(
+              sql: "UPDATE \"\(table)\" SET uuid = ? WHERE rowid = ?",
+              arguments: [uuid.uuidString, rowID]
+            )
+          }
+        }
+      }
     }
 
     return migrator
