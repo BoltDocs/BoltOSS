@@ -61,4 +61,66 @@ struct MigrationTests {
       #expect(installation.orderIndex == idx)
     }
   }
+
+  @Test func migrationStoreUUIDsAsUppercaseStrings() async throws {
+    let dbQueue = try DatabaseQueue()
+
+    let migrator = LibraryDatabaseImp.createMigrator()
+    try migrator.migrate(dbQueue, upTo: "Create Bookmarks Table")
+
+    let blobUUID = UUID()
+
+    try await dbQueue.write { db in
+      try db.execute(
+        sql:
+          """
+          INSERT INTO "docset-installations" (uuid, name, version, installedAsLatestVersion, source)
+          VALUES (?, ?, ?, ?, ?)
+          """,
+        arguments: [blobUUID, "Blob DocSet", "1.0", true, "custom"]
+      )
+      try db.execute(
+        sql:
+          """
+          INSERT INTO "custom-feeds" (uuid, name, url)
+          VALUES (?, ?, ?)
+          """,
+        arguments: [blobUUID, "Custom Feed", "https://example.com/feed.atom"]
+      )
+    }
+
+    try await dbQueue.read { db in
+      let types = try String.fetchAll(
+        db,
+        sql: "SELECT typeof(uuid) FROM \"docset-installations\""
+      )
+      #expect(types == ["blob"])
+    }
+
+    try migrator.migrate(dbQueue)
+
+    try await dbQueue.read { db in
+      let installationUUIDs = try String.fetchAll(
+        db,
+        sql: "SELECT uuid FROM \"docset-installations\""
+      )
+      #expect(installationUUIDs == [blobUUID.uuidString])
+
+      let installationTypes = try String.fetchAll(
+        db,
+        sql: "SELECT typeof(uuid) FROM \"docset-installations\""
+      )
+      #expect(installationTypes == ["text"])
+
+      let installation = try DocsetInstallation.fetchOne(db, key: blobUUID)
+      #expect(installation?.name == "Blob DocSet")
+
+      let feed = try CustomFeedEntity.fetchOne(db, key: blobUUID)
+      #expect(feed?.displayName == "Custom Feed")
+
+      let feedType = try String.fetchOne(db, sql: "SELECT typeof(uuid) FROM \"custom-feeds\"")
+      #expect(feedType == "text")
+    }
+  }
+
 }

@@ -20,4 +20,10 @@ import GRDB
 
 import BoltTypes
 
-extension CustomFeedEntity: TableRecord, PersistableRecord, FetchableRecord { }
+extension CustomFeedEntity: TableRecord, PersistableRecord, FetchableRecord {
+
+  public static func databaseUUIDEncodingStrategy(for column: String) -> DatabaseUUIDEncodingStrategy {
+    .uppercaseString
+  }
+
+}

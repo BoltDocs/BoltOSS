@@ -92,7 +92,7 @@ public struct DocsetInstallationUpdate: TableRecord {
       return
     }
 
-    try Self
+    try DocsetInstallation
       .filter(key: uuid)
       .updateAll(db, assignments)
   }

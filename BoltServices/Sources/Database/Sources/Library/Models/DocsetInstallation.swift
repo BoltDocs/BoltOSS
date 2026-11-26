@@ -20,4 +20,10 @@ import GRDB
 
 import BoltTypes
 
-extension DocsetInstallation: TableRecord, PersistableRecord, FetchableRecord { }
+extension DocsetInstallation: TableRecord, PersistableRecord, FetchableRecord {
+
+  public static func databaseUUIDEncodingStrategy(for column: String) -> DatabaseUUIDEncodingStrategy {
+    .uppercaseString
+  }
+
+}
