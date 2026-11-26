@@ -16,7 +16,7 @@
 
 import GRDB
 
-public struct TarIndex: Codable, FetchableRecord, TableRecord {
+public struct TarIndex: Codable, FetchableRecord, TableRecord, Sendable {
 
   public var path: String
   public var hash: String

@@ -141,7 +141,7 @@ final class LibraryDatabaseImp: LibraryDatabase, LoggerProvider {
     .ignoreFailure()
 
   lazy var allCustomFeeds: AnyPublisher<[CustomFeedEntity], Never> = ValueObservation
-    .trackingConstantRegion(CustomFeedEntity.fetchAll)
+    .trackingConstantRegion { try CustomFeedEntity.fetchAll($0) }
     .publisher(in: dbPool, scheduling: .immediate)
     // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
@@ -153,7 +153,7 @@ final class LibraryDatabaseImp: LibraryDatabase, LoggerProvider {
     .ignoreFailure()
 
   lazy var allDownloadTasks: AnyPublisher<[DownloadTaskEntity], Never> = ValueObservation
-    .trackingConstantRegion(DownloadTaskEntity.fetchAll)
+    .trackingConstantRegion { try DownloadTaskEntity.fetchAll($0) }
     .publisher(in: dbPool, scheduling: .immediate)
     // swiftlint:disable:next trailing_closure
     .handleEvents(receiveCompletion: { completion in
