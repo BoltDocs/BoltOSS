@@ -72,7 +72,7 @@ final class FeedsServiceTests: NetworkingStubbedTestCase {
 
     do {
       try feedsService.insertCustomFeed(testFeed)
-      try feedsService.deleteCustomFeeds(testFeed)
+      try feedsService.deleteCustomFeed(testFeed)
     } catch {
       XCTFail("error thrown: \(error)")
     }

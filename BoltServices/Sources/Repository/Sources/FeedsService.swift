@@ -48,7 +48,7 @@ public protocol FeedsService {
 
   func updateCustomFeed(_ feed: CustomFeed) throws
 
-  func deleteCustomFeeds(_ feed: CustomFeed) throws
+  func deleteCustomFeed(_ feed: CustomFeed) throws
 
 }
 
