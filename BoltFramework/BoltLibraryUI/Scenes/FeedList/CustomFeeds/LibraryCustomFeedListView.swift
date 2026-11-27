@@ -28,10 +28,13 @@ import BoltUserGuide
 import BoltUserGuideUI
 import BoltUtils
 
-private final class LibraryCustomFeedListViewModel: ObservableObject {
+private final class LibraryCustomFeedListViewModel: ObservableObject, LoggerProvider {
 
   @Injected(\.feedsService)
   private var feedsService: FeedsService
+
+  @Injected(\.libraryDocsetsManager)
+  private var libraryDocsetsManager: LibraryDocsetsManager
 
   @Published var feeds = [CustomFeed]()
 
@@ -60,8 +63,30 @@ private final class LibraryCustomFeedListViewModel: ObservableObject {
     try? feedsService.updateCustomFeed(newFeed)
   }
 
-  func onConfirmRemoveFeed(_ feed: CustomFeed) throws {
-    try? feedsService.deleteCustomFeeds(feed)
+  func onConfirmRemoveFeed(_ feed: CustomFeed) {
+    for record in installedRecords(for: feed) {
+      do {
+        try libraryDocsetsManager.uninstallDocset(forRecord: record)
+      } catch {
+        Self.logger.error("onConfirmRemoveFeed: \(feed), failed to uninstallDocset: \(record), error: \(error)")
+        return
+      }
+    }
+    do {
+      try feedsService.deleteCustomFeed(feed)
+    } catch {
+      Self.logger.error("onConfirmRemoveFeed: \(feed), failed to delete custom feed with error: \(error)")
+    }
+  }
+
+  func hasInstalledDocsets(for feed: CustomFeed) -> Bool {
+    return !installedRecords(for: feed).isEmpty
+  }
+
+  private func installedRecords(for feed: CustomFeed) -> [LibraryRecord] {
+    return libraryDocsetsManager.installedRecords.filter {
+      $0.repository == feed.repository && $0.name == feed.id
+    }
   }
 
 }
@@ -221,6 +246,18 @@ struct LibraryCustomFeedListView: View {
   }
 
   private func promptRemoveFeed(_ feed: CustomFeed) {
+    let confirmRemoveFeed: () -> Void = {
+      model.onConfirmRemoveFeed(feed)
+    }
+
+    if model.hasInstalledDocsets(for: feed) {
+      presentRemoveFeedWithInstalledDocsetsAlert(for: feed, onConfirm: confirmRemoveFeed)
+    } else {
+      presentRemoveFeedAlert(for: feed, onConfirm: confirmRemoveFeed)
+    }
+  }
+
+  private func presentRemoveFeedAlert(for feed: CustomFeed, onConfirm: @escaping () -> Void) {
     let alertMessage = !feed.displayName.isEmpty ?
       "Library-ImportedFeeds-List-RemoveAlert-removeMessageFormat".boltLocalized(feed.displayName) :
       "Library-ImportedFeeds-List-RemoveAlert-removeFeedMessage".boltLocalized
@@ -228,12 +265,21 @@ struct LibraryCustomFeedListView: View {
       UIAlertController.alert(
         withTitle: "Library-ImportedFeeds-List-RemoveAlert-removeFeedTitle".boltLocalized,
         message: alertMessage,
-        confirmAction: (
-          BoltLocalizations.confirm,
-          UIAlertAction.Style.destructive, {
-            try? model.onConfirmRemoveFeed(feed)
-          }
-        ),
+        confirmAction: (BoltLocalizations.confirm, .destructive, onConfirm),
+        cancelAction: (UIKitLocalizations.cancel, { })
+      )
+    )
+  }
+
+  private func presentRemoveFeedWithInstalledDocsetsAlert(for feed: CustomFeed, onConfirm: @escaping () -> Void) {
+    let alertMessage = !feed.displayName.isEmpty ?
+      "Library-ImportedFeeds-List-RemoveAlert-removeWithInstalledDocsetsMessageFormat".boltLocalized(feed.displayName) :
+      "Library-ImportedFeeds-List-RemoveAlert-removeFeedWithInstalledDocsetsMessage".boltLocalized
+    GlobalUI.presentAlertController(
+      UIAlertController.alert(
+        withTitle: "Library-ImportedFeeds-List-RemoveAlert-removeFeedTitle".boltLocalized,
+        message: alertMessage,
+        confirmAction: (BoltLocalizations.confirm, .destructive, onConfirm),
         cancelAction: (UIKitLocalizations.cancel, { })
       )
     )

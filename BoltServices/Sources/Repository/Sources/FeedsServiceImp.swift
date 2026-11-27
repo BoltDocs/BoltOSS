@@ -92,7 +92,7 @@ final class FeedsServiceImp: FeedsServiceInternal {
     try libraryDatabase.updateCustomFeed(feed.customFeedEntity)
   }
 
-  func deleteCustomFeeds(_ feed: CustomFeed) throws {
+  func deleteCustomFeed(_ feed: CustomFeed) throws {
     try libraryDatabase.deleteCustomFeed(feed.customFeedEntity)
   }
 

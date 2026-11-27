@@ -188,10 +188,12 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
   // MARK: - Uninstall
 
   func uninstallDocset(forRecord record: LibraryRecord) throws {
+    let installationPath = LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(record.uuidString)
+    if FileManager.default.fileExists(atPath: installationPath) {
+      try FileManager.default.removeItem(atPath: installationPath)
+    }
+
     try libraryDatabase.deleteDocsetInstallation(withUUID: record.uuid)
-    try FileManager.default.removeItem(
-      atPath: LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(record.uuidString)
-    )
   }
 
   func updateDocsetInstallation(_ update: DocsetInstallationUpdate) throws {
