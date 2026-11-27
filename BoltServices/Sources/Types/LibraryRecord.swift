@@ -42,6 +42,59 @@ public protocol LibraryRecord {
 
 public extension LibraryRecord {
 
+  static func makeIdentifier(
+    uuidString: String,
+    name: String,
+    version: DocsetVersion,
+    installedAsLatestVersion: Bool,
+    repository: RepositoryIdentifier
+  ) -> String {
+    let name = identifierName(
+      uuidString: uuidString,
+      name: name,
+      repository: repository
+    )
+    return InstallationIdentifier.fromName(
+      name,
+      version: version,
+      installedAsLatestVersion: installedAsLatestVersion,
+      repository: repository
+    )
+  }
+
+  static func makeVersionIndependentIdentifier(
+    uuidString: String,
+    name: String,
+    version: DocsetVersion,
+    installedAsLatestVersion: Bool,
+    repository: RepositoryIdentifier
+  ) -> String {
+    let name = identifierName(
+      uuidString: uuidString,
+      name: name,
+      repository: repository
+    )
+    return InstallationIdentifier.versionIndependentFromName(
+      name,
+      version: version,
+      installedAsLatestVersion: installedAsLatestVersion,
+      repository: repository
+    )
+  }
+
+  private static func identifierName(
+    uuidString: String,
+    name: String,
+    repository: RepositoryIdentifier
+  ) -> String {
+    switch repository.recordIdentifierNameKind {
+    case .name:
+      return name
+    case .uuid:
+      return uuidString
+    }
+  }
+
   var hasNewerVersion: Bool {
     if !installedAsLatestVersion {
       return false
