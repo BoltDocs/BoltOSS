@@ -20,6 +20,11 @@ import Factory
 
 public struct RepositoryIdentifier: Sendable, Codable, RawRepresentable, Hashable {
 
+  public enum RecordIdentifierNameKind: Sendable {
+    case name
+    case uuid
+  }
+
   private enum Repository: String {
     case main
     case cheatsheet
@@ -48,6 +53,15 @@ public struct RepositoryIdentifier: Sendable, Codable, RawRepresentable, Hashabl
   }
 
   public private(set) var rawValue: String
+
+  public var recordIdentifierNameKind: RecordIdentifierNameKind {
+    switch Repository(rawValue: rawValue) {
+    case .main, .cheatsheet, .userContributed, .custom:
+      return .name
+    case .local, nil:
+      return .uuid
+    }
+  }
 
   public static var main: Self { return Self(rawValue: Repository.main.rawValue)! }
   public static var cheatsheet: Self { return Self(rawValue: Repository.cheatsheet.rawValue)! }

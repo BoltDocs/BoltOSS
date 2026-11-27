@@ -66,14 +66,16 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
     self.latestVersion = latestVersion
 
     uuidString = uuid.uuidString
-    identifier = InstallationIdentifier.fromName(
-      name,
+    identifier = Self.makeIdentifier(
+      uuidString: uuidString,
+      name: name,
       version: version,
       installedAsLatestVersion: installedAsLatestVersion,
       repository: repository
     )
-    versionIndependentIdentifier = InstallationIdentifier.versionIndependentFromName(
-      name,
+    versionIndependentIdentifier = Self.makeVersionIndependentIdentifier(
+      uuidString: uuidString,
+      name: name,
       version: version,
       installedAsLatestVersion: installedAsLatestVersion,
       repository: repository
@@ -92,14 +94,16 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
     latestVersion = try container.decode(DocsetVersion?.self, forKey: .latestVersion)
 
     uuidString = uuid.uuidString
-    identifier = InstallationIdentifier.fromName(
-      name,
+    identifier = Self.makeIdentifier(
+      uuidString: uuidString,
+      name: name,
       version: version,
       installedAsLatestVersion: installedAsLatestVersion,
       repository: repository
     )
-    versionIndependentIdentifier = InstallationIdentifier.versionIndependentFromName(
-      name,
+    versionIndependentIdentifier = Self.makeVersionIndependentIdentifier(
+      uuidString: uuidString,
+      name: name,
       version: version,
       installedAsLatestVersion: installedAsLatestVersion,
       repository: repository
