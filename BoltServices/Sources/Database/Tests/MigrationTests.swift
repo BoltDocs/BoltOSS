@@ -123,4 +123,63 @@ struct MigrationTests {
     }
   }
 
+  @Test func migrationAddDisplayNameForInstallations() async throws {
+    let dbQueue = try DatabaseQueue()
+
+    let migrator = LibraryDatabaseImp.createMigrator()
+    try migrator.migrate(dbQueue, upTo: "Store UUIDs as Uppercase Strings")
+
+    let names = ["Bash", "Apache_HTTP_Server", "Custom DocSet"]
+
+    try await dbQueue.write { db in
+      for (idx, name) in names.enumerated() {
+        try db.execute(
+          sql:
+            """
+            INSERT INTO "docset-installations" (uuid, name, version, installedAsLatestVersion, source, orderIndex)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+          arguments: [UUID().uuidString, name, "1.0", true, "main", idx]
+        )
+      }
+    }
+
+    try migrator.migrate(dbQueue)
+
+    let installations = try await dbQueue.read { db in
+      let request = DocsetInstallation
+        .all()
+        .order([Column(DocsetInstallation.CodingKeys.orderIndex), Column.rowID])
+
+      return try DocsetInstallation
+        .fetchAll(db, request)
+    }
+
+    #expect(installations.count == names.count)
+    for (idx, installation) in installations.enumerated() {
+      #expect(installation.name == names[idx])
+      #expect(installation.displayName == names[idx])
+    }
+
+    let inserted = DocsetInstallation(
+      name: "Apache_HTTP_Server",
+      displayName: "Apache HTTP Server",
+      version: DocsetVersion(rawValue: "2.4"),
+      installedAsLatestVersion: false,
+      repository: .main,
+      orderIndex: names.count
+    )
+
+    try await dbQueue.write { db in
+      try inserted.insert(db)
+    }
+
+    let fetched = try await dbQueue.read { db in
+      try DocsetInstallation.fetchOne(db, key: inserted.uuid)
+    }
+
+    #expect(fetched?.name == "Apache_HTTP_Server")
+    #expect(fetched?.displayName == "Apache HTTP Server")
+  }
+
 }

@@ -215,10 +215,17 @@ struct DocsetUnarchiver: LoggerProvider {
         }
 
         // move tarix and tar to the right location
-        try fileManager.moveItem(
-          atPath: downloadedTarPath,
-          toPath: resourcesPath.appendingPathComponent("tarix.tgz")
-        )
+        if removeSourceFiles {
+          try fileManager.moveItem(
+            atPath: downloadedTarPath,
+            toPath: resourcesPath.appendingPathComponent("tarix.tgz")
+          )
+        } else {
+          try fileManager.copyItem(
+            atPath: downloadedTarPath,
+            toPath: resourcesPath.appendingPathComponent("tarix.tgz")
+          )
+        }
         try fileManager.moveItem(
           atPath: tarixDBPath,
           toPath: resourcesPath.appendingPathComponent("tarixIndex.db")

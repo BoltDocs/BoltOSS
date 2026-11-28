@@ -25,6 +25,7 @@ public struct DocsetInstallationUpdate: TableRecord {
 
   public var uuid: UUID
   public var name: String?
+  public var displayName: String?
   public var version: String?
   public var installedAsLatestVersion: Bool?
   public var repository: RepositoryIdentifier?
@@ -33,6 +34,7 @@ public struct DocsetInstallationUpdate: TableRecord {
   public init(
     uuid: UUID,
     name: String? = nil,
+    displayName: String? = nil,
     version: String? = nil,
     installedAsLatestVersion: Bool? = nil,
     repository: RepositoryIdentifier? = nil,
@@ -40,6 +42,7 @@ public struct DocsetInstallationUpdate: TableRecord {
   ) {
     self.uuid = uuid
     self.name = name
+    self.displayName = displayName
     self.version = version
     self.installedAsLatestVersion = installedAsLatestVersion
     self.repository = repository
@@ -57,6 +60,13 @@ public struct DocsetInstallationUpdate: TableRecord {
       assignments.append(
         Column(DocsetInstallation.CodingKeys.name)
           .set(to: name)
+      )
+    }
+
+    if let displayName = displayName {
+      assignments.append(
+        Column(DocsetInstallation.CodingKeys.displayName)
+          .set(to: displayName)
       )
     }
 

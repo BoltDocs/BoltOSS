@@ -33,19 +33,22 @@ struct HomeListItemViewModel {
   var uuid: UUID
 
   init(queryResult: LibraryInstallationQueryResult) {
-    uuid = queryResult.record.uuid
-    subtitle = Self.subtitle(forRecord: queryResult.record)
-    switch queryResult {
-    case let .docset(docset):
-      title = docset.displayName
-      image = docset.iconImageForList
-    case let .broken(installation):
-      title = installation.name
-      let symbolName = "text.book.closed"
-      if let uiImage = UIImage(systemName: symbolName) {
-        image = IdentifiableImage(image: uiImage, id: symbolName)
+    let record = queryResult.record
+    uuid = record.uuid
+    subtitle = Self.subtitle(forRecord: record)
+    title = record.displayName
+    image = {
+      switch queryResult {
+      case let .docset(docset):
+        return docset.iconImageForList
+      case let .broken(installation):
+        let symbolName = "text.book.closed"
+        if let uiImage = UIImage(systemName: symbolName) {
+          return IdentifiableImage(image: uiImage, id: symbolName)
+        }
       }
-    }
+      return nil
+    }()
   }
 
   private static func subtitle(forRecord record: LibraryRecord) -> String {
