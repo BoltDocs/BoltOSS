@@ -87,15 +87,17 @@ extension LibraryDatabaseImp {
     }
   }
 
-  func deleteBookmarkById(_ bookmark: Bookmark) throws {
+  func deleteBookmark(byRowID rowID: Int64) throws {
     _ = try dbPool.write { db in
-      try Bookmark.deleteOne(db, key: bookmark.rowID)
+      try Bookmark.deleteOne(db, key: rowID)
     }
   }
 
-  func deleteBookmark(byPath path: String, docsetID: String) throws {
+  func deleteBookmarks(byDocsetID docsetID: String) throws {
     _ = try dbPool.write { db in
-      try deleteBookmark(byPath: path, docsetID: docsetID, in: db)
+      try Bookmark
+        .filter(Column(Bookmark.CodingKeys.docsetID) == docsetID)
+        .deleteAll(db)
     }
   }
 

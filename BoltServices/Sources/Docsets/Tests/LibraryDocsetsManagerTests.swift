@@ -17,6 +17,7 @@
 import Foundation
 import XCTest
 
+import BoltDatabase
 import BoltDocsetsTestResources
 import BoltSearch
 import BoltTestingUtils
@@ -29,11 +30,16 @@ import Factory
 
 final class LibraryDocsetsManagerTests: XCTestCase {
 
-  @LazyInjected(\.libraryDocsetsManager)
+  @DynamicInjected(\.libraryDatabase)
+  private var libraryDatabase: LibraryDatabase
+
+  @DynamicInjected(\.libraryDocsetsManager)
   private var libraryDocsetsManager: LibraryDocsetsManager
 
   override func setUpWithError() throws {
     try super.setUpWithError()
+
+    Container.shared.manager.push()
 
     Container.shared.docsetsModuleInitializer()()
     Container.shared.searchModuleInitializer()()
@@ -43,6 +49,7 @@ final class LibraryDocsetsManagerTests: XCTestCase {
 
   override func tearDownWithError() throws {
     try super.tearDownWithError()
+    Container.shared.manager.pop()
     try FileManager.default.removeItem(atPath: LocalFileSystem.downloadsAbsolutePath)
   }
 
@@ -126,6 +133,31 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     XCTAssertFalse(downloadsPathContents.contains("Vim-9.0-main.tgz.tarix"))
   }
 
+  func testUninstallDocsetDeletesBookmarkAndHistory() async throws {
+    try await installDocsetTrackedAsLatest(version: "/8")
+
+    try await Task.sleep(for: .milliseconds(1000))
+
+    let record = try XCTUnwrap(libraryDocsetsManager.installedRecords.first {
+      $0.name == "Bash"
+    })
+
+    let docsetID = record.versionIndependentIdentifier
+    _ = try libraryDatabase.insertBookmark(Bookmark(title: "Bash", path: "index.html", docsetID: docsetID))
+
+    let otherDocsetID = "Vim-9.0-main"
+    let otherBookmark = try libraryDatabase.insertBookmark(
+      Bookmark(title: "Vim", path: "index.html", docsetID: otherDocsetID)
+    )
+
+    XCTAssertFalse(try libraryDatabase.fetchBookmarks(forDocsetID: docsetID).isEmpty)
+
+    try libraryDocsetsManager.uninstallDocset(forRecord: record, deleteBookmarksAndHistory: true)
+
+    XCTAssertTrue(try libraryDatabase.fetchBookmarks(forDocsetID: docsetID).isEmpty)
+    XCTAssertEqual(try libraryDatabase.fetchBookmarks(forDocsetID: otherDocsetID), [otherBookmark])
+  }
+
   func testUpdateExistingDocset() async throws {
     try await installDocsetTrackedAsLatest(version: "/8")
 
@@ -135,7 +167,12 @@ final class LibraryDocsetsManagerTests: XCTestCase {
       result.record.name == "Bash"
     }
     XCTAssertEqual(docsetsBeforeUpdate.count, 1)
-    XCTAssertEqual(docsetsBeforeUpdate.first?.record.version.rawValue, "/8")
+
+    let previousRecord = try XCTUnwrap(docsetsBeforeUpdate.first?.record)
+    XCTAssertEqual(previousRecord.version.rawValue, "/8")
+    let bookmark = try libraryDatabase.insertBookmark(
+      Bookmark(title: "Bash", path: "index.html", docsetID: previousRecord.versionIndependentIdentifier)
+    )
 
     try await installDocsetTrackedAsLatest(version: "/9")
 
@@ -146,7 +183,11 @@ final class LibraryDocsetsManagerTests: XCTestCase {
     }
 
     XCTAssertEqual(docsetsAfterUpdate.count, 1)
-    XCTAssertEqual(docsetsAfterUpdate.first?.record.version.rawValue, "/9")
+
+    let updatedRecord = try XCTUnwrap(docsetsAfterUpdate.first?.record)
+    XCTAssertEqual(updatedRecord.version.rawValue, "/9")
+    let bookmarks = try libraryDatabase.fetchBookmarks(forDocsetID: updatedRecord.versionIndependentIdentifier)
+    XCTAssertTrue(bookmarks.contains(bookmark))
   }
 
   private func installDocsetTrackedAsLatest(version: String) async throws {
