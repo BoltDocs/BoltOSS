@@ -57,7 +57,7 @@ public protocol LibraryDocsetsManager {
 
   func installLocalDocset(forFeedEntry feedEntry: FeedEntry, atPath docsetPath: String) throws
 
-  func uninstallDocset(forRecord record: LibraryRecord) throws
+  func uninstallDocset(forRecord record: LibraryRecord, deleteBookmarksAndHistory: Bool) throws
 
   func updateDocsetInstallation(_ update: DocsetInstallationUpdate) throws
 
@@ -140,7 +140,7 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
       for record in outdatedRecords {
         Self.logger.info("DocsetUninstaller: uninstalling outdated record: \(record.identifier)")
         do {
-          try uninstallDocset(forRecord: record)
+          try uninstallDocset(forRecord: record, deleteBookmarksAndHistory: false)
         } catch {
           Self.logger.info("DocsetUninstaller: failed to uninstall outdated record: \(record.identifier), \(error)")
         }
@@ -178,13 +178,22 @@ final class LibraryDocsetsManagerImp: LibraryDocsetsManager, LoggerProvider {
 
   // MARK: - Uninstall
 
-  func uninstallDocset(forRecord record: LibraryRecord) throws {
+  func uninstallDocset(forRecord record: LibraryRecord, deleteBookmarksAndHistory: Bool) throws {
     let installationPath = LocalFileSystem.docsetsAbsolutePath.appendingPathComponent(record.uuidString)
     if FileManager.default.fileExists(atPath: installationPath) {
       try FileManager.default.removeItem(atPath: installationPath)
     }
 
     try libraryDatabase.deleteDocsetInstallation(withUUID: record.uuid)
+
+    if deleteBookmarksAndHistory {
+      do {
+        try libraryDatabase.deleteBookmarks(byDocsetID: record.versionIndependentIdentifier)
+      } catch {
+        Self.logger
+          .warning("DocsetUninstaller: failed to delete bookmarks or histories for record: \(record.identifier), error: \(error)")
+      }
+    }
   }
 
   func updateDocsetInstallation(_ update: DocsetInstallationUpdate) throws {

@@ -66,7 +66,7 @@ private final class LibraryCustomFeedListViewModel: ObservableObject, LoggerProv
   func onConfirmRemoveFeed(_ feed: CustomFeed) {
     for record in installedRecords(for: feed) {
       do {
-        try libraryDocsetsManager.uninstallDocset(forRecord: record)
+        try libraryDocsetsManager.uninstallDocset(forRecord: record, deleteBookmarksAndHistory: true)
       } catch {
         Self.logger.error("onConfirmRemoveFeed: \(feed), failed to uninstallDocset: \(record), error: \(error)")
         return
