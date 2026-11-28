@@ -37,15 +37,6 @@ public enum LibraryInstallationQueryResult: Hashable {
     }
   }
 
-  public var displayName: String {
-    switch self {
-    case let .docset(docset):
-      return docset.displayName
-    case let .broken(installation):
-      return installation.name
-    }
-  }
-
 }
 
 public extension Container {

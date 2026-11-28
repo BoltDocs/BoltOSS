@@ -120,6 +120,13 @@ extension LibraryDatabaseImp {
       }
     }
 
+    migrator.registerMigration("Add Display Name Column for Installations Table") { db in
+      try db.alter(table: "docset-installations") { t in
+        t.add(column: "displayName", .text).notNull().defaults(to: "")
+      }
+      try db.execute(sql: #"UPDATE "docset-installations" SET displayName = name"#)
+    }
+
     return migrator
   }
 

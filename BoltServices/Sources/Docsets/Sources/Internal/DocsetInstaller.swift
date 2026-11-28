@@ -79,11 +79,7 @@ struct DocsetInstallerImp: DocsetInstaller, LoggerProvider {
     .eraseToAnyPublisher()
   }
 
-  func installDocset(
-    forEntry entry: FeedEntry,
-    docsetPath: String,
-    uuid: UUID
-  ) throws {
+  func installDocset(forEntry entry: FeedEntry, docsetPath: String, uuid: UUID) throws {
     do {
       try Self.removeWALFiles(forDocsetPath: docsetPath)
     } catch {
@@ -96,6 +92,7 @@ struct DocsetInstallerImp: DocsetInstaller, LoggerProvider {
     let docsetInstallation = DocsetInstallation(
       uuid: uuid,
       name: entry.feed.id,
+      displayName: entry.feed.displayName,
       version: DocsetVersion(rawValue: entry.version),
       installedAsLatestVersion: entry.isTrackedAsLatest,
       repository: entry.feed.repository

@@ -337,7 +337,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
         return docsets
       }
       return docsets.filter { queryResult in
-        return queryResult.displayName.lowercased().contains(trimmedQuery)
+        return queryResult.record.displayName.lowercased().contains(trimmedQuery)
       }
     }
     .map { docsets in
@@ -404,7 +404,7 @@ public final class HomeViewController: BaseViewController, SearchBarProvider {
             GlobalUI.presentAlertController(
               UIAlertController.alert(
                 withTitle: "Home-List-RemoveDamagedDocsetAlert-title".boltLocalized,
-                message: "Home-List-RemoveDamagedDocsetAlert-message".boltLocalized(installation.name),
+                message: "Home-List-RemoveDamagedDocsetAlert-message".boltLocalized(installation.displayName),
                 confirmAction: (
                   UIKitLocalizations.ok,
                   UIAlertAction.Style.default,

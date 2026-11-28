@@ -20,6 +20,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
 
   public let uuid: UUID
   public let name: String
+  public let displayName: String
   public let version: DocsetVersion
   public let installedAsLatestVersion: Bool
   public let repository: RepositoryIdentifier
@@ -33,6 +34,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
   public enum CodingKeys: String, CodingKey {
     case uuid
     case name
+    case displayName
     case version
     case installedAsLatestVersion
     case repository = "source"
@@ -47,6 +49,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
   public init(
     uuid: UUID = UUID(),
     name: String,
+    displayName: String? = nil,
     version: DocsetVersion,
     installedAsLatestVersion: Bool,
     repository: RepositoryIdentifier,
@@ -55,6 +58,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
   ) {
     self.uuid = uuid
     self.name = name
+    self.displayName = displayName ?? name
     self.version = version
     self.installedAsLatestVersion = installedAsLatestVersion
     self.repository = repository
@@ -80,6 +84,7 @@ public struct DocsetInstallation: LibraryRecord, Sendable, Codable, Hashable, Cu
     let container = try decoder.container(keyedBy: CodingKeys.self)
     uuid = try container.decode(UUID.self, forKey: .uuid)
     name = try container.decode(String.self, forKey: .name)
+    displayName = try container.decode(String.self, forKey: .displayName)
     version = try container.decode(DocsetVersion.self, forKey: .version)
     installedAsLatestVersion = try container.decode(Bool.self, forKey: .installedAsLatestVersion)
     repository = try container.decode(RepositoryIdentifier.self, forKey: .repository)

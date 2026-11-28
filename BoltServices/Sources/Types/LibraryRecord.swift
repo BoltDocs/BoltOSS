@@ -24,6 +24,8 @@ public protocol LibraryRecord {
 
   var name: String { get }
 
+  var displayName: String { get }
+
   var repository: RepositoryIdentifier { get }
 
   var version: DocsetVersion { get }
